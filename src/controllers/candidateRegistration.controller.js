@@ -89,6 +89,12 @@ const getMapLocation = catchAsync(async (req, res) => {
   const data = await candidateRegistrationService.getMapLocation(req.query);
   res.send(data);
 });
+
+const change_pass = catchAsync(async (req, res) => {
+  const userId = req.userId
+  const user = await candidateRegistrationService.change_pass(userId, req.body);
+  res.send(user);
+});
 // const logout = catchAsync(async (req, res) => {
 //   await authService.logout(req.body.refreshToken);
 //   res.status(httpStatus.NO_CONTENT).send();
@@ -135,6 +141,7 @@ module.exports = {
   forget_password,
   forget_password_Otp,
   forget_password_set,
+  change_pass,
 //   logout,
 //   refreshTokens,
 //   forgotPassword,

@@ -31,5 +31,6 @@ router.route('/updateByIdcandidataSearchEmployerSet/:id').put(candidateDetailsCo
 router.route('/SearchByIdcandidataSearchEmployerSet').get(authorization,candidateDetailsController.SearchByIdcandidataSearchEmployerSet);
 router.route('/getByIdEmployerDetails/:id').get(candidateDetailsController.getByIdEmployerDetails);
 router.route('/candidateSearch_front_page').post(authorization, candidateDetailsController.candidateSearch_front_page);
+router.route('/recentSearch').get(authorization, candidateDetailsController.recentSearch);
 // router.route('/createSearchCandidate').post(authorization, candidateDetailsController.createSearchCandidate);
 module.exports = router;

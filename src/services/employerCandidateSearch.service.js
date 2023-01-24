@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { CandiadteSearch, CreateSavetoFolder, CreateSavetoFolderseprate} = require('../models/employerCandidateSearch.model');
+const { CandiadteSearch, CreateSavetoFolder, CreateSavetoFolderseprate, CreateoutSearchHistory, CreateoutSearchHistorySave} = require('../models/employerCandidateSearch.model');
 const {EmployerDetails, EmployerPostjob} = require('../models/employerDetails.model');
 const {KeySkill, CandidateSaveJob} = require('../models/candidateDetails.model');
 const {EmployerRegistration} = require('../models')
@@ -255,6 +255,116 @@ const searchCandidate = async (key) => {
    return data;
 }
 
+
+const outSearch_employer = async (userId, body) => {
+  const check = await EmployerRegistration.findById(userId)
+
+  if(!check){
+    throw new ApiError(httpStatus.NOT_FOUND, 'employer not found');
+  }
+  await CreateoutSearchHistory.create({...body, ...{userId:userId}})
+  const {keyskills, anykeywords, experiencefrom, experienceto, salaryRange, salary, location, displayDetails, qualification} = body
+  let keyskillSearch = {active:true}
+  let anykeywordsSearch = [{active:true}]
+  let experienceSearch = {active:true}
+  let salaryRangeSearch = {active:true}
+  let locationSearch = {active:true}
+  let displayDetailsSearch = {active:true}
+  let qualificationSearch = {active:true}
+  let educationSearch = {active:true}
+  let salarySearch = {active:true}
+
+  // filter if condition
+
+  if(keyskills != null){
+    keyskillSearch = { keyskill: {$elemMatch:{$in:keyskills}}}
+  }
+  if(anykeywords != null){
+    anykeywordsSearch = [{ currentSkill: {$elemMatch:{$in:anykeywords}}}, {preferredSkill: {$elemMatch:{$in:anykeywords}}}]
+  }
+  if(experiencefrom != null && experienceto != null){
+    experienceSearch = [{ experienceYear: { $gte: parseInt(experiencefrom) }},{experienceYear: { $lte: parseInt(experienceto) }}]
+  }
+  if(salaryRange != null){
+
+  }
+  if(location != null){
+    locationSearch ={locationCurrent:{$in:location}}
+  }
+  if(qualification != null){
+    qualificationSearch = {education:{$in:qualification}}
+  }
+  if(salary != null){
+    
+  }
+  if(displayDetails != null){
+
+  }
+  console.log(qualificationSearch)
+  const data = await KeySkill.aggregate([
+    {
+      $match: {
+        $and: [keyskillSearch, locationSearch, qualificationSearch]
+      },
+    },
+    {
+      $match: {
+        $or: anykeywordsSearch,
+      },
+    },
+    {
+      $match: {
+        $and:experienceSearch
+      },
+    },
+    {
+      $lookup: {
+        from: 'candidateregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'candidateregistrations',
+      },
+    },
+    {
+      $unwind:'$candidateregistrations',
+    },
+  ])
+  return data
+}
+
+
+const outSearchSave = async (userId, userBody) => {
+  const data = await CreateoutSearchHistorySave.create({...userBody, ...{userId:userId}})
+  return data
+}
+
+const outSearchRecentSearch = async (userId) => {
+  const data = await CreateoutSearchHistory.aggregate([
+    { 
+      $match: { 
+        $and: [ { userId: { $eq: userId } }] 
+    }
+  },
+  {
+    $limit: 5,
+  },
+  {
+    $sort:{createdAt:-1}
+  }
+])
+return data ;
+}
+
+const outSearchSaveData = async (userId) => {
+  const data = await CreateoutSearchHistorySave.aggregate([
+    { 
+      $match: { 
+        $and: [ { userId: { $eq: userId } }] 
+    }
+  },
+])
+return data ;
+}
 
 const createSavetoFolder = async (userId, userBody) => {
   let values = {...userBody, ...{userId:userId}}
@@ -527,4 +637,8 @@ module.exports = {
     createSaveSeprate,
     getSaveSeprate,
     delete_Seprate_saveCandidate,
+    outSearch_employer,
+    outSearchSave,
+    outSearchRecentSearch,
+    outSearchSaveData,
 };

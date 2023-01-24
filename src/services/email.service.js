@@ -21,25 +21,25 @@ if (config.env !== 'test') {
  * @returns {Promise}
  */
 const sendEmail = async (to, subject, text) => {
-  const msg = { from: "muthamizhyadav@gmail.com", to, subject, text};
+  const msg = { from: config.email.from, to, subject, text};
   // await OTPModel.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   await transport.sendMail(msg);
 };
 
 const sendEmailEmp = async (to, subject, text) => {
-  const msg = { from: "muthamizhyadav@gmail.com", to, subject, text};
+  const msg = { from: config.email.from, to, subject, text};
   // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   await transport.sendMail(msg);
 };
 
 const forgetEmail = async (to, subject, text, otp, userId) => {
-  const msg = { from: "muthamizhyadav@gmail.com", to, subject, text};
+  const msg = { from: config.email.from, to, subject, text};
   await OTPModel.findOneAndUpdate({userId:userId},{otp:otp},{ new: true })
   await transport.sendMail(msg);
 };
 
 const forgetEmailEmp = async (to, subject, text, otp, userId) => {
-  const msg = { from: "muthamizhyadav@gmail.com", to, subject, text};
+  const msg = { from: config.email.from, to, subject, text};
   await EmployeOtp.findOneAndUpdate({userId:userId},{otp:otp},{ new: true })
   await transport.sendMail(msg);
 };

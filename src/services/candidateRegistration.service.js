@@ -144,8 +144,27 @@ const change_password = async (id, body) => {
     return data;
 }
 
-
-
+const change_pass = async (userId, body) => {
+  const {oldpassword, newpassword, confirmpassword} = body
+  let userName = await CandidateRegistration.findById(userId);
+  if (!userName) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'User Not Found');
+  }else {
+    if (await userName.isPasswordMatch(oldpassword)) {
+      console.log('Password Macthed');
+      if(newpassword != confirmpassword){
+        throw new ApiError(httpStatus.UNAUTHORIZED, "Re-Enter Password Doesn't Match");  
+      }else{
+        const salt = await bcrypt.genSalt(10);
+        let password = await bcrypt.hash(newpassword, salt);
+       await CandidateRegistration.findByIdAndUpdate({ _id: userId }, { password: password }, { new: true });
+      }
+    } else {
+      throw new ApiError(httpStatus.UNAUTHORIZED, "Oldpassword Doesn't Match");
+    }
+  }
+  return userName
+}
 
 const getMapLocation = async (query) => {
   let response = await Axios.get(
@@ -190,6 +209,7 @@ module.exports = {
     forget_password,
     forget_password_Otp,
     forget_password_set,
+    change_pass,
 //   getUserById,
 //   getUserByEmail,
 //   updateUserById,

@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { KeySkill, CandidatePostjob, CandidateSaveJob, CandidateSearchjobCandidate, candidataSearchEmployerSet } = require('../models/candidateDetails.model');
+const { KeySkill, CandidatePostjob, CandidateSaveJob, CandidateSearchjobCandidate, candidataSearchEmployerSet, CandidateRecentSearchjobCandidate } = require('../models/candidateDetails.model');
 const { CandidateRegistration } = require('../models');
 const  {EmployerDetails, EmployerPostjob}  = require('../models/employerDetails.model');
 const ApiError = require('../utils/ApiError');
@@ -100,7 +100,7 @@ const deleteById = async (id) => {
 const candidateSearch = async (body) => {
   // console.log(userId)
   // let values = {...body, ...{userId:userId}}
-     let {search, experience, location} = body
+     let {search, experience, location, preferredindustry, salary} = body
 
      if(search != null){
       search = search.split(',');
@@ -109,15 +109,23 @@ const candidateSearch = async (body) => {
   //  await CandidateSearchjobCandidate.create(values);
 
     //  search = ["fbhfghfh","software engineer"]
-     experienceSearch = {active:true}
-     locationSearch = {active:true}
+    let experienceSearch = {active:true}
+    let locationSearch = {active:true}
+    let salarySearch = {active:true}
+    let preferredindustrySearch = {active:true}
+    if(preferredindustry != null){
+      preferredindustrySearch = { preferredindustry: { $eq: preferredindustry } }
+    }
+    if(salary != null){
+      salarySearch = { salaryRangeFrom: { $lte: parseInt(salary) },salaryRangeTo: { $gte: parseInt(salary) } }
+    }
      if(experience != null){
       experienceSearch = { experienceFrom: { $lte: parseInt(experience) },experienceTo: { $gte: parseInt(experience) } }
      }
      if(location != null){
        locationSearch = { jobLocation: { $eq: location } }
      }
-     console.log(experienceSearch)
+     console.log(preferredindustrySearch)
     const data = await EmployerDetails.aggregate([
       { 
         $match: { 
@@ -126,7 +134,7 @@ const candidateSearch = async (body) => {
     },  
     { 
       $match: { 
-        $and: [ { adminStatus: { $eq: "Approved" } },experienceSearch,locationSearch] 
+        $and: [ { adminStatus: { $eq: "Approved" } },experienceSearch,locationSearch,salarySearch,preferredindustrySearch] 
     }   
    },    
          {
@@ -830,14 +838,48 @@ const candidateSearch_front_page = async (id, body) => {
   if(!check){
     throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
   }
+   let values = {...body, ...{userId:id}}
+   await CandidateRecentSearchjobCandidate.create(values);
   // let values = {...body, ...{userId:userId}}
-     let {search, experience, location} = body
+     let {search, experience, location, preferredindustry, salary, workmode, education, salaryfilter, role, freshness, locationfilter, companytype, postedby} = body
   //  await CandidateSearchjobCandidate.create(values);
 
     //  search = ["fbhfghfh","software engineer"]
+    // console.log(body)
      let experienceSearch = {active:true}
      let locationSearch = {active:true}
      let allSearch = [{active:true}]
+     let salarySearch = {active:true}
+     let preferredindustrySearch = {active:true}
+     let workmodeSearch = {active:true}
+     let educationSearch = {active:true}
+     let salaryfilterSearch = {active:true}
+     let roleSearch = {active:true}
+     let freshnessSearch = {active:true}
+     let locationfilterSearch = {active:true}
+     let companytypeSearch = {active:true}
+     let postedbySearch = {active:true}
+     if(postedby != null){
+      postedbySearch = { companyType: { $in: postedby } }
+     }
+     if(workmode != null){
+      workmodeSearch = { workplaceType: { $in: workmode } }
+     }
+     if(companytype != null){
+      companytypeSearch = { industry: { $in: companytype } }
+     }
+     if(role != null){
+      roleSearch = { role: { $in: role } }
+     }
+     if(education != null){
+      educationSearch = { educationalQualification: { $in: education } }
+     }
+    if(preferredindustry != null){
+      preferredindustrySearch = { preferredindustry: { $eq: preferredindustry } }
+    }
+    if(salary != null){
+      salarySearch = { salaryRangeFrom: { $lte: parseInt(salary) },salaryRangeTo: { $gte: parseInt(salary) } }
+    }
      if(search != null){
       search = search.split(',');
       allSearch = [ { designation: { $in: search } },{ keySkill: {$elemMatch:{$in:search}}}]
@@ -849,7 +891,7 @@ const candidateSearch_front_page = async (id, body) => {
      if(location != null){
        locationSearch = { jobLocation: { $eq: location } }
      }
-    //  console.log(allSearch)
+      // console.log(educationSearch)
     const data = await EmployerDetails.aggregate([
       { 
         $match: { 
@@ -858,13 +900,20 @@ const candidateSearch_front_page = async (id, body) => {
     },  
     { 
       $match: { 
-        $and: [ { adminStatus: { $eq: "Approved" } }, experienceSearch, locationSearch] 
+        $and: [ { adminStatus: { $eq: "Approved" } }, experienceSearch, locationSearch, salarySearch, preferredindustrySearch, workmodeSearch, educationSearch, roleSearch, companytypeSearch, ] 
     }   
    },    
          {
             $lookup: {
               from: 'employerregistrations',
               localField: 'userId',
+              pipeline:[
+                { 
+                  $match: { 
+                    $and:[postedbySearch]
+                }
+              },
+              ],
               foreignField: '_id',
               as: 'employerregistrations',
             },
@@ -876,6 +925,23 @@ const candidateSearch_front_page = async (id, body) => {
     return data 
 }
 
+
+const recentSearch = async (userId) => {
+  const data = await CandidateRecentSearchjobCandidate.aggregate([
+    { 
+      $match: { 
+        $and: [ { userId: { $eq: userId } }] 
+    }
+  },
+  {
+    $limit: 5,
+  },
+  {
+    $sort:{createdAt:-1}
+  }
+])
+return data ;
+}
 module.exports = {
     createkeySkill,
     getByIdUser,
@@ -899,5 +965,6 @@ module.exports = {
     SearchByIdcandidataSearchEmployerSet,
     getByIdEmployerDetails,
     candidateSearch_front_page,
+    recentSearch,
     // createSearchCandidate,
 };
