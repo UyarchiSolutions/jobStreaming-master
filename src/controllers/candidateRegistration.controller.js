@@ -13,10 +13,10 @@ const register = catchAsync(async (req, res) => {
     user.resume = path;
   }
   const tokens = await tokenService.generateAuthTokens(user);
-  await emailService.sendVerificationEmail(user.email, tokens.access.token, user.mobileNumber);
   //  await OTPModel.create({token:tokens.access.token});
   res.status(httpStatus.CREATED).send({ user, tokens });
   await user.save();
+  await emailService.sendVerificationEmail(user.email, tokens.access.token, user.mobileNumber);
   //   console.log(user._id)
 });
 

@@ -49,6 +49,81 @@ const countPostjobError = catchAsync(async(req,res) => {
   const user = await employerDetailsService.countPostjobError(userId)
   res.send(user)
 })
+
+const EmployerspostDraft = catchAsync(async(req,res) => {
+  let userId = req.userId
+  const user = await employerDetailsService.EmployerspostDraft(userId, req.body)
+  res.send(user)
+})
+
+const draftData_employerside = catchAsync(async(req,res) => {
+  let userId = req.userId
+  const user = await employerDetailsService.draftData_employerside(userId)
+  res.send(user)
+})
+
+const draftData_employerside_ById = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.draftData_employerside_ById(req.params.id)
+  res.send(user)
+})
+
+const draftData_delete = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.draftData_delete(req.params.id)
+  res.send(user)
+})
+
+const getAllApplied_postjobs_Candidates = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.getAllApplied_postjobs_Candidates(req.params.id)
+  res.send(user)
+})
+
+const statusChange_employer = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.statusChange_employer(req.params.id, req.body)
+  res.send(user)
+})
+
+const getByIdAll_CandidateDetails = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.getByIdAll_CandidateDetails(req.params.id)
+  res.send(user)
+})
+
+const employer_comment = catchAsync(async(req,res) => {
+  let userId = req.userId
+  const user = await employerDetailsService.employer_comment(userId)
+  res.send(user)
+})
+
+const comment_edit = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.comment_edit(req.params.id, req.body)
+  res.send(user)
+})
+
+const mail_template_create = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await employerDetailsService.mail_template_create(userId, req.body)
+  res.send(user)
+})
+
+const mail_template_data = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await employerDetailsService.mail_template_data(userId)
+  res.send(user)
+})
+
+const mail_template_data_Id = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.mail_template_data_Id(req.params.id)
+  res.send(user)
+})
+
+const mail_template_data_Update = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.mail_template_data_Update(req.params.id, req.body)
+  res.send(user)
+})
+
+const mail_template_data_delete = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.mail_template_data_delete(req.params.id)
+  res.send(user)
+})
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -58,4 +133,18 @@ module.exports = {
   getById_Get,
   data_Id,
   countPostjobError,
+  EmployerspostDraft,
+  draftData_employerside,
+  draftData_employerside_ById,
+  draftData_delete,
+  getAllApplied_postjobs_Candidates,
+  statusChange_employer,
+  getByIdAll_CandidateDetails,
+  employer_comment,
+  comment_edit,
+  mail_template_create,
+  mail_template_data,
+  mail_template_data_Id,
+  mail_template_data_Update,
+  mail_template_data_delete,
 };

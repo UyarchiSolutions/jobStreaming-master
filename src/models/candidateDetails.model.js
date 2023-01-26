@@ -146,6 +146,13 @@ const candidatePostjobSchema = mongoose.Schema(
         type:Boolean,
         default:true,
       },
+      approvedStatus:{
+        type:String,
+        default:"Applied"
+      },
+      employerCommand:{
+        type:String,
+      },
       active:{
           type:Boolean,
           default:true,

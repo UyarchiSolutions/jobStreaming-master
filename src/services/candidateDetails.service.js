@@ -341,6 +341,7 @@ const getByIdAppliedJobs = async (userId) => {
  {
   $project:{
     userId:1,
+    approvedStatus:1,
     companyType:"$employerdetails.employerregistrations.companyType",
     companyName:"$employerdetails.employerregistrations.companyName",
     designation:"$employerdetails.designation",
@@ -449,6 +450,7 @@ const applyJobsView = async (userId) =>{
     updatedAt:"$employerdetails.updatedAt",
     jobTittle:"$employerdetails.jobTittle",
     candidatesavejobs:{ $ifNull: ['$employerdetails.candidatesavejobs', false] },
+    approvedStatus:1,
   }
  }
    ])
@@ -545,6 +547,7 @@ const getByIdSavedJobs = async (userId) => {
     jobTittle:"$employerdetails.jobTittle",
     candidatepostjobsStatus:{ $ifNull: ['$employerdetails.candidatepostjobs.status', false] },
     candidatepostjobs:{ $ifNull: ['$employerdetails.candidatepostjobs', false] },
+    approvedStatus:'$employerdetails.candidatepostjobs.approvedStatus',
   }
  }
    ])
@@ -630,6 +633,7 @@ const getByIdSavedJobsView = async (userId) => {
     updatedAt:"$employerdetails.updatedAt",
     jobTittle:"$employerdetails.jobTittle",
     candidatepostjobs:{ $ifNull: ['$employerdetails.candidatepostjobs', false] },
+    approvedStatus:'$employerdetails.candidatepostjobs.approvedStatus',
   }
  }
    ])
