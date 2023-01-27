@@ -3,6 +3,7 @@ const validate = require('../../middlewares/validate');
 const authController = require('../../controllers/auth.controller');
 const employerDetailsController = require('../../controllers/employerDetails.controller');
 const authorization = require('../../controllers/empVEridy.controller');
+const auth = require('../../controllers/tokenVerify.controller');
 
 const router = express.Router();
 
@@ -32,4 +33,10 @@ router.route('/mail_template_data').get(authorization, employerDetailsController
 router.route('/mail_template_data_Id/:id').get(employerDetailsController.mail_template_data_Id);
 router.route('/mail_template_data_Update/:id').put(employerDetailsController.mail_template_data_Update);
 router.route('/mail_template_data_delete/:id').delete(employerDetailsController.mail_template_data_delete);
+
+// send notification mail
+router.route('/send_mail_and_notification').post(authorization, employerDetailsController.send_mail_and_notification);
+router.route('/getAll_Mail_notification_employerside').get(authorization, employerDetailsController.getAll_Mail_notification_employerside);
+router.route('/getAll_Mail_notification_candidateside').get(auth, employerDetailsController.getAll_Mail_notification_candidateside);
+router.route('/candidate_mailnotification_Change/:id').put(employerDetailsController.candidate_mailnotification_Change);
 module.exports = router;

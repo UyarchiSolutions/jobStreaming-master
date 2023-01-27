@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate} = require('../models/employerDetails.model');
+const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification} = require('../models/employerDetails.model');
 const { PlanPayment } = require('../models/planPaymentDetails.model');
 const { CandidatePostjob} = require('../models/candidateDetails.model');
 const { CandidateRegistration } = require('../models');
@@ -467,7 +467,7 @@ const getByIdAll_CandidateDetails = async (id) => {
 
 const employer_comment = async (userId, Body) =>{
   let values = {...Body, ...{userId:userId}}
-  return await create(values)
+  return await Employercomment.create(values)
 }
 
 //edit comment 
@@ -527,7 +527,144 @@ const mail_template_data_delete = async (id, body) => {
    await data.remove();
 }
 
+// notofication send candidate
 
+const send_mail_and_notification = async (userId, body) => {
+  const data = await EmployerRegistration.findById(userId)
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  const {candidates} = body
+  candidates.forEach(async (e) => {
+    await EmployerMailNotification.create({...body, ...{userId:userId, candidateId:e}});
+ });
+  return {messages:'Send Notification Mail Successfully...'}
+}
+
+const getAll_Mail_notification_employerside = async (userId) => {
+  const data = await EmployerMailNotification.aggregate([
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId} }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'candidateregistrations',
+        localField: 'candidateId',
+        foreignField: '_id',
+        pipeline:[
+          {
+          $lookup: {
+            from: 'candidatedetails',
+            localField: '_id',
+            foreignField: 'userId',
+            as:'candidatedetails'
+            }
+          },
+          {
+            $project:{
+              name:1,
+              locationCurrent:'$candidatedetails.locationCurrent',
+              education:'$candidatedetails.education',
+              experienceYear:'$candidatedetails.experienceYear',
+              experienceMonth:'$candidatedetails.experienceMonth'
+            }
+          }
+        ],
+        as:'candidateregistrations'
+        }
+    },   
+    {
+      $lookup: {
+        from: 'employermailtemplates',
+        localField: 'userId',
+        foreignField: 'userId',
+        pipeline:[
+          {
+            $lookup: {
+              from: 'employercomments',
+              localField: 'userId',
+              foreignField: 'userId',
+              as:'employercomments'
+              }
+            },
+        ],
+        as:'employermailtemplates'
+        }
+      }, 
+      {
+        $project:{
+          jobtitle:'$employermailtemplates.jobTitle',
+          comment:'$employermailtemplates.employercomments.comment',
+          commentId:'$employermailtemplates.employercomments._id',
+          status:1,
+          candidateDetail:'$candidateregistrations'
+        }
+      }
+  ])
+  return data
+}
+
+// getAll_Mail_notification_candidateside
+
+const getAll_Mail_notification_candidateside = async (userId) => {
+  const data = await EmployerMailNotification.aggregate([
+    {
+      $match: {
+        $and: [{ candidateId: { $eq: userId} }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        pipeline:[
+          {
+            $lookup: {
+              from: 'employermailtemplates',
+              localField: '_id',
+              foreignField: 'userId',
+              as:'employermailtemplates'
+              }
+            },
+            {
+              $project:{
+                companyName:1,
+                city:'$employermailtemplates.jobLocation',
+                jobTitle:'$employermailtemplates.jobTitle',
+                experienceFrom:'$employermailtemplates.experienceFrom',
+                experienceTo:'$employermailtemplates.experienceTo',
+                ctc:'$employermailtemplates.ctc',
+                date:'$employermailtemplates.date',
+              }
+            }
+        ],
+        as:'employerregistrations'
+        }
+      },
+      {
+        $project:{
+          status:1,
+          employerregistrations:'$employerregistrations'
+        }
+      }
+  ])
+  return data
+
+}
+
+// notification status change 
+
+const candidate_mailnotification_Change = async (id, body) => {
+  const data = await EmployerMailNotification.findById(id)
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  const value = await EmployerMailNotification.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return value
+}
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -551,4 +688,8 @@ module.exports = {
   mail_template_data_Id,
   mail_template_data_Update,
   mail_template_data_delete,
+  send_mail_and_notification,
+  getAll_Mail_notification_employerside,
+  getAll_Mail_notification_candidateside,
+  candidate_mailnotification_Change,
 };

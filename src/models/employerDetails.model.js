@@ -360,4 +360,37 @@ const employerPostjobSchema = mongoose.Schema(
     }
   );
   const EmployerMailTemplate = mongoose.model('EmployerMailTemplate', EmployerMailTemplateSchema);
-module.exports = {EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate};
+  const EmployerMailNotificationSchema = mongoose.Schema(
+    {
+      _id: {
+        type: String,
+        default: v4,
+      },
+      userId: {
+          type:String,
+      },
+      candidateId:{
+          type:String,
+      },
+      status:{
+        type:String,
+        default:'Pending'
+      },
+      mailId:{
+        type:String,
+      },
+      date:{
+        type:String,
+        default:moment().format('YYYY-MM-DD')
+      },
+      active:{
+          type:Boolean,
+          default:true,
+      }
+    },
+    {
+      timestamps: true,
+    }
+  );
+  const EmployerMailNotification = mongoose.model('EmployerMailNotification', EmployerMailNotificationSchema);
+module.exports = {EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification};

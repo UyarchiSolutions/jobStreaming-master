@@ -89,7 +89,7 @@ const getByIdAll_CandidateDetails = catchAsync(async(req,res) => {
 
 const employer_comment = catchAsync(async(req,res) => {
   let userId = req.userId
-  const user = await employerDetailsService.employer_comment(userId)
+  const user = await employerDetailsService.employer_comment(userId, req.body)
   res.send(user)
 })
 
@@ -124,6 +124,30 @@ const mail_template_data_delete = catchAsync(async(req,res) => {
   const user = await employerDetailsService.mail_template_data_delete(req.params.id)
   res.send(user)
 })
+
+const send_mail_and_notification = catchAsync(async(req,res) => {
+   const userId = req.userId
+  const user = await employerDetailsService.send_mail_and_notification(userId, req.body)
+  res.send(user)
+})
+
+const getAll_Mail_notification_employerside = catchAsync(async(req,res) => {
+  const userId = req.userId
+ const user = await employerDetailsService.getAll_Mail_notification_employerside(userId)
+ res.send(user)
+})
+
+const getAll_Mail_notification_candidateside = catchAsync(async(req,res) => {
+  const userId = req.userId
+ const user = await employerDetailsService.getAll_Mail_notification_candidateside(userId)
+ res.send(user)
+})
+
+const candidate_mailnotification_Change = catchAsync(async(req,res) => {
+ const user = await employerDetailsService.candidate_mailnotification_Change(req.params.id, req.body)
+ res.send(user)
+})
+
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -147,4 +171,8 @@ module.exports = {
   mail_template_data_Id,
   mail_template_data_Update,
   mail_template_data_delete,
+  send_mail_and_notification,
+  getAll_Mail_notification_employerside,
+  getAll_Mail_notification_candidateside,
+  candidate_mailnotification_Change,
 };
