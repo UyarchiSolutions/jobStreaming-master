@@ -52,7 +52,7 @@ const generateToken = async (req) => {
   // // value.uid_cloud = cloud_recording.value.Uid;
   // // value.cloud_id = cloud_recording.value._id;
   // value.save();
-  return { uid, token ,channel:chennel};
+  return { uid, token, channel: chennel };
 };
 
 const generateToken_sub = async (req) => {
@@ -63,23 +63,23 @@ const generateToken_sub = async (req) => {
   const moment_curr = moment();
   const currentTimestamp = moment_curr.add(30, 'minutes');
   const expirationTimestamp = new Date(new Date(currentTimestamp.format('YYYY-MM-DD') + ' ' + currentTimestamp.format('HH:mm:ss'))).getTime() / 1000;
-  let value = await tempTokenModel.create({
-    ...req.body,
-    ...{
-      date: moment().format('YYYY-MM-DD'),
-      time: moment().format('HHMMSS'),
-      created: moment(),
-      Uid: uid,
-      chennel: channel,
-      participents: 3,
-      created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-      expDate: expirationTimestamp * 1000,
-    },
-  });
+  // let value = await tempTokenModel.create({
+  //   ...req.body,
+  //   ...{
+  //     date: moment().format('YYYY-MM-DD'),
+  //     time: moment().format('HHMMSS'),
+  //     created: moment(),
+  //     Uid: uid,
+  //     chennel: channel,
+  //     participents: 3,
+  //     created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+  //     expDate: expirationTimestamp * 1000,
+  //   },
+  // });
   const token = await geenerate_rtc_token(channel, uid, role, expirationTimestamp);
-  value.token = token;
-  value.save();
-  return { uid, token, value };
+  // value.token = token;
+  // value.save();
+  return { uid, token, channel };
 };
 
 
