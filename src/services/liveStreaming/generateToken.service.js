@@ -279,7 +279,7 @@ const recording_start = async (req) => {
           },
         },
         recordingFileConfig: {
-          avFileType: ['hls', 'mp4'],
+          avFileType: ['hls'],
         },
         storageConfig: {
           vendor: 1,
