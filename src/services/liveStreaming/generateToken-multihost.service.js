@@ -31,28 +31,28 @@ const generateToken = async (req) => {
   const currentTimestamp = moment_curr.add(30, 'minutes');
   const expirationTimestamp =
     new Date(new Date(currentTimestamp.format('YYYY-MM-DD') + ' ' + currentTimestamp.format('HH:mm:ss'))).getTime() / 1000;
-  let value = await tempTokenModel.create({
-    ...req.body,
-    ...{
-      date: moment().format('YYYY-MM-DD'),
-      time: moment().format('HHMMSS'),
-      created: moment(),
-      Uid: uid,
-      participents: 3,
-      created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-      expDate: expirationTimestamp * 1000,
-    },
-  });
+  // let value = await tempTokenModel.create({
+  //   ...req.body,
+  //   ...{
+  //     date: moment().format('YYYY-MM-DD'),
+  //     time: moment().format('HHMMSS'),
+  //     created: moment(),
+  //     Uid: uid,
+  //     participents: 3,
+  //     created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+  //     expDate: expirationTimestamp * 1000,
+  //   },
+  // });
   const token = await geenerate_rtc_token(chennel, uid, role, expirationTimestamp);
-  value.token = token;
-  value.chennel = chennel;
-  value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
-  let cloud_recording = await generateToken_sub_record(chennel, false, req);
-  value.cloud_recording = cloud_recording.value.token;
-  value.uid_cloud = cloud_recording.value.Uid;
-  value.cloud_id = cloud_recording.value._id;
-  value.save();
-  return { uid, token, value, cloud_recording };
+  // value.token = token;
+  // value.chennel = chennel;
+  // value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
+  // // let cloud_recording = await generateToken_sub_record(chennel, false, req);
+  // // value.cloud_recording = cloud_recording.value.token;
+  // // value.uid_cloud = cloud_recording.value.Uid;
+  // // value.cloud_id = cloud_recording.value._id;
+  // value.save();
+  return { uid, token };
 };
 
 const generateToken_sub = async (req) => {
