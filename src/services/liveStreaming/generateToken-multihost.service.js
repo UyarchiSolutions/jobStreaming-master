@@ -52,7 +52,7 @@ const generateToken = async (req) => {
   // // value.uid_cloud = cloud_recording.value.Uid;
   // // value.cloud_id = cloud_recording.value._id;
   // value.save();
-  return { uid, token };
+  return { uid, token ,channel:chennel};
 };
 
 const generateToken_sub = async (req) => {
