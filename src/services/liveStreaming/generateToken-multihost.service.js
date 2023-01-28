@@ -96,9 +96,14 @@ const createRooms = async (req) => {
   return value;
 }
 
+const get_allrooms = async (req) => {
+  let value = hostRooms.find();
+  return value;
+}
+
 module.exports = {
   generateToken,
   generateToken_sub,
-  createRooms
-
+  createRooms,
+  get_allrooms
 };

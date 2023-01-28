@@ -19,7 +19,13 @@ const createRooms = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(value);
 });
 
+const get_allrooms = catchAsync(async (req, res) => {
+  let value = await generateTokenService.get_allrooms(req);
+  res.status(httpStatus.CREATED).send(value);
+});
+
 module.exports = {
   generateToken,
-  createRooms
+  createRooms,
+  get_allrooms
 };

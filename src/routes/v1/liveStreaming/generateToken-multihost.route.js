@@ -9,6 +9,7 @@ const generateToken = require('../../../controllers/liveStreaming/generateToken-
 
 router.post('/getToken', generateToken.generateToken);
 router.post('/create/rooms', generateToken.createRooms);
+router.get('/rooms/all', generateToken.get_allrooms);
 
 
 module.exports = router;
