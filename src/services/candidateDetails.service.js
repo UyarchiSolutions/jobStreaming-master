@@ -845,12 +845,13 @@ const candidateSearch_front_page = async (id, body) => {
    let values = {...body, ...{userId:id}}
    await CandidateRecentSearchjobCandidate.create(values);
   // let values = {...body, ...{userId:userId}}
-     let {search, experience, location, preferredindustry, salary, workmode, education, salaryfilter, role, freshness, locationfilter, companytype, postedby} = body
+     let {search, experience, experienceAnotherfrom, experienceAnotherto, location, preferredindustry, salary, workmode, education, salaryfilter, role, freshness, locationfilter, companytype, postedby} = body
   //  await CandidateSearchjobCandidate.create(values);
 
     //  search = ["fbhfghfh","software engineer"]
     // console.log(body)
      let experienceSearch = {active:true}
+     let experienceAnotherSearch = {active:true}
      let locationSearch = {active:true}
      let allSearch = [{active:true}]
      let salarySearch = {active:true}
@@ -866,6 +867,9 @@ const candidateSearch_front_page = async (id, body) => {
      if(postedby != null){
       postedbySearch = { companyType: { $in: postedby } }
      }
+     if(experienceAnotherfrom != null && experienceAnotherto != null){
+      experienceAnotherSearch = [{ experienceFrom: { $gte: parseInt(experienceAnotherfrom) }},{experienceFrom: { $lte: parseInt(experienceAnotherto) }}]
+     }
      if(workmode != null){
       workmodeSearch = { workplaceType: { $in: workmode } }
      }
@@ -879,29 +883,35 @@ const candidateSearch_front_page = async (id, body) => {
       educationSearch = { educationalQualification: { $in: education } }
      }
     if(preferredindustry != null){
-      preferredindustrySearch = { preferredindustry: { $eq: preferredindustry } }
+      preferredindustrySearch = { preferedIndustry: { $eq: preferredindustry } }
     }
     if(salary != null){
       salarySearch = { salaryRangeFrom: { $lte: parseInt(salary) },salaryRangeTo: { $gte: parseInt(salary) } }
     }
      if(search != null){
       search = search.split(',');
-      allSearch = [ { designation: { $in: search } },{ keySkill: {$elemMatch:{$in:search}}}]
+      allSearch = [ { designation: { $in: search } },{ keySkill: {$elemMatch:{$in:search}}},{ jobTittle: { $in: search } }]
      }
 
      if(experience != null){
-      experienceSearch = { experienceFrom: { $lte: parseInt(experience) },experienceTo: { $gte: parseInt(experience) } }
+      // experienceSearch = { experienceFrom: { $lte: parseInt(experience) },experienceTo: { $gte: parseInt(experience) } }
+      experienceSearch = { experienceFrom: { $gte: parseInt(experience) }}
      }
      if(location != null){
        locationSearch = { jobLocation: { $eq: location } }
      }
-      // console.log(educationSearch)
+       console.log(experienceAnotherSearch, salarySearch)
     const data = await EmployerDetails.aggregate([
       { 
         $match: { 
           $or:allSearch 
       }
     },  
+    { 
+      $match: { 
+        $and:experienceAnotherSearch 
+    }
+  },
     { 
       $match: { 
         $and: [ { adminStatus: { $eq: "Approved" } }, experienceSearch, locationSearch, salarySearch, preferredindustrySearch, workmodeSearch, educationSearch, roleSearch, companytypeSearch, ] 
@@ -911,6 +921,7 @@ const candidateSearch_front_page = async (id, body) => {
             $lookup: {
               from: 'employerregistrations',
               localField: 'userId',
+              foreignField: '_id',
               pipeline:[
                 { 
                   $match: { 
@@ -918,7 +929,6 @@ const candidateSearch_front_page = async (id, body) => {
                 }
               },
               ],
-              foreignField: '_id',
               as: 'employerregistrations',
             },
           },

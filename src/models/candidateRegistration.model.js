@@ -59,6 +59,7 @@ const userSchema = mongoose.Schema(
     },
     workStatus: {
       type: String,
+      required: true,
     },
     mobileNumber: {
       type: Number,
@@ -68,6 +69,7 @@ const userSchema = mongoose.Schema(
     adminStatus:{
       type:String,
       default:"Pending",
+      required: true,
     },
     lat:{
       type:String,

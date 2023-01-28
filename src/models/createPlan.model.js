@@ -29,7 +29,7 @@ const  createPlanSchema = mongoose.Schema(
         type:Number,
     },
     offer:{
-        type:String,
+        type:Number,
     },
     validityOfPlan:{
         type:Number,

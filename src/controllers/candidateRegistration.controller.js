@@ -90,6 +90,11 @@ const change_pass = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.change_pass(userId, req.body);
   res.send(user);
 });
+
+const getAllLatLong = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.getAllLatLong( req.body);
+  res.send(user);
+});
 // const logout = catchAsync(async (req, res) => {
 //   await authService.logout(req.body.refreshToken);
 //   res.status(httpStatus.NO_CONTENT).send();
@@ -137,6 +142,7 @@ module.exports = {
   forget_password_Otp,
   forget_password_set,
   change_pass,
+  getAllLatLong,
   //   logout,
   //   refreshTokens,
   //   forgotPassword,
