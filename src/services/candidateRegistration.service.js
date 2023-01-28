@@ -173,6 +173,13 @@ const getMapLocation = async (query) => {
   return response.data;
 };
 
+
+const getAllLatLong = async (body) => {
+  const {address} = body
+   const data = await CandidateRegistration.find({currentAddress:address})
+    return {data:data, count:data.length} 
+};
+
 // const updateUserById = async (userId, updateBody) => {
 //   const user = await getUserById(userId);
 //   if (!user) {
@@ -210,6 +217,7 @@ module.exports = {
     forget_password_Otp,
     forget_password_set,
     change_pass,
+    getAllLatLong,
 //   getUserById,
 //   getUserByEmail,
 //   updateUserById,

@@ -6,10 +6,12 @@ const employerRegistration = require('../../controllers/employerRegistration.con
 // const uploadImage = require('../../middlewares/upload');
 const auth = require('../../middlewares/auth');
 const authorization = require('../../controllers/empVEridy.controller');
+// const employerfile = require('../../middlewares/uploadEmployerfile');
+const uploadlogo = require('../../middlewares/uploadlogo');
 
 const router = express.Router();
 
-router.route('/register').post(employerRegistration.register);
+router.route('/register').post(uploadlogo.fields([{ name: 'choosefile' }, { name: 'logo' }]),employerRegistration.register);
 router.route('/userDetails').get(authorization, employerRegistration.getUserById);
 
 router.route('/verify_email').put(employerRegistration.verify_email);
@@ -26,6 +28,7 @@ router.route('/forget_password').post(employerRegistration.forget_password);
 router.route('/forget_password_Otp').post(employerRegistration.forget_password_Otp);
 router.route('/forget_password_set/:id').post(employerRegistration.forget_password_set);
 router.route('/change_pass').post(authorization, employerRegistration.change_pass);
+router.route('/getbyAll_lat_lang').post(employerRegistration.getbyAll_lat_lang);
 // router.post('/logout', validate(authValidation.logout), authController.logout);
 // router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
 // router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);

@@ -18,7 +18,7 @@ const createEmpDetails = async (userId, userBody) => {
   if(!app){
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
-  const {validity, interviewDate} = userBody;
+  const {validity} = userBody;
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HHmmss');
   let expiredDate
@@ -30,7 +30,12 @@ const createEmpDetails = async (userId, userBody) => {
   }else{
     expiredDate = moment().add(1, 'days').format('YYYY-MM-DD');
   }
-  let values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time:creat1, interviewstartDate:interviewDate.startDate, interviewendDate:interviewDate.endDate, } };
+  let values
+  if(!userBody.interviewDate){
+    values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time:creat1 } };
+  }else{
+     values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time:creat1, interviewstartDate:interviewDate.startDate, interviewendDate:interviewDate.endDate, } };
+  }
   const freeCount = await EmployerDetails.find({userId:userId})
   const usser = await EmployerRegistration.findById(userId)
   console.log(freeCount.length, usser.freePlanCount)

@@ -58,6 +58,12 @@ const employerDetailsSchema = mongoose.Schema(
     candidateDescription:{
         type:String,
     },
+    salaryDescription:{
+        type:String,
+    },
+    urltoApply:{
+        type:String,
+    },
     workplaceType:{
         type:String,
     },

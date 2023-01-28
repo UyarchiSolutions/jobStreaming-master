@@ -15,7 +15,8 @@ const createPlanPayment = async (userId, userBody) => {
   let creat1 = moment().format('HHmmss');
   let ss = await CreatePlan.findOne({_id:planId})
   // validityOfPlan
-  let jobPostVAlidityExpiry = moment().add(ss.validityOfPlan, 'days').format('YYYY-MM-DD');
+   let jobPostVAlidityExpiry = moment().add(ss.validityOfPlan, 'days').format('YYYY-MM-DD');
+  // let jobPostVAlidityExpiry = moment().add(ss.validityOfPlan, 'minutes')
   let values = { ...userBody, ...{ userId: userId, date: date, time:creat1, expDate:jobPostVAlidityExpiry} };
   let data = await PlanPayment.create(values);
   return data;

@@ -50,30 +50,37 @@ const userEmpSchema = mongoose.Schema(
     //   enum: roles,
     //   default: 'user',
     // },
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
-    },
-    isMobileVerified:{
-      type: Boolean,
-      default: false,
-    },
     companyType: {
       type: String,
+      required:true,
     },
-    companyName:{
+    contactName:{
       type:String,
+      required:true,
     },
     pincode: {
         type: Number,
       },
     mobileNumber: {
       type: Number,
+      required:true,
     },
     lat:{
       type:String,
     },
     long:{
+      type:String,
+    },
+    logo:{
+      type:String,
+    },
+    aboutCompany:{
+      type:String,
+    },
+    choosefile:{
+      type:String,
+    },
+    location:{
       type:String,
     },
     freePlanCount:{
@@ -83,6 +90,14 @@ const userEmpSchema = mongoose.Schema(
      active: {
         type: Boolean,
         default:true,
+      },
+      isEmailVerified: {
+        type: Boolean,
+        default: false,
+      },
+      isMobileVerified:{
+        type: Boolean,
+        default: false,
       },
   },
   {

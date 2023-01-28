@@ -6,7 +6,7 @@ const candidateRegistration = require('../../controllers/candidateRegistration.c
 const uploadImage = require('../../middlewares/upload');
 const auth = require('../../middlewares/auth');
 const authorization = require('../../controllers/tokenVerify.controller');
-
+const author = require('../../controllers/empVEridy.controller');
 const router = express.Router();
 
 router.route('/register').post(uploadImage.array('resume'),candidateRegistration.register);
@@ -25,6 +25,9 @@ router.route('/forget_password').post(candidateRegistration.forget_password);
 router.route('/forget_password_Otp').post(candidateRegistration.forget_password_Otp);
 router.route('/forget_password_set/:id').post(candidateRegistration.forget_password_set);
 router.route('/change_pass').post(authorization, candidateRegistration.change_pass);
+
+// map
+router.route('/getAllLatLong').post(candidateRegistration.getAllLatLong);
 // router.post('/logout', validate(authValidation.logout), authController.logout);
 // router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
 // router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);

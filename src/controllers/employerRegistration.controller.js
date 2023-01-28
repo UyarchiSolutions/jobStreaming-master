@@ -5,6 +5,20 @@ const  {EmployeOtp}  = require('../models');
 
 const register = catchAsync(async (req, res) => {
   const user = await EmployerRegistration.createEmployer(req.body);
+  if (req.files.logo) {
+    let path = '';
+    req.files.logo.forEach(function (files, index, arr) {
+      path = 'resumes/uploadlogo/' + files.filename;
+    });
+    user.logo = path;
+  }
+  if (req.files.choosefile) {
+    let path = '';
+    req.files.choosefile.forEach(function (files, index, arr) {
+      path = 'resumes/uploadlogo/' + files.filename;
+    });
+    user.choosefile = path;
+  }
   const tokens = await tokenService.generateAuthTokens(user);
   //  await EmployeOtp.create({token:tokens.access.token});
   res.status(httpStatus.CREATED).send({ user, tokens });
@@ -85,6 +99,11 @@ const change_pass = catchAsync(async (req, res) => {
   res.send(user);
 });
 
+
+const getbyAll_lat_lang = catchAsync (async(req,res) => {
+  const data = await EmployerRegistration.getbyAll_lat_lang(req.body)
+  res.send(data)
+})
 // const logout = catchAsync(async (req, res) => {
 //   await authService.logout(req.body.refreshToken);
 //   res.status(httpStatus.NO_CONTENT).send();
@@ -150,6 +169,7 @@ module.exports = {
   forget_password_Otp,
   forget_password_set,
   change_pass,
+  getbyAll_lat_lang,
 //   logout,
 //   refreshTokens,
 //   forgotPassword,

@@ -5,6 +5,7 @@ const User = require('../models/user.model');
 
 
 const createkeySkill = catchAsync(async (req, res) => {
+  console.log(req.userId)
     const userId = req.userId
   const user = await candidateDetailsService.createkeySkill(userId, req.body);
   // console.log(req.files)

@@ -275,6 +275,12 @@ const updateByIdEmployerRegistration = async (id, updateBody) => {
  return data;
 };
  
+
+const getbyAll_lat_lang = async (body) => {
+  const {location} = body
+  const data = await EmployerRegistration.find({location:location})
+  return {data:data, count:data.length} 
+}
 module.exports = {
     createEmployer,
     verify_email,
@@ -292,6 +298,7 @@ module.exports = {
     forget_password_Otp,
     forget_password_set,
     change_pass,
+    getbyAll_lat_lang,
 //   getUserById,
 //   getUserByEmail,
 //   updateUserById,
