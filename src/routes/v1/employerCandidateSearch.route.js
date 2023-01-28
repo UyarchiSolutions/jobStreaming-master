@@ -21,4 +21,8 @@ router.route('/candidatdeSaveJobRemove/:id').delete(employerCandidateSearch.cand
 router.route('/saveFolderData_view').get(authorization, employerCandidateSearch.saveFolderData_view);
 router.route('/getSaveSeprate').get(authorization, employerCandidateSearch.getSaveSeprate);
 router.route('/delete_Seprate_saveCandidate/:id').delete(employerCandidateSearch.delete_Seprate_saveCandidate);
+router.route('/outSearch_employer').post(authorization, employerCandidateSearch.outSearch_employer);
+router.route('/outSearchSave').post(authorization, employerCandidateSearch.outSearchSave);
+router.route('/outSearchRecentSearch').post(authorization, employerCandidateSearch.outSearchRecentSearch);
+router.route('/outSearchSaveData').post(authorization, employerCandidateSearch.outSearchSaveData);
 module.exports = router;

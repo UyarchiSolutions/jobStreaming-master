@@ -79,6 +79,12 @@ const getUserById = catchAsync(async (req, res) => {
   res.send({user});
 });
 
+const change_pass = catchAsync(async (req, res) => {
+  let userId = req.userId
+  const user = await EmployerRegistration.change_pass(userId, req.body);
+  res.send(user);
+});
+
 // const logout = catchAsync(async (req, res) => {
 //   await authService.logout(req.body.refreshToken);
 //   res.status(httpStatus.NO_CONTENT).send();
@@ -143,6 +149,7 @@ module.exports = {
   forget_password,
   forget_password_Otp,
   forget_password_set,
+  change_pass,
 //   logout,
 //   refreshTokens,
 //   forgotPassword,

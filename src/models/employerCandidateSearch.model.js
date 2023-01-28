@@ -143,4 +143,78 @@ const createSavetoFolderSchema = mongoose.Schema(
     }
   );
   const CreateSavetoFolderseprate = mongoose.model('createSavetoFolderseprate', createSavetoFolderseprateSchema);
-module.exports = {CandiadteSearch, CreateSavetoFolder, CreateSavetoFolderseprate} ;
+  const createoutSearchHistorySchema = mongoose.Schema(
+    {
+      _id: {
+        type: String,
+        default: v4,
+      },
+      userId:{
+          type:String,
+      },
+      keyskills:{
+        type:Array,
+      },
+      anykeywords:{
+        type:Array,
+      },
+      experiencefrom:{
+        type:Number,
+      },
+      experienceto:{
+        type:Number,
+      },
+      location:{
+        type:Array,
+      },
+      qualification:{
+        type:Array,
+      },
+      active:{
+          type:Boolean,
+          default:true,
+      }
+    },
+    {
+      timestamps: true,
+    }
+  );
+  const CreateoutSearchHistory = mongoose.model('createoutSearchHistory', createoutSearchHistorySchema);
+  const createoutSearchHistorySaveShema = mongoose.Schema(
+    {
+      _id: {
+        type: String,
+        default: v4,
+      },
+      userId:{
+          type:String,
+      },
+      keyskills:{
+        type:Array,
+      },
+      anykeywords:{
+        type:Array,
+      },
+      experiencefrom:{
+        type:Number,
+      },
+      experienceto:{
+        type:Number,
+      },
+      location:{
+        type:Array,
+      },
+      qualification:{
+        type:Array,
+      },
+      active:{
+          type:Boolean,
+          default:true,
+      }
+    },
+    {
+      timestamps: true,
+    }
+  );
+  const CreateoutSearchHistorySave = mongoose.model('createoutSearchHistorySave', createoutSearchHistorySaveShema);
+module.exports = {CandiadteSearch, CreateSavetoFolder, CreateSavetoFolderseprate, CreateoutSearchHistory, CreateoutSearchHistorySave} ;

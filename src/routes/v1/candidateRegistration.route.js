@@ -24,6 +24,7 @@ router.route('/mobile_verify_Otp').post(candidateRegistration.mobile_verify_Otp)
 router.route('/forget_password').post(candidateRegistration.forget_password);
 router.route('/forget_password_Otp').post(candidateRegistration.forget_password_Otp);
 router.route('/forget_password_set/:id').post(candidateRegistration.forget_password_set);
+router.route('/change_pass').post(authorization, candidateRegistration.change_pass);
 // router.post('/logout', validate(authValidation.logout), authController.logout);
 // router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
 // router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);

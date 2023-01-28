@@ -28,6 +28,15 @@ const keySkillSchema = mongoose.Schema(
     experienceYear:{
         type:Number
     },
+    expectedctc:{
+      type:Number,
+    },
+    currentctc:{
+      type:String,
+    },
+    noticeperiod:{
+      type:String,
+    },
     salaryRangeFrom:{
         type:Number,
     },
@@ -88,6 +97,9 @@ const keySkillSchema = mongoose.Schema(
     Jobtype:{
         type:String,
     },
+    relocate:{
+      type:String,
+    },
     keyskillSet:{
       type:Array,
     },
@@ -133,6 +145,13 @@ const candidatePostjobSchema = mongoose.Schema(
       status:{
         type:Boolean,
         default:true,
+      },
+      approvedStatus:{
+        type:String,
+        default:"Applied"
+      },
+      employerCommand:{
+        type:String,
       },
       active:{
           type:Boolean,
@@ -188,6 +207,12 @@ const candidatePostjobSchema = mongoose.Schema(
       location:{
         type:String,
       },
+      preferredindustry:{
+        type:String,
+      },
+      salary:{
+        type:Number,
+      },
       active:{
           type:Boolean,
           default:true,
@@ -230,5 +255,38 @@ const candidatePostjobSchema = mongoose.Schema(
     }
   );
   const candidataSearchEmployerSet = mongoose.model('candidatesetSearch', candidataSearchEmployerSetSchema);
-  
-module.exports = {KeySkill, CandidatePostjob, CandidateSaveJob, CandidateSearchjobCandidate, candidataSearchEmployerSet} ;
+  const candidateRecentSearchjobCandidateSchema = mongoose.Schema(
+    {
+      _id: {
+        type: String,
+        default: v4,
+      },
+      userId:{
+        type:String,
+      },
+      search:{
+        type:Array,
+      },
+      experience:{
+        type:Number,
+      },
+      location:{
+        type:String,
+      },
+      preferredindustry:{
+        type:String,
+      },
+      salary:{
+        type:Number,
+      },
+      active:{
+          type:Boolean,
+          default:true,
+      }
+    },
+    {
+      timestamps: true,
+    }
+  );
+  const CandidateRecentSearchjobCandidate = mongoose.model('candidateRecentSearchjob', candidateRecentSearchjobCandidateSchema);
+module.exports = {KeySkill, CandidatePostjob, CandidateSaveJob, CandidateSearchjobCandidate, candidataSearchEmployerSet, CandidateRecentSearchjobCandidate} ;

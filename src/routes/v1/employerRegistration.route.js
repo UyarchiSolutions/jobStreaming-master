@@ -25,6 +25,7 @@ router.route('/mobile_verify_Otp').post(employerRegistration.mobile_verify_Otp);
 router.route('/forget_password').post(employerRegistration.forget_password);
 router.route('/forget_password_Otp').post(employerRegistration.forget_password_Otp);
 router.route('/forget_password_set/:id').post(employerRegistration.forget_password_set);
+router.route('/change_pass').post(authorization, employerRegistration.change_pass);
 // router.post('/logout', validate(authValidation.logout), authController.logout);
 // router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
 // router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);

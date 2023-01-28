@@ -1,57 +1,53 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
-const { authService, userService, tokenService, emailService, candidateRegistrationService} = require('../services');
-const  {OTPModel}  = require('../models');
+const { authService, userService, tokenService, emailService, candidateRegistrationService } = require('../services');
+const { OTPModel } = require('../models');
 
 const register = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.createCandidate(req.body);
   if (req.files) {
     let path = '';
     req.files.forEach(function (files, index, arr) {
-       path  = "resumes/"+files.filename
+      path = 'resumes/' + files.filename;
     });
-    user.resume = path
+    user.resume = path;
   }
   const tokens = await tokenService.generateAuthTokens(user);
   //  await OTPModel.create({token:tokens.access.token});
   res.status(httpStatus.CREATED).send({ user, tokens });
   await user.save();
-//   console.log(user._id)
-  await emailService.sendVerificationEmail(user.email, tokens.access.token, user.mobileNumber)
+  await emailService.sendVerificationEmail(user.email, tokens.access.token, user.mobileNumber);
+  //   console.log(user._id)
 });
 
+const verify_email = catchAsync(async (req, res) => {
+  const { token } = req.body;
+  const user = await candidateRegistrationService.verify_email(token);
+  res.send({ user });
+});
 
-const verify_email = catchAsync(async(req,res) => {
-    const {token} = req.body
-    const user = await candidateRegistrationService.verify_email(token)
-    res.send({user})
-})
-
-
-const mobile_verify = catchAsync(async(req,res) => {
-  const {mobilenumber} = req.body
-  const user = await candidateRegistrationService.mobile_verify(mobilenumber)
-  res.send(user)
-})
-
-const mobile_verify_Otp = catchAsync(async(req,res) => {
-  const {mobilenumber, otp} = req.body
-  const user = await candidateRegistrationService.mobile_verify_Otp(mobilenumber, otp)
-  res.send(user)
-})
-
-const forget_password = catchAsync(async (req, res) => {
-  const {mobilenumber} = req.body
-  const user = await candidateRegistrationService.forget_password(mobilenumber);
+const mobile_verify = catchAsync(async (req, res) => {
+  const { mobilenumber } = req.body;
+  const user = await candidateRegistrationService.mobile_verify(mobilenumber);
   res.send(user);
 });
 
+const mobile_verify_Otp = catchAsync(async (req, res) => {
+  const { mobilenumber, otp } = req.body;
+  const user = await candidateRegistrationService.mobile_verify_Otp(mobilenumber, otp);
+  res.send(user);
+});
+
+const forget_password = catchAsync(async (req, res) => {
+  const { mobilenumber } = req.body;
+  const user = await candidateRegistrationService.forget_password(mobilenumber);
+  res.send(user);
+});
 
 const forget_password_Otp = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.forget_password_Otp(req.body);
   res.send(user);
 });
-
 
 const forget_password_set = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.forget_password_set(req.params.id, req.body);
@@ -65,29 +61,34 @@ const login = catchAsync(async (req, res) => {
 });
 
 const forgot = catchAsync(async (req, res) => {
-    const user = await candidateRegistrationService.forgot(req.body);
-    res.send({user});
- });
+  const user = await candidateRegistrationService.forgot(req.body);
+  res.send({ user });
+});
 
- const change_password = catchAsync(async (req, res) => {
-    const user = await candidateRegistrationService.change_password(req.params.id, req.body);
-    res.send({user});
- });
+const change_password = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.change_password(req.params.id, req.body);
+  res.send({ user });
+});
 
- const forgot_verify_email = catchAsync(async(req,res) => {
-    const user = await candidateRegistrationService.forgot_verify_email(req.body)
-    res.send({user})
-})
+const forgot_verify_email = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.forgot_verify_email(req.body);
+  res.send({ user });
+});
 
 const getUserById = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.getUserById(req.params.id);
-  res.send({user});
+  res.send({ user });
 });
-
 
 const getMapLocation = catchAsync(async (req, res) => {
   const data = await candidateRegistrationService.getMapLocation(req.query);
   res.send(data);
+});
+
+const change_pass = catchAsync(async (req, res) => {
+  const userId = req.userId;
+  const user = await candidateRegistrationService.change_pass(userId, req.body);
+  res.send(user);
 });
 // const logout = catchAsync(async (req, res) => {
 //   await authService.logout(req.body.refreshToken);
@@ -135,10 +136,11 @@ module.exports = {
   forget_password,
   forget_password_Otp,
   forget_password_set,
-//   logout,
-//   refreshTokens,
-//   forgotPassword,
-//   resetPassword,
-//   sendVerificationEmail,
-//   verifyEmail,
+  change_pass,
+  //   logout,
+  //   refreshTokens,
+  //   forgotPassword,
+  //   resetPassword,
+  //   sendVerificationEmail,
+  //   verifyEmail,
 };

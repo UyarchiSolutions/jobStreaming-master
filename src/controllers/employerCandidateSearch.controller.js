@@ -101,6 +101,32 @@ const candidatdeSaveJobRemove = catchAsync(async (req, res) => {
     const user = await employerCandidateSearch.saveFolderData_view(userId)
     res.send({user})
 })
+
+const outSearch_employer = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await employerCandidateSearch.outSearch_employer(userId, req.body)
+  res.send({user})
+})
+
+const outSearchSave = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await employerCandidateSearch.outSearchSave(userId, req.body)
+  res.send(user)
+})
+
+
+const outSearchRecentSearch = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await employerCandidateSearch.outSearchRecentSearch(userId, req.body)
+  res.send(user)
+})
+
+
+const outSearchSaveData = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await employerCandidateSearch.outSearchSaveData(userId, req.body)
+  res.send(user)
+})
 module.exports = {
     createCandidateSearch,
     searchQuery,
@@ -118,4 +144,8 @@ module.exports = {
     createSaveSeprate,
     getSaveSeprate,
     delete_Seprate_saveCandidate,
+    outSearch_employer,
+    outSearchSave,
+    outSearchRecentSearch,
+    outSearchSaveData,
 };

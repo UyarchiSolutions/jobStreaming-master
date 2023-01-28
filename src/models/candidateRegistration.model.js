@@ -62,6 +62,8 @@ const userSchema = mongoose.Schema(
     },
     mobileNumber: {
       type: Number,
+      required: true,
+      unique: true,
     },
     adminStatus:{
       type:String,

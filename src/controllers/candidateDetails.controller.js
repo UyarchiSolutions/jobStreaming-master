@@ -159,6 +159,12 @@ const candidateSearch_front_page = catchAsync(async (req, res) => {
   const user = await candidateDetailsService.candidateSearch_front_page(userId, req.body);
   res.send(user)
 });
+
+const recentSearch = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await candidateDetailsService.recentSearch(userId)
+  res.send(user)
+})
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -182,5 +188,6 @@ module.exports = {
   SearchByIdcandidataSearchEmployerSet,
   getByIdEmployerDetails,
   candidateSearch_front_page,
+  recentSearch,
   // createSearchCandidate,
 };
