@@ -190,6 +190,7 @@ const getHostTokens = async (req) => {
         In_active_users: { $ifNull: ['$total_users.count', 0] },
         total_user: { $sum: ['$total_users.count', '$active_users.count'] },
         active: 1,
+        storedURL: 1,
       },
     },
   ]);
