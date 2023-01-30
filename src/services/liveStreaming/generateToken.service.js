@@ -306,7 +306,7 @@ const recording_query = async (req) => {
     { headers: { Authorization } }
   );
   let baseURL = 'https://streamingupload.s3.ap-south-1.amazonaws.com/'
-  let token = await tempTokenModel.findByIdAndUpdate({ _id: req.body.id }, { storedURL: baseURL + query.serverResponse.fileList });
+  let token = await tempTokenModel.findByIdAndUpdate({ _id: req.body.id }, { storedURL: baseURL + query.data.serverResponse.fileList });
   return query.data;
 };
 const recording_stop = async (req) => {
