@@ -305,6 +305,8 @@ const recording_query = async (req) => {
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
     { headers: { Authorization } }
   );
+  let baseURL = 'https://streamingupload.s3.ap-south-1.amazonaws.com/'
+  let token = await tempTokenModel.findByIdAndUpdate({ _id: req.body.id }, { storedURL: baseURL + query.serverResponse.fileList });
   return query.data;
 };
 const recording_stop = async (req) => {

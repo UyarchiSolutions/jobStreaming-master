@@ -10,7 +10,11 @@ const appCertificate = '6f0bf1aadfb34e50b9cac392307157c8';
 const Authorization = `Basic ${Buffer.from(`bc709eb08f0a438aaae0e7d9962f5ad3:93ff83ec1ab544bc97b0de84706c428f`).toString(
   'base64'
 )}`;
-
+var m3u8ToMp4 = require("m3u8-to-mp4");
+var converter = new m3u8ToMp4();
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const ffmpeg = require('fluent-ffmpeg');
+ffmpeg.setFfmpegPath(ffmpegPath);
 const generateUid = async (req) => {
   const length = 5;
   const randomNo = Math.floor(Math.pow(10, length - 1) + Math.random() * 9 * Math.pow(10, length - 1));
@@ -98,6 +102,12 @@ const createRooms = async (req) => {
 
 const get_allrooms = async (req) => {
   let value = hostRooms.find();
+  let video = await converter
+    .setInputFile("https://streamingupload.s3.ap-south-1.amazonaws.com/36f53fabdf094de09de944658458be01/34424/4d74aa494c44397d371e3a9a7338de06_36f53fab-df09-4de0-9de9-44658458be01.m3u8")
+    .setOutputFile("dummy.mp4")
+    .start();
+  console.log(video)
+
   return value;
 }
 
