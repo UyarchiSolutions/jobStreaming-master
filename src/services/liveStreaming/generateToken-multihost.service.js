@@ -10,6 +10,8 @@ const appCertificate = '6f0bf1aadfb34e50b9cac392307157c8';
 const Authorization = `Basic ${Buffer.from(`bc709eb08f0a438aaae0e7d9962f5ad3:93ff83ec1ab544bc97b0de84706c428f`).toString(
   'base64'
 )}`;
+var m3u8ToMp4 = require("m3u8-to-mp4");
+var converter = new m3u8ToMp4();
 
 const generateUid = async (req) => {
   const length = 5;
@@ -98,6 +100,7 @@ const createRooms = async (req) => {
 
 const get_allrooms = async (req) => {
   let value = hostRooms.find();
+ 
   return value;
 }
 

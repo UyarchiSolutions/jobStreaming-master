@@ -190,6 +190,7 @@ const getHostTokens = async (req) => {
         In_active_users: { $ifNull: ['$total_users.count', 0] },
         total_user: { $sum: ['$total_users.count', '$active_users.count'] },
         active: 1,
+        storedURL: 1,
       },
     },
   ]);
@@ -305,6 +306,8 @@ const recording_query = async (req) => {
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
     { headers: { Authorization } }
   );
+  let baseURL = 'https://streamingupload.s3.ap-south-1.amazonaws.com/'
+  let token = await tempTokenModel.findByIdAndUpdate({ _id: req.body.id }, { storedURL: baseURL + query.data.serverResponse.fileList });
   return query.data;
 };
 const recording_stop = async (req) => {

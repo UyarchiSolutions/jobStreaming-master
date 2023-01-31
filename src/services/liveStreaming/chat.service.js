@@ -7,17 +7,17 @@ const { Groupchat } = require('../../models/liveStreaming/chat.model');
 
 
 
-const chat_room_create = async (req,io) => {
-    console.log(req)
-    let dateIso= new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime();
-    let data=await Groupchat.create({...req,...{created:moment(),dateISO:dateIso}})
-    io.sockets.emit(req.channel, data);
+const chat_room_create = async (req, io) => {
+  console.log(req)
+  let dateIso = new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime();
+  let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso } })
+  io.sockets.emit(req.channel, data);
 }
 
-const getoldchats=async (req) => {
-    console.log(req)
-    let data=await Groupchat.find({channel:req.query.channel}).sort({dateISO:1});
-    return data;
+const getoldchats = async (req) => {
+  console.log(req)
+  let data = await Groupchat.find({ channel: req.query.channel }).sort({ dateISO: 1 });
+  return data;
 }
 
 module.exports = {

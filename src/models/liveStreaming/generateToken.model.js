@@ -52,16 +52,19 @@ const tempToken = mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  cloud_recording:{
+  cloud_recording: {
     type: String,
   },
-  uid_cloud:{
+  uid_cloud: {
     type: String,
   },
-  cloud_id:{
+  cloud_id: {
     type: String,
   },
-  store:{
+  store: {
+    type: String,
+  },
+  storedURL: {
     type: String,
   }
 });
