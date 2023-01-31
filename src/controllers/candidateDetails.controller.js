@@ -166,6 +166,7 @@ const recentSearch = catchAsync(async(req,res) => {
   const user = await candidateDetailsService.recentSearch(userId)
   res.send(user)
 })
+
 module.exports = {
   createkeySkill,
   getByIdUser,

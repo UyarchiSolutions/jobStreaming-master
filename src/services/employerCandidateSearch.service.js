@@ -5,7 +5,7 @@ const {KeySkill, CandidateSaveJob} = require('../models/candidateDetails.model')
 const {EmployerRegistration} = require('../models')
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
-
+const moment = require('moment');
 
 const createCandidateSearch = async (userId, userBody) => {
     let values = {...userBody, ...{userId:userId}}
@@ -262,11 +262,12 @@ const outSearch_employer = async (userId, body) => {
   if(!check){
     throw new ApiError(httpStatus.NOT_FOUND, 'employer not found');
   }
+  // console.log(body.keyskills)
   await CreateoutSearchHistory.create({...body, ...{userId:userId}})
   const {keyskills, anykeywords, experiencefrom, experienceto, salaryRange, salary, location, displayDetails, qualification} = body
   let keyskillSearch = {active:true}
   let anykeywordsSearch = [{active:true}]
-  let experienceSearch = {active:true}
+  let experienceSearch = [{active:true}]
   let salaryRangeSearch = {active:true}
   let locationSearch = {active:true}
   let displayDetailsSearch = {active:true}
@@ -300,7 +301,8 @@ const outSearch_employer = async (userId, body) => {
   if(displayDetails != null){
 
   }
-  console.log(qualificationSearch)
+  // console.log(keyskillSearch, locationSearch, qualificationSearch,anykeywordsSearch, experienceSearch)
+  let sc = moment().format('YYYY-MM-DD')
   const data = await KeySkill.aggregate([
     {
       $match: {
@@ -322,6 +324,14 @@ const outSearch_employer = async (userId, body) => {
         from: 'candidateregistrations',
         localField: 'userId',
         foreignField: '_id',
+        // pipeline:[
+        //   {
+        //     $project:{
+        //       day: {$subtract: [sc,"$latestdate"]}
+        //     }
+        //   }
+          
+        // ],
         as: 'candidateregistrations',
       },
     },

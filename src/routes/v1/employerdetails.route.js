@@ -4,7 +4,7 @@ const authController = require('../../controllers/auth.controller');
 const employerDetailsController = require('../../controllers/employerDetails.controller');
 const authorization = require('../../controllers/empVEridy.controller');
 const auth = require('../../controllers/tokenVerify.controller');
-
+const authadmin = require('../../controllers/adminVerify.controller');
 const router = express.Router();
 
 router.route('/createEmpDetails').post(authorization, employerDetailsController.createEmpDetails);
@@ -39,4 +39,11 @@ router.route('/send_mail_and_notification').post(authorization, employerDetailsC
 router.route('/getAll_Mail_notification_employerside').get(authorization, employerDetailsController.getAll_Mail_notification_employerside);
 router.route('/getAll_Mail_notification_candidateside').get(auth, employerDetailsController.getAll_Mail_notification_candidateside);
 router.route('/candidate_mailnotification_Change/:id').put(employerDetailsController.candidate_mailnotification_Change);
+
+//map
+router.route('/neighbour_api').get(employerDetailsController.neighbour_api);
+
+// plans details admin
+router.route('/All_Plans').get(authadmin,employerDetailsController.All_Plans);
+router.route('/all_plans_users_details/:id').get(employerDetailsController.all_plans_users_details);
 module.exports = router;

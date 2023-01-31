@@ -10,6 +10,7 @@ const bcrypt = require('bcryptjs');
 const moment = require('moment');
 const { format } = require('morgan');
 const { create } = require('../models/candidateRegistration.model');
+const Axios = require('axios');
 
 //keySkill
 
@@ -670,6 +671,113 @@ const candidate_mailnotification_Change = async (id, body) => {
   const value = await EmployerMailNotification.findByIdAndUpdate({ _id: id }, body, { new: true });
   return value
 }
+
+
+// 
+const neighbour_api = async (lat, long, type, radius) => {
+  // console.log(location,type,radius)
+  let response = await Axios.get(
+    `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${long}&radius=${radius}&type=${type}&keyword=${type}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+  );
+
+  return response.data;
+};
+
+// plan details
+
+const All_Plans = async (userId) => {
+   const data = await CreatePlan.aggregate([
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId} }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'planpayments',
+        localField: '_id',
+        foreignField: 'planId',
+        pipeline:[
+               {
+                $group: {
+                  _id: null,
+                  total: {$sum: 1},
+                }
+               }
+        ],
+        as:'planpayments'
+        }
+      },
+      {
+        $unwind: {
+          preserveNullAndEmptyArrays: true,
+          path: '$planpayments',
+        },
+      },
+      {
+        $project:{
+          numberOfUsers:'$planpayments.total'
+        }
+      }
+   ])
+   return data ;
+}
+
+const all_plans_users_details = async (id) => {
+  const data = await PlanPayment.aggregate([
+    {
+      $match: {
+        $and: [{ planId: { $eq: id} }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        pipeline:[
+          {
+            $lookup: {
+              from: 'employerdetails',
+              localField: '_id',
+              foreignField: 'userId',
+              as:'employerdetails'
+              }
+            },
+        ],
+        as:'employerregistrations'
+        }
+      },
+      {
+        $unwind: {
+          preserveNullAndEmptyArrays: true,
+          path: '$employerregistrations',
+        },
+      },
+      {
+        $project:{
+          cvCountUser:1,
+          cvCount:1,
+          countjobPost:1,
+          active:1,
+          cashType:1,
+          payAmount:1,
+          paymentStatus:1,
+          date:1,
+          time:1,
+          expDate:1,
+          companyname:'$employerregistrations.name',
+          email:'$employerregistrations.email',
+          companyType:'$employerregistrations.companyType',
+          contactName:'$employerregistrations.contactName',
+          mobileNumber:'$employerregistrations.mobileNumber',
+          location:'$employerregistrations.location',
+          employerdetails:'$employerregistrations.employerdetails'
+        }
+      }
+  ])
+  return data
+}
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -697,4 +805,7 @@ module.exports = {
   getAll_Mail_notification_employerside,
   getAll_Mail_notification_candidateside,
   candidate_mailnotification_Change,
+  neighbour_api,
+  All_Plans,
+  all_plans_users_details,
 };

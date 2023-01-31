@@ -148,6 +148,23 @@ const candidate_mailnotification_Change = catchAsync(async(req,res) => {
  res.send(user)
 })
 
+
+const neighbour_api = catchAsync(async (req, res) => {
+  const { lat, long, type, radius } = req.query;
+  const data = await employerDetailsService.neighbour_api(lat, long, type, radius);
+  res.send(data);
+});
+
+const All_Plans = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await employerDetailsService.All_Plans(userId)
+  res.send(user)
+ })
+
+ const all_plans_users_details = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.all_plans_users_details(req.params.id)
+  res.send(user)
+ })
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -175,4 +192,7 @@ module.exports = {
   getAll_Mail_notification_employerside,
   getAll_Mail_notification_candidateside,
   candidate_mailnotification_Change,
+  neighbour_api,
+  All_Plans,
+  all_plans_users_details,
 };
