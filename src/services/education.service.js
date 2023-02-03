@@ -8,6 +8,8 @@ const {
   Medium,
   DrCourse,
   Specialization,
+  Pgspecialization,
+  Drspecialization,
 } = require('../models/education.model');
 const { OTPModel } = require('../models');
 const { Token } = require('../models');
@@ -56,7 +58,17 @@ const get_drcourse = async (id) => {
 };
 
 const get_specialization = async (id) => {
-  let data = await Specialization.find({courseId:id});
+  let data = await Specialization.find({ courseId: id });
+  return data;
+};
+
+const get_pgspecialization = async (id) => {
+  let data = await Pgspecialization.find({ courseId: id });
+  return data;
+};
+
+const get_drspecialization = async (id) => {
+  let data = await Drspecialization.find({courseId: id});
   return data;
 };
 module.exports = {
@@ -68,4 +80,6 @@ module.exports = {
   get_medium,
   get_drcourse,
   get_specialization,
+  get_pgspecialization,
+  get_drspecialization,
 };

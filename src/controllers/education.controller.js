@@ -42,6 +42,16 @@ const get_specialization = catchAsync(async (req, res) => {
     res.send(user);
   }); 
 
+  const get_pgspecialization = catchAsync(async (req, res) => {
+    const user = await educationService.get_pgspecialization(req.params.id);
+    res.send(user);
+  });
+
+  const get_drspecialization = catchAsync(async (req, res) => {
+    const user = await educationService.get_drspecialization(req.params.id);
+    res.send(user);
+  });
+
 module.exports = {
   createQualification,
   get_sslc_course,
@@ -51,4 +61,6 @@ module.exports = {
   get_medium,
   get_drcourse,
   get_specialization,
+  get_pgspecialization,
+  get_drspecialization,
 };

@@ -217,4 +217,62 @@ const  sslcCourseSchema = mongoose.Schema(
     }
   );
   const Specialization = mongoose.model('specialization', specializationSchema);
-module.exports = {Qualification, SslcCourse, HscCourse, PgCourse, UgCourse, Medium, DrCourse, Specialization} ;
+
+  const  pgspecializationSchema = mongoose.Schema(
+    {
+      _id: {
+        type: String,
+        default: v4,
+      },
+      Course:{
+          type:String,
+      },
+      Education:{
+        type:String,
+      },
+      Specialization:{
+        type:String,
+      },
+      courseId:{
+        type:String,
+      },
+      active:{
+          type:Boolean,
+          default:true,
+      }
+    },
+    {
+      timestamps: true,
+    }
+  );
+  const Pgspecialization = mongoose.model('pgspecialization', pgspecializationSchema);
+
+  const  drspecializationSchema = mongoose.Schema(
+    {
+      _id: {
+        type: String,
+        default: v4,
+      },
+      Course:{
+          type:String,
+      },
+      Education:{
+        type:String,
+      },
+      Specialization:{
+        type:String,
+      },
+      courseId:{
+        type:String,
+      },
+      active:{
+          type:Boolean,
+          default:true,
+      }
+    },
+    {
+      timestamps: true,
+    }
+  );
+  const Drspecialization = mongoose.model('drspecialization', drspecializationSchema);
+module.exports = {Qualification, SslcCourse, HscCourse, PgCourse, UgCourse, Medium, DrCourse, Specialization, Pgspecialization, Drspecialization} ;

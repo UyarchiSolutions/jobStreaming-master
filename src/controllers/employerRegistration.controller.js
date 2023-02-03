@@ -1,70 +1,68 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
-const { authService, userService, tokenService, emailService, EmployerRegistration} = require('../services');
-const  {EmployeOtp}  = require('../models');
+const { authService, userService, tokenService, emailService, EmployerRegistration } = require('../services');
+const { EmployeOtp } = require('../models');
 
 const register = catchAsync(async (req, res) => {
   const user = await EmployerRegistration.createEmployer(req.body);
-  if (req.files.logo) {
-    let path = '';
-    req.files.logo.forEach(function (files, index, arr) {
-      path = 'resumes/uploadlogo/' + files.filename;
-    });
-    user.logo = path;
+  if (req.files) {
+    if (req.files.logo) {
+      let path = '';
+      req.files.logo.forEach(function (files, index, arr) {
+        path = 'resumes/uploadlogo/' + files.filename;
+      });
+      user.logo = path;
+    }
+    if (req.files.choosefile) {
+      let path = '';
+      req.files.choosefile.forEach(function (files, index, arr) {
+        path = 'resumes/uploadlogo/' + files.filename;
+      });
+      user.choosefile = path;
+    }
   }
-  if (req.files.choosefile) {
-    let path = '';
-    req.files.choosefile.forEach(function (files, index, arr) {
-      path = 'resumes/uploadlogo/' + files.filename;
-    });
-    user.choosefile = path;
-  }
+
   const tokens = await tokenService.generateAuthTokens(user);
   //  await EmployeOtp.create({token:tokens.access.token});
   res.status(httpStatus.CREATED).send({ user, tokens });
   await user.save();
-//   console.log(user._id)
-  await emailService.sendVerificationEmailEmp(user.email, tokens.access.token, user.mobileNumber)
+  //   console.log(user._id)
+  await emailService.sendVerificationEmailEmp(user.email, tokens.access.token, user.mobileNumber);
 });
 
+const verify_email = catchAsync(async (req, res) => {
+  const { token, otp } = req.body;
+  const user = await EmployerRegistration.verify_email(token, otp);
+  res.send({ user });
+});
 
-const verify_email = catchAsync(async(req,res) => {
-    const {token,otp} = req.body
-    const user = await EmployerRegistration.verify_email(token, otp)
-    res.send({user})
-})
-
-
-const mobile_verify = catchAsync(async(req,res) => {
-  const {mobilenumber} = req.body
-  const user = await EmployerRegistration.mobile_verify(mobilenumber)
-  res.send(user)
-})
-
-const mobile_verify_Otp = catchAsync(async(req,res) => {
-  const {mobilenumber, otp} = req.body
-  const user = await EmployerRegistration.mobile_verify_Otp(mobilenumber, otp)
-  res.send(user)
-})
-
-const forget_password = catchAsync(async (req, res) => {
-  const {mobilenumber} = req.body
-  const user = await EmployerRegistration.forget_password(mobilenumber);
+const mobile_verify = catchAsync(async (req, res) => {
+  const { mobilenumber } = req.body;
+  const user = await EmployerRegistration.mobile_verify(mobilenumber);
   res.send(user);
 });
 
+const mobile_verify_Otp = catchAsync(async (req, res) => {
+  const { mobilenumber, otp } = req.body;
+  const user = await EmployerRegistration.mobile_verify_Otp(mobilenumber, otp);
+  res.send(user);
+});
+
+const forget_password = catchAsync(async (req, res) => {
+  const { mobilenumber } = req.body;
+  const user = await EmployerRegistration.forget_password(mobilenumber);
+  res.send(user);
+});
 
 const forget_password_Otp = catchAsync(async (req, res) => {
   const user = await EmployerRegistration.forget_password_Otp(req.body);
   res.send(user);
 });
 
-
 const forget_password_set = catchAsync(async (req, res) => {
   const user = await EmployerRegistration.forget_password_set(req.params.id, req.body);
   res.send(user);
 });
-
 
 const login = catchAsync(async (req, res) => {
   const user = await EmployerRegistration.UsersLogin(req.body);
@@ -73,37 +71,36 @@ const login = catchAsync(async (req, res) => {
 });
 
 const forgot = catchAsync(async (req, res) => {
-    const user = await EmployerRegistration.forgot(req.body);
-    res.send({user});
- });
+  const user = await EmployerRegistration.forgot(req.body);
+  res.send({ user });
+});
 
- const change_password = catchAsync(async (req, res) => {
-    const user = await EmployerRegistration.change_password(req.params.id, req.body);
-    res.send({user});
- });
+const change_password = catchAsync(async (req, res) => {
+  const user = await EmployerRegistration.change_password(req.params.id, req.body);
+  res.send({ user });
+});
 
- const forgot_verify_email = catchAsync(async(req,res) => {
-    const user = await EmployerRegistration.forgot_verify_email(req.body)
-    res.send({user})
-})
+const forgot_verify_email = catchAsync(async (req, res) => {
+  const user = await EmployerRegistration.forgot_verify_email(req.body);
+  res.send({ user });
+});
 
 const getUserById = catchAsync(async (req, res) => {
-  let userId = req.userId
+  let userId = req.userId;
   const user = await EmployerRegistration.getUserById(userId);
-  res.send({user});
+  res.send({ user });
 });
 
 const change_pass = catchAsync(async (req, res) => {
-  let userId = req.userId
+  let userId = req.userId;
   const user = await EmployerRegistration.change_pass(userId, req.body);
   res.send(user);
 });
 
-
-const getbyAll_lat_lang = catchAsync (async(req,res) => {
-  const data = await EmployerRegistration.getbyAll_lat_lang(req.body)
-  res.send(data)
-})
+const getbyAll_lat_lang = catchAsync(async (req, res) => {
+  const data = await EmployerRegistration.getbyAll_lat_lang(req.body);
+  res.send(data);
+});
 // const logout = catchAsync(async (req, res) => {
 //   await authService.logout(req.body.refreshToken);
 //   res.status(httpStatus.NO_CONTENT).send();
@@ -137,20 +134,19 @@ const getbyAll_lat_lang = catchAsync (async(req,res) => {
 // });
 
 const employerRegistration = catchAsync(async (req, res) => {
-  const data = await EmployerRegistration.employerRegistration(req.params.page)
-  res.send({data});
-})
-
+  const data = await EmployerRegistration.employerRegistration(req.params.page);
+  res.send({ data });
+});
 
 const employerRegistration_Approved = catchAsync(async (req, res) => {
-  const data = await EmployerRegistration.employerRegistration_Approved(req.params.page)
-  res.send({data});
-})
+  const data = await EmployerRegistration.employerRegistration_Approved(req.params.page);
+  res.send({ data });
+});
 
 const updateByIdEmployerRegistration = catchAsync(async (req, res) => {
-  const data = await EmployerRegistration.updateByIdEmployerRegistration(req.params.id, req.body)
-  res.send({data});
-})
+  const data = await EmployerRegistration.updateByIdEmployerRegistration(req.params.id, req.body);
+  res.send({ data });
+});
 
 module.exports = {
   register,
@@ -170,10 +166,10 @@ module.exports = {
   forget_password_set,
   change_pass,
   getbyAll_lat_lang,
-//   logout,
-//   refreshTokens,
-//   forgotPassword,
-//   resetPassword,
-//   sendVerificationEmail,
-//   verifyEmail,
+  //   logout,
+  //   refreshTokens,
+  //   forgotPassword,
+  //   resetPassword,
+  //   sendVerificationEmail,
+  //   verifyEmail,
 };

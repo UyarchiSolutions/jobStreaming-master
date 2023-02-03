@@ -14,4 +14,6 @@ router.route('/get_ug_course/:id').get(educationController.get_ug_course);
 router.route('/get_medium').get(educationController.get_medium);
 router.route('/get_drcourse/:id').get(educationController.get_drcourse);
 router.route('/get_specialization/:id').get(educationController.get_specialization);
+router.route('/get_pgspecialization/:id').get(educationController.get_pgspecialization);
+router.route('/get_drspecialization/:id').get(educationController.get_drspecialization);
 module.exports = router;
