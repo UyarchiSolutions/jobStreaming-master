@@ -15,7 +15,8 @@ const Axios = require('axios');
 //keySkill
 
 const createEmpDetails = async (userId, userBody) => {
-  let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
+  // let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
+  let app = await EmployerRegistration.findOne({_id:userId})
   if(!app){
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
@@ -268,7 +269,8 @@ const deleteById = async (id) => {
 
 const countPostjobError = async (userId) =>{
   let date = moment().format('YYYY-MM-DD');
-  let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
+  // let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
+  let app = await EmployerRegistration.findOne({_id:userId})
   if(!app){
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
