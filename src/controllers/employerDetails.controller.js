@@ -170,6 +170,11 @@ const All_Plans = catchAsync(async(req,res) => {
   const user = await employerDetailsService.keySkillData(req.params.key)
   res.send(user)
  })
+
+ const location = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.location(req.params.key)
+  res.send(user)
+ })
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -201,4 +206,5 @@ module.exports = {
   All_Plans,
   all_plans_users_details,
   keySkillData,
+  location,
 };

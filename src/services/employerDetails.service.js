@@ -785,13 +785,23 @@ const all_plans_users_details = async (id) => {
 }
 
 const keySkillData = async (key) => {
-  const re = new RegExp(key)
+  const re = new RegExp(key.toLowerCase())
   // console.log(re)
   let fn = re.exec.bind(re);
   let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java"]
   let filtered = data.filter(fn);
   return filtered
 }
+
+const location = async (key) => {
+  const re = new RegExp(key.toLowerCase())
+  // console.log(re)
+  let fn = re.exec.bind(re);
+  let data = ["nagapattinam","mayiladuthurai","madurai","krishnagiri","karur","kanniyakumari","erode","dindigul","dharmapuri","ariyalur","chennai","kanchipuram","villupuram","pondicherry","cuddalore","kallakuruchi","nagapattinam","salem","bangalore","coimbatore",]
+  let filtered = data.filter(fn);
+  return filtered
+}
+
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -823,4 +833,5 @@ module.exports = {
   All_Plans,
   all_plans_users_details,
   keySkillData,
+  location,
 };

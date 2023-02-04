@@ -49,4 +49,5 @@ router.route('/all_plans_users_details/:id').get(employerDetailsController.all_p
 
 // keySkill
 router.route('/keySkillData/:key').get(employerDetailsController.keySkillData);
+router.route('/location/:key').get(employerDetailsController.location);
 module.exports = router;
