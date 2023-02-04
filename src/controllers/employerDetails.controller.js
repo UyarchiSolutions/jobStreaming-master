@@ -165,6 +165,11 @@ const All_Plans = catchAsync(async(req,res) => {
   const user = await employerDetailsService.all_plans_users_details(req.params.id)
   res.send(user)
  })
+
+ const keySkillData = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.keySkillData(req.params.key)
+  res.send(user)
+ })
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -195,4 +200,5 @@ module.exports = {
   neighbour_api,
   All_Plans,
   all_plans_users_details,
+  keySkillData,
 };

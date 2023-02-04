@@ -33,7 +33,6 @@ const createEmpDetails = async (userId, userBody) => {
   if(pay){
    expiredDate = moment().add(pay.jobPostVAlidity, 'days').format('YYYY-MM-DD');
   }else{
-    console.log("qefqe")
     expiredDate = moment().add(1, 'days').format('YYYY-MM-DD');
   }
   let values
@@ -784,6 +783,15 @@ const all_plans_users_details = async (id) => {
   ])
   return data
 }
+
+const keySkillData = async (key) => {
+  const re = new RegExp(key)
+  // console.log(re)
+  let fn = re.exec.bind(re);
+  let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java"]
+  let filtered = data.filter(fn);
+  return filtered
+}
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -814,4 +822,5 @@ module.exports = {
   neighbour_api,
   All_Plans,
   all_plans_users_details,
+  keySkillData,
 };

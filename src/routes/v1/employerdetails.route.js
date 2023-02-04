@@ -46,4 +46,7 @@ router.route('/neighbour_api').get(employerDetailsController.neighbour_api);
 // plans details admin
 router.route('/All_Plans').get(authadmin,employerDetailsController.All_Plans);
 router.route('/all_plans_users_details/:id').get(employerDetailsController.all_plans_users_details);
+
+// keySkill
+router.route('/keySkillData/:key').get(employerDetailsController.keySkillData);
 module.exports = router;
