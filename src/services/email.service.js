@@ -69,7 +69,7 @@ If you did not request any password resets, then ignore this email.`;
 const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
   const subject = 'Email Verification';
   // replace this url with the link to the reset password page of your front-end app
-  const resetPasswordUrl = `https://job.lotsmart.in/#/EmployeeVerifyOTP?mobilenumber=${mobilenumber}`;
+  const resetPasswordUrl = `http://localhost:4200/empverify-otp?mobilenumber=${mobilenumber}`;
   const text = `Dear user,
 To set your password, click on this link: ${resetPasswordUrl}
 If you did not request any password sets, then ignore this email.`;
@@ -118,7 +118,7 @@ let maskmail = async (email) => {
 
 const maskmail_email = async (to) => {
   console.log(to);
-  const msg = { from: '"Your Name" <noreply-tj@uyarchi.com>', to, subject: 'maskmailer checked' };
+  const msg = { from: '"Uyarchi solutions" <noreply-tj@uyarchi.com>', to, subject: 'maskmailer checked' };
   console.log(msg);
   await transport.sendMail(msg);
 };
