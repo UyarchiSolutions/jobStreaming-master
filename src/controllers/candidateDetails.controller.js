@@ -42,6 +42,20 @@ const updateById = catchAsync(async(req,res) => {
     res.send({user})
 })
 
+const updateByIdImage = catchAsync(async(req,res) => {
+    const user = await candidateDetailsService.updateByIdImage(req.params.id, req.body)
+    // console.log(req.files)
+    if (req.files.length != 0 ) {
+    let path = '';
+    req.files.forEach(function (files, index, arr) {
+       path  = "resumes/images/"+files.filename
+    });
+    user.image = path
+  }
+    await user.save();
+    res.send({user})
+})
+
 
 
 const deleteById = catchAsync(async(req,res) => {
@@ -191,5 +205,6 @@ module.exports = {
   getByIdEmployerDetails,
   candidateSearch_front_page,
   recentSearch,
+  updateByIdImage,
   // createSearchCandidate,
 };

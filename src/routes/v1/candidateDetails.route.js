@@ -9,6 +9,8 @@ const authorization1= require('../../controllers/empVEridy.controller');
 const router = express.Router();
 
 router.route('/createKeyskill').post(authorization,uploadImage.array('image'), candidateDetailsController.createkeySkill);
+//create only image put method 
+router.route('/updateByIdImage/:id').put(uploadImage.array('image'), candidateDetailsController.updateByIdImage);
 
 router.route('/getKeyskill').get(authorization,candidateDetailsController.getByIdUser);
 router.route('/updateKeyskill').put(authorization, uploadImage.array('image'), candidateDetailsController.updateById);

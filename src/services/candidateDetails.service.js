@@ -80,6 +80,16 @@ const updateById = async (userId, updateBody) => {
   return data;
 };
 
+const updateByIdImage = async (id, updateBody) => {
+  const user = await KeySkill.findById(id)
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
+  }
+  const data = await KeySkill.findOneAndUpdate({_id:id}, updateBody, { new: true });
+  await data.save();
+  return data;
+};
+
 
 const deleteById = async (id) => {
   const user = await getUserById(id);
@@ -981,5 +991,6 @@ module.exports = {
     getByIdEmployerDetails,
     candidateSearch_front_page,
     recentSearch,
+    updateByIdImage,
     // createSearchCandidate,
 };
