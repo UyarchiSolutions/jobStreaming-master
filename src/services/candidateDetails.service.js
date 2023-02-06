@@ -900,7 +900,7 @@ const candidateSearch_front_page = async (id, body) => {
   //  search = ["fbhfghfh","software engineer"]
   // console.log(body)
   let experienceSearch = { active: true };
-  let experienceAnotherSearch = { active: true };
+  let experienceAnotherSearch = [{ active: true }];
   let locationSearch = { active: true };
   let allSearch = [{ active: true }];
   let salarySearch = { active: true };
@@ -956,7 +956,14 @@ const candidateSearch_front_page = async (id, body) => {
   if (location != null) {
     locationSearch = { jobLocation: { $eq: location } };
   }
-  console.log(experienceAnotherSearch, salarySearch);
+  // console.log(experienceSearch,
+  //   locationSearch,
+  //   salarySearch,
+  //   preferredindustrySearch,
+  //   workmodeSearch,
+  //   educationSearch,
+  //   roleSearch,
+  //   companytypeSearch,);
   const data = await EmployerDetails.aggregate([
     {
       $match: {
@@ -971,7 +978,7 @@ const candidateSearch_front_page = async (id, body) => {
     {
       $match: {
         $and: [
-          { adminStatus: { $eq: 'Approved' } },
+          // { adminStatus: { $eq: 'Approved' } },
           experienceSearch,
           locationSearch,
           salarySearch,
