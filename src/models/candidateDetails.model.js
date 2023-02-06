@@ -34,6 +34,9 @@ const keySkillSchema = mongoose.Schema(
     currentctc:{
       type:String,
     },
+    dob:{
+      type:String,
+    },
     noticeperiod:{
       type:String,
     },
@@ -125,125 +128,120 @@ const keySkillSchema = mongoose.Schema(
         default:true,
     },
     // 10th
-    sslc:{
-      sslcQualification:{
-        type:String,
-      },
-      sslcBoard:{
-        type:String,
-      },
-      sslcPassedYear:{
-        type:Number,
-      },
-      sslcMedium:{
-        type:String
-      },
-      sslctotalmarks:{
-        type:String,
-      },
+    sslcQualification:{
+      type:String,
+      // default:'SSLC'
+    },
+    sslcBoard:{
+      type:String,
+    },
+    sslcPassedYear:{
+      type:Number,
+    },
+    sslcMedium:{
+      type:String
+    },
+    sslctotalmarks:{
+      type:String,
     },
     // 12th
-     hsc:{
-      hsQualification:{
-         type:String,
-      },
-      hsBoard:{
-        type:String,
-      },
-      hsPassedYear:{
-        type:Number,
-      },
-      hsMedium:{
-        type:String
-      },
-      hstotalmarks:{
-        type:String,
-      },
+    hsQualification:{
+      type:String,
+      // default:'HSC'
+    },
+    hsBoard:{
+      type:String,
+    },
+    hsPassedYear:{
+      type:Number,
+    },
+    hsMedium:{
+      type:String
+    },
+    hstotalmarks:{
+      type:String,
     },
     
     // graduation/diploma
-    ugraduation_diploma:{
-      ugQualification:{
-        type:String,
-      },
-      ugCourse:{
-        type:String,
-      },
-      ugSpecialization:{
-        type:String,
-      },
-      ugCourseType:{
-        type:String,
-      },
-      ugCourseDurationFrom:{
-        type:String,
-      },
-      ugCourseDurationTo:{
-        type:String,
-      },
-      ugGradingSystem:{
-        type:String,
-      },
-      ugMarks:{
-        type:String,
-      },
+    ugQualification:{
+      type:String,
+      // default:'Graduation/Diploma'
     },
+    ugCourse:{
+      type:String,
+    },
+    ugSpecialization:{
+      type:String,
+    },
+    ugCourseType:{
+      type:String,
+    },
+    ugCourseDurationFrom:{
+      type:String,
+    },
+    ugCourseDurationTo:{
+      type:String,
+    },
+    ugGradingSystem:{
+      type:String,
+    },
+    ugMarks:{
+      type:String,
+    },
+
     // pg
-    pg:{
-      pgQualification:{
-         type:String,
-      },
-      pgCourse:{
-        type:String,
-      },
-      pgSpecialization:{
-        type:String,
-      },
-      pgCourseType:{
-        type:String,
-      },
-      pgCourseDurationFrom:{
-        type:String,
-      },
-      pgCourseDurationTo:{
-        type:String,
-      },
-      pgGradingSystem:{
-        type:String,
-      },
-      pgMarks:{
-        type:String,
-      },
-  
+    pgQualification:{
+      type:String,
+      // default:'Masters/Post-Graduation'
     },
+    pgCourse:{
+      type:String,
+    },
+    pgSpecialization:{
+      type:String,
+    },
+    pgCourseType:{
+      type:String,
+    },
+    pgCourseDurationFrom:{
+      type:String,
+    },
+    pgCourseDurationTo:{
+      type:String,
+    },
+    pgGradingSystem:{
+      type:String,
+    },
+    pgMarks:{
+      type:String,
+    },
+
      // docterate
-     doctrate_mphil:{
-      drQualification:{
-        type:String,
-      },
-      drCourse:{
-        type:String,
-      },
-      drSpecialization:{
-        type:String,
-      },
-      drCourseType:{
-        type:String,
-      },
-      drCourseDurationFrom:{
-        type:String,
-      },
-      drCourseDurationTo:{
-        type:String,
-      },
-      drGradingSystem:{
-        type:String,
-      },
-      drMarks:{
-        type:String,
-      },
+     drQualification:{
+      type:String,
+      // default:'Doctorate/PhD'
     },
-    
+    drCourse:{
+      type:String,
+    },
+    drSpecialization:{
+      type:String,
+    },
+    drCourseType:{
+      type:String,
+    },
+    drCourseDurationFrom:{
+      type:String,
+    },
+    drCourseDurationTo:{
+      type:String,
+    },
+    drGradingSystem:{
+      type:String,
+    },
+    drMarks:{
+      type:String,
+    },
   },
   {
     timestamps: true,
