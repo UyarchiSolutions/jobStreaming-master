@@ -11,7 +11,7 @@ const router = express.Router();
 router.route('/createKeyskill').post(authorization,uploadImage.array('image'), candidateDetailsController.createkeySkill);
 //create only image put method 
 router.route('/updateByIdImage/:id').put(uploadImage.array('image'), candidateDetailsController.updateByIdImage);
-
+router.route('/educationDetails').post(authorization, candidateDetailsController.educationDetails);
 router.route('/getKeyskill').get(authorization,candidateDetailsController.getByIdUser);
 router.route('/updateKeyskill').put(authorization, uploadImage.array('image'), candidateDetailsController.updateById);
 router.route('/deleteKeyskill/:id').delete(candidateDetailsController.deleteById);
@@ -34,5 +34,6 @@ router.route('/SearchByIdcandidataSearchEmployerSet').get(authorization,candidat
 router.route('/getByIdEmployerDetails/:id').get(candidateDetailsController.getByIdEmployerDetails);
 router.route('/candidateSearch_front_page').post(authorization, candidateDetailsController.candidateSearch_front_page);
 router.route('/recentSearch').get(authorization, candidateDetailsController.recentSearch);
+router.route('/languages').get(candidateDetailsController.languages);
 // router.route('/createSearchCandidate').post(authorization, candidateDetailsController.createSearchCandidate);
 module.exports = router;

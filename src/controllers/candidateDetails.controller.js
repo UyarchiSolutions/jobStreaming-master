@@ -181,6 +181,17 @@ const recentSearch = catchAsync(async(req,res) => {
   res.send(user)
 })
 
+const educationDetails = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await candidateDetailsService.educationDetails(userId, req.body)
+  res.send(user)
+})
+
+const languages = catchAsync(async(req,res) => {
+  const user = await candidateDetailsService.languages()
+  res.send(user)
+})
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -206,5 +217,7 @@ module.exports = {
   candidateSearch_front_page,
   recentSearch,
   updateByIdImage,
+  educationDetails,
+  languages,
   // createSearchCandidate,
 };

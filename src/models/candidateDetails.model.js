@@ -19,6 +19,9 @@ const keySkillSchema = mongoose.Schema(
     keyskill: {
         type:Array,
     },
+    languages:{
+      type:Object,
+    },
     userId:{
         type:String,
     },
@@ -248,6 +251,73 @@ const keySkillSchema = mongoose.Schema(
   }
 );
 const KeySkill = mongoose.model('candidateDetail', keySkillSchema);
+const educationDeatilsSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    keyskill: {
+        type:Array,
+    },
+    userId:{
+        type:String,
+    },
+
+    Qualification:{
+        type:String,
+    },
+    course:{
+        type:String,
+    },
+    specification:{
+        type:String,
+    },
+    university:{
+        type:String,
+    },
+    courseType:{
+        type:String,
+    },
+    passingYear:{
+        type:Number,
+    },
+    gradingSystem:{
+        type:String,
+    },
+    mark:{
+        type:String,
+    },
+    Board:{
+      type:String,
+    },
+    medium:{
+      type:String,
+    },
+    courseDurationFrom:{
+      type:String,
+    },
+    courseDurationTo:{
+      type:String,
+    },
+    date:{
+      type:String,
+      // default:moment().format('YYYY-MM-DD')
+    },
+    time: {
+      type: String,
+      // default:moment().format('HHmmss')
+    },
+    active:{
+        type:Boolean,
+        default:true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const EducationDeatils = mongoose.model('educationDeatil', educationDeatilsSchema);
 const candidatePostjobSchema = mongoose.Schema(
     {
       _id: {
@@ -407,4 +477,4 @@ const candidatePostjobSchema = mongoose.Schema(
     }
   );
   const CandidateRecentSearchjobCandidate = mongoose.model('candidateRecentSearchjob', candidateRecentSearchjobCandidateSchema);
-module.exports = {KeySkill, CandidatePostjob, CandidateSaveJob, CandidateSearchjobCandidate, candidataSearchEmployerSet, CandidateRecentSearchjobCandidate} ;
+module.exports = {KeySkill, CandidatePostjob, CandidateSaveJob, CandidateSearchjobCandidate, candidataSearchEmployerSet, CandidateRecentSearchjobCandidate, EducationDeatils} ;
