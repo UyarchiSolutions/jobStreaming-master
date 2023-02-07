@@ -13,6 +13,7 @@ const {
   Department,
   City,
   Rolecategory,
+  Industries,
 } = require('../models/education.model');
 const { OTPModel } = require('../models');
 const { Token } = require('../models');
@@ -90,7 +91,12 @@ const get_city = async (key) => {
 };
 
 const get_Rolecategory = async (id) => {
-  let data = await Rolecategory.find({DepartmentId:id});
+  let data = await Rolecategory.find({ DepartmentId: id });
+  return data;
+};
+
+const get_Industry = async () => {
+  let data = await Industries.find();
   return data;
 };
 module.exports = {
@@ -107,4 +113,5 @@ module.exports = {
   get_Department,
   get_city,
   get_Rolecategory,
+  get_Industry,
 };

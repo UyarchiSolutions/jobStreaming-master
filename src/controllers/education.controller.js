@@ -67,6 +67,11 @@ const get_specialization = catchAsync(async (req, res) => {
     res.send(user);
   });
 
+  const get_Industry = catchAsync(async (req, res) => {
+    const user = await educationService.get_Industry();
+    res.send(user);
+  });
+
 module.exports = {
   createQualification,
   get_sslc_course,
@@ -81,4 +86,5 @@ module.exports = {
   get_Department,
   get_city,
   get_Rolecategory,
+  get_Industry,
 };
