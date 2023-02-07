@@ -127,48 +127,115 @@ const deleteById = async (id) => {
 // };
 
 const candidateSearch = async (body) => {
-  // console.log(userId)
-  // let values = {...body, ...{userId:userId}}
-  let { search, experience, location, preferredindustry, salary } = body;
-
-  if (search != null) {
-    search = search.split(',');
-    console.log(search);
-  }
+  let {
+    search,
+    experience,
+    experienceAnotherfrom,
+    experienceAnotherto,
+    location,
+    preferredindustry,
+    salary,
+    workmode,
+    education,
+    salaryfilter,
+    role,
+    freshness,
+    locationfilter,
+    companytype,
+    postedby,
+  } = body;
   //  await CandidateSearchjobCandidate.create(values);
 
   //  search = ["fbhfghfh","software engineer"]
+  // console.log(body)
   let experienceSearch = { active: true };
+  let experienceAnotherSearch = [{ active: true }];
   let locationSearch = { active: true };
+  let allSearch = [{ active: true }];
   let salarySearch = { active: true };
   let preferredindustrySearch = { active: true };
+  let workmodeSearch = { active: true };
+  let educationSearch = { active: true };
+  let salaryfilterSearch = { active: true };
+  let roleSearch = { active: true };
+  let freshnessSearch = { active: true };
+  let locationfilterSearch = { active: true };
+  let companytypeSearch = { active: true };
+  let postedbySearch = { active: true };
+  if (postedby != null) {
+    postedbySearch = { companyType: { $in: postedby } };
+  }
+  if (experienceAnotherfrom != null && experienceAnotherto != null) {
+    experienceAnotherSearch = [
+      { experienceFrom: { $gte: parseInt(experienceAnotherfrom) } },
+      { experienceFrom: { $lte: parseInt(experienceAnotherto) } },
+    ];
+  }
+  if (workmode != null) {
+    workmodeSearch = { workplaceType: { $in: workmode } };
+  }
+  if (companytype != null) {
+    companytypeSearch = { industry: { $in: companytype } };
+  }
+  if (role != null) {
+    roleSearch = { role: { $in: role } };
+  }
+  if (education != null) {
+    educationSearch = { educationalQualification: { $in: education } };
+  }
   if (preferredindustry != null) {
-    preferredindustrySearch = { preferredindustry: { $eq: preferredindustry } };
+    preferredindustrySearch = { preferedIndustry: { $eq: preferredindustry } };
   }
   if (salary != null) {
     salarySearch = { salaryRangeFrom: { $lte: parseInt(salary) }, salaryRangeTo: { $gte: parseInt(salary) } };
   }
+  if (search != null) {
+    search = search.split(',');
+    allSearch = [
+      { designation: { $in: search } },
+      { keySkill: { $elemMatch: { $in: search } } },
+      { jobTittle: { $in: search } },
+    ];
+  }
+
   if (experience != null) {
-    experienceSearch = { experienceFrom: { $lte: parseInt(experience) }, experienceTo: { $gte: parseInt(experience) } };
+    // experienceSearch = { experienceFrom: { $lte: parseInt(experience) },experienceTo: { $gte: parseInt(experience) } }
+    experienceSearch = { experienceFrom: { $gte: parseInt(experience) } };
   }
   if (location != null) {
     locationSearch = { jobLocation: { $eq: location } };
   }
-  console.log(preferredindustrySearch);
+  // console.log(experienceSearch,
+  //   locationSearch,
+  //   salarySearch,
+  //   preferredindustrySearch,
+  //   workmodeSearch,
+  //   educationSearch,
+  //   roleSearch,
+  //   companytypeSearch,);
   const data = await EmployerDetails.aggregate([
     {
       $match: {
-        $or: [{ designation: { $in: search } }, { keySkill: { $elemMatch: { $in: search } } }],
+        $or: allSearch,
+      },
+    },
+    {
+      $match: {
+        $and: experienceAnotherSearch,
       },
     },
     {
       $match: {
         $and: [
-          { adminStatus: { $eq: 'Approved' } },
+          // { adminStatus: { $eq: 'Approved' } },
           experienceSearch,
           locationSearch,
           salarySearch,
           preferredindustrySearch,
+          workmodeSearch,
+          educationSearch,
+          roleSearch,
+          companytypeSearch,
         ],
       },
     },
@@ -177,6 +244,13 @@ const candidateSearch = async (body) => {
         from: 'employerregistrations',
         localField: 'userId',
         foreignField: '_id',
+        pipeline: [
+          {
+            $match: {
+              $and: [postedbySearch],
+            },
+          },
+        ],
         as: 'employerregistrations',
       },
     },
