@@ -20,4 +20,5 @@ router.route('/get_Department').get(educationController.get_Department);
 router.route('/get_city/:key').get(educationController.get_city);
 router.route('/get_Rolecategory/:id').get(educationController.get_Rolecategory);
 router.route('/get_Industry').get(educationController.get_Industry);
+router.route('/get_Role/:id').get(educationController.get_Role);
 module.exports = router;
