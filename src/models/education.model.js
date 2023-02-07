@@ -316,4 +316,26 @@ const  sslcCourseSchema = mongoose.Schema(
     }
   );
   const City = mongoose.model('city', citySchema);
-module.exports = {Qualification, SslcCourse, HscCourse, PgCourse, UgCourse, Medium, DrCourse, Specialization, Pgspecialization, Drspecialization, Department, City} ;
+  const  rolecategorySchema = mongoose.Schema(
+    {
+      _id: {
+        type: String,
+        default: v4,
+      },
+      Role_Category:{
+        type:String,
+      },
+      DepartmentId:{
+        type:String,
+      },
+      active:{
+          type:Boolean,
+          default:true,
+      }
+    },
+    {
+      timestamps: true,
+    }
+  );
+  const Rolecategory = mongoose.model('rolecategory', rolecategorySchema);
+module.exports = {Qualification, SslcCourse, HscCourse, PgCourse, UgCourse, Medium, DrCourse, Specialization, Pgspecialization, Drspecialization, Department, City, Rolecategory} ;

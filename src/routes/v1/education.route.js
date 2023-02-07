@@ -18,4 +18,5 @@ router.route('/get_pgspecialization/:id').get(educationController.get_pgspeciali
 router.route('/get_drspecialization/:id').get(educationController.get_drspecialization);
 router.route('/get_Department').get(educationController.get_Department);
 router.route('/get_city/:key').get(educationController.get_city);
+router.route('/get_Rolecategory/:id').get(educationController.get_Rolecategory);
 module.exports = router;

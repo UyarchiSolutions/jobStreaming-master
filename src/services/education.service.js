@@ -12,6 +12,7 @@ const {
   Drspecialization,
   Department,
   City,
+  Rolecategory,
 } = require('../models/education.model');
 const { OTPModel } = require('../models');
 const { Token } = require('../models');
@@ -23,6 +24,7 @@ const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const Axios = require('axios');
 const moment = require('moment');
+const { default: axios } = require('axios');
 
 const createQualification = async (userBody) => {
   let data = await Qualification.create(userBody);
@@ -80,7 +82,51 @@ const get_Department = async () => {
 };
 
 const get_city = async (key) => {
-  let data = await City.find({ city: { $regex: key, $options: 'i' } }).limit(50)
+  let data = await City.find({ city: { $regex: key, $options: 'i' } }).limit(50);
+  let values = await Axios.get(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${key}&inputtype=textquery&locationbias=circle%3A2000%4047.6918452%2C-122.2226413&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`)
+  return values.data.formatted_address;
+};
+
+const get_Rolecategory = async (id) => {
+  let values = [
+    {
+      DepartmentId: '0e573bae-f4f5-40e2-a022-e41854009fb2',
+      Role_Category: 'After Sales Service & Repair',
+    },
+    {
+      DepartmentId: '0e573bae-f4f5-40e2-a022-e41854009fb2',
+      Role_Category: 'Back Office',
+    },
+    {
+      DepartmentId: '0e573bae-f4f5-40e2-a022-e41854009fb2',
+      Role_Category: 'Customer Success',
+    },
+    {
+      DepartmentId: '0e573bae-f4f5-40e2-a022-e41854009fb2',
+      Role_Category: 'Non Voice',
+    },
+    {
+      DepartmentId: '0e573bae-f4f5-40e2-a022-e41854009fb2',
+      Role_Category: 'Operations',
+    },
+    {
+      DepartmentId: '0e573bae-f4f5-40e2-a022-e41854009fb2',
+      Role_Category: 'Operations Support',
+    },
+    {
+      DepartmentId: '0e573bae-f4f5-40e2-a022-e41854009fb2',
+      Role_Category: 'Service Delivery',
+    },
+    {
+      DepartmentId: '0e573bae-f4f5-40e2-a022-e41854009fb2',
+      Role_Category: 'Voice/Blended',
+    },
+    {
+      DepartmentId: '0e573bae-f4f5-40e2-a022-e41854009fb2',
+      Role_Category: 'Customer Success, Service & Operations - Other',
+    },
+  ];
+  let data = await Rolecategory.create(values);
   return data;
 };
 module.exports = {
@@ -96,4 +142,5 @@ module.exports = {
   get_drspecialization,
   get_Department,
   get_city,
+  get_Rolecategory,
 };
