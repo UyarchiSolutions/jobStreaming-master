@@ -788,7 +788,7 @@ const keySkillData = async (key) => {
   const re = new RegExp(key.toLowerCase())
   // console.log(re)
   let fn = re.exec.bind(re);
-  let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java"]
+  let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   let filtered = data.filter(fn);
   return filtered
 }
