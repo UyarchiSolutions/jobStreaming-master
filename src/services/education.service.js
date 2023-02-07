@@ -14,6 +14,7 @@ const {
   City,
   Rolecategory,
   Industries,
+  Role,
 } = require('../models/education.model');
 const { OTPModel } = require('../models');
 const { Token } = require('../models');
@@ -96,6 +97,11 @@ const get_Industry = async () => {
   let data = await Industries.find();
   return data;
 };
+
+const get_Role = async () => {
+  let data = await Role.create(values);
+  return data;
+};
 module.exports = {
   createQualification,
   get_sslc_course,
@@ -111,4 +117,5 @@ module.exports = {
   get_city,
   get_Rolecategory,
   get_Industry,
+  get_Role,
 };
