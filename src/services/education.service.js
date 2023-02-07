@@ -83,11 +83,8 @@ const get_Department = async () => {
 };
 
 const get_city = async (key) => {
-  let data = await City.find({ city: { $regex: key, $options: 'i' } }).limit(50);
-  let values = await Axios.get(
-    `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${key}&inputtype=textquery&locationbias=circle%3A2000%4047.6918452%2C-122.2226413&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
-  );
-  return values.data;
+  let data = await City.find({ name: { $regex: key, $options: 'i' } }).limit(50);
+  return data;
 };
 
 const get_Rolecategory = async (id) => {

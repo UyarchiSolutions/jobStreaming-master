@@ -7,19 +7,19 @@ const { StringDecoder } = require('string_decoder');
 const { v4 } = require('uuid');
 const moment = require('moment');
 
-const  QualificationSchema = mongoose.Schema(
+const QualificationSchema = mongoose.Schema(
   {
     _id: {
       type: String,
       default: v4,
     },
-    qualification:{
-        type:String,
+    qualification: {
+      type: String,
     },
-    active:{
-        type:Boolean,
-        default:true,
-    }
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
@@ -27,337 +27,361 @@ const  QualificationSchema = mongoose.Schema(
 );
 const Qualification = mongoose.model('Qualification', QualificationSchema);
 
-const  sslcCourseSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Board:{
-          type:String,
-      },
-      Degree:{
-        type:String,
-      },
-      Education:{
-        type:String,
-      },
-      QualificationId:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+const sslcCourseSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const SslcCourse = mongoose.model('sslccourses', sslcCourseSchema);
-  const  hscCourseSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Board:{
-          type:String,
-      },
-      Degree:{
-        type:String,
-      },
-      Education:{
-        type:String,
-      },
-      QualificationId:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    Board: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const HscCourse = mongoose.model('hscCourse', hscCourseSchema);
+    Degree: {
+      type: String,
+    },
+    Education: {
+      type: String,
+    },
+    QualificationId: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const SslcCourse = mongoose.model('sslccourses', sslcCourseSchema);
+const hscCourseSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    Board: {
+      type: String,
+    },
+    Degree: {
+      type: String,
+    },
+    Education: {
+      type: String,
+    },
+    QualificationId: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const HscCourse = mongoose.model('hscCourse', hscCourseSchema);
 
-  const  pgCourseSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Course:{
-          type:String,
-      },
-      Degree:{
-        type:String,
-      },
-      Education:{
-        type:String,
-      },
-      QualificationId:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+const pgCourseSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const PgCourse = mongoose.model('pgCourse', pgCourseSchema);
+    Course: {
+      type: String,
+    },
+    Degree: {
+      type: String,
+    },
+    Education: {
+      type: String,
+    },
+    QualificationId: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const PgCourse = mongoose.model('pgCourse', pgCourseSchema);
 
-  const  ugCourseSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Course:{
-          type:String,
-      },
-      Degree:{
-        type:String,
-      },
-      Education:{
-        type:String,
-      },
-      QualificationId:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+const ugCourseSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const UgCourse = mongoose.model('ugCourse', ugCourseSchema);
-  const  mediumSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      School_Medium:{
-          type:String,
-      },
-      Education:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    Course: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const Medium = mongoose.model('medium', mediumSchema);
+    Degree: {
+      type: String,
+    },
+    Education: {
+      type: String,
+    },
+    QualificationId: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const UgCourse = mongoose.model('ugCourse', ugCourseSchema);
+const mediumSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    School_Medium: {
+      type: String,
+    },
+    Education: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Medium = mongoose.model('medium', mediumSchema);
 
-  const  drCourseSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Course:{
-          type:String,
-      },
-      Education:{
-        type:String,
-      },
-      QualificationId:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+const drCourseSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const DrCourse = mongoose.model('drCourse', drCourseSchema);
-  const  specializationSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Course:{
-          type:String,
-      },
-      Education:{
-        type:String,
-      },
-      Specialization:{
-        type:String,
-      },
-      courseId:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    Course: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const Specialization = mongoose.model('specialization', specializationSchema);
+    Education: {
+      type: String,
+    },
+    QualificationId: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const DrCourse = mongoose.model('drCourse', drCourseSchema);
+const specializationSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    Course: {
+      type: String,
+    },
+    Education: {
+      type: String,
+    },
+    Specialization: {
+      type: String,
+    },
+    courseId: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Specialization = mongoose.model('specialization', specializationSchema);
 
-  const  pgspecializationSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Course:{
-          type:String,
-      },
-      Education:{
-        type:String,
-      },
-      Specialization:{
-        type:String,
-      },
-      courseId:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+const pgspecializationSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const Pgspecialization = mongoose.model('pgspecialization', pgspecializationSchema);
+    Course: {
+      type: String,
+    },
+    Education: {
+      type: String,
+    },
+    Specialization: {
+      type: String,
+    },
+    courseId: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Pgspecialization = mongoose.model('pgspecialization', pgspecializationSchema);
 
-  const  drspecializationSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Course:{
-          type:String,
-      },
-      Education:{
-        type:String,
-      },
-      Specialization:{
-        type:String,
-      },
-      courseId:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+const drspecializationSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const Drspecialization = mongoose.model('drspecialization', drspecializationSchema);
-  const  departmentSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Department:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    Course: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const Department = mongoose.model('department', departmentSchema);
-  const  citySchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      city:{
-        type:String,
-      },
-      state:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    Education: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const City = mongoose.model('city', citySchema);
-  const  rolecategorySchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Role_Category:{
-        type:String,
-      },
-      DepartmentId:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    Specialization: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const Rolecategory = mongoose.model('rolecategory', rolecategorySchema);
-  const  industriesSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      Type:{
-        type:String,
-      },
-      Industry:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    courseId: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const Industries = mongoose.model('industry', industriesSchema);
-module.exports = {Qualification, SslcCourse, HscCourse, PgCourse, UgCourse, Medium, DrCourse, Specialization, Pgspecialization, Drspecialization, Department, City, Rolecategory, Industries} ;
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Drspecialization = mongoose.model('drspecialization', drspecializationSchema);
+const departmentSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    Department: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Department = mongoose.model('department', departmentSchema);
+const citySchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    name: {
+      type: String,
+    },
+    countryCode: {
+      type: String,
+    },
+    stateCode: {
+      type: String,
+    },
+    latitude: {
+      type: String,
+    },
+    longitude: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const City = mongoose.model('city', citySchema);
+const rolecategorySchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    Role_Category: {
+      type: String,
+    },
+    DepartmentId: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Rolecategory = mongoose.model('rolecategory', rolecategorySchema);
+const industriesSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    Type: {
+      type: String,
+    },
+    Industry: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Industries = mongoose.model('industry', industriesSchema);
+module.exports = {
+  Qualification,
+  SslcCourse,
+  HscCourse,
+  PgCourse,
+  UgCourse,
+  Medium,
+  DrCourse,
+  Specialization,
+  Pgspecialization,
+  Drspecialization,
+  Department,
+  City,
+  Rolecategory,
+  Industries,
+};
