@@ -10,21 +10,26 @@ const bcrypt = require('bcryptjs');
 const moment = require('moment');
 const { format } = require('morgan');
 const { create } = require('../models/candidateRegistration.model');
+const Axios = require('axios');
 
 //keySkill
 
 const createEmpDetails = async (userId, userBody) => {
-  let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
+  // let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
+  let app = await EmployerRegistration.findOne({_id:userId})
   if(!app){
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
-  const {validity} = userBody;
+  // const {validity} = userBody;
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HHmmss');
   let expiredDate
   // console.log(validity);
   const plan = await PlanPayment.findOne({userId:userId, active:true})
-  const pay = await  CreatePlan.findOne({_id:plan.planId})
+  let pay
+  if(plan){
+  pay = await  CreatePlan.findOne({_id:plan.planId})
+  }
   if(pay){
    expiredDate = moment().add(pay.jobPostVAlidity, 'days').format('YYYY-MM-DD');
   }else{
@@ -101,9 +106,31 @@ const getByIdUser = async (id) => {
         $and: [{ userId: { $eq: id } }],
       },
     },
-
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: '_id',
+        foreignField: 'jobId', 
+        pipeline:[
+          {
+            $group: {
+               _id: null,
+               count: { $sum:1}
+            }
+          }
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     {
       $project: {
+        appliedcount:"$candidatepostjobs.count",
         keySkill: 1,
         dates: dates,
         date: 1,
@@ -267,7 +294,8 @@ const deleteById = async (id) => {
 
 const countPostjobError = async (userId) =>{
   let date = moment().format('YYYY-MM-DD');
-  let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
+  // let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
+  let app = await EmployerRegistration.findOne({_id:userId})
   if(!app){
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
@@ -356,7 +384,7 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
   const data = await EmployerDetails.aggregate([
     {
       $match: {
-        $and: [{ userId: { $eq: userId } }],
+        $and: [{ _id: { $eq: userId } }],
       },
     },
     {
@@ -380,6 +408,12 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
                   },
                 },
                 {
+                  $unwind: {
+                    path: '$candidatedetails',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
                 $project:{
                   name:1,
                   locationCurrent:'$candidatedetails.locationCurrent',
@@ -396,8 +430,20 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
               as: 'candidateregistrations',
             },
           },
+          {
+            $unwind: {
+              path: '$candidateregistrations',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
         ],
         as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
       },
     },
     {
@@ -405,8 +451,8 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
         candidateId:'$candidatepostjobs.candidateregistrations._id',
         employerCommand:'$candidatepostjobs.employerCommand',
         postjobId:'$candidatepostjobs._id',
-        status:'candidatepostjobs.approvedStatus',
-        candidateData:'candidatepostjobs.candidateregistrations',
+        status:'$candidatepostjobs.approvedStatus',
+        candidateData:'$candidatepostjobs.candidateregistrations',
       }
     }
   ])
@@ -670,6 +716,132 @@ const candidate_mailnotification_Change = async (id, body) => {
   const value = await EmployerMailNotification.findByIdAndUpdate({ _id: id }, body, { new: true });
   return value
 }
+
+
+// 
+const neighbour_api = async (lat, long, type, radius) => {
+  // console.log(location,type,radius)
+  let response = await Axios.get(
+    `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${long}&radius=${radius}&type=${type}&keyword=${type}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+  );
+
+  return response.data;
+};
+
+// plan details
+
+const All_Plans = async (userId) => {
+   const data = await CreatePlan.aggregate([
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId} }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'planpayments',
+        localField: '_id',
+        foreignField: 'planId',
+        pipeline:[
+               {
+                $group: {
+                  _id: null,
+                  total: {$sum: 1},
+                }
+               }
+        ],
+        as:'planpayments'
+        }
+      },
+      {
+        $unwind: {
+          preserveNullAndEmptyArrays: true,
+          path: '$planpayments',
+        },
+      },
+      {
+        $project:{
+          numberOfUsers:'$planpayments.total'
+        }
+      }
+   ])
+   return data ;
+}
+
+const all_plans_users_details = async (id) => {
+  const data = await PlanPayment.aggregate([
+    {
+      $match: {
+        $and: [{ planId: { $eq: id} }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        pipeline:[
+          {
+            $lookup: {
+              from: 'employerdetails',
+              localField: '_id',
+              foreignField: 'userId',
+              as:'employerdetails'
+              }
+            },
+        ],
+        as:'employerregistrations'
+        }
+      },
+      {
+        $unwind: {
+          preserveNullAndEmptyArrays: true,
+          path: '$employerregistrations',
+        },
+      },
+      {
+        $project:{
+          cvCountUser:1,
+          cvCount:1,
+          countjobPost:1,
+          active:1,
+          cashType:1,
+          payAmount:1,
+          paymentStatus:1,
+          date:1,
+          time:1,
+          expDate:1,
+          companyname:'$employerregistrations.name',
+          email:'$employerregistrations.email',
+          companyType:'$employerregistrations.companyType',
+          contactName:'$employerregistrations.contactName',
+          mobileNumber:'$employerregistrations.mobileNumber',
+          location:'$employerregistrations.location',
+          employerdetails:'$employerregistrations.employerdetails'
+        }
+      }
+  ])
+  return data
+}
+
+const keySkillData = async (key) => {
+  const re = new RegExp(key.toLowerCase())
+  // console.log(re)
+  let fn = re.exec.bind(re);
+  let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
+  let filtered = data.filter(fn);
+  return filtered
+}
+
+const location = async (key) => {
+  const re = new RegExp(key.toLowerCase())
+  // console.log(re)
+  let fn = re.exec.bind(re);
+  let data = ["nagapattinam","mayiladuthurai","madurai","krishnagiri","karur","kanniyakumari","erode","dindigul","dharmapuri","ariyalur","chennai","kanchipuram","villupuram","pondicherry","cuddalore","kallakuruchi","nagapattinam","salem","bangalore","coimbatore",]
+  let filtered = data.filter(fn);
+  return filtered
+}
+
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -697,4 +869,9 @@ module.exports = {
   getAll_Mail_notification_employerside,
   getAll_Mail_notification_candidateside,
   candidate_mailnotification_Change,
+  neighbour_api,
+  All_Plans,
+  all_plans_users_details,
+  keySkillData,
+  location,
 };

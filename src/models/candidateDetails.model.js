@@ -19,6 +19,9 @@ const keySkillSchema = mongoose.Schema(
     keyskill: {
         type:Array,
     },
+    languages:{
+      type:Object,
+    },
     userId:{
         type:String,
     },
@@ -32,6 +35,9 @@ const keySkillSchema = mongoose.Schema(
       type:Number,
     },
     currentctc:{
+      type:String,
+    },
+    dob:{
       type:String,
     },
     noticeperiod:{
@@ -127,7 +133,7 @@ const keySkillSchema = mongoose.Schema(
     // 10th
     sslcQualification:{
       type:String,
-      default:'SSLC'
+      // default:'SSLC'
     },
     sslcBoard:{
       type:String,
@@ -144,7 +150,7 @@ const keySkillSchema = mongoose.Schema(
     // 12th
     hsQualification:{
       type:String,
-      default:'HSC'
+      // default:'HSC'
     },
     hsBoard:{
       type:String,
@@ -162,7 +168,7 @@ const keySkillSchema = mongoose.Schema(
     // graduation/diploma
     ugQualification:{
       type:String,
-      default:'Graduation/Diploma'
+      // default:'Graduation/Diploma'
     },
     ugCourse:{
       type:String,
@@ -189,7 +195,7 @@ const keySkillSchema = mongoose.Schema(
     // pg
     pgQualification:{
       type:String,
-      default:'Masters/Post-Graduation'
+      // default:'Masters/Post-Graduation'
     },
     pgCourse:{
       type:String,
@@ -216,7 +222,7 @@ const keySkillSchema = mongoose.Schema(
      // docterate
      drQualification:{
       type:String,
-      default:'Doctorate/PhD'
+      // default:'Doctorate/PhD'
     },
     drCourse:{
       type:String,
@@ -245,6 +251,73 @@ const keySkillSchema = mongoose.Schema(
   }
 );
 const KeySkill = mongoose.model('candidateDetail', keySkillSchema);
+const educationDeatilsSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    keyskill: {
+        type:Array,
+    },
+    userId:{
+        type:String,
+    },
+
+    Qualification:{
+        type:String,
+    },
+    course:{
+        type:String,
+    },
+    specification:{
+        type:String,
+    },
+    university:{
+        type:String,
+    },
+    courseType:{
+        type:String,
+    },
+    passingYear:{
+        type:Number,
+    },
+    gradingSystem:{
+        type:String,
+    },
+    mark:{
+        type:String,
+    },
+    Board:{
+      type:String,
+    },
+    medium:{
+      type:String,
+    },
+    courseDurationFrom:{
+      type:String,
+    },
+    courseDurationTo:{
+      type:String,
+    },
+    date:{
+      type:String,
+      // default:moment().format('YYYY-MM-DD')
+    },
+    time: {
+      type: String,
+      // default:moment().format('HHmmss')
+    },
+    active:{
+        type:Boolean,
+        default:true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const EducationDeatils = mongoose.model('educationDeatil', educationDeatilsSchema);
 const candidatePostjobSchema = mongoose.Schema(
     {
       _id: {
@@ -277,7 +350,7 @@ const candidatePostjobSchema = mongoose.Schema(
       timestamps: true,
     }
   );
-  const CandidatePostjob = mongoose.model('candidatePostjob', candidatePostjobSchema);
+  const CandidatePostjob = mongoose.model('candidateApplyjob', candidatePostjobSchema);
   const candidateSaveJobSchema = mongoose.Schema(
     {
       _id: {
@@ -404,4 +477,4 @@ const candidatePostjobSchema = mongoose.Schema(
     }
   );
   const CandidateRecentSearchjobCandidate = mongoose.model('candidateRecentSearchjob', candidateRecentSearchjobCandidateSchema);
-module.exports = {KeySkill, CandidatePostjob, CandidateSaveJob, CandidateSearchjobCandidate, candidataSearchEmployerSet, CandidateRecentSearchjobCandidate} ;
+module.exports = {KeySkill, CandidatePostjob, CandidateSaveJob, CandidateSearchjobCandidate, candidataSearchEmployerSet, CandidateRecentSearchjobCandidate, EducationDeatils} ;

@@ -9,6 +9,7 @@ const {emailService} = require('../services');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const Axios = require('axios');
+const moment = require('moment');
 
 const createCandidate = async (userBody) => {
     const {password,confirmpassword} = userBody
@@ -103,6 +104,7 @@ const UsersLogin = async (userBody) => {
     } else {
       if (await userName.isPasswordMatch(password)) {
         console.log('Password Macthed');
+        await CandidateRegistration.findOneAndUpdate({ email: email }, {latestdate:moment().format('YYYY-MM-DD')}, {new:true});
       } else {
         throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
       }

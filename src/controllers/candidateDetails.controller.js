@@ -42,6 +42,20 @@ const updateById = catchAsync(async(req,res) => {
     res.send({user})
 })
 
+const updateByIdImage = catchAsync(async(req,res) => {
+    const user = await candidateDetailsService.updateByIdImage(req.params.id, req.body)
+    // console.log(req.files)
+    if (req.files.length != 0 ) {
+    let path = '';
+    req.files.forEach(function (files, index, arr) {
+       path  = "resumes/images/"+files.filename
+    });
+    user.image = path
+  }
+    await user.save();
+    res.send({user})
+})
+
 
 
 const deleteById = catchAsync(async(req,res) => {
@@ -166,6 +180,18 @@ const recentSearch = catchAsync(async(req,res) => {
   const user = await candidateDetailsService.recentSearch(userId)
   res.send(user)
 })
+
+const educationDetails = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await candidateDetailsService.educationDetails(userId, req.body)
+  res.send(user)
+})
+
+const languages = catchAsync(async(req,res) => {
+  const user = await candidateDetailsService.languages()
+  res.send(user)
+})
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -190,5 +216,8 @@ module.exports = {
   getByIdEmployerDetails,
   candidateSearch_front_page,
   recentSearch,
+  updateByIdImage,
+  educationDetails,
+  languages,
   // createSearchCandidate,
 };

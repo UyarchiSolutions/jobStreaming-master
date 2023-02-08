@@ -77,6 +77,9 @@ const userSchema = mongoose.Schema(
     long:{
       type:String,
     },
+    latestdate:{
+      type:String,
+    },
     active:{
       type:Boolean,
       default:true,

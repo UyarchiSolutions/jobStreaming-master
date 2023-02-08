@@ -1,8 +1,8 @@
 const nodemailer = require('nodemailer');
 const config = require('../config/config');
 const logger = require('../config/logger');
-const  {OTPModel} = require('../models')
-const  {EmployeOtp} = require('../models')
+const { OTPModel } = require('../models');
+const { EmployeOtp } = require('../models');
 
 const transport = nodemailer.createTransport(config.email.smtp);
 /* istanbul ignore next */
@@ -21,26 +21,26 @@ if (config.env !== 'test') {
  * @returns {Promise}
  */
 const sendEmail = async (to, subject, text) => {
-  const msg = { from: config.email.from, to, subject, text};
+  const msg = { from: config.email.from, to, subject, text };
   // await OTPModel.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   await transport.sendMail(msg);
 };
 
 const sendEmailEmp = async (to, subject, text) => {
-  const msg = { from: config.email.from, to, subject, text};
+  const msg = { from: config.email.from, to, subject, text };
   // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   await transport.sendMail(msg);
 };
 
 const forgetEmail = async (to, subject, text, otp, userId) => {
-  const msg = { from: config.email.from, to, subject, text};
-  await OTPModel.findOneAndUpdate({userId:userId},{otp:otp},{ new: true })
+  const msg = { from: config.email.from, to, subject, text };
+  await OTPModel.findOneAndUpdate({ userId: userId }, { otp: otp }, { new: true });
   await transport.sendMail(msg);
 };
 
 const forgetEmailEmp = async (to, subject, text, otp, userId) => {
-  const msg = { from: config.email.from, to, subject, text};
-  await EmployeOtp.findOneAndUpdate({userId:userId},{otp:otp},{ new: true })
+  const msg = { from: config.email.from, to, subject, text };
+  await EmployeOtp.findOneAndUpdate({ userId: userId }, { otp: otp }, { new: true });
   await transport.sendMail(msg);
 };
 
@@ -69,16 +69,15 @@ If you did not request any password resets, then ignore this email.`;
 const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
   const subject = 'Email Verification';
   // replace this url with the link to the reset password page of your front-end app
-  const resetPasswordUrl = `https://job.lotsmart.in/#/EmployeeVerifyOTP?mobilenumber=${mobilenumber}`;
+  const resetPasswordUrl = `http://localhost:4200/empverify-otp?mobilenumber=${mobilenumber}`;
   const text = `Dear user,
 To set your password, click on this link: ${resetPasswordUrl}
 If you did not request any password sets, then ignore this email.`;
   await sendEmailEmp(to, subject, text, token);
 };
 
-
 const sendVerificationEmail = async (to, token, mobilenumber) => {
-  console.log(to)
+  console.log(to);
   const subject = 'Email Verification';
   // replace this url with the link to the reset password page of your front-end app
   const resetPasswordUrl = `https://job.lotsmart.in/#/VeriftOPT?mobilenumber=${mobilenumber}`;
@@ -88,29 +87,40 @@ If you did not request any password sets, then ignore this email.`;
   await sendEmail(to, subject, text, token);
 };
 
-
-const sendforgotEmail = async (to,userId) => {
+const sendforgotEmail = async (to, userId) => {
   const subject = 'Forget Password';
   // console.log(to, token)
   // replace this url with the link to the email verification page of your front-end app
   var otp = Math.random();
-   otp = otp * 1000000;
-   otp = parseInt(otp);
+  otp = otp * 1000000;
+  otp = parseInt(otp);
   //  console.log(otp);
-   const text = `Dear user, To Forget Password, OTP:${otp}. Do not share your otp`
+  const text = `Dear user, To Forget Password, OTP:${otp}. Do not share your otp`;
   await forgetEmail(to, subject, text, otp, userId);
 };
 
-const sendforgotEmailEmp = async (to,userId) => {
+const sendforgotEmailEmp = async (to, userId) => {
   const subject = 'Forget Password';
   // console.log(to, token)
   // replace this url with the link to the email verification page of your front-end app
   var otp = Math.random();
-   otp = otp * 1000000;
-   otp = parseInt(otp);
+  otp = otp * 1000000;
+  otp = parseInt(otp);
   //  console.log(otp);
-   const text = `Dear user, To Forget Password, OTP:${otp}. Do not share your otp`
+  const text = `Dear user, To Forget Password, OTP:${otp}. Do not share your otp`;
   await forgetEmailEmp(to, subject, text, otp, userId);
+};
+
+let maskmail = async (email) => {
+  console.log(email);
+  await maskmail_email(email);
+};
+
+const maskmail_email = async (to) => {
+  console.log(to);
+  const msg = { from: '"Uyarchi solutions" <noreply-tj@uyarchi.com>', to, subject: 'maskmailer checked' };
+  console.log(msg);
+  await transport.sendMail(msg);
 };
 
 module.exports = {
@@ -123,4 +133,5 @@ module.exports = {
   forgetEmailEmp,
   sendVerificationEmailEmp,
   sendforgotEmailEmp,
+  maskmail,
 };

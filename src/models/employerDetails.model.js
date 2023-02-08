@@ -91,9 +91,6 @@ const employerDetailsSchema = mongoose.Schema(
     interviewstartDate:{
         type:String,
     },
-    interviewstartDate:{
-        type:String,
-    },
     interviewendDate:{
         type:String,
     },
