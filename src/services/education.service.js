@@ -102,6 +102,7 @@ const get_Role = async () => {
   let data = await Role.create(values);
   return data;
 };
+
 module.exports = {
   createQualification,
   get_sslc_course,

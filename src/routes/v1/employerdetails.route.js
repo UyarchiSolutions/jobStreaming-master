@@ -21,8 +21,8 @@ router.route('/EmployerspostDraft').post(authorization, employerDetailsControlle
 router.route('/draftData').get(authorization, employerDetailsController.draftData_employerside);
 router.route('/draftData_getId/:id').get(employerDetailsController.draftData_employerside_ById);
 router.route('/draftData_delete/:id').delete(employerDetailsController.draftData_delete);
-router.route('/getAllApplied_postjobs_Candidates/:id').delete(employerDetailsController.getAllApplied_postjobs_Candidates);
-router.route('/statusChange_employer/:id').delete(employerDetailsController.statusChange_employer);
+router.route('/getAllApplied_postjobs_Candidates/:id').get(employerDetailsController.getAllApplied_postjobs_Candidates);
+router.route('/statusChange_employer/:id').get(employerDetailsController.statusChange_employer);
 router.route('/getByIdAll_CandidateDetails/:id').get(employerDetailsController.getByIdAll_CandidateDetails);
 router.route('/employer_comment').post(authorization, employerDetailsController.employer_comment);
 router.route('/comment_edit/:id').put(employerDetailsController.comment_edit);

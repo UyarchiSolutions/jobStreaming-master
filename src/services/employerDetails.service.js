@@ -362,7 +362,7 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
   const data = await EmployerDetails.aggregate([
     {
       $match: {
-        $and: [{ userId: { $eq: userId } }],
+        $and: [{ _id: { $eq: userId } }],
       },
     },
     {
@@ -386,6 +386,12 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
                   },
                 },
                 {
+                  $unwind: {
+                    path: '$candidatedetails',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
                 $project:{
                   name:1,
                   locationCurrent:'$candidatedetails.locationCurrent',
@@ -402,8 +408,20 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
               as: 'candidateregistrations',
             },
           },
+          {
+            $unwind: {
+              path: '$candidateregistrations',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
         ],
         as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
       },
     },
     {
@@ -411,8 +429,8 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
         candidateId:'$candidatepostjobs.candidateregistrations._id',
         employerCommand:'$candidatepostjobs.employerCommand',
         postjobId:'$candidatepostjobs._id',
-        status:'candidatepostjobs.approvedStatus',
-        candidateData:'candidatepostjobs.candidateregistrations',
+        status:'$candidatepostjobs.approvedStatus',
+        candidateData:'$candidatepostjobs.candidateregistrations',
       }
     }
   ])

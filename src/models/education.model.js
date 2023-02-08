@@ -369,6 +369,28 @@ const industriesSchema = mongoose.Schema(
   }
 );
 const Industries = mongoose.model('industry', industriesSchema);
+const roleSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    RoleId: {
+      type: String,
+    },
+    Job_role: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Role = mongoose.model('jobrole', roleSchema);
 module.exports = {
   Qualification,
   SslcCourse,
@@ -384,4 +406,5 @@ module.exports = {
   City,
   Rolecategory,
   Industries,
+  Role,
 };
