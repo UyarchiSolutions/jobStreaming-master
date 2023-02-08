@@ -424,6 +424,7 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
                   preferredSkill:'$candidatedetails.preferredSkill',
                   experienceYear:'$candidatedetails.experienceYear',
                   experienceMonth:'$candidatedetails.experienceMonth',
+                  expectedctc:'$candidatedetails.expectedctc'
                 }
               }
               ],
