@@ -350,7 +350,7 @@ const candidatePostjobSchema = mongoose.Schema(
       timestamps: true,
     }
   );
-  const CandidatePostjob = mongoose.model('candidateApplyjob', candidatePostjobSchema);
+  const CandidatePostjob = mongoose.model('candidatepostjob', candidatePostjobSchema);
   const candidateSaveJobSchema = mongoose.Schema(
     {
       _id: {
