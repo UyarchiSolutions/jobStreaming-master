@@ -137,6 +137,13 @@ const autojobSearch = catchAsync(async (req, res) => {
     res.send(user)
 });
 
+
+const createdSearchhistoryData = catchAsync(async (req, res) => {
+  let userId = req.userId
+  const user = await candidateDetailsService.createdSearchhistoryData(userId, req.body);
+  res.send(user)
+});
+
 const CandidateRegistrations = catchAsync(async (req, res) => {
     const user = await candidateDetailsService.CandidateRegistrations(req.params.page);
     res.send(user)
@@ -219,5 +226,6 @@ module.exports = {
   updateByIdImage,
   educationDetails,
   languages,
+  createdSearchhistoryData,
   // createSearchCandidate,
 };

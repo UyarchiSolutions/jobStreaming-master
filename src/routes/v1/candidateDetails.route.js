@@ -26,6 +26,7 @@ router.route('/applyJobsView/:userId').get(candidateDetailsController.applyJobsV
 router.route('/getByIdSavedJobsView/:userId').get(candidateDetailsController.getByIdSavedJobsView);
 router.route('/autojobSearch').get(authorization, candidateDetailsController.autojobSearch);
 router.route('/createdSearchhistory').post(authorization, candidateDetailsController.createdSearchhistory);
+router.route('/createdSearchhistoryData').get(authorization, candidateDetailsController.createdSearchhistoryData);
 router.route('/CandidateRegistrations/:page').get(candidateDetailsController.CandidateRegistrations);
 router.route('/updateByIdCandidateRegistration/:id').put(candidateDetailsController.updateByIdCandidateRegistration);
 router.route('/createSetSearchEmployerData').post(authorization, candidateDetailsController.createSetSearchEmployerData);

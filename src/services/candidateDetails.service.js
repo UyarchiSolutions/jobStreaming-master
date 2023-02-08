@@ -779,6 +779,11 @@ const createdSearchhistory = async (userId, body) => {
   return data;
 };
 
+const createdSearchhistoryData = async (userId) => {
+  let data = await CandidateSearchjobCandidate.find({userId:userId});
+  return data;
+};
+
 const autojobSearch = async (userId) => {
   // console.log(userId)
   //  { keySkill: {$elemMatch:{$in:search}}}
@@ -1166,5 +1171,6 @@ module.exports = {
   updateByIdImage,
   educationDetails,
   languages,
+  createdSearchhistoryData,
   // createSearchCandidate,
 };

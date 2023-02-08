@@ -281,7 +281,7 @@ const outSearch_employer = async (userId, body) => {
     keyskillSearch = { keyskill: {$elemMatch:{$in:keyskills}}}
   }
   if(anykeywords != null){
-    anykeywordsSearch = [{ currentSkill: {$elemMatch:{$in:anykeywords}}}, {preferredSkill: {$elemMatch:{$in:anykeywords}}}]
+    anykeywordsSearch = [{ currentSkill: {$elemMatch:{$in:[anykeywords]}}}, {preferredSkill: {$elemMatch:{$in:[anykeywords]}}}]
   }
   if(experiencefrom != null && experienceto != null){
     experienceSearch = [{ experienceYear: { $gte: parseInt(experiencefrom) }},{experienceYear: { $lte: parseInt(experienceto) }}]
