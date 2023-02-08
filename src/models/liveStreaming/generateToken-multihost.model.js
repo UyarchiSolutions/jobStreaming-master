@@ -88,7 +88,22 @@ const hostRoomschema = mongoose.Schema({
   roomName: {
     type: String,
   },
-
+  cloudRecording: {
+    type: Boolean,
+    default: false
+  },
+  token: {
+    type: String,
+  },
+  user: {
+    type: String,
+  },
+  UId: {
+    type: String,
+  },
+  storedURL: {
+    type: String,
+  }
 });
 
 const hostRooms = mongoose.model('hostrooms', hostRoomschema);
