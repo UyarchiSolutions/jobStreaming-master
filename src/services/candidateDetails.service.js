@@ -464,6 +464,7 @@ const getByIdAppliedJobs = async (userId) => {
       $project: {
         userId: 1,
         approvedStatus: 1,
+        appliedDate:'$employerdetails.createdAt',
         companyType: '$employerdetails.employerregistrations.companyType',
         companyName: '$employerdetails.employerregistrations.name',
         designation: '$employerdetails.jobTittle',
