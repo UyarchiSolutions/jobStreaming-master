@@ -106,9 +106,31 @@ const getByIdUser = async (id) => {
         $and: [{ userId: { $eq: id } }],
       },
     },
-
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: '_id',
+        foreignField: 'jobId', 
+        pipeline:[
+          {
+            $group: {
+               _id: null,
+               count: { $sum:1}
+            }
+          }
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     {
       $project: {
+        appliedcount:"$candidatepostjobs.count",
         keySkill: 1,
         dates: dates,
         date: 1,
