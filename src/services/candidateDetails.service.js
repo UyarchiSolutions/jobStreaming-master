@@ -486,7 +486,7 @@ const getByIdAppliedJobs = async (userId) => {
         openings: '$employerdetails.openings',
         createdAt: '$employerdetails.createdAt',
         updatedAt: '$employerdetails.updatedAt',
-        candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs', false] },
+        candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
       },
     },
   ]);
@@ -549,7 +549,7 @@ const applyJobsView = async (userId) => {
       $project: {
         userId: 1,
         companyType: '$employerdetails.employerregistrations.companyType',
-        companyName: '$employerdetails.employerregistrations.companyName',
+        companyName: '$employerdetails.employerregistrations.name',
         designation: '$employerdetails.designation',
         recruiterName: '$employerdetails.recruiterName',
         contactNumber: '$employerdetails.contactNumber',
@@ -571,7 +571,7 @@ const applyJobsView = async (userId) => {
         createdAt: '$employerdetails.createdAt',
         updatedAt: '$employerdetails.updatedAt',
         jobTittle: '$employerdetails.jobTittle',
-        candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs', false] },
+        candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
         approvedStatus: 1,
       },
     },
@@ -645,7 +645,7 @@ const getByIdSavedJobs = async (userId) => {
       $project: {
         userId: 1,
         companyType: '$employerdetails.employerregistrations.companyType',
-        companyName: '$employerdetails.employerregistrations.companyName',
+        companyName: '$employerdetails.employerregistrations.name',
         designation: '$employerdetails.designation',
         recruiterName: '$employerdetails.recruiterName',
         contactNumber: '$employerdetails.contactNumber',
@@ -732,7 +732,7 @@ const getByIdSavedJobsView = async (userId) => {
       $project: {
         userId: 1,
         companyType: '$employerdetails.employerregistrations.companyType',
-        companyName: '$employerdetails.employerregistrations.companyName',
+        companyName: '$employerdetails.employerregistrations.name',
         designation: '$employerdetails.designation',
         recruiterName: '$employerdetails.recruiterName',
         contactNumber: '$employerdetails.contactNumber',
