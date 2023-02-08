@@ -1118,15 +1118,15 @@ const candidateSearch_front_page = async (id, body) => {
 const recentSearch = async (userId) => {
   const data = await CandidateRecentSearchjobCandidate.aggregate([
     {
+      $sort: { createdAt: -1 },
+    },
+    {
       $match: {
         $and: [{ userId: { $eq: userId } }],
       },
     },
     {
       $limit: 5,
-    },
-    {
-      $sort: { createdAt: -1 },
     },
   ]);
   return data;
