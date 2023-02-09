@@ -18,17 +18,17 @@ const moment = require('moment');
 
 const createkeySkill = async (userId, userBody) => {
   console.log(userId);
-  let secondarySkill;
-  let pasrSkill;
-  let keySkill = userBody.keyskill.split(',');
-  let currentSkill = userBody.currentSkill.split(',');
-  let preferredSkill = userBody.preferredSkill.split(',');
-  if (userBody.secondarySkill != null) {
-    secondarySkill = userBody.secondarySkill.split(',');
-  }
-  if (userBody.pasrSkill != null) {
-    pasrSkill = userBody.pasrSkill.split(',');
-  }
+  // let secondarySkill;
+  // let pasrSkill;
+  // let keyskill = userBody.keyskill.split(',');
+  // let currentSkill = userBody.currentSkill.split(',');
+  // let preferredSkill = userBody.preferredSkill.split(',');
+  // if (userBody.secondarySkill != null) {
+  //   secondarySkill = userBody.secondarySkill.split(',');
+  // }
+  // if (userBody.pasrSkill != null) {
+  //   pasrSkill = userBody.pasrSkill.split(',');
+  // }
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HHmmss');
   let values = {
@@ -37,11 +37,11 @@ const createkeySkill = async (userId, userBody) => {
       userId: userId,
       date: date,
       time: creat1,
-      keyskill: keySkill,
-      currentSkill: currentSkill,
-      preferredSkill: preferredSkill,
-      secondarySkill: secondarySkill,
-      pasrSkill: pasrSkill,
+      // keyskill: keyskill,
+      // currentSkill: currentSkill,
+      // preferredSkill: preferredSkill,
+      // secondarySkill: secondarySkill,
+      // pasrSkill: pasrSkill,
     },
   };
   let data = await KeySkill.create(values);
