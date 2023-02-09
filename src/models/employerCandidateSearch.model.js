@@ -152,6 +152,9 @@ const createSavetoFolderSchema = mongoose.Schema(
       userId:{
           type:String,
       },
+      experience:{
+        type:Number,
+      },
       keyskills:{
         type:Array,
       },
@@ -191,6 +194,9 @@ const createSavetoFolderSchema = mongoose.Schema(
       },
       keyskills:{
         type:Array,
+      },
+      experience:{
+        type:Number,
       },
       anykeywords:{
         type:Array,

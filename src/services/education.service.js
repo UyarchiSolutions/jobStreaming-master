@@ -101,28 +101,8 @@ const get_Industry = async () => {
 const get_Role = async () => {
   let values = [
     {
-      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
-      Job_role: 'Product Analyst',
-    },
-    {
-      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
-      Job_role: 'Product Head',
-    },
-    {
-      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
-      Job_role: 'Product Manager',
-    },
-    {
-      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
-      Job_role: 'Product Operations Associate/ Lead',
-    },
-    {
-      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
-      Job_role: 'Technical Product Manager',
-    },
-    {
-      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
-      Job_role: 'Technology Product Management - Other',
+      RoleId: '1953632d-8258-4443-bcd3-d5f995847b44',
+      Job_role: 'Production & Manufacturing - Other',
     },
   ];
   let data = await Role.create(values);
