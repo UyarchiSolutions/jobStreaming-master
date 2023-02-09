@@ -290,10 +290,10 @@ const outSearch_employer = async (userId, body) => {
 
   }
   if(location != null){
-    locationSearch ={locationCurrent:{$in:location}}
+    locationSearch ={locationCurrent:{$in:[location]}}
   }
   if(qualification != null){
-    qualificationSearch = {education:{$in:qualification}}
+    qualificationSearch = {education:{$in:[qualification]}}
   }
   if(salary != null){
     
@@ -301,7 +301,7 @@ const outSearch_employer = async (userId, body) => {
   if(displayDetails != null){
 
   }
-  // console.log(keyskillSearch, locationSearch, qualificationSearch,anykeywordsSearch, experienceSearch)
+  console.log(keyskillSearch, locationSearch, qualificationSearch,anykeywordsSearch, experienceSearch)
   let sc = moment().format('YYYY-MM-DD')
   const data = await KeySkill.aggregate([
     {

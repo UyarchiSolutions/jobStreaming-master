@@ -189,8 +189,8 @@ const candidateSearch = async (body) => {
   if (salary != null) {
     salarySearch = { salaryRangeFrom: { $lte: parseInt(salary) }, salaryRangeTo: { $gte: parseInt(salary) } };
   }
-  if (search != null) {
-    search = search.split(',');
+  if (search.length != 0) {
+    // search = search.split(',');
     allSearch = [
       { designation: { $in: search } },
       { keySkill: { $elemMatch: { $in: search } } },
