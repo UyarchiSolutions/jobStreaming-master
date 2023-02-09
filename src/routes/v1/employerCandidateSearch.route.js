@@ -23,6 +23,6 @@ router.route('/getSaveSeprate').get(authorization, employerCandidateSearch.getSa
 router.route('/delete_Seprate_saveCandidate/:id').delete(employerCandidateSearch.delete_Seprate_saveCandidate);
 router.route('/outSearch_employer').post(authorization, employerCandidateSearch.outSearch_employer);
 router.route('/outSearchSave').post(authorization, employerCandidateSearch.outSearchSave);
-router.route('/outSearchRecentSearch').post(authorization, employerCandidateSearch.outSearchRecentSearch);
+router.route('/outSearchRecentSearch').get(authorization, employerCandidateSearch.outSearchRecentSearch);
 router.route('/outSearchSaveData').post(authorization, employerCandidateSearch.outSearchSaveData);
 module.exports = router;

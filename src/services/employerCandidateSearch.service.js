@@ -350,6 +350,9 @@ const outSearchSave = async (userId, userBody) => {
 
 const outSearchRecentSearch = async (userId) => {
   const data = await CreateoutSearchHistory.aggregate([
+    {
+      $sort:{createdAt:-1}
+    },
     { 
       $match: { 
         $and: [ { userId: { $eq: userId } }] 

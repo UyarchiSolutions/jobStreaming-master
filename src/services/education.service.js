@@ -101,80 +101,16 @@ const get_Industry = async () => {
 const get_Role = async () => {
   let values = [
     {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Accountant/Accounts Executive',
+      RoleId: '50f26818-e73d-49a9-ab60-db59bca658ef',
+      Job_role: 'Risk Analyst',
     },
     {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Accounts Manager',
+      RoleId: '50f26818-e73d-49a9-ab60-db59bca658ef',
+      Job_role: 'Risk Consultant',
     },
     {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Accounts',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Payable Executive',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Accounts Payable Manager',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Accounts Receivable Executive',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Accounts Receivable Manager',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Cashier',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Chartered Accountant (CA)',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Chief Accountant',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Chief Accounting Officer (CAO)',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Company Secretary/Compliance Officer',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Cost Accountant',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Financial Accountant',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Head-Taxation',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Manager Taxation',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Tax Analyst',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Taxation Executive',
-    },
-    {
-      RoleId: 'ef8f0886-bc9e-4bbc-94c2-b8107a27ffec',
-      Job_role: 'Accounting & Taxation - other',
+      RoleId: '50f26818-e73d-49a9-ab60-db59bca658ef',
+      Job_role: 'Assessment/Advisory-Other',
     },
   ];
   let data = await Role.create(values);
