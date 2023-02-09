@@ -101,23 +101,32 @@ const get_Industry = async () => {
 const get_Role = async () => {
   let values = [
     {
-      RoleId: 'df9507f4-000c-4b66-9918-70fa302e9fc0',
-      Job_role: 'Catalog Executive',
+      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
+      Job_role: 'Banquet Manager',
     },
     {
-      RoleId: 'df9507f4-000c-4b66-9918-70fa302e9fc0',
-      Job_role: 'Catalog Manager',
+      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
+      Job_role: 'Catering Executive',
     },
     {
-      RoleId: 'df9507f4-000c-4b66-9918-70fa302e9fc0',
-      Job_role: 'eCommerce Executive',
+      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
+      Job_role: 'Catering Manager / Supervisor',
     },
     {
-      RoleId: 'df9507f4-000c-4b66-9918-70fa302e9fc0',
-      Job_role: 'eCommerce Manager',
+      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
+      Job_role: 'Event Executive',
     },
     {
-      Job_role: 'eCommerce Operations - Other',
+      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
+      Job_role: 'Event Planner/Manager',
+    },
+    {
+      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
+      Job_role: 'Sponsorship/Partnership Manager',
+    },
+    {
+      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
+      Job_role: 'Events & Banquet - Other',
     },
   ];
   let data = await Role.create(values);

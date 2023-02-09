@@ -288,9 +288,9 @@ const outSearch_employer = async (userId, body) => {
   if (
     keyskills.length != 0 ||
     anykeywords != null ||
-    experiencefrom == null ||
-    experienceto == null ||
-    salaryRange == null ||
+    experiencefrom != null ||
+    experienceto != null ||
+    salaryRange != null ||
     location != null ||
     salary != null ||
     displayDetails != null ||
