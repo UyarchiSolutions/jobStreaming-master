@@ -118,6 +118,9 @@ const employerDetailsSchema = mongoose.Schema(
     department:{
         type:String,
     },
+    roleCategory:{
+        type:String,
+    },
     date:{
         type:String,
         // default:moment().format('YYYY-MM-DD')
