@@ -37,5 +37,6 @@ router.route('/candidateSearch_front_page').post(authorization, candidateDetails
 router.route('/recentSearch').get(authorization, candidateDetailsController.recentSearch);
 router.route('/languages').get(candidateDetailsController.languages);
 router.route('/educationDetails').post(authorization, candidateDetailsController.educationDetails);
+router.route('/recentSearch_byId/:id').get(candidateDetailsController.recentSearch_byId);
 // router.route('/createSearchCandidate').post(authorization, candidateDetailsController.createSearchCandidate);
 module.exports = router;

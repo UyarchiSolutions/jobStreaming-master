@@ -115,6 +115,9 @@ const employerDetailsSchema = mongoose.Schema(
     validity:{
         type:Number,
     },
+    department:{
+        type:String,
+    },
     date:{
         type:String,
         // default:moment().format('YYYY-MM-DD')

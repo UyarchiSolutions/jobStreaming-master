@@ -130,6 +130,18 @@ const keySkillSchema = mongoose.Schema(
         type:Boolean,
         default:true,
     },
+    industry:{
+      type:String,
+    },
+    department:{
+      type:String,
+    },
+    roleCategory:{
+      type:String,
+    },
+    role:{
+      type:String,
+    },
     // 10th
     sslcQualification:{
       type:String,

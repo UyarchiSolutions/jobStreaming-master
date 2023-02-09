@@ -30,7 +30,7 @@ const getByIdUser = catchAsync(async(req,res) => {
 const updateById = catchAsync(async(req,res) => {
   let userId = req.userId 
     const user = await candidateDetailsService.updateById(userId, req.body)
-    // console.log(req.files)
+    console.log(req.files)
     if (req.files.length != 0 ) {
     let path = '';
     req.files.forEach(function (files, index, arr) {
@@ -199,6 +199,11 @@ const languages = catchAsync(async(req,res) => {
   res.send(user)
 })
 
+const recentSearch_byId = catchAsync(async(req,res) => {
+  const user = await candidateDetailsService.recentSearch_byId(req.params.id)
+  res.send(user)
+})
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -227,5 +232,6 @@ module.exports = {
   educationDetails,
   languages,
   createdSearchhistoryData,
+  recentSearch_byId,
   // createSearchCandidate,
 };

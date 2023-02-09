@@ -1152,6 +1152,11 @@ const recentSearch = async (userId) => {
   return data;
 };
 
+
+const recentSearch_byId = async (id) => {
+  const data = await CandidateRecentSearchjobCandidate.findById(id)
+  return data;
+};
 // candidate education details
 const educationDetails = async (userId, body) => {
   let date = moment().format('YYYY-MM-DD');
@@ -1194,5 +1199,6 @@ module.exports = {
   educationDetails,
   languages,
   createdSearchhistoryData,
+  recentSearch_byId,
   // createSearchCandidate,
 };
