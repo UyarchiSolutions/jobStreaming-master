@@ -372,8 +372,8 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         experienceTo: 1,
         interviewType: 1,
         candidateDescription: 1,
-        salaryDescription:1,
-        urltoApply:1,
+        salaryDescription: 1,
+        urltoApply: 1,
         workplaceType: 1,
         industry: 1,
         preferedIndustry: 1,
@@ -383,9 +383,9 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         employmentType: 1,
         openings: 1,
         createdAt: 1,
-        expiredDate:1,
-        date:1,
-        time:1,
+        expiredDate: 1,
+        date: 1,
+        time: 1,
         appliedCount: '$employerpostjobs.count',
         candidatesubmitButton: { $ifNull: ['$candidatepostjobs.status', false] },
         saveButton: { $ifNull: ['$candidatesavejobs.status', false] },
@@ -464,7 +464,7 @@ const getByIdAppliedJobs = async (userId) => {
       $project: {
         userId: 1,
         approvedStatus: 1,
-        appliedDate:'$employerdetails.createdAt',
+        appliedDate: '$employerdetails.createdAt',
         companyType: '$employerdetails.employerregistrations.companyType',
         companyName: '$employerdetails.employerregistrations.name',
         designation: '$employerdetails.jobTittle',
@@ -487,8 +487,8 @@ const getByIdAppliedJobs = async (userId) => {
         openings: '$employerdetails.openings',
         createdAt: '$employerdetails.createdAt',
         updatedAt: '$employerdetails.updatedAt',
-        date:'$employerdetails.date',
-        time:'$employerdetails.time',
+        date: '$employerdetails.date',
+        time: '$employerdetails.time',
         candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
       },
     },
@@ -553,7 +553,7 @@ const applyJobsView = async (userId) => {
         userId: 1,
         companyType: '$employerdetails.employerregistrations.companyType',
         companyName: '$employerdetails.employerregistrations.name',
-        appliedDate:'$employerdetails.createdAt',
+        appliedDate: '$employerdetails.createdAt',
         designation: '$employerdetails.jobTittle',
         recruiterName: '$employerdetails.recruiterName',
         contactNumber: '$employerdetails.contactNumber',
@@ -575,8 +575,8 @@ const applyJobsView = async (userId) => {
         createdAt: '$employerdetails.createdAt',
         updatedAt: '$employerdetails.updatedAt',
         jobTittle: '$employerdetails.jobTittle',
-        date:'$employerdetails.date',
-        time:'$employerdetails.time',
+        date: '$employerdetails.date',
+        time: '$employerdetails.time',
         candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
         approvedStatus: 1,
       },
@@ -673,8 +673,8 @@ const getByIdSavedJobs = async (userId) => {
         createdAt: '$employerdetails.createdAt',
         updatedAt: '$employerdetails.updatedAt',
         jobTittle: '$employerdetails.jobTittle',
-        date:'$employerdetails.date',
-        time:'$employerdetails.time',
+        date: '$employerdetails.date',
+        time: '$employerdetails.time',
         candidatepostjobsStatus: { $ifNull: ['$employerdetails.candidatepostjobs.status', false] },
         candidatepostjobs: { $ifNull: ['$employerdetails.candidatepostjobs', false] },
         approvedStatus: '$employerdetails.candidatepostjobs.approvedStatus',
@@ -762,8 +762,8 @@ const getByIdSavedJobsView = async (userId) => {
         createdAt: '$employerdetails.createdAt',
         updatedAt: '$employerdetails.updatedAt',
         jobTittle: '$employerdetails.jobTittle',
-        date:'$employerdetails.date',
-        time:'$employerdetails.time',
+        date: '$employerdetails.date',
+        time: '$employerdetails.time',
         candidatepostjobs: { $ifNull: ['$employerdetails.candidatepostjobs', false] },
         approvedStatus: '$employerdetails.candidatepostjobs.approvedStatus',
       },
@@ -780,7 +780,7 @@ const createdSearchhistory = async (userId, body) => {
 };
 
 const createdSearchhistoryData = async (userId) => {
-  let data = await CandidateSearchjobCandidate.find({userId:userId});
+  let data = await CandidateSearchjobCandidate.find({ userId: userId });
   return data;
 };
 
@@ -979,7 +979,6 @@ const candidateSearch_front_page = async (id, body) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
   }
   let values = { ...body, ...{ userId: id } };
-  await CandidateRecentSearchjobCandidate.create(values);
   // let values = {...body, ...{userId:userId}}
   let {
     search,
@@ -998,6 +997,25 @@ const candidateSearch_front_page = async (id, body) => {
     companytype,
     postedby,
   } = body;
+  if (
+    search.length != 0 ||
+    experience != null ||
+    experienceAnotherfrom != null ||
+    experienceAnotherto != null ||
+    location != null ||
+    preferredindustry != null ||
+    salary != null ||
+    workmode != null ||
+    education != null ||
+    salaryfilter != null ||
+    role != null ||
+    freshness != null ||
+    locationfilter != null ||
+    companytype != null ||
+    postedby != null
+  ) {
+    await CandidateRecentSearchjobCandidate.create(values);
+  }
   //  await CandidateSearchjobCandidate.create(values);
 
   //  search = ["fbhfghfh","software engineer"]
