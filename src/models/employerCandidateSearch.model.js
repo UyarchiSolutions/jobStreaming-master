@@ -173,6 +173,12 @@ const createSavetoFolderSchema = mongoose.Schema(
       qualification:{
         type:Array,
       },
+      date:{
+        type:String,
+      },
+      time:{
+        type:String,
+      },
       active:{
           type:Boolean,
           default:true,
@@ -212,6 +218,12 @@ const createSavetoFolderSchema = mongoose.Schema(
       },
       qualification:{
         type:Array,
+      },
+      date:{
+        type:String,
+      },
+      time:{
+        type:String,
       },
       active:{
           type:Boolean,

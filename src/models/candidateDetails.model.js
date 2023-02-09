@@ -467,6 +467,12 @@ const candidatePostjobSchema = mongoose.Schema(
       salary:{
         type:Number,
       },
+      date:{
+        type:String,
+      },
+      time:{
+        type:String,
+      },
       active:{
           type:Boolean,
           default:true,

@@ -978,7 +978,9 @@ const candidateSearch_front_page = async (id, body) => {
   if (!check) {
     throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
   }
-  let values = { ...body, ...{ userId: id } };
+  let date = moment().format('YYYY-MM-DD');
+  let creat1 = moment().format('HH:mm:ss');
+  let values = { ...body, ...{ userId: id, date:date, time:creat1 } };
   // let values = {...body, ...{userId:userId}}
   let {
     search,
@@ -1144,7 +1146,7 @@ const recentSearch = async (userId) => {
       },
     },
     {
-      $limit: 5,
+      $limit: 10,
     },
   ]);
   return data;

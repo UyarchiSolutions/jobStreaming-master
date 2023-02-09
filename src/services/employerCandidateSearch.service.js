@@ -273,6 +273,8 @@ const outSearch_employer = async (userId, body) => {
   if (!check) {
     throw new ApiError(httpStatus.NOT_FOUND, 'employer not found');
   }
+  let date = moment().format('YYYY-MM-DD');
+  let creat1 = moment().format('HH:mm:ss');
   // console.log(body.keyskills)
   const {
     keyskills,
@@ -298,7 +300,7 @@ const outSearch_employer = async (userId, body) => {
     displayDetails != null ||
     qualification != null
   ) {
-    await CreateoutSearchHistory.create({ ...body, ...{ userId: userId } });
+    await CreateoutSearchHistory.create({ ...body, ...{ userId: userId, date:date, time:creat1} });
   }
   let keyskillSearch = { active: true };
   let expSearch = { active: true };
@@ -385,7 +387,9 @@ const outSearch_employer = async (userId, body) => {
 };
 
 const outSearchSave = async (userId, userBody) => {
-  const data = await CreateoutSearchHistorySave.create({ ...userBody, ...{ userId: userId } });
+  let date = moment().format('YYYY-MM-DD');
+  let creat1 = moment().format('HH:mm:ss');
+  const data = await CreateoutSearchHistorySave.create({ ...userBody, ...{ userId: userId, date:date, time:creat1 } });
   return data;
 };
 
