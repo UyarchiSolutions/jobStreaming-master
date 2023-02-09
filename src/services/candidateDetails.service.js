@@ -1043,7 +1043,7 @@ const candidateSearch_front_page = async (id, body) => {
   if (salary != null) {
     salarySearch = { salaryRangeFrom: { $lte: parseInt(salary) }, salaryRangeTo: { $gte: parseInt(salary) } };
   }
-  if (search != null || search.length != 0) {
+  if (search.length != 0) {
     // search = search.split(',');
     allSearch = [
       { designation: { $in: search } },
