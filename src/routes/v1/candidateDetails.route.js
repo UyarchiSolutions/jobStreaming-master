@@ -13,7 +13,7 @@ router.route('/createKeyskill').post(authorization,uploadImage.array('image'), c
 router.route('/updateByIdImage/:id').put(uploadImage.array('image'), candidateDetailsController.updateByIdImage);
 router.route('/educationDetails').post(authorization, candidateDetailsController.educationDetails);
 router.route('/getKeyskill').get(authorization,candidateDetailsController.getByIdUser);
-router.route('/updateKeyskill').put(authorization, uploadImage.array('image'), candidateDetailsController.updateById);
+router.route('/updateKeyskill').post(authorization, uploadImage.array('image'), candidateDetailsController.updateById);
 router.route('/deleteKeyskill/:id').delete(candidateDetailsController.deleteById);
 router.route('/candidateSearch').post(candidateDetailsController.candidateSearch);
 router.route('/getByIdEmployerDetailsShownCandidate/:id').get(authorization, candidateDetailsController.getByIdEmployerDetailsShownCandidate);

@@ -98,14 +98,8 @@ const get_Industry = async () => {
   return data;
 };
 
-const get_Role = async () => {
-  let values = [
-    {
-      RoleId: '1953632d-8258-4443-bcd3-d5f995847b44',
-      Job_role: 'Production & Manufacturing - Other',
-    },
-  ];
-  let data = await Role.create(values);
+const get_Role = async (id) => {
+  let data = await Role.find({RoleId:id});
   return data;
 };
 
