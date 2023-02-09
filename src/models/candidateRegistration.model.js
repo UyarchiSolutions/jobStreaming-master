@@ -77,6 +77,9 @@ const userSchema = mongoose.Schema(
     long:{
       type:String,
     },
+    location:{
+      type:String,
+    },
     latestdate:{
       type:String,
     },
