@@ -404,10 +404,7 @@ const outSearchRecentSearch = async (userId) => {
       },
     },
     {
-      $limit: 5,
-    },
-    {
-      $sort: { createdAt: -1 },
+      $limit: 10,
     },
   ]);
   return data;
