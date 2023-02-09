@@ -101,32 +101,28 @@ const get_Industry = async () => {
 const get_Role = async () => {
   let values = [
     {
-      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
-      Job_role: 'Banquet Manager',
+      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
+      Job_role: 'Product Analyst',
     },
     {
-      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
-      Job_role: 'Catering Executive',
+      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
+      Job_role: 'Product Head',
     },
     {
-      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
-      Job_role: 'Catering Manager / Supervisor',
+      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
+      Job_role: 'Product Manager',
     },
     {
-      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
-      Job_role: 'Event Executive',
+      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
+      Job_role: 'Product Operations Associate/ Lead',
     },
     {
-      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
-      Job_role: 'Event Planner/Manager',
+      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
+      Job_role: 'Technical Product Manager',
     },
     {
-      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
-      Job_role: 'Sponsorship/Partnership Manager',
-    },
-    {
-      RoleId: 'b0ed52c0-f1da-4c83-9335-04be9f4539a5',
-      Job_role: 'Events & Banquet - Other',
+      RoleId: 'bc341140-97c7-4ed1-a775-084518e2e09f',
+      Job_role: 'Technology Product Management - Other',
     },
   ];
   let data = await Role.create(values);

@@ -165,7 +165,7 @@ const createSavetoFolderSchema = mongoose.Schema(
         type:Number,
       },
       location:{
-        type:Array,
+        type:String,
       },
       qualification:{
         type:Array,
@@ -202,7 +202,7 @@ const createSavetoFolderSchema = mongoose.Schema(
         type:Number,
       },
       location:{
-        type:Array,
+        type:String,
       },
       qualification:{
         type:Array,
