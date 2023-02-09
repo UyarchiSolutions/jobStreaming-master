@@ -277,7 +277,7 @@ const outSearch_employer = async (userId, body) => {
 
   // filter if condition
 
-  if(keyskills != null){
+  if(keyskills.length != 0){
     keyskillSearch = { keyskill: {$elemMatch:{$in:keyskills}}}
   }
   if(anykeywords != null){
@@ -301,7 +301,7 @@ const outSearch_employer = async (userId, body) => {
   if(displayDetails != null){
 
   }
-  console.log(keyskillSearch, locationSearch, qualificationSearch,anykeywordsSearch, experienceSearch)
+  // console.log(keyskillSearch, locationSearch, qualificationSearch,anykeywordsSearch, experienceSearch)
   let sc = moment().format('YYYY-MM-DD')
   const data = await KeySkill.aggregate([
     {
