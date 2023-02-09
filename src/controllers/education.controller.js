@@ -3,8 +3,8 @@ const catchAsync = require('../utils/catchAsync');
 const educationService = require('../services/education.service');
 
 const createQualification = catchAsync(async (req, res) => {
-  const user = await educationService.createQualification(req.body);
-  res.status(httpStatus.CREATED).send(user);
+  const user = await educationService.createQualification();
+  res.send(user);
 });
 
 const get_sslc_course = catchAsync(async (req, res) => {

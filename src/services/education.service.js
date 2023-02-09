@@ -28,8 +28,8 @@ const Axios = require('axios');
 const moment = require('moment');
 const { default: axios } = require('axios');
 
-const createQualification = async (userBody) => {
-  let data = await Qualification.create(userBody);
+const createQualification = async () => {
+  let data = await Qualification.find();
   return data;
 };
 
