@@ -36,5 +36,6 @@ router.route('/getByIdEmployerDetails/:id').get(candidateDetailsController.getBy
 router.route('/candidateSearch_front_page').post(authorization, candidateDetailsController.candidateSearch_front_page);
 router.route('/recentSearch').get(authorization, candidateDetailsController.recentSearch);
 router.route('/languages').get(candidateDetailsController.languages);
+router.route('/educationDetails').post(authorization, candidateDetailsController.educationDetails);
 // router.route('/createSearchCandidate').post(authorization, candidateDetailsController.createSearchCandidate);
 module.exports = router;

@@ -1152,7 +1152,9 @@ const recentSearch = async (userId) => {
 
 // candidate education details
 const educationDetails = async (userId, body) => {
-  const data = await EducationDeatils.create({ ...body, ...{ userId: userId } });
+  let date = moment().format('YYYY-MM-DD');
+  let creat1 = moment().format('HHmmss');
+  const data = await EducationDeatils.create({ ...body, ...{ userId: userId, date:date, time:creat1} });
   return data;
 };
 
