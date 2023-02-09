@@ -199,7 +199,7 @@ const createSavetoFolderSchema = mongoose.Schema(
         type:Number,
       },
       anykeywords:{
-        type:Array,
+        type:String,
       },
       experiencefrom:{
         type:Number,
