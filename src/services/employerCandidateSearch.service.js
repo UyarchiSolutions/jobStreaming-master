@@ -409,6 +409,17 @@ const outSearchRecentSearch = async (userId) => {
   return data;
 };
 
+
+const recent_search_byId = async (id) => {
+  const data = await CreateoutSearchHistory.findById(id);
+  return data;
+};
+
+const recent_searchSave_byId = async (id) => {
+  const data = await CreateoutSearchHistorySave.findById(id);
+  return data;
+};
+
 const outSearchSaveData = async (userId) => {
   const data = await CreateoutSearchHistorySave.aggregate([
     {
@@ -687,4 +698,6 @@ module.exports = {
   outSearchSave,
   outSearchRecentSearch,
   outSearchSaveData,
+  recent_search_byId,
+  recent_searchSave_byId,
 };

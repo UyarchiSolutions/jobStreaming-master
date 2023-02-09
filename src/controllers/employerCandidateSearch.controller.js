@@ -127,6 +127,16 @@ const outSearchSaveData = catchAsync(async(req,res) => {
   const user = await employerCandidateSearch.outSearchSaveData(userId, req.body)
   res.send(user)
 })
+
+const recent_search_byId = catchAsync(async(req,res) => {
+  const user = await employerCandidateSearch.recent_search_byId(req.params.id)
+  res.send(user)
+})
+
+const recent_searchSave_byId = catchAsync(async(req,res) => {
+  const user = await employerCandidateSearch.recent_searchSave_byId(req.params.id)
+  res.send(user)
+})
 module.exports = {
     createCandidateSearch,
     searchQuery,
@@ -148,4 +158,6 @@ module.exports = {
     outSearchSave,
     outSearchRecentSearch,
     outSearchSaveData,
+    recent_search_byId,
+    recent_searchSave_byId,
 };

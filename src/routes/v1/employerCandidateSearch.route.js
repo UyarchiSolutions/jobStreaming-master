@@ -25,4 +25,6 @@ router.route('/outSearch_employer').post(authorization, employerCandidateSearch.
 router.route('/outSearchSave').post(authorization, employerCandidateSearch.outSearchSave);
 router.route('/outSearchRecentSearch').get(authorization, employerCandidateSearch.outSearchRecentSearch);
 router.route('/outSearchSaveData').post(authorization, employerCandidateSearch.outSearchSaveData);
+router.route('/recent_searchSave_byId/:id').get(employerCandidateSearch.recent_searchSave_byId);
+router.route('/recent_search_byId/:id').get(employerCandidateSearch.recent_search_byId);
 module.exports = router;
