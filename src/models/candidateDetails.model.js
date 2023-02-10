@@ -112,8 +112,11 @@ const keySkillSchema = mongoose.Schema(
     experienceMonthSet:{
       type:Number,
     },
-    experienceYeaSet:{
+    experienceYearSet:{
       type:Number,
+    },
+    designationSet:{
+      type:String,
     },
     locationSet:{
       type:String,
