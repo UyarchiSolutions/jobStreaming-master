@@ -100,6 +100,16 @@ const updateById = async (userId, updateBody) => {
   return data;
 };
 
+const updateEducation = async (userId, updateBody) => {
+  const user = await KeySkill.findOne({ userId: userId });
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
+  }
+  const data = await KeySkill.findOneAndUpdate({ userId: userId }, updateBody, { new: true });
+  await data.save();
+  return data;
+};
+
 const updateByIdImage = async (id, updateBody) => {
   const user = await KeySkill.findById(id);
   if (!user) {
@@ -1251,5 +1261,6 @@ module.exports = {
   createdSearchhistoryData,
   recentSearch_byId,
   candidate_detials,
+  updateEducation,
   // createSearchCandidate,
 };

@@ -56,7 +56,12 @@ const updateByIdImage = catchAsync(async(req,res) => {
     res.send({user})
 })
 
-
+const updateEducation = catchAsync(async(req,res) => {
+  let userId = req.userId 
+    const user = await candidateDetailsService.updateEducation(userId, req.body)
+    await user.save();
+    res.send(user)
+})
 
 const deleteById = catchAsync(async(req,res) => {
     const user = await candidateDetailsService.deleteById(req.params.id)
@@ -239,5 +244,6 @@ module.exports = {
   createdSearchhistoryData,
   recentSearch_byId,
   candidate_detials,
+  updateEducation,
   // createSearchCandidate,
 };
