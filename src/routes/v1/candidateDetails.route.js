@@ -40,5 +40,6 @@ router.route('/educationDetails').post(authorization, candidateDetailsController
 router.route('/recentSearch_byId/:id').get(candidateDetailsController.recentSearch_byId);
 router.route('/candidate_detials/:id').get(candidateDetailsController.candidate_detials);
 router.route('/updateEducation').post(authorization,candidateDetailsController.updateEducation);
+router.route('/createdSearchhistoryData_byId/:id').get(candidateDetailsController.createdSearchhistoryData_byId);
 // router.route('/createSearchCandidate').post(authorization, candidateDetailsController.createSearchCandidate);
 module.exports = router;

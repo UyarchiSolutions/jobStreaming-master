@@ -1231,6 +1231,11 @@ const candidate_detials = async (id) => {
   ]);
   return data;
 };
+
+const createdSearchhistoryData_byId = async (id) => {
+  let data = await CandidateSearchjobCandidate.findById(id);
+  return data;
+};
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -1262,5 +1267,6 @@ module.exports = {
   recentSearch_byId,
   candidate_detials,
   updateEducation,
+  createdSearchhistoryData_byId,
   // createSearchCandidate,
 };
