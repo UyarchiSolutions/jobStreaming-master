@@ -91,6 +91,9 @@ const employerDetailsSchema = mongoose.Schema(
     employmentType:{
         type:String,
     },
+    signature:{
+        type:String,
+    },
     openings:{
         type:Number,
     },
