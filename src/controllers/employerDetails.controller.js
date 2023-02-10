@@ -21,6 +21,11 @@ const updateById = catchAsync(async(req,res) => {
     res.send({user})
 })
 
+const update_active_deactive = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.update_active_deactive(req.params.id, req.body)
+  res.send(user)
+})
+
 
 const deleteById = catchAsync(async(req,res) => {
     const user = await employerDetailsService.deleteById(req.params.id)
@@ -207,4 +212,5 @@ module.exports = {
   all_plans_users_details,
   keySkillData,
   location,
+  update_active_deactive,
 };

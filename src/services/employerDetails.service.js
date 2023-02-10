@@ -195,6 +195,17 @@ const getById = async (id) => {
   
 };
 
+
+const update_active_deactive = async (id, body) => {
+  const data = await EmployerDetails.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'employerDetails not found');
+  }
+  const value = await EmployerDetails.findByIdAndUpdate({_id:id}, {active:body.active}, {new:true})
+  return value;
+  
+};
+
 const data_Id = async (id) => {
   const data = await EmployerDetails.aggregate([
     {
@@ -875,4 +886,5 @@ module.exports = {
   all_plans_users_details,
   keySkillData,
   location,
+  update_active_deactive
 };

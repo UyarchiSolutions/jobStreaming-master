@@ -16,6 +16,7 @@ router.route('/createEmpDetailsRepost/:id').put(employerDetailsController.create
 router.route('/getByIdEmpDetails/:id').get(employerDetailsController.getById_Get);
 router.route('/data_Id/:id').get(employerDetailsController.data_Id);
 router.route('/countPostjobError').get(authorization, employerDetailsController.countPostjobError);
+router.route('/update_active_deactive/:id').put(employerDetailsController.update_active_deactive);
 //sdfd
 router.route('/EmployerspostDraft').post(authorization, employerDetailsController.EmployerspostDraft);
 router.route('/draftData').get(authorization, employerDetailsController.draftData_employerside);
