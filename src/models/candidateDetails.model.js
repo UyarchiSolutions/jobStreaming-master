@@ -118,12 +118,6 @@ const keySkillSchema = mongoose.Schema(
     locationSet:{
       type:String,
     },
-    templateName:{
-      type:String,
-    },
-    jobortemplate:{
-      type:String,
-    },
     date:{
       type:String,
       // default:moment().format('YYYY-MM-DD')

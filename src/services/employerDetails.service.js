@@ -23,6 +23,9 @@ const createEmpDetails = async (userId, userBody) => {
   // const {validity} = userBody;
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HHmmss');
+  let data;
+  let values
+  if(userBody.jobortemplate == "job"){
   let expiredDate
   // console.log(validity);
   const plan = await PlanPayment.findOne({userId:userId, active:true})
@@ -35,7 +38,6 @@ const createEmpDetails = async (userId, userBody) => {
   }else{
     expiredDate = moment().add(1, 'days').format('YYYY-MM-DD');
   }
-  let values
   if(!userBody.interviewDate){
     values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time:creat1 } };
   }else{
@@ -63,7 +65,11 @@ const createEmpDetails = async (userId, userBody) => {
     await PlanPayment.findByIdAndUpdate({_id:da._id}, {countjobPost:count}, {new:true})
   }
 
-  let data = await EmployerDetails.create(values);
+  data = await EmployerDetails.create(values);
+}else{
+  values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time:creat1 } };
+  data = await EmployerDetails.create(values);
+}
   // if(freeCount == usser.freePlanCount){
   // }
   return data;
