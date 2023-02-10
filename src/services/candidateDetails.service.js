@@ -1185,6 +1185,42 @@ const languages = async () => {
   let data = await Languages.find();
   return data;
 };
+
+// candidate details
+
+const candidate_detials = async (id) => {
+  const data = await CandidateRegistration.aggregate([
+    {
+      $match: {
+        $and: [{ _id: { $eq: id } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'candidatedetails',
+        localField: '_id',
+        foreignField: 'userId',
+        as: 'candidatedetails',
+      },
+    },
+    {
+      $project: {
+        resume: 1,
+        email: 1,
+        workStatus: 1,
+        mobileNumber: 1,
+        name: 1,
+        lat: 1,
+        long: 1,
+        resume: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        candidateDetails: '$candidatedetails',
+      },
+    },
+  ]);
+  return data;
+};
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -1214,5 +1250,6 @@ module.exports = {
   languages,
   createdSearchhistoryData,
   recentSearch_byId,
+  candidate_detials,
   // createSearchCandidate,
 };
