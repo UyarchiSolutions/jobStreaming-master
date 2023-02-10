@@ -424,9 +424,15 @@ const recent_searchSave_byId = async (id) => {
 const outSearchSaveData = async (userId) => {
   const data = await CreateoutSearchHistorySave.aggregate([
     {
+      $sort: { createdAt: -1 },
+    },
+    {
       $match: {
         $and: [{ userId: { $eq: userId } }],
       },
+    },
+    {
+      $limit: 10,
     },
   ]);
   return data;
