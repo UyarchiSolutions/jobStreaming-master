@@ -774,13 +774,27 @@ const getByIdSavedJobsView = async (userId) => {
 
 const createdSearchhistory = async (userId, body) => {
   console.log(userId);
-  let values = { ...body, ...{ userId: userId } };
+  let date = moment().format('YYYY-MM-DD');
+  let creat1 = moment().format('HHmmss');
+  let values = { ...body, ...{ userId: userId, date:date, time:creat1} };
   let data = await CandidateSearchjobCandidate.create(values);
   return data;
 };
 
 const createdSearchhistoryData = async (userId) => {
-  let data = await CandidateSearchjobCandidate.find({ userId: userId });
+  let data = await CandidateSearchjobCandidate.aggregate([  
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId } }],
+      },
+    },
+    {
+      $limit: 10,
+    },
+]);
   return data;
 };
 
