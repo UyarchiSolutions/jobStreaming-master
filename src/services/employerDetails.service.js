@@ -67,7 +67,7 @@ const createEmpDetails = async (userId, userBody) => {
 
   data = await EmployerDetails.create(values);
 }else{
-  values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time:creat1 } };
+  values = { ...userBody, ...{ userId: userId, date: date, time:creat1 } };
   data = await EmployerDetails.create(values);
 }
   // if(freeCount == usser.freePlanCount){
