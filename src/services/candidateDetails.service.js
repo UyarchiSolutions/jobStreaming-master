@@ -930,6 +930,13 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
       },
     },
     {
+      $match: {
+        $and: [
+          { jobortemplate: { $eq: "job" } },
+        ],
+      },
+    },
+    {
       $lookup: {
         from: 'employerregistrations',
         localField: 'userId',

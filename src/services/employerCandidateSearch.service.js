@@ -287,6 +287,7 @@ const outSearch_employer = async (userId, body) => {
     displayDetails,
     qualification,
     experience,
+    gender,
   } = body;
   if (
     keyskills.length != 0 ||
@@ -298,18 +299,20 @@ const outSearch_employer = async (userId, body) => {
     location != null ||
     salary != null ||
     displayDetails != null ||
-    qualification != null
+    qualification != null ||
+    gender != null
   ) {
-    await CreateoutSearchHistory.create({ ...body, ...{ userId: userId, date:date, time:creat1} });
+    await CreateoutSearchHistory.create({ ...body, ...{ userId: userId, date: date, time: creat1 } });
   }
   let keyskillSearch = { active: true };
   let expSearch = { active: true };
   let anykeywordsSearch = [{ active: true }];
   let experienceSearch = [{ active: true }];
   let salaryRangeSearch = { active: true };
+  let genderSearch = { active: true };
   let locationSearch = { active: true };
   let displayDetailsSearch = { active: true };
-  let qualificationSearch = { active: true };
+  let qualificationSearch = [{ active: true }];
   let educationSearch = { active: true };
   let salarySearch = { active: true };
 
@@ -331,17 +334,25 @@ const outSearch_employer = async (userId, body) => {
     ];
   }
   if (experience != null) {
-    expSearch ={ experienceYear: { $eq:experience } }
+    expSearch = { experienceYear: { $eq: experience } };
   }
   if (salaryRange != null) {
   }
   if (location != null) {
     locationSearch = { locationCurrent: { $in: [location] } };
   }
-  if (qualification != null) {
-    qualificationSearch = { education: { $in: [qualification] } };
+  if (course != null) {
+    qualificationSearch = [
+      { drCourse: { $in: [qualification] } },
+      { pgCourse: { $in: [qualification] } },
+      { ugCourse: { $in: [qualification] } },
+      { sslcQualification: { $in: [qualification] } },
+      { hsQualification: { $in: [qualification] } },
+    ];
   }
   if (salary != null) {
+  }
+  if (gender != null) {
   }
   if (displayDetails != null) {
   }
@@ -350,7 +361,12 @@ const outSearch_employer = async (userId, body) => {
   const data = await KeySkill.aggregate([
     {
       $match: {
-        $and: [keyskillSearch, locationSearch, qualificationSearch, expSearch],
+        $and: [keyskillSearch, locationSearch, expSearch],
+      },
+    },
+    {
+      $match: {
+        $or: qualificationSearch,
       },
     },
     {
@@ -389,7 +405,7 @@ const outSearch_employer = async (userId, body) => {
 const outSearchSave = async (userId, userBody) => {
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HH:mm:ss');
-  const data = await CreateoutSearchHistorySave.create({ ...userBody, ...{ userId: userId, date:date, time:creat1 } });
+  const data = await CreateoutSearchHistorySave.create({ ...userBody, ...{ userId: userId, date: date, time: creat1 } });
   return data;
 };
 
@@ -409,7 +425,6 @@ const outSearchRecentSearch = async (userId) => {
   ]);
   return data;
 };
-
 
 const recent_search_byId = async (id) => {
   const data = await CreateoutSearchHistory.findById(id);
