@@ -617,7 +617,7 @@ const employerRemovePostJobs = async (id) => {
 };
 
 const allFolderData = async (userId, folderName) => {
-  console.log(userId);
+  console.log(userId, folderName);
   const data = await CreateSavetoFolder.aggregate([
     {
       $match: {
@@ -635,9 +635,62 @@ const allFolderData = async (userId, folderName) => {
               from: 'candidatedetails',
               localField: '_id',
               foreignField: 'userId',
+              pipeline:[
+                {
+                  $project:{
+                    keyskill:1,
+                    currentSkill:1,
+                    preferredSkill:1,
+                    active:1,
+                    image:1,
+                    dob:1,
+                    experienceYear:1,
+                    experienceMonth:1,
+                    expectedctc:1,
+                    currentctc:1,
+                    locationCurrent:1,
+                    locationNative:1,
+                    noticeperiod:1,
+                    gender:1,
+                    maritalStatus:1,
+                    relocate:1,
+                    date:1,
+                    time:1,
+                    drCourse:1,
+                    drCourseDurationFrom:1,
+                    drCourseDurationTo:1,
+                    drCourseType:1,
+                    drGradingSystem:1,
+                    drMarks:1,
+                    drQualification:1,
+                    drSpecialization:1,
+                    pgCourse:1,
+                    pgCourseDurationFrom:1,
+                    pgCourseDurationTo:1,
+                    pgCourseType:1,
+                    pgGradingSystem:1,
+                    pgMarks:1,
+                    pgQualification:1,
+                    pgSpecialization:1,
+                    experienceMonthSet:1,
+                    sslcQualification:1,
+                    sslcBoard:1,
+                    sslcPassedYear:1,
+                    sslcMedium:1,
+                    sslctotalmarks:1,
+                    hsBoard:1,
+                    hsPassedYear:1,
+                    hsMedium:1,
+                    hstotalmarks:1,
+                  }
+                }
+              ],
               as: 'candidatedetails',
+              
             },
+            
           },
+          
           {
             $unwind: {
               path: '$candidatedetails',
@@ -664,12 +717,7 @@ const allFolderData = async (userId, folderName) => {
         workStatus: '$candidateregistrations.workStatus',
         mobileNumber: '$candidateregistrations.mobileNumber',
         resume: '$candidateregistrations.resume',
-        keyskill: '$candidateregistrations.candidatedetails.keyskill',
-        currentSkill: '$candidateregistrations.candidatedetails.currentSkill',
-        preferredSkill: '$candidateregistrations.candidatedetails.preferredSkill',
-        secondarySkill: '$candidateregistrations.candidatedetails.secondarySkill',
-        pasrSkill: '$candidateregistrations.candidatedetails.pasrSkill',
-        locationCurrent: '$candidateregistrations.candidatedetails.locationCurrent',
+        candidateDetails:"$candidateregistrations.candidatedetails"
         // userId:"$candidateregistrations.candidatedetails.userId",
       },
     },
