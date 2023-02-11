@@ -741,11 +741,15 @@ const saveFolderData_view = async (userId) => {
     {
       $group: {
         _id: { folderName: '$folderName', userId: '$userId' },
+        count: {
+          $sum: 1,
+        },
       },
     },
     {
       $project: {
         folderName: '$_id.folderName',
+        count:1,
         userId: userId,
       },
     },
