@@ -98,7 +98,7 @@ const createSavetoFolderSchema = mongoose.Schema(
       type: String,
     },
     candidateId: {
-      type: Array,
+      type: String,
     },
     status: {
       type: Boolean,
