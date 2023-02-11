@@ -12,76 +12,76 @@ const candiadteSearchSchema = mongoose.Schema(
       type: String,
       default: v4,
     },
-    anyKeywords:{
-        type:Array,
+    anyKeywords: {
+      type: Array,
     },
     keyskill: {
-        type:Array,
+      type: Array,
     },
-    experienceMonthFrom:{
-        type:Number
+    experienceMonthFrom: {
+      type: Number,
     },
-    experienceMonthTo:{
-        type:Number
+    experienceMonthTo: {
+      type: Number,
     },
-    experienceYearFrom:{
-        type:Number
+    experienceYearFrom: {
+      type: Number,
     },
-    experienceYearTo:{
-        type:Number
+    experienceYearTo: {
+      type: Number,
     },
-    salaryFrom:{
-        type:Number,
+    salaryFrom: {
+      type: Number,
     },
-    salaryTo:{
-        type:Number,
+    salaryTo: {
+      type: Number,
     },
-    locationCurrent:{
-        type:String,
+    locationCurrent: {
+      type: String,
     },
-    education:{
-        type:String,
+    education: {
+      type: String,
     },
-    course:{
-        type:String,
+    course: {
+      type: String,
     },
-    specification:{
-        type:String,
+    specification: {
+      type: String,
     },
-    university:{
-        type:String,
+    university: {
+      type: String,
     },
-    courseType:{
-        type:String,
+    courseType: {
+      type: String,
     },
-    passingYearFrom:{
-        type:Number,
+    passingYearFrom: {
+      type: Number,
     },
-    passingYearTo:{
-        type:Number,
+    passingYearTo: {
+      type: Number,
     },
-    registration:{
-        type:String,
+    registration: {
+      type: String,
     },
-    onlyCandidates:{
-        type:String,
+    onlyCandidates: {
+      type: String,
     },
-    candiadeSeeking:{
-        type:String,
+    candiadeSeeking: {
+      type: String,
     },
-    employmentType:{
-        type:String,
+    employmentType: {
+      type: String,
     },
-    EducationalType:{
-        type:String,
+    EducationalType: {
+      type: String,
     },
-    userId:{
-        type:String,
+    userId: {
+      type: String,
     },
-    active:{
-        type:Boolean,
-        default:true,
-    }
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
@@ -89,150 +89,168 @@ const candiadteSearchSchema = mongoose.Schema(
 );
 const CandiadteSearch = mongoose.model('candiadteSearch', candiadteSearchSchema);
 const createSavetoFolderSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      userId:{
-          type:String,
-      },
-      candidateId:{
-        type:String,
-      },
-      status:{
-        type:Boolean,
-        default:true,
-      },
-      folderName:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+  {
+    _id: {
+      type: String,
+      default: v4,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const CreateSavetoFolder = mongoose.model('SavetoFolderEmployerSearches', createSavetoFolderSchema);
-  const createSavetoFolderseprateSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      userId:{
-          type:String,
-      },
-      candidateId:{
-        type:String,
-      },
-      status:{
-        type:Boolean,
-        default:true,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    userId: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const CreateSavetoFolderseprate = mongoose.model('createSavetoFolderseprate', createSavetoFolderseprateSchema);
-  const createoutSearchHistorySchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      userId:{
-          type:String,
-      },
-      experience:{
-        type:Number,
-      },
-      keyskills:{
-        type:Array,
-      },
-      anykeywords:{
-        type:String,
-      },
-      experiencefrom:{
-        type:Number,
-      },
-      experienceto:{
-        type:Number,
-      },
-      location:{
-        type:String,
-      },
-      qualification:{
-        type:Array,
-      },
-      date:{
-        type:String,
-      },
-      time:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    candidateId: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const CreateoutSearchHistory = mongoose.model('createoutSearchHistory', createoutSearchHistorySchema);
-  const createoutSearchHistorySaveShema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      userId:{
-          type:String,
-      },
-      keyskills:{
-        type:Array,
-      },
-      experience:{
-        type:Number,
-      },
-      anykeywords:{
-        type:String,
-      },
-      experiencefrom:{
-        type:Number,
-      },
-      experienceto:{
-        type:Number,
-      },
-      location:{
-        type:String,
-      },
-      qualification:{
-        type:Array,
-      },
-      date:{
-        type:String,
-      },
-      time:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    status: {
+      type: Boolean,
+      default: true,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const CreateoutSearchHistorySave = mongoose.model('createoutSearchHistorySave', createoutSearchHistorySaveShema);
-module.exports = {CandiadteSearch, CreateSavetoFolder, CreateSavetoFolderseprate, CreateoutSearchHistory, CreateoutSearchHistorySave} ;
+    folderName: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const CreateSavetoFolder = mongoose.model('SavetoFolderEmployerSearches', createSavetoFolderSchema);
+const createSavetoFolderseprateSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    userId: {
+      type: String,
+    },
+    candidateId: {
+      type: String,
+    },
+    status: {
+      type: Boolean,
+      default: true,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const CreateSavetoFolderseprate = mongoose.model('createSavetoFolderseprate', createSavetoFolderseprateSchema);
+const createoutSearchHistorySchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    userId: {
+      type: String,
+    },
+    experience: {
+      type: Number,
+    },
+    keyskills: {
+      type: Array,
+    },
+    anykeywords: {
+      type: String,
+    },
+    experiencefrom: {
+      type: Number,
+    },
+    experienceto: {
+      type: Number,
+    },
+    location: {
+      type: String,
+    },
+    qualification: {
+      type: Array,
+    },
+    date: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const CreateoutSearchHistory = mongoose.model('createoutSearchHistory', createoutSearchHistorySchema);
+const createoutSearchHistorySaveShema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    userId: {
+      type: String,
+    },
+    keyskills: {
+      type: Array,
+    },
+    experience: {
+      type: Number,
+    },
+    anykeywords: {
+      type: Array,
+    },
+    experiencefrom: {
+      type: Number,
+    },
+    experienceto: {
+      type: Number,
+    },
+    location: {
+      type: String,
+    },
+    qualification: {
+      type: Array,
+    },
+    date: {
+      type: String,
+    },
+    salary: {
+      type: String,
+    },
+    displayDetails: {
+      type: String,
+    },
+    course: {
+      type: Array,
+    },
+    gender: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const CreateoutSearchHistorySave = mongoose.model('createoutSearchHistorySave', createoutSearchHistorySaveShema);
+module.exports = {
+  CandiadteSearch,
+  CreateSavetoFolder,
+  CreateSavetoFolderseprate,
+  CreateoutSearchHistory,
+  CreateoutSearchHistorySave,
+};

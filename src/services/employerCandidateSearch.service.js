@@ -285,7 +285,7 @@ const outSearch_employer = async (userId, body) => {
     salary,
     location,
     displayDetails,
-    qualification,
+    course,
     experience,
     gender,
   } = body;
@@ -299,7 +299,7 @@ const outSearch_employer = async (userId, body) => {
     location != null ||
     salary != null ||
     displayDetails != null ||
-    qualification != null ||
+    course != null ||
     gender != null
   ) {
     await CreateoutSearchHistory.create({ ...body, ...{ userId: userId, date: date, time: creat1 } });
@@ -323,8 +323,8 @@ const outSearch_employer = async (userId, body) => {
   }
   if (anykeywords != null) {
     anykeywordsSearch = [
-      { currentSkill: { $elemMatch: { $in: [anykeywords] } } },
-      { preferredSkill: { $elemMatch: { $in: [anykeywords] } } },
+      { currentSkill: { $elemMatch: { $in: anykeywords } } },
+      { preferredSkill: { $elemMatch: { $in: anykeywords } } },
     ];
   }
   if (experiencefrom != null && experienceto != null) {
