@@ -15,6 +15,7 @@ const {
   Rolecategory,
   Industries,
   Role,
+  AllCourse,
 } = require('../models/education.model');
 const { OTPModel } = require('../models');
 const { Token } = require('../models');
@@ -99,7 +100,12 @@ const get_Industry = async () => {
 };
 
 const get_Role = async (id) => {
-  let data = await Role.find({RoleId:id});
+  let data = await Role.find({ RoleId: id });
+  return data;
+};
+
+const get_allcourse = async (key) => {
+  let data = await AllCourse.find({ Course: { $regex: key, $options: 'i' } });
   return data;
 };
 
@@ -119,4 +125,5 @@ module.exports = {
   get_Rolecategory,
   get_Industry,
   get_Role,
+  get_allcourse,
 };

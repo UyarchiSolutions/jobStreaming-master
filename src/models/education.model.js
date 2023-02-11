@@ -391,6 +391,34 @@ const roleSchema = mongoose.Schema(
   }
 );
 const Role = mongoose.model('jobrole', roleSchema);
+const allCourseSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    Course: {
+      type: String,
+    },
+    Degree: {
+      type: String,
+    },
+    Education: {
+      type: String,
+    },
+    QualificationId: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const AllCourse = mongoose.model('allCourse', allCourseSchema);
 module.exports = {
   Qualification,
   SslcCourse,
@@ -407,4 +435,5 @@ module.exports = {
   Rolecategory,
   Industries,
   Role,
+  AllCourse,
 };
