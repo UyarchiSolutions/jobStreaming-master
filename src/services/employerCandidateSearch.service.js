@@ -459,9 +459,10 @@ const outSearchSaveData = async (userId) => {
 };
 
 const createSavetoFolder = async (userId, userBody) => {
-  let values = { ...userBody, ...{ userId: userId } };
-  let data = await CreateSavetoFolder.create(values);
-  return data;
+    userBody.candidateId.forEach(async (e) => {
+    await CreateSavetoFolder.create({ ...userBody, ...{ userId: userId, candidateId: e } });
+  });
+  return {message:"saved sucessfully"};
 };
 
 const employerPost_Jobs = async (userId) => {
