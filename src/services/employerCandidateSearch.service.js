@@ -313,7 +313,7 @@ const outSearch_employer = async (userId, body) => {
   let locationSearch = { active: true };
   let displayDetailsSearch = { active: true };
   let qualificationSearch = [{ active: true }];
-  let educationSearch = { active: true };
+  // let educationSearch = { active: true };
   let salarySearch = { active: true };
 
   // filter if condition
@@ -337,31 +337,35 @@ const outSearch_employer = async (userId, body) => {
     expSearch = { experienceYear: { $eq: experience } };
   }
   if (salaryRange != null) {
+    salaryRangeSearch = { expectedctc: { $eq: salaryRange} };
   }
   if (location != null) {
     locationSearch = { locationCurrent: { $in: [location] } };
   }
   if (course != null) {
     qualificationSearch = [
-      { drCourse: { $in: [qualification] } },
-      { pgCourse: { $in: [qualification] } },
-      { ugCourse: { $in: [qualification] } },
-      { sslcQualification: { $in: [qualification] } },
-      { hsQualification: { $in: [qualification] } },
+      { drCourse: { $in: course } },
+      { pgCourse: { $in: course } },
+      { ugCourse: { $in: course } },
+      { sslcQualification: { $in: course } },
+      { hsQualification: { $in: course } },
     ];
   }
   if (salary != null) {
+    salarySearch = { expectedctc: { $eq: salary} };
   }
   if (gender != null) {
+    genderSearch = { gender: { $eq: gender} };
   }
   if (displayDetails != null) {
+    displayDetailsSearch = { date: { $lte: moment().subtract(14, 'days').format('YYYY-MM-DD')} };
   }
   // console.log(keyskillSearch, locationSearch, qualificationSearch,anykeywordsSearch, experienceSearch)
   let sc = moment().format('YYYY-MM-DD');
   const data = await KeySkill.aggregate([
     {
       $match: {
-        $and: [keyskillSearch, locationSearch, expSearch],
+        $and: [keyskillSearch, locationSearch, expSearch, displayDetailsSearch, genderSearch, salarySearch, salaryRangeSearch],
       },
     },
     {
