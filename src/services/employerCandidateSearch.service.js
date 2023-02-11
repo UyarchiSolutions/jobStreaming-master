@@ -299,7 +299,7 @@ const outSearch_employer = async (userId, body) => {
     location != null ||
     salary != null ||
     displayDetails != null ||
-    course != null ||
+    course.length != 0 ||
     gender != null
   ) {
     await CreateoutSearchHistory.create({ ...body, ...{ userId: userId, date: date, time: creat1 } });
