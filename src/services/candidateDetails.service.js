@@ -997,7 +997,7 @@ const getByIdEmployerDetails = async (id) => {
 };
 
 const candidateSearch_front_page = async (id, body) => {
-  // console.log(userId)
+  console.log(id)
   const check = await CandidateRegistration.findById(id);
   if (!check) {
     throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
@@ -1125,7 +1125,7 @@ const candidateSearch_front_page = async (id, body) => {
     {
       $match: {
         $and: [
-          // { adminStatus: { $eq: 'Approved' } },
+           { jobortemplate: { $eq: 'job' } },
           experienceSearch,
           locationSearch,
           salarySearch,
@@ -1268,5 +1268,6 @@ module.exports = {
   candidate_detials,
   updateEducation,
   createdSearchhistoryData_byId,
+  
   // createSearchCandidate,
 };
