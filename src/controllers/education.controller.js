@@ -78,7 +78,7 @@ const get_specialization = catchAsync(async (req, res) => {
   });
 
   const get_allcourse = catchAsync(async (req, res) => {
-    const user = await educationService.get_allcourse(req.params.key);
+    const user = await educationService.get_allcourse();
     res.send(user);
   });
 module.exports = {

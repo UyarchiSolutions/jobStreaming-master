@@ -104,8 +104,8 @@ const get_Role = async (id) => {
   return data;
 };
 
-const get_allcourse = async (key) => {
-  let data = await AllCourse.find();
+const get_allcourse = async () => {
+  let data = await AllCourse.aggregate([{$sort: { createdAt: -1 }}]);
   return data;
 };
 
