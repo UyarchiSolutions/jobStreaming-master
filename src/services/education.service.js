@@ -105,7 +105,7 @@ const get_Role = async (id) => {
 };
 
 const get_allcourse = async (key) => {
-  let data = await AllCourse.find({ Course: { $regex: key, $options: 'i' } });
+  let data = await AllCourse.find();
   return data;
 };
 
