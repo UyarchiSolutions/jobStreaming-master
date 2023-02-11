@@ -203,6 +203,9 @@ const keySkillSchema = mongoose.Schema(
     ugGradingSystem:{
       type:String,
     },
+    ugUniversity:{
+      type:String,
+    },
     ugMarks:{
       type:String,
     },
@@ -230,6 +233,9 @@ const keySkillSchema = mongoose.Schema(
     pgGradingSystem:{
       type:String,
     },
+    pgUniversity:{
+      type:String,
+    },
     pgMarks:{
       type:String,
     },
@@ -255,6 +261,9 @@ const keySkillSchema = mongoose.Schema(
       type:String,
     },
     drGradingSystem:{
+      type:String,
+    },
+    drUniversity:{
       type:String,
     },
     drMarks:{
