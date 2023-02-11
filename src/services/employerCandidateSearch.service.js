@@ -323,8 +323,8 @@ const outSearch_employer = async (userId, body) => {
   }
   if (anykeywords != null) {
     anykeywordsSearch = [
-      { currentSkill: { $elemMatch: { $in: anykeywords } } },
-      { preferredSkill: { $elemMatch: { $in: anykeywords } } },
+      { currentSkill: { $elemMatch: { $in: [anykeywords] } } },
+      { preferredSkill: { $elemMatch: { $in: [anykeywords] } } },
     ];
   }
   if (experiencefrom != null && experienceto != null) {
@@ -342,7 +342,7 @@ const outSearch_employer = async (userId, body) => {
   if (location != null) {
     locationSearch = { locationCurrent: { $in: [location] } };
   }
-  if (course != null) {
+  if (course.length != 0) {
     qualificationSearch = [
       { drCourse: { $in: course } },
       { pgCourse: { $in: course } },
@@ -357,9 +357,10 @@ const outSearch_employer = async (userId, body) => {
   if (gender != null) {
     genderSearch = { gender: { $eq: gender} };
   }
-  if (displayDetails != null) {
-    displayDetailsSearch = { date: { $lte: moment().subtract(14, 'days').format('YYYY-MM-DD')} };
-  }
+  // if (displayDetails != null) {
+  //   displayDetailsSearch = { date: { $gte: moment().subtract(14, 'days').format('YYYY-MM-DD')} };
+  //   console.log(displayDetailsSearch)
+  // }
   // console.log(keyskillSearch, locationSearch, qualificationSearch,anykeywordsSearch, experienceSearch)
   let sc = moment().format('YYYY-MM-DD');
   const data = await KeySkill.aggregate([
