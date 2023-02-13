@@ -1189,9 +1189,12 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
   const user = await KeySkill.findOne({ userId: userId });
   let search = user.keyskillSet;
   let locetion = user.locationSet;
-  let expYear = user.experienceYeaSet;
+  let expYear = user.experienceYearSet;
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'candidateDetails not found');
+  }
+  if(!search){
+    throw new ApiError(httpStatus.NOT_FOUND, 'job alert data not found');
   }
   // console.log(search,locetion)
   //  user.forEach(async (e) => {
