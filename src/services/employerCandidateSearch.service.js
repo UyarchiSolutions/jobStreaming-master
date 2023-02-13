@@ -621,7 +621,7 @@ const allFolderData = async (userId, folderName) => {
   const data = await CreateSavetoFolder.aggregate([
     {
       $match: {
-        $and: [{ userId: { $eq: userId } }, { folderName: { $eq: folderName.folderName } }],
+        $and: [{ userId: { $eq: userId } }, { folderName: { $eq: folderName } }],
       },
     },
     {
@@ -672,7 +672,6 @@ const allFolderData = async (userId, folderName) => {
                     pgMarks:1,
                     pgQualification:1,
                     pgSpecialization:1,
-                    experienceMonthSet:1,
                     sslcQualification:1,
                     sslcBoard:1,
                     sslcPassedYear:1,

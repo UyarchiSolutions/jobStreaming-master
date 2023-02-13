@@ -83,7 +83,7 @@ const employerRemovePostJobs = catchAsync(async(req,res) => {
 
 const allFolderData = catchAsync(async(req,res) => {
     // const userId = req.userId
-    const user = await employerCandidateSearch.allFolderData(req.params.id, req.body)
+    const user = await employerCandidateSearch.allFolderData(req.params.id, req.query.folderName)
     res.send(user)
 })
 
