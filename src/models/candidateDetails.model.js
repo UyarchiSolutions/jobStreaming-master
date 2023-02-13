@@ -275,7 +275,7 @@ const keySkillSchema = mongoose.Schema(
     currentDepartment:{
       type:String,
     },
-    roleCategory:{
+    role_Category:{
       type:String,
     },
     salaryFrom:{
