@@ -397,6 +397,15 @@ const employerPostjobSchema = mongoose.Schema(
       mailId:{
         type:String,
       },
+      email:{
+        type:String,
+      },
+      signature:{
+        type:String,
+      },
+      subject:{
+        type:String,
+      },
       date:{
         type:String,
         default:moment().format('YYYY-MM-DD')
