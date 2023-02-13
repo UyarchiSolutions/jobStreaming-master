@@ -269,6 +269,21 @@ const keySkillSchema = mongoose.Schema(
     drMarks:{
       type:String,
     },
+    currentIndustry:{
+      type:String,
+    },
+    currentDepartment:{
+      type:String,
+    },
+    roleCategory:{
+      type:String,
+    },
+    salaryFrom:{
+      type:String
+    },
+    SalaryTo:{
+      type:String,
+    },
   },
   {
     timestamps: true,

@@ -27,4 +27,8 @@ router.route('/outSearchRecentSearch').get(authorization, employerCandidateSearc
 router.route('/outSearchSaveData').get(authorization, employerCandidateSearch.outSearchSaveData);
 router.route('/recent_searchSave_byId/:id').get(employerCandidateSearch.recent_searchSave_byId);
 router.route('/recent_search_byId/:id').get(employerCandidateSearch.recent_search_byId);
+
+//delete folder
+router.route('/delete_folder').delete(employerCandidateSearch.delete_folder);
+router.route('/delete_one_data').delete(employerCandidateSearch.delete_one_data);
 module.exports = router;

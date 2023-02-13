@@ -617,7 +617,7 @@ const employerRemovePostJobs = async (id) => {
 };
 
 const allFolderData = async (userId, folderName) => {
-  console.log(userId, folderName);
+  // console.log(userId, folderName);
   const data = await CreateSavetoFolder.aggregate([
     {
       $match: {
@@ -756,6 +756,43 @@ const saveFolderData_view = async (userId) => {
   return data;
 };
 
+// delete folder 
+
+const delete_folder = async (id, folder) => {
+  const data = await CreateSavetoFolder.find({userId:id, folderName:folder});
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'savejob not found');
+  }
+  data.forEach(async (e) => {
+    e.remove();
+    // console.log("delete")
+  }) 
+  return {message:"folder deleted successfully"}
+};
+
+// delete folderBy one data
+
+const delete_one_data = async (body) => {
+  const {candidateId} = body
+  candidateId.forEach(async (e) => {
+   let data = await CreateSavetoFolder.findById(e)
+   data.remove()
+  }) 
+  return {message:"Deleted data "}
+};
+
+// recent search delete 
+
+ const recent_search_delete = async (body) => {
+  const {candidateId} = body
+  candidateId.forEach(async (e) => {
+   let data = await CreateSavetoFolder.findById(e)
+   data.remove()
+  }) 
+  return {message:"Deleted data "}
+};
+
+
 module.exports = {
   createCandidateSearch,
   searchCandidate,
@@ -779,4 +816,6 @@ module.exports = {
   outSearchSaveData,
   recent_search_byId,
   recent_searchSave_byId,
+  delete_folder,
+  delete_one_data,
 };

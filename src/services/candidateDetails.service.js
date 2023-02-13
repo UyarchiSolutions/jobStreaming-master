@@ -60,7 +60,211 @@ const getByIdUser = async (id) => {
         from: 'candidatedetails',
         localField: '_id',
         foreignField: 'userId',
+        pipeline:[
+          {
+            $lookup: {
+              from: 'qualifications',
+              localField: 'sslcQualification',
+              foreignField: '_id',
+              as: 'sslcqualifications',
+            },
+          },
+          {
+            $unwind: {
+              path: '$sslcqualifications',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'qualifications',
+              localField: 'drQualification',
+              foreignField: '_id',
+              as: 'qualifications',
+            },
+          },
+          {
+            $unwind: {
+              path: '$qualifications',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'drcourses',
+              localField: 'drCourse',
+              foreignField: '_id',
+              as: 'drcourses',
+            },
+          },
+          {
+            $unwind: {
+              path: '$drcourses',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'drspecializations',
+              localField: 'drSpecialization',
+              foreignField: '_id',
+              as: 'drspecializations',
+            },
+          },
+          {
+            $unwind: {
+              path: '$drspecializations',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'qualifications',
+              localField: 'pgQualification',
+              foreignField: '_id',
+              as: 'pgqualifications',
+            },
+          },
+          {
+            $unwind: {
+              path: '$pgqualifications',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'pgcourses',
+              localField: 'pgCourse',
+              foreignField: '_id',
+              as: 'pgcourses',
+            },
+          },
+          {
+            $unwind: {
+              path: '$pgcourses',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'pgspecializations',
+              localField: 'pgSpecialization',
+              foreignField: '_id',
+              as: 'pgspecializations',
+            },
+          },
+          {
+            $unwind: {
+              path: '$pgspecializations',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'qualifications',
+              localField: 'ugQualification',
+              foreignField: '_id',
+              as: 'ugqualifications',
+            },
+          },
+          {
+            $unwind: {
+              path: '$ugqualifications',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'ugcourses',
+              localField: 'ugCourse',
+              foreignField: '_id',
+              as: 'ugcourses',
+            },
+          },
+          {
+            $unwind: {
+              path: '$ugcourses',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'specializations',
+              localField: 'ugSpecialization',
+              foreignField: '_id',
+              as: 'specializations',
+            },
+          },
+          {
+            $unwind: {
+              path: '$specializations',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'industries',
+              localField: 'industry',
+              foreignField: '_id',
+              as: 'industries',
+            },
+          },
+          {
+            $unwind: {
+              path: '$industries',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'departments',
+              localField: 'department',
+              foreignField: '_id',
+              as: 'departments',
+            },
+          },
+          {
+            $unwind: {
+              path: '$departments',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'rolecategories',
+              localField: 'roleCategory',
+              foreignField: '_id',
+              as: 'rolecategories',
+            },
+          },
+          {
+            $unwind: {
+              path: '$rolecategories',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'jobroles',
+              localField: 'role',
+              foreignField: '_id',
+              as: 'jobroles',
+            },
+          },
+          {
+            $unwind: {
+              path: '$jobroles',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
         as: 'candidatedetails',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatedetails',
+        preserveNullAndEmptyArrays: true,
       },
     },
     {
@@ -75,7 +279,48 @@ const getByIdUser = async (id) => {
         resume: 1,
         createdAt: 1,
         updatedAt: 1,
-        candidateDetails: '$candidatedetails',
+        // candidateDetails: '$candidatedetails',
+        keyskill:'$candidatedetails.keyskill',
+        currentSkill:'$candidatedetails.currentSkill',
+        preferredSkill:'$candidatedetails.preferredSkill',
+        active:'$candidatedetails.active',
+        image:'$candidatedetails.image',
+        dob:'$candidatedetails.dob',
+        experienceYear:'$candidatedetails.experienceYear',
+        experienceMonth:'$candidatedetails.experienceMonth',
+        expectedctc:'$candidatedetails.expectedctc',
+        currentctc:'$candidatedetails.currentctc',
+        locationCurrent:'$candidatedetails.locationCurrent',
+        locationNative:'$candidatedetails.locationNative',
+        noticeperiod:'$candidatedetails.noticeperiod',
+        gender:'$candidatedetails.gender',
+        maritalStatus:'$candidatedetails.maritalStatus',
+        ugMarks:'$candidatedetails.ugMarks',
+        ugGradingSystem:'$candidatedetails.ugGradingSystem',
+        ugCourseType:'$candidatedetails.ugCourseType',
+        ugCourseDurationTo:'$candidatedetails.ugCourseDurationTo',
+        ugCourseDurationFrom:'$candidatedetails.ugCourseDurationFrom',
+        relocate:'$candidatedetails.relocate',
+        languages:'$candidatedetails.languages',
+        ugUniversity:'$candidatedetails.ugUniversity',
+        drQualification:'$candidatedetails.qualifications.qualification',
+        drcourses:'$candidatedetails.drcourses.Course',
+        drSpecialization:'$candidatedetails.drspecializations.Specialization',
+        pgQualification:'$candidatedetails.pgqualifications.qualification',
+        pgCourse:'$candidatedetails.pgcourses.Course',
+        pgSpecialization:'$candidatedetails.pgspecializations.Specialization',
+        ugQualification:'$candidatedetails.ugqualifications.qualification',
+        ugCourse:'$candidatedetails.ugcourses.Course',
+        ugSpecialization:'$candidatedetails.specializations.Specialization',
+        role:'$candidatedetails.jobroles.Job_role',
+        roleCategory:'$candidatedetails.rolecategories.Role_Category',
+        department:'$candidatedetails.departments.Department',
+        industry:'$candidatedetails.industries.Industry',
+        sslctotalmarks:'$candidatedetails.sslctotalmarks',
+        sslcPassedYear:'$candidatedetails.sslcPassedYear',
+        sslcMedium:'$candidatedetails.sslcMedium',
+        sslcBoard:'$candidatedetails.sslcBoard',
+        sslcQualification:"$candidatedetails.sslcqualifications.qualification",
       },
     },
   ]);
