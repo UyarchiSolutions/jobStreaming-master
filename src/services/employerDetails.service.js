@@ -1325,6 +1325,20 @@ const getAll_Mail_notification_candidateside = async (userId) => {
             preserveNullAndEmptyArrays: true,
           },
         },
+        {
+          $lookup: {
+            from: 'candidatepostjobs',
+            localField: 'mailId',
+            foreignField: 'jobId',
+            as:'candidatepostjobs'
+            }
+          },
+          {
+            $unwind: {
+              path: '$candidatepostjobs',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
       {
         $project:{
           subject:1,
@@ -1341,6 +1355,7 @@ const getAll_Mail_notification_candidateside = async (userId) => {
           employerdetails:'$employerdetails',
           employerregistrations:'$employerregistrations',
           date:1,
+          appliedStatus:'$candidatepostjobs.approvedStatus',
         }
       }
   ])
@@ -1405,7 +1420,7 @@ const get_job_post = async (id) => {
 }
 
 // get notification job id
-const get_job_post_candidate = async (id) => {
+const get_job_post_candidate = async (id, candidateId) => {
   const data = await EmployerMailNotification.aggregate([
    {
      $match: {
@@ -1440,6 +1455,27 @@ const get_job_post_candidate = async (id) => {
           preserveNullAndEmptyArrays: true,
         },
       },
+        {
+          $lookup: {
+            from: 'candidatepostjobs',
+            localField: 'mailId',
+            foreignField: 'jobId',
+            pipeline:[
+              {
+                $match: {
+                  $and: [{ userId: { $eq: candidateId} }],
+                },
+              },  
+            ],
+            as:'candidatepostjobs'
+            }
+          },
+          {
+            $unwind: {
+              path: '$candidatepostjobs',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
      {
       $lookup: {
         from: 'employerdetails',
@@ -1495,6 +1531,7 @@ const get_job_post_candidate = async (id) => {
          jobDetails:'$employerdetails',
          candiadteName:'$candidateregistrations.name',
          aboutCompany:'$employerregistrations.aboutCompany',
+         appliedStatus:'$candidatepostjobs.approvedStatus'
        }
      },
   ])

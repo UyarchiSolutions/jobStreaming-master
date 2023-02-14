@@ -187,7 +187,7 @@ const All_Plans = catchAsync(async(req,res) => {
  })
 
  const get_job_post_candidate = catchAsync(async(req,res) => {
-  const user = await employerDetailsService.get_job_post_candidate(req.params.id)
+  const user = await employerDetailsService.get_job_post_candidate(req.params.id, req.params.candidateId)
   res.send(user)
  })
 module.exports = {
