@@ -1494,6 +1494,7 @@ const get_job_post_candidate = async (id) => {
          name:'$employerregistrations.name',
          jobDetails:'$employerdetails',
          candiadteName:'$candidateregistrations.name',
+         aboutCompany:'$employerregistrations.aboutCompany',
        }
      },
   ])
