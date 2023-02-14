@@ -1315,6 +1315,15 @@ const saveFolderData_view = async (userId) => {
 };
 
 
+const edit_all_folder = async (userId, body) => {
+  const data = await CreateSavetoFolder.find({userId:userId, folderName:body.folderName})
+  data.forEach(async (e) => {
+    await CreateSavetoFolder.findByIdAndUpdate({_id:e._id}, {folderName:body.newfoldername}, {new:true})
+  }) 
+  return {message:"folderName changed sucessfully"}
+}
+
+
 const saveFolderData_view_All_data = async (userId) => {
   const data = await CreateSavetoFolder.aggregate([
     { $sort: { createdAt: -1 } },
@@ -1406,4 +1415,5 @@ module.exports = {
   delete_one_data,
   saveFolderData_view_All_data,
   outSearchSaveData_all,
+  edit_all_folder,
 };

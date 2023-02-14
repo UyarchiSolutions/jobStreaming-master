@@ -31,6 +31,7 @@ router.route('/recent_search_byId/:id').get(employerCandidateSearch.recent_searc
 //delete folder
 router.route('/delete_folder').delete(employerCandidateSearch.delete_folder);
 router.route('/delete_one_data').delete(employerCandidateSearch.delete_one_data);
+router.route('/edit_all_folder').put(authorization,employerCandidateSearch.edit_all_folder);
 
 router.route('/saveFolderData_view_All_data').get(authorization,employerCandidateSearch.saveFolderData_view_All_data);
 router.route('/outSearchSaveData_all').get(authorization, employerCandidateSearch.outSearchSaveData_all);
