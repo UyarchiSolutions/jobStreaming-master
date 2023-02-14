@@ -1191,10 +1191,11 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
   let search = user.keyskillSet;
   let locetion = user.locationSet;
   let expYear = user.experienceYearSet;
+  console.log(search)
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'candidateDetails not found');
   }
-  if(!search){
+  if(search.length == 0){
     throw new ApiError(httpStatus.NOT_FOUND, 'job alert data not found');
   }
   // console.log(search,locetion)
