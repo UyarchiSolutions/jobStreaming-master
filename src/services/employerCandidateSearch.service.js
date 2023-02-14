@@ -1268,6 +1268,38 @@ const allFolderData = async (userId, folderName) => {
 
 const saveFolderData_view = async (userId) => {
   const data = await CreateSavetoFolder.aggregate([
+    { $sort: { createdAt: -1 } },
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId } }],
+      },
+    },
+    {
+      $group: {
+        _id: { folderName: '$folderName', userId: '$userId' },
+        count: {
+          $sum: 1,
+        },
+      },
+    },
+    {
+      $project: {
+        folderName: '$_id.folderName',
+        count:1,
+        userId: userId,
+      },
+    },
+    {
+      $limit: 3,
+    },
+  ]);
+  return data;
+};
+
+
+const saveFolderData_view_All_data = async (userId) => {
+  const data = await CreateSavetoFolder.aggregate([
+    { $sort: { createdAt: -1 } },
     {
       $match: {
         $and: [{ userId: { $eq: userId } }],
@@ -1354,4 +1386,5 @@ module.exports = {
   recent_searchSave_byId,
   delete_folder,
   delete_one_data,
+  saveFolderData_view_All_data,
 };

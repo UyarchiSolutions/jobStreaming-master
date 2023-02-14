@@ -146,6 +146,12 @@ const delete_one_data = catchAsync(async(req,res) => {
   const user = await employerCandidateSearch.delete_one_data(req.body)
   res.send(user)
 })
+
+const saveFolderData_view_All_data = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await employerCandidateSearch.saveFolderData_view_All_data(userId)
+  res.send({user})
+})
 module.exports = {
     createCandidateSearch,
     searchQuery,
@@ -171,4 +177,5 @@ module.exports = {
     recent_searchSave_byId,
     delete_folder,
     delete_one_data,
+    saveFolderData_view_All_data,
 };
