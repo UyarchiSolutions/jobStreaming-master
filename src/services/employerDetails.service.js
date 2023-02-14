@@ -1347,7 +1347,62 @@ const getAll_Mail_notification_candidateside = async (userId) => {
   return data
 
 }
-
+// get jobpost data
+const get_job_post = async (id) => {
+   const data = await EmployerDetails.aggregate([
+    {
+      $match: {
+        $and: [{ _id: { $eq: id} }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as:'employerregistrations'
+        }
+      },
+      {
+        $unwind: {
+          path: '$employerregistrations',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project:{
+          companyType:'$employerregistrations.companyType',
+          mobileNumber:'$employerregistrations.mobileNumber',
+          contactName:'$employerregistrations.contactName',
+          email:'$employerregistrations.email',
+          name:'$employerregistrations.name',
+          keySkill:1,
+          jobTittle:1,
+          recruiterName:1,
+          contactNumber:1,
+          jobDescription:1,
+          educationalQualification:1,
+          salaryRangeFrom:1,
+          salaryRangeTo:1,
+          experienceFrom:1,
+          experienceTo:1,
+          interviewType:1,
+          candidateDescription:1,
+          salaryDescription:1,
+          urltoApply:1,
+          workplaceType:1,
+          industry:1,
+          preferedIndustry:1,
+          jobLocation:1,
+          employmentType:1,
+          openings:1,
+          date:1,
+          time:1,
+        }
+      },
+   ])
+   return data
+}
 // notification status change 
 
 const candidate_mailnotification_Change = async (id, body) => {
@@ -1516,5 +1571,6 @@ module.exports = {
   all_plans_users_details,
   keySkillData,
   location,
-  update_active_deactive
+  update_active_deactive,
+  get_job_post,
 };

@@ -41,6 +41,7 @@ router.route('/getAll_Mail_notification_employerside').get(authorization, employ
 router.route('/getAll_Mail_notification_candidateside').get(auth, employerDetailsController.getAll_Mail_notification_candidateside);
 router.route('/candidate_mailnotification_Change/:id').put(employerDetailsController.candidate_mailnotification_Change);
 
+router.route('/get_job_post/:id').get(employerDetailsController.get_job_post);
 //map
 router.route('/neighbour_api').get(employerDetailsController.neighbour_api);
 
