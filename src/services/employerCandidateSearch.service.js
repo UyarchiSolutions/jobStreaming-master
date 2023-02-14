@@ -328,9 +328,13 @@ const outSearch_employer = async (userId, body) => {
     ];
   }
   if (experiencefrom != null && experienceto != null) {
+    // experienceSearch = [
+    //   { experienceYear: { $gte: parseInt(experiencefrom) } },
+    //   { experienceYear: { $lte: parseInt(experienceto) } },
+    // ];
     experienceSearch = [
-      { experienceYear: { $gte: parseInt(experiencefrom) } },
-      { experienceYear: { $lte: parseInt(experienceto) } },
+      { experienceYear: { $eq: parseInt(experiencefrom) } },
+      { experienceMonth: { $lte: parseInt(experienceto) } },
     ];
   }
   if (experience != null) {
@@ -746,7 +750,21 @@ const outSearchSaveData = async (userId) => {
       },
     },
     {
-      $limit: 10,
+      $limit: 4,
+    },
+  ]);
+  return data;
+};
+
+const outSearchSaveData_all = async (userId) => {
+  const data = await CreateoutSearchHistorySave.aggregate([
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId } }],
+      },
     },
   ]);
   return data;
@@ -1387,4 +1405,5 @@ module.exports = {
   delete_folder,
   delete_one_data,
   saveFolderData_view_All_data,
+  outSearchSaveData_all,
 };

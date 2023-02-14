@@ -1220,11 +1220,30 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
         ],
       },
     },
+    // {
+    //   $match: {
+    //     $and: [
+    //       { jobortemplate: { $eq: "job" } },
+    //     ],
+    //   },
+    // },
     {
-      $match: {
-        $and: [
-          { jobortemplate: { $eq: "job" } },
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: '_id',
+        foreignField: 'jobId',
+        pipeline:[
+          {
+            $match:{ userId: { $eq: id } }
+          }
         ],
+        as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
       },
     },
     {
@@ -1423,7 +1442,7 @@ const candidateSearch_front_page = async (id, body) => {
     {
       $match: {
         $and: [
-           { jobortemplate: { $eq: 'job' } },
+          //  { jobortemplate: { $eq: 'job' } },
           experienceSearch,
           locationSearch,
           salarySearch,

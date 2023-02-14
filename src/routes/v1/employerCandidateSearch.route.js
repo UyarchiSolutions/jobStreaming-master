@@ -33,4 +33,5 @@ router.route('/delete_folder').delete(employerCandidateSearch.delete_folder);
 router.route('/delete_one_data').delete(employerCandidateSearch.delete_one_data);
 
 router.route('/saveFolderData_view_All_data').get(authorization,employerCandidateSearch.saveFolderData_view_All_data);
+router.route('/outSearchSaveData_all').get(authorization, employerCandidateSearch.outSearchSaveData_all);
 module.exports = router;
