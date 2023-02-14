@@ -1428,6 +1428,20 @@ const get_job_post_candidate = async (id) => {
      },
      {
       $lookup: {
+        from: 'candidateregistrations',
+        localField: 'candidateId',
+        foreignField: '_id',
+        as:'candidateregistrations'
+        }
+      },
+      {
+        $unwind: {
+          path: '$candidateregistrations',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+     {
+      $lookup: {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
@@ -1478,7 +1492,8 @@ const get_job_post_candidate = async (id) => {
          contactName:'$employerregistrations.contactName',
          email:'$employerregistrations.email',
          name:'$employerregistrations.name',
-         jobDetails:'$employerdetails'
+         jobDetails:'$employerdetails',
+         candiadteName:'$candidateregistrations.name',
        }
      },
   ])
