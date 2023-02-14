@@ -234,6 +234,9 @@ const createoutSearchHistorySaveShema = mongoose.Schema(
     gender: {
       type: String,
     },
+    searchTittle:{
+      type:String,
+    },
     time: {
       type: String,
     },

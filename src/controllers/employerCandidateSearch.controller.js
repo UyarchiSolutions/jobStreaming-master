@@ -138,7 +138,7 @@ const recent_searchSave_byId = catchAsync(async(req,res) => {
 })
 
 const delete_folder = catchAsync(async(req,res) => {
-  const user = await employerCandidateSearch.delete_folder(req.query.id, req.query.folder)
+  const user = await employerCandidateSearch.delete_folder(req.params.id, req.body)
   res.send(user)
 })
 
