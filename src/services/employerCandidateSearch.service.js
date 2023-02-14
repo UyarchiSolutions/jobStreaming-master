@@ -1369,22 +1369,19 @@ const delete_folder = async (id, folder) => {
 
 const delete_one_data = async (body) => {
   const {candidateId} = body
-  candidateId.forEach(async (e) => {
-   let data = await CreateSavetoFolder.findById(e)
-   data.remove()
-  }) 
+   let data = await CreateSavetoFolder.deleteMany({_id:{$in:candidateId}})
+   if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'data not found');
+   }
   return {message:"Deleted data "}
 };
 
 // recent search delete 
 
- const recent_search_delete = async (body) => {
-  const {candidateId} = body
-  candidateId.forEach(async (e) => {
-   let data = await CreateSavetoFolder.findById(e)
-   data.remove()
-  }) 
-  return {message:"Deleted data "}
+ const recent_saver_search_delete = async (body) => {
+    const {candidateId} = body
+    await CreateoutSearchHistorySave.deleteMany({_id:{$in:candidateId}})
+    return {message:"deleted..."}
 };
 
 
@@ -1416,4 +1413,5 @@ module.exports = {
   saveFolderData_view_All_data,
   outSearchSaveData_all,
   edit_all_folder,
+  recent_saver_search_delete,
 };

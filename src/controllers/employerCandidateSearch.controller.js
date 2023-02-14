@@ -164,6 +164,11 @@ const edit_all_folder = catchAsync(async(req,res) => {
   const user = await employerCandidateSearch.edit_all_folder(userId, req.body)
   res.send(user)
 })
+
+const recent_saver_search_delete = catchAsync(async(req,res) => {
+  const user = await employerCandidateSearch.recent_saver_search_delete(req.body)
+  res.send(user)
+})
 module.exports = {
     createCandidateSearch,
     searchQuery,
@@ -192,4 +197,5 @@ module.exports = {
     saveFolderData_view_All_data,
     outSearchSaveData_all,
     edit_all_folder,
+    recent_saver_search_delete,
 };

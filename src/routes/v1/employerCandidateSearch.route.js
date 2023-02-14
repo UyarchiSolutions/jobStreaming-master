@@ -32,6 +32,7 @@ router.route('/recent_search_byId/:id').get(employerCandidateSearch.recent_searc
 router.route('/delete_folder/:id/:folder').delete(employerCandidateSearch.delete_folder);
 router.route('/delete_one_data').delete(employerCandidateSearch.delete_one_data);
 router.route('/edit_all_folder').put(authorization,employerCandidateSearch.edit_all_folder);
+router.route('/recent_saver_search_delete').delete(employerCandidateSearch.recent_saver_search_delete);
 
 router.route('/saveFolderData_view_All_data').get(authorization,employerCandidateSearch.saveFolderData_view_All_data);
 router.route('/outSearchSaveData_all').get(authorization, employerCandidateSearch.outSearchSaveData_all);
