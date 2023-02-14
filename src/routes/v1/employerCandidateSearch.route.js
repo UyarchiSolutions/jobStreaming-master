@@ -29,7 +29,7 @@ router.route('/recent_searchSave_byId/:id').get(employerCandidateSearch.recent_s
 router.route('/recent_search_byId/:id').get(employerCandidateSearch.recent_search_byId);
 
 //delete folder
-router.route('/delete_folder/:id/:folder').put(employerCandidateSearch.delete_folder);
+router.route('/delete_folder/:id/:folder').delete(employerCandidateSearch.delete_folder);
 router.route('/delete_one_data').delete(employerCandidateSearch.delete_one_data);
 router.route('/edit_all_folder').put(authorization,employerCandidateSearch.edit_all_folder);
 
