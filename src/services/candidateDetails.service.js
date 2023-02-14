@@ -1234,7 +1234,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
         foreignField: 'jobId',
         pipeline:[
           {
-            $match:{ userId: { $eq: id } }
+            $match:{ userId: { $eq: userId } }
           }
         ],
         as: 'candidatepostjobs',
@@ -1299,6 +1299,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
         companyType: '$employerregistrations.companyType',
         name: '$employerregistrations.name',
         regitserStatus: '$employerregistrations.adminStatus',
+        appliedStatus:'$candidatepostjobs.approvedStatus'
       },
     },
   ]);
