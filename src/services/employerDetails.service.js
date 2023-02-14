@@ -1403,6 +1403,88 @@ const get_job_post = async (id) => {
    ])
    return data
 }
+
+// get notification job id
+const get_job_post_candidate = async (id) => {
+  const data = await EmployerMailNotification.aggregate([
+   {
+     $match: {
+       $and: [{ _id: { $eq: id} }],
+     },
+   },
+   {
+     $lookup: {
+       from: 'employerregistrations',
+       localField: 'userId',
+       foreignField: '_id',
+       as:'employerregistrations'
+       }
+     },
+     {
+       $unwind: {
+         path: '$employerregistrations',
+         preserveNullAndEmptyArrays: true,
+       },
+     },
+     {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'mailId',
+        foreignField: '_id',
+        pipeline:[
+          {
+          $project:{
+            keySkill:1,
+            jobTittle:1,
+            recruiterName:1,
+            contactNumber:1,
+            jobDescription:1,
+            educationalQualification:1,
+            salaryRangeFrom:1,
+            salaryRangeTo:1,
+            experienceFrom:1,
+            experienceTo:1,
+            interviewType:1,
+            candidateDescription:1,
+            salaryDescription:1,
+            urltoApply:1,
+            workplaceType:1,
+            industry:1,
+            preferedIndustry:1,
+            jobLocation:1,
+            employmentType:1,
+            openings:1,
+            date:1,
+            time:1,
+          }
+        }
+        ],
+        as:'employerdetails'
+        }
+      },
+      {
+        $unwind: {
+          path: '$employerdetails',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+     {
+       $project:{
+         subject:1,
+         signature:1,
+         email:1,
+         companyType:'$employerregistrations.companyType',
+         mobileNumber:'$employerregistrations.mobileNumber',
+         contactName:'$employerregistrations.contactName',
+         email:'$employerregistrations.email',
+         name:'$employerregistrations.name',
+         jobDetails:'$employerdetails'
+       }
+     },
+  ])
+  return data
+}
+
 // notification status change 
 
 const candidate_mailnotification_Change = async (id, body) => {
@@ -1573,4 +1655,5 @@ module.exports = {
   location,
   update_active_deactive,
   get_job_post,
+  get_job_post_candidate,
 };
