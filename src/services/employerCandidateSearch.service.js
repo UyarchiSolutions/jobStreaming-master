@@ -1353,8 +1353,8 @@ const saveFolderData_view_All_data = async (userId) => {
 
 // delete folder 
 
-const delete_folder = async (id, body) => {
-  const data = await CreateSavetoFolder.find({userId:id, folderName:body.folder});
+const delete_folder = async (id, folder) => {
+  const data = await CreateSavetoFolder.find({userId:id, folderName:folder});
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'savejob not found');
   }
