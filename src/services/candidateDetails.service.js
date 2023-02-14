@@ -362,6 +362,7 @@ const getByIdUser = async (id) => {
         role_Category:'$candidatedetails.role_Category',
         salaryFrom:'$candidatedetails.salaryFrom',
         SalaryTo:'$candidatedetails.SalaryTo',
+        candidateDetails:'$candidatedetails'
       },
     },
   ]);
