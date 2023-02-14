@@ -625,6 +625,7 @@ const outSearch_employer = async (userId, body) => {
         resume: '$candidateregistrations.resume',
         createdAt: '$candidateregistrations.createdAt',
         updatedAt: '$candidateregistrations.updatedAt',
+        candiadteId:'$candidateregistrations._id',
         // candidateDetails: '$candidatedetails',
         keyskill:1,
         currentSkill:1,
