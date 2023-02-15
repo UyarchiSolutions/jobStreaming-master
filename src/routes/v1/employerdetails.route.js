@@ -57,4 +57,6 @@ router.route('/location/:key').get(employerDetailsController.location);
 router.route('/create_Recruiter').post(authorization, employerDetailsController.create_Recruiter);
 router.route('/get_Recruiter').get(authorization, employerDetailsController.get_Recruiter);
 router.route('/get_Recruiter_id/:id').get(employerDetailsController.get_Recruiter_id);
+router.route('/Recruiter_edit/:id').put(employerDetailsController.Recruiter_edit);
+router.route('/Recruiter_delete/:id').delete(employerDetailsController.Recruiter_delete);
 module.exports = router;

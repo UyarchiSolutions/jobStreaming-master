@@ -1696,6 +1696,18 @@ const get_Recruiter_id = async (id) => {
   const data = await Recruiters.findById(id)
  return data
 }
+
+const Recruiter_edit = async (id, body) => {
+  // console.log(id, body)
+  const data = await Recruiters.findByIdAndUpdate({_id:id}, body, {new:true})
+ return data
+}
+
+const Recruiter_delete = async (id) => {
+  // console.log(id, body)
+  const data = await Recruiters.deleteOne({_id:id})
+   return data
+}
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -1734,4 +1746,6 @@ module.exports = {
   create_Recruiter,
   get_Recruiter,
   get_Recruiter_id,
+  Recruiter_edit,
+  Recruiter_delete,
 };
