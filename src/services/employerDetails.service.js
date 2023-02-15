@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification} = require('../models/employerDetails.model');
+const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification, Recruiters} = require('../models/employerDetails.model');
 const { PlanPayment } = require('../models/planPaymentDetails.model');
 const { CandidatePostjob} = require('../models/candidateDetails.model');
 const { CandidateRegistration } = require('../models');
@@ -1681,6 +1681,21 @@ const location = async (key) => {
   return filtered
 }
 
+const create_Recruiter = async (userId, body) => {
+   const data = await Recruiters.create({...body, ...{userId:userId} })
+  return data
+}
+
+const get_Recruiter = async (userId) => {
+  const data = await Recruiters.find({userId:userId})
+ return data
+}
+
+
+const get_Recruiter_id = async (id) => {
+  const data = await Recruiters.findById(id)
+ return data
+}
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -1716,4 +1731,7 @@ module.exports = {
   update_active_deactive,
   get_job_post,
   get_job_post_candidate,
+  create_Recruiter,
+  get_Recruiter,
+  get_Recruiter_id,
 };

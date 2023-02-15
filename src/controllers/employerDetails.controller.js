@@ -191,6 +191,23 @@ const All_Plans = catchAsync(async(req,res) => {
   const user = await employerDetailsService.get_job_post_candidate(req.params.id, userId)
   res.send(user)
  })
+
+ const create_Recruiter = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await employerDetailsService.create_Recruiter(userId, req.body)
+  res.send(user)
+ })
+
+ const get_Recruiter = catchAsync(async(req,res) => {
+  const userId = req.userId
+  const user = await employerDetailsService.get_Recruiter(userId)
+  res.send(user)
+ })
+
+ const get_Recruiter_id = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.get_Recruiter_id(req.params.id)
+  res.send(user)
+ })
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -226,4 +243,7 @@ module.exports = {
   update_active_deactive,
   get_job_post,
   get_job_post_candidate,
+  create_Recruiter,
+  get_Recruiter,
+  get_Recruiter_id,
 };

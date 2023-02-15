@@ -109,7 +109,8 @@ const employerDetailsSchema = mongoose.Schema(
     interviewerName:{
         type:String,
     },
-    interviewerContactNumber:{
+    interviewerContactNumber:
+    {
         type:Number,
     },
     startTime:{
@@ -420,4 +421,36 @@ const employerPostjobSchema = mongoose.Schema(
     }
   );
   const EmployerMailNotification = mongoose.model('EmployerMailNotification', EmployerMailNotificationSchema);
-module.exports = {EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification};
+  const RecruiterSchema = mongoose.Schema(
+    {
+      _id: {
+        type: String,
+        default: v4,
+      },
+      userId: {
+          type:String,
+      },
+      recruiterName:{
+          type:String,
+      },
+      email:{
+        type:String,
+      },
+      mobileNumber:{
+        type:String,
+      },
+      date:{
+        type:String,
+        default:moment().format('YYYY-MM-DD')
+      },
+      active:{
+          type:Boolean,
+          default:true,
+      }
+    },
+    {
+      timestamps: true,
+    }
+  );
+  const Recruiters = mongoose.model('recruiter', RecruiterSchema);
+module.exports = {EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification, Recruiters};
