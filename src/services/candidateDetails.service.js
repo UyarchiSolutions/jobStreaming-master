@@ -1213,7 +1213,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
   const data = await EmployerDetails.aggregate([
     {
       $match: {
-        $or: [
+        $and: [
           { location: { $eq: locetion } },
           { keySkill: { $elemMatch: { $in: search } } },
           { experienceFrom: { $lte: parseInt(expYear) }, experienceTo: { $gte: parseInt(expYear) } },
