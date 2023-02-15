@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const { CandidateRegistration, User } = require('../models');
+const { KeySkill } = require('../models/candidateDetails.model');
 const { OTPModel } = require('../models');
 const { Token } = require('../models');
 const  sendmail  = require('../config/textlocal');
@@ -97,6 +98,7 @@ const forget_password_set = async (id, body) => {
 }
  
 const UsersLogin = async (userBody) => {
+    let Boolean = false
     const { email, password } = userBody;
     let userName = await CandidateRegistration.findOne({ email: email });
     if (!userName) {
@@ -109,7 +111,11 @@ const UsersLogin = async (userBody) => {
         throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
       }
     }
-    return userName;
+    let details = await KeySkill.find({userId:userName._id})
+    if(details){
+      Boolean = true
+    }
+    return {userName:userName, detailsStatus:Boolean };
   };
 
 const forgot_verify_email = async (body) =>{
