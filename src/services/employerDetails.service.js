@@ -4,6 +4,7 @@ const { PlanPayment } = require('../models/planPaymentDetails.model');
 const { CandidatePostjob} = require('../models/candidateDetails.model');
 const { CandidateRegistration } = require('../models');
 const { CreatePlan } = require('../models/createPlan.model');
+const { Skill } = require('../models/education.model');
 const { EmployerRegistration } = require('../models');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
@@ -1662,12 +1663,13 @@ const all_plans_users_details = async (id) => {
 }
 
 const keySkillData = async (key) => {
-  const re = new RegExp(key.toLowerCase())
-  // console.log(re)
-  let fn = re.exec.bind(re);
-  let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
-  let filtered = data.filter(fn);
-  return filtered
+  // const re = new RegExp(key.toLowerCase())
+  // // console.log(re)
+  // let fn = re.exec.bind(re);
+  // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
+  // let filtered = data.filter(fn);
+  const data = await Skill.find({ Skill_Title: { $regex: key, $options: 'i' } }).limit(50)
+  return data
 }
 
 const location = async (key) => {

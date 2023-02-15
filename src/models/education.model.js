@@ -419,6 +419,18 @@ const allCourseSchema = mongoose.Schema(
   }
 );
 const AllCourse = mongoose.model('allCourse', allCourseSchema);
+const skillSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    Skill_Title: {
+      type: String,
+    },   
+  },
+);
+const Skill = mongoose.model('skill', skillSchema);
 module.exports = {
   Qualification,
   SslcCourse,
@@ -436,4 +448,5 @@ module.exports = {
   Industries,
   Role,
   AllCourse,
+  Skill,
 };
