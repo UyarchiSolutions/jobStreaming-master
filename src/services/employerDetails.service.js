@@ -1421,7 +1421,7 @@ const get_job_post = async (id) => {
 
 // get notification job id
 const get_job_post_candidate = async (id, candidateId) => {
-  console.log(candidateId)
+  // console.log(candidateId)
   const data = await EmployerMailNotification.aggregate([
    {
      $match: {
