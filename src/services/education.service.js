@@ -16,6 +16,7 @@ const {
   Industries,
   Role,
   AllCourse,
+  AllSpecialization,
 } = require('../models/education.model');
 const { OTPModel } = require('../models');
 const { Token } = require('../models');
@@ -105,7 +106,13 @@ const get_Role = async (id) => {
 };
 
 const get_allcourse = async () => {
-  let data = await AllCourse.aggregate([{$sort: { createdAt: -1 }}]);
+  let data = await AllCourse.aggregate([{ $sort: { createdAt: -1 } }]);
+  return data;
+};
+
+const get_all_specialization = async (body) => {
+  const {arr} = body
+  let data = await AllSpecialization.find({ courseId:{$in:arr} });
   return data;
 };
 
@@ -126,4 +133,5 @@ module.exports = {
   get_Industry,
   get_Role,
   get_allcourse,
+  get_all_specialization,
 };
