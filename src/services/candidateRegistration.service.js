@@ -115,7 +115,7 @@ const UsersLogin = async (userBody) => {
     if(details){
       Boolean = true
     }
-    return {userName:userName, detailsStatus:Boolean };
+    return {userName, detailsStatus:Boolean };
   };
 
 const forgot_verify_email = async (body) =>{
