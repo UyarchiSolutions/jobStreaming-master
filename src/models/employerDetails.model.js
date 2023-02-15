@@ -71,7 +71,7 @@ const employerDetailsSchema = mongoose.Schema(
         type:String,
     },
     preferedIndustry:{
-        type:String,
+        type:Array,
     },
     functionalArea:{
         type:String,
