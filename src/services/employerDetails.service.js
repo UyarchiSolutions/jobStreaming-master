@@ -1668,7 +1668,7 @@ const keySkillData = async (key) => {
   // let fn = re.exec.bind(re);
   // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   // let filtered = data.filter(fn);
-  const data = await Skill.find({ Skill_Title: { $regex: key, $options: 'i' } }).limit(7)
+  const data = await Skill.find({ Skill_Title: { $regex: key, $options: 'i' } }).limit(50)
   return data
 }
 
