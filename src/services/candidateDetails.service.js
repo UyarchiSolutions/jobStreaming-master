@@ -1191,7 +1191,8 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
   let search = user.keyskillSet;
   let locetion = user.locationSet;
   let expYear = user.experienceYearSet;
-  console.log(search)
+  let expMonth = user.experienceMonthSet
+  console.log(search,expYear, expMonth)
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'candidateDetails not found');
   }
@@ -1214,9 +1215,9 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
     {
       $match: {
         $and: [
-          { location: { $eq: locetion } },
+          { jobLocation: { $eq: locetion } },
           { keySkill: { $elemMatch: { $in: search } } },
-          { experienceFrom: { $lte: parseInt(expYear) }, experienceTo: { $gte: parseInt(expYear) } },
+          { experienceFrom: { $eq: parseInt(expYear) }, experienceTo: { $lte: parseInt(expMonth) } },
         ],
       },
     },
