@@ -116,6 +116,11 @@ const get_all_specialization = async (body) => {
   return data;
 };
 
+const get_Qualification = async (body) => {
+  const {arr} = body
+  let data = await AllCourse.find({ QualificationId:{$in:arr} });
+  return data;
+};
 module.exports = {
   createQualification,
   get_sslc_course,
@@ -134,4 +139,5 @@ module.exports = {
   get_Role,
   get_allcourse,
   get_all_specialization,
+  get_Qualification,
 };
