@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService, candidateRegistrationService } = require('../services');
 const { OTPModel } = require('../models');
+const { KeySkill } = require('../models/candidateDetails.model');
 
 const register = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.createCandidate(req.body);
@@ -56,9 +57,16 @@ const forget_password_set = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
+  let Boolean = false
   const user = await candidateRegistrationService.UsersLogin(req.body);
+  console.log(user)
+  let details = await KeySkill.find({userId:user._id})
+  if(details){
+    Boolean = true
+  }
+  console.log(Boolean)
   const tokens = await tokenService.generateAuthTokens(user);
-  res.send({ user, tokens });
+  res.send({ user, tokens, Boolean });
 });
 
 const forgot = catchAsync(async (req, res) => {
