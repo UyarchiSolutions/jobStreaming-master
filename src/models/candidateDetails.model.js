@@ -25,6 +25,15 @@ const keySkillSchema = mongoose.Schema(
     userId:{
         type:String,
     },
+    recruiterName:{
+      type:String,
+    },
+    recruiterEmail:{
+      type:String,
+    },
+    recruiterNumber:{
+      type:String,
+    },
     experienceMonth:{
         type:Number
     },
