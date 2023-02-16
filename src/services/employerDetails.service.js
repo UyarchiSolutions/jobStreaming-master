@@ -1075,8 +1075,8 @@ const send_mail_and_notification = async (userId, body) => {
         email: '$employerregistrations.email',
         name: '$employerregistrations.name',
         aboutCompany: '$employerregistrations.aboutCompany',
-        location:'$employerregistrations.location',
-        choosefile:'$employerregistrations.choosefile',
+        location: '$employerregistrations.location',
+        choosefile: '$employerregistrations.choosefile',
       },
     },
   ]);
@@ -1129,9 +1129,9 @@ const send_mail_and_notification = async (userId, body) => {
         contactName: employer[0].contactName,
         email: employer[0].email,
         companyname: employer[0].name,
-        aboutCompany:employer[0].aboutCompany,
-        location:employer[0].location,
-        choosefile:employer[0].choosefile,
+        aboutCompany: employer[0].aboutCompany,
+        location: employer[0].location,
+        choosefile: employer[0].choosefile,
       });
       const mainOptions = {
         from: body.email,
@@ -1927,10 +1927,10 @@ const keySkillData = async (key) => {
   // let fn = re.exec.bind(re);
   // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   // let filtered = data.filter(fn);
-  var query = /^joh?/i
+  var query = new RegExp("\^" + key, "i");
   const data = await Skill.find({ Skill_Title: { $regex: query } }).sort({ Skill_Title: 1 }).limit(7);
-    // .sort({ Skill_Title: 1 })
-    // .select('Skill_Title')
+  // .sort({ Skill_Title: 1 })
+  // .select('Skill_Title')
   return data;
 };
 
