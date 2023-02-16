@@ -1906,6 +1906,7 @@ const candidate_detials = async (id, jobid) => {
         salaryFrom:'$candidatedetails.salaryFrom',
         SalaryTo:'$candidatedetails.SalaryTo',
         appliedStatus:'$candidatepostjobs.approvedStatus',
+        postjobId:'$candidatepostjobs._id',
       },
     },
   ]);
