@@ -147,11 +147,48 @@ const getByIdUser = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'departments',
+        localField: 'department',
+        foreignField: '_id',
+        as: 'departments',
+      },
+    },
+    {
       $unwind: {
-        path: '$candidatepostjobs',
+        path: '$departments',
         preserveNullAndEmptyArrays: true,
       },
     },
+    {
+      $lookup: {
+        from: 'rolecategories',
+        localField: 'roleCategory',
+        foreignField: '_id',
+        as: 'rolecategories',
+      },
+    },
+    {
+      $unwind: {
+        path: '$rolecategories',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    
     {
       $project: {
         appliedcount: '$candidatepostjobs.count',
@@ -190,6 +227,15 @@ const getByIdUser = async (id) => {
         expiredDate: 1,
         createdAt: 1,
         adminStatus: 1,
+        recruiterName:1,
+        recruiterEmail:1,
+        recruiterNumber:1, 
+        roleName:'$jobroles.Job_role',
+        categoryName:'$rolecategories.Role_Category',
+        departmentName:'$departments.Department',
+        department:1,
+        roleCategory:1,
+        role:1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
