@@ -882,45 +882,45 @@ const mail_template_data_delete = async (id, body) => {
 // notofication send candidate
 var ejs = require("ejs");
 const nodemailer = require("nodemailer");
-
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
+  host: 'mail.uyarchi.com',
   port: 465,
   secure: true,
   auth: {
-    user: 'muthamizhyadav@gmail.com',
-    pass: 'dramjibzgemvmmsp'
+    user: 'noreply-tj@uyarchi.com',
+    pass: 'Thunivu@100'
   }
 });
-
 const send_mail_and_notification = async (userId, body) => {
-
-
-  const data = await ejs.renderFile(__dirname + "/template.ejs", { name: 'bharathiraja', age: 25 });
-  const mainOptions = {
-    from: 'vignesh1041996@gmail.com',
-    to: ['bharathiraja996574@gmail.com', 'vignesh1041996@gmail.com'],
-    subject: 'templates',
-    html: data
-  };
-
-  transporter.sendMail(mainOptions, (err, info) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('Message sent: ' + info.response);
+      const data = await EmployerRegistration.findById(userId)
+      // console.log(userId)
+    if (!data) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
     }
-  });
-  //   const data = await EmployerRegistration.findById(userId)
-  //   if (!data) {
-  //     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
-  //   }
-  //   const { candidates } = body
-  //   candidates.forEach(async (e) => {
-  //     await EmployerMailNotification.create({...body, ...{userId:userId, candidateId:e}});
-  //  });
-
-  // let email = await emailService.sendEmailTemplate('bharathiraja996574@gmail.com', 'asdasdas', data)
+    const { candidates } = body
+    candidates.forEach(async (e) => {
+      await EmployerMailNotification.create({...body, ...{userId:userId, candidateId:e}});
+          const candidate = await CandidateRegistration.findById(e)
+          // console.log(candidate)
+      if(body.mail == "mail"){
+        const data1 = await ejs.renderFile(__dirname + "/template.ejs", { name:candidate.name });
+     const mainOptions = {
+       from: body.email,
+       to: candidate.email,
+       subject: 'templates',
+       html: data1
+     };
+   
+     transporter.sendMail(mainOptions, (err, info) => {
+       if (err) {
+         console.log(err);
+       } else {
+         console.log('Message sent: ' + info.response);
+       }
+     });
+   }  
+    });
+   
   return { messages: 'Send Notification Mail Successfully...' }
 }
 
