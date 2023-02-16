@@ -233,6 +233,9 @@ const getByIdUser = async (id) => {
         roleName:'$jobroles.Job_role',
         categoryName:'$rolecategories.Role_Category',
         departmentName:'$departments.Department',
+        department:1,
+        roleCategory:1,
+        role:1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },

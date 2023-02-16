@@ -25,8 +25,14 @@ const employerDetailsSchema = mongoose.Schema(
     recruiterName: {
       type: String,
     },
-    contactNumber: {
+    recruiterNumber: {
       type: Number,
+    },
+    recruiterNumber: {
+      type: Number,
+    },
+    recruiterEmail:{
+      type:String,
     },
     jobDescription: {
       type: String,
