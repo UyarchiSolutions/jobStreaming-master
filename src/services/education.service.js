@@ -119,6 +119,16 @@ const get_all_specialization = async (body) => {
 const get_Qualification = async (body) => {
   const {arr} = body
   let data = await AllCourse.find({ QualificationId:{$in:arr} });
+  // const data = await AllCourse.aggregate([
+  //   {
+  //     $match:{ QualificationId:{$in:arr} },
+  //   },
+  //   {
+  //     $project:{
+
+  //     }
+  //   }
+  // ])
   return data;
 };
 module.exports = {

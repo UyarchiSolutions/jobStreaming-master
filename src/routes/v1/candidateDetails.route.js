@@ -38,7 +38,7 @@ router.route('/recentSearch').get(authorization, candidateDetailsController.rece
 router.route('/languages').get(candidateDetailsController.languages);
 router.route('/educationDetails').post(authorization, candidateDetailsController.educationDetails);
 router.route('/recentSearch_byId/:id').get(candidateDetailsController.recentSearch_byId);
-router.route('/candidate_detials/:id').get(candidateDetailsController.candidate_detials);
+router.route('/candidate_detials/:id/:jobid').get(candidateDetailsController.candidate_detials);
 router.route('/updateEducation').post(authorization,candidateDetailsController.updateEducation);
 router.route('/createdSearchhistoryData_byId/:id').get(candidateDetailsController.createdSearchhistoryData_byId);
 // router.route('/createSearchCandidate').post(authorization, candidateDetailsController.createSearchCandidate);

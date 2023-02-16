@@ -23,7 +23,7 @@ router.route('/draftData').get(authorization, employerDetailsController.draftDat
 router.route('/draftData_getId/:id').get(employerDetailsController.draftData_employerside_ById);
 router.route('/draftData_delete/:id').delete(employerDetailsController.draftData_delete);
 router.route('/getAllApplied_postjobs_Candidates/:id').get(employerDetailsController.getAllApplied_postjobs_Candidates);
-router.route('/statusChange_employer/:id').get(employerDetailsController.statusChange_employer);
+router.route('/statusChange_employer/:id').put(employerDetailsController.statusChange_employer);
 router.route('/getByIdAll_CandidateDetails/:id').get(employerDetailsController.getByIdAll_CandidateDetails);
 router.route('/employer_comment').post(authorization, employerDetailsController.employer_comment);
 router.route('/comment_edit/:id').put(employerDetailsController.comment_edit);
@@ -36,7 +36,7 @@ router.route('/mail_template_data_Update/:id').put(employerDetailsController.mai
 router.route('/mail_template_data_delete/:id').delete(employerDetailsController.mail_template_data_delete);
 
 // send notification mail
-router.route('/send_mail_and_notification').post(employerDetailsController.send_mail_and_notification);
+router.route('/send_mail_and_notification').post(authorization, employerDetailsController.send_mail_and_notification);
 router.route('/getAll_Mail_notification_employerside').get(authorization, employerDetailsController.getAll_Mail_notification_employerside);
 router.route('/getAll_Mail_notification_candidateside').get(auth, employerDetailsController.getAll_Mail_notification_candidateside);
 router.route('/candidate_mailnotification_Change/:id').put(employerDetailsController.candidate_mailnotification_Change);

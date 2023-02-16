@@ -1,5 +1,11 @@
 const httpStatus = require('http-status');
-const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification } = require('../models/employerDetails.model');
+const {
+  EmployerDetails,
+  EmployerPostDraft,
+  Employercomment,
+  EmployerMailTemplate,
+  EmployerMailNotification,
+} = require('../models/employerDetails.model');
 const { PlanPayment } = require('../models/planPaymentDetails.model');
 const { CandidatePostjob } = require('../models/candidateDetails.model');
 const { CandidateRegistration } = require('../models');
@@ -18,7 +24,7 @@ const { emailService } = require('../services');
 
 const createEmpDetails = async (userId, userBody) => {
   // let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
-  let app = await EmployerRegistration.findOne({ _id: userId })
+  let app = await EmployerRegistration.findOne({ _id: userId });
   if (!app) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
@@ -26,14 +32,14 @@ const createEmpDetails = async (userId, userBody) => {
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HHmmss');
   let data;
-  let values
-  if (userBody.jobortemplate == "job") {
-    let expiredDate
+  let values;
+  if (userBody.jobortemplate == 'job') {
+    let expiredDate;
     // console.log(validity);
-    const plan = await PlanPayment.findOne({ userId: userId, active: true })
-    let pay
+    const plan = await PlanPayment.findOne({ userId: userId, active: true });
+    let pay;
     if (plan) {
-      pay = await CreatePlan.findOne({ _id: plan.planId })
+      pay = await CreatePlan.findOne({ _id: plan.planId });
     }
     if (pay) {
       expiredDate = moment().add(pay.jobPostVAlidity, 'days').format('YYYY-MM-DD');
@@ -43,28 +49,38 @@ const createEmpDetails = async (userId, userBody) => {
     if (!userBody.interviewDate) {
       values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time: creat1 } };
     } else {
-      values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time: creat1, interviewstartDate: interviewDate.startDate, interviewendDate: interviewDate.endDate, } };
+      values = {
+        ...userBody,
+        ...{
+          userId: userId,
+          expiredDate: expiredDate,
+          date: date,
+          time: creat1,
+          interviewstartDate: interviewDate.startDate,
+          interviewendDate: interviewDate.endDate,
+        },
+      };
     }
-    const freeCount = await EmployerDetails.find({ userId: userId })
-    const usser = await EmployerRegistration.findById(userId)
-    console.log(freeCount.length, usser.freePlanCount)
+    const freeCount = await EmployerDetails.find({ userId: userId });
+    const usser = await EmployerRegistration.findById(userId);
+    console.log(freeCount.length, usser.freePlanCount);
     if (freeCount.length >= usser.freePlanCount) {
-      const da = await PlanPayment.findOne({ userId: userId, active: true })
+      const da = await PlanPayment.findOne({ userId: userId, active: true });
       if (!da) {
         throw new ApiError(httpStatus.NOT_FOUND, 'your not pay the plan');
       }
       if (date > da.expDate) {
-        await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true })
+        await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true });
         throw new ApiError(httpStatus.NOT_FOUND, 'plan time expired');
       }
-      const createPlan = await CreatePlan.findOne({ _id: da.planId })
+      const createPlan = await CreatePlan.findOne({ _id: da.planId });
       if (da.countjobPost == createPlan.jobPost) {
-        await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true })
+        await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true });
         throw new ApiError(httpStatus.NOT_FOUND, 'jobpost limit over...');
       }
       // }
-      let count = da.countjobPost += 1
-      await PlanPayment.findByIdAndUpdate({ _id: da._id }, { countjobPost: count }, { new: true })
+      let count = (da.countjobPost += 1);
+      await PlanPayment.findByIdAndUpdate({ _id: da._id }, { countjobPost: count }, { new: true });
     }
 
     data = await EmployerDetails.create(values);
@@ -79,9 +95,9 @@ const createEmpDetails = async (userId, userBody) => {
 
 const createEmpDetailsRepost = async (id, userBody) => {
   const { userId } = userBody;
-  let expiredDate
-  const plan = await PlanPayment.findOne({ userId: userId, active: true })
-  const pay = await CreatePlan.findOne({ _id: plan.planId })
+  let expiredDate;
+  const plan = await PlanPayment.findOne({ userId: userId, active: true });
+  const pay = await CreatePlan.findOne({ _id: plan.planId });
   if (pay) {
     expiredDate = moment().add(pay.jobPostVAlidity, 'days').format('YYYY-MM-DD');
   } else {
@@ -95,10 +111,10 @@ const createEmpDetailsRepost = async (id, userBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'employerDetails not found');
   }
   let values = { ...userBody, ...{ expiredDate: expiredDate, date: date, adminStatus: 'Pending', time: creat1 } };
-  console.log(values)
+  console.log(values);
   const data = await EmployerDetails.findByIdAndUpdate({ _id: id }, values, { new: true });
-  let count = plan.countjobPost += 1
-  await PlanPayment.findByIdAndUpdate({ _id: plan._id }, { countjobPost: count }, { new: true })
+  let count = (plan.countjobPost += 1);
+  await PlanPayment.findByIdAndUpdate({ _id: plan._id }, { countjobPost: count }, { new: true });
   await data.save();
   return data;
 };
@@ -123,9 +139,9 @@ const getByIdUser = async (id) => {
           {
             $group: {
               _id: null,
-              count: { $sum: 1 }
-            }
-          }
+              count: { $sum: 1 },
+            },
+          },
         ],
         as: 'candidatepostjobs',
       },
@@ -138,7 +154,7 @@ const getByIdUser = async (id) => {
     },
     {
       $project: {
-        appliedcount: "$candidatepostjobs.count",
+        appliedcount: '$candidatepostjobs.count',
         keySkill: 1,
         dates: dates,
         date: 1,
@@ -200,18 +216,15 @@ const getById = async (id) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'employerDetails not found');
   }
   return data;
-
 };
-
 
 const update_active_deactive = async (id, body) => {
   const data = await EmployerDetails.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'employerDetails not found');
   }
-  const value = await EmployerDetails.findByIdAndUpdate({ _id: id }, { active: body.active }, { new: true })
+  const value = await EmployerDetails.findByIdAndUpdate({ _id: id }, { active: body.active }, { new: true });
   return value;
-
 };
 
 const data_Id = async (id) => {
@@ -224,7 +237,6 @@ const data_Id = async (id) => {
   ]);
   return data;
 };
-
 
 const getById_Get = async (id) => {
   let dates = moment().format('YYYY-MM-DD');
@@ -310,40 +322,38 @@ const deleteById = async (id) => {
   return user;
 };
 
-
 const countPostjobError = async (userId) => {
   let date = moment().format('YYYY-MM-DD');
   // let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
-  let app = await EmployerRegistration.findOne({ _id: userId })
+  let app = await EmployerRegistration.findOne({ _id: userId });
   if (!app) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
-  const freeCount = await EmployerDetails.find({ userId: userId })
-  const usser = await EmployerRegistration.findById(userId)
-  const daaa = await PlanPayment.findOne({ userId: userId, active: true })
+  const freeCount = await EmployerDetails.find({ userId: userId });
+  const usser = await EmployerRegistration.findById(userId);
+  const daaa = await PlanPayment.findOne({ userId: userId, active: true });
   if (freeCount.length == usser.freePlanCount && !daaa) {
     throw new ApiError(httpStatus.NOT_FOUND, 'your free post over..');
   }
   if (freeCount.length >= usser.freePlanCount) {
-    const da = await PlanPayment.findOne({ userId: userId, active: true })
+    const da = await PlanPayment.findOne({ userId: userId, active: true });
     if (!da) {
       throw new ApiError(httpStatus.NOT_FOUND, 'your not pay the plan');
     }
-    const createPlan = await CreatePlan.findOne({ _id: da.planId })
+    const createPlan = await CreatePlan.findOne({ _id: da.planId });
     if (da.countjobPost == createPlan.jobPost) {
       throw new ApiError(httpStatus.NOT_FOUND, 'jobpost limit over...');
     }
     if (date > da.expDate) {
-      await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true })
+      await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true });
       throw new ApiError(httpStatus.NOT_FOUND, 'plan time expired');
     }
   }
-  return { message: "button enable" }
-}
-
+  return { message: 'button enable' };
+};
 
 const EmployerspostDraft = async (userId, userBody) => {
-  let app = await EmployerRegistration.findOne({ _id: userId, adminStatus: "Approved" })
+  let app = await EmployerRegistration.findOne({ _id: userId, adminStatus: 'Approved' });
   if (!app) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
@@ -359,17 +369,25 @@ const EmployerspostDraft = async (userId, userBody) => {
   //   expiredDate = moment().add(1, 'days').format('YYYY-MM-DD');
   // }
   let values;
-  console.log(userBody.interviewDate, "huhi")
+  console.log(userBody.interviewDate, 'huhi');
   if (!userBody.interviewDate) {
-    console.log("fer")
+    console.log('fer');
     values = { ...userBody, ...{ userId: userId, date: date, time: creat1 } };
   } else {
-    values = { ...userBody, ...{ userId: userId, date: date, time: creat1, interviewstartDate: interviewDate.startDate, interviewendDate: interviewDate.endDate } };
+    values = {
+      ...userBody,
+      ...{
+        userId: userId,
+        date: date,
+        time: creat1,
+        interviewstartDate: interviewDate.startDate,
+        interviewendDate: interviewDate.endDate,
+      },
+    };
   }
   let data1 = await EmployerPostDraft.create(values);
-  return data1
-}
-
+  return data1;
+};
 
 const draftData_employerside = async (userId) => {
   const data = await EmployerPostDraft.aggregate([
@@ -378,25 +396,25 @@ const draftData_employerside = async (userId) => {
         $and: [{ userId: { $eq: userId } }],
       },
     },
-  ])
-  return data
-}
+  ]);
+  return data;
+};
 
 const draftData_employerside_ById = async (id) => {
-  const data = await EmployerPostDraft.findById(id)
+  const data = await EmployerPostDraft.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  return data
-}
+  return data;
+};
 
 const draftData_delete = async (id) => {
-  const data = await EmployerPostDraft.findById(id)
+  const data = await EmployerPostDraft.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   await data.remove();
-}
+};
 
 // postjob_candidate_Applied_datas
 const getAllApplied_postjobs_Candidates = async (userId) => {
@@ -697,7 +715,7 @@ const getAllApplied_postjobs_Candidates = async (userId) => {
                     sslcPassedYear: '$candidatedetails.sslcPassedYear',
                     sslcMedium: '$candidatedetails.sslcMedium',
                     sslcBoard: '$candidatedetails.sslcBoard',
-                    sslcQualification: "$candidatedetails.sslcqualifications.qualification",
+                    sslcQualification: '$candidatedetails.sslcqualifications.qualification',
                     pgUniversity: '$candidatedetails.pgUniversity',
                     pgMarks: '$candidatedetails.pgUniversity',
                     pgGradingSystem: '$candidatedetails.pgUniversity',
@@ -754,20 +772,20 @@ const getAllApplied_postjobs_Candidates = async (userId) => {
         postjobId: '$candidatepostjobs._id',
         status: '$candidatepostjobs.approvedStatus',
         candidateData: '$candidatepostjobs.candidateregistrations',
-      }
-    }
-  ])
-  return data
-}
+      },
+    },
+  ]);
+  return data;
+};
 
 const statusChange_employer = async (id, updateBody) => {
-  const data = await CandidatePostjob.findById(id)
+  const data = await CandidatePostjob.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   const Data = await CandidatePostjob.findByIdAndUpdate({ _id: id }, updateBody, { new: true });
-  return Data
-}
+  return Data;
+};
 
 const getByIdAll_CandidateDetails = async (id) => {
   const data = await CandidateRegistration.aggregate([
@@ -781,8 +799,8 @@ const getByIdAll_CandidateDetails = async (id) => {
         from: 'candidatedetails',
         localField: '_id',
         foreignField: 'userId',
-        as: 'candidatedetails'
-      }
+        as: 'candidatedetails',
+      },
     },
     {
       $project: {
@@ -809,39 +827,39 @@ const getByIdAll_CandidateDetails = async (id) => {
         maritalStatus: '$candidatedetails.maritalStatus',
         mark: '$candidatedetails.mark',
         image: '$candidatedetails.image',
-      }
-    }
-  ])
-  return data
-}
+      },
+    },
+  ]);
+  return data;
+};
 
 // comment
 
 const employer_comment = async (userId, Body) => {
-  let values = { ...Body, ...{ userId: userId } }
-  return await Employercomment.create(values)
-}
+  let values = { ...Body, ...{ userId: userId } };
+  return await Employercomment.create(values);
+};
 
-//edit comment 
+//edit comment
 
 const comment_edit = async (id, body) => {
-  const data = await Employercomment.findById(id)
+  const data = await Employercomment.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   const Data = await Employercomment.findByIdAndUpdate({ _id: id }, body, { new: true });
-  return Data
-}
+  return Data;
+};
 
 // mail template
 
 const mail_template_create = async (userId, body) => {
-  const data = await EmployerRegistration.findById(userId)
+  const data = await EmployerRegistration.findById(userId);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  return await EmployerMailTemplate.create({ ...body, ...{ userId: userId } })
-}
+  return await EmployerMailTemplate.create({ ...body, ...{ userId: userId } });
+};
 
 const mail_template_data = async (userId) => {
   const data = await EmployerMailTemplate.aggregate([
@@ -850,79 +868,241 @@ const mail_template_data = async (userId) => {
         $and: [{ userId: { $eq: userId } }],
       },
     },
-  ])
-  return data
-}
+  ]);
+  return data;
+};
 
 const mail_template_data_Id = async (id) => {
-  const data = await EmployerMailTemplate.findById(id)
+  const data = await EmployerMailTemplate.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  return data
-}
+  return data;
+};
 
 const mail_template_data_Update = async (id, body) => {
-  const data = await EmployerMailTemplate.findById(id)
+  const data = await EmployerMailTemplate.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   const value = await EmployerMailTemplate.findByIdAndUpdate({ _id: id }, body, { new: true });
-  return value
-}
+  return value;
+};
 
 const mail_template_data_delete = async (id, body) => {
-  const data = await EmployerMailTemplate.findById(id)
+  const data = await EmployerMailTemplate.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   await data.remove();
-}
+};
 
 // notofication send candidate
-var ejs = require("ejs");
-const nodemailer = require("nodemailer");
-
+var ejs = require('ejs');
+const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
+  host: 'mail.uyarchi.com',
   port: 465,
   secure: true,
   auth: {
-    user: 'muthamizhyadav@gmail.com',
-    pass: 'dramjibzgemvmmsp'
-  }
+    user: 'noreply-tj@uyarchi.com',
+    pass: 'Thunivu@100',
+  },
 });
-
 const send_mail_and_notification = async (userId, body) => {
+  const data = await EmployerRegistration.findById(userId);
+  // console.log(userId)
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  const employer = await EmployerDetails.aggregate([
+    {
+      $match: {
+        $and: [{ _id: { $eq: body.mailId } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'industries',
+        localField: 'industry',
+        foreignField: '_id',
+        as: 'industries',
+      },
+    },
+    {
+      $unwind: {
+        path: '$industries',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'departments',
+        localField: 'department',
+        foreignField: '_id',
+        as: 'departments',
+      },
+    },
+    {
+      $unwind: {
+        path: '$departments',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'rolecategories',
+        localField: 'roleCategory',
+        foreignField: '_id',
+        as: 'rolecategories',
+      },
+    },
+    {
+      $unwind: {
+        path: '$rolecategories',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'employerregistrations',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        keySkill: 1,
+        preferedIndustry: 1,
+        preferredSkill: 1,
+        adminStatus: 1,
+        active: 1,
+        jobTittle: 1,
+        contactNumber: 1,
+        jobDescription: 1,
+        educationalQualification: 1,
+        salaryRangeFrom: 1,
+        salaryRangeTo: 1,
+        experienceFrom: 1,
+        experienceTo: 1,
+        interviewType: 1,
+        candidateDescription: 1,
+        salaryDescription: 1,
+        urltoApply: 1,
+        workplaceType: 1,
+        industry: 1,
+        jobLocation: 1,
+        employmentType: 1,
+        openings: 1,
+        role: '$jobroles.Job_role',
+        roleCategory: '$rolecategories.Role_Category',
+        department: '$departments.Department',
+        industry: '$industries.Industry',
+        interviewstartDate: 1,
+        interviewendDate: 1,
+        startTime: 1,
+        endTime: 1,
+        recruiterName: 1,
+        date: 1,
+        time: 1,
+        companyType: '$employerregistrations.companyType',
+        mobileNumber: '$employerregistrations.mobileNumber',
+        contactName: '$employerregistrations.contactName',
+        email: '$employerregistrations.email',
+        name: '$employerregistrations.name',
+      },
+    },
+  ]);
+  console.log(employer);
+  const { candidates, subject, signature, email } = body;
+  candidates.forEach(async (e) => {
+    await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
+    const candidate = await CandidateRegistration.findById(e);
+    // console.log(candidate)
+    if (body.mail == 'mail') {
+      const data1 = await ejs.renderFile(__dirname + '/template.ejs', {
+        name: candidate.name,
+        subject: subject,
+        signature: signature,
+        keySkill: keySkill,
+        preferedIndustry: preferedIndustry,
+        preferredSkill: preferredSkill,
+        adminStatus: adminStatus,
+        active: active,
+        jobTittle: jobTittle,
+        contactNumber: contactNumber,
+        jobDescription: jobDescription,
+        educationalQualification: educationalQualification,
+        salaryRangeFrom: salaryRangeFrom,
+        salaryRangeTo: salaryRangeTo,
+        experienceFrom: experienceFrom,
+        experienceTo: experienceTo,
+        interviewType: interviewType,
+        candidateDescription: candidateDescription,
+        salaryDescription: salaryDescription,
+        urltoApply: urltoApply,
+        workplaceType: workplaceType,
+        industry: industry,
+        jobLocation: jobLocation,
+        employmentType: employmentType,
+        openings: openings,
+        role: role,
+        roleCategory: roleCategory,
+        department: department,
+        industry: industry,
+        interviewstartDate: interviewstartDate,
+        interviewendDate: interviewendDate,
+        startTime: startTime,
+        endTime: endTime,
+        recruiterName: recruiterName,
+        date: date,
+        time: time,
+        companyType: companyType,
+        mobileNumber: mobileNumber,
+        contactName: contactName,
+        email: email,
+        name: name,
+      });
+      const mainOptions = {
+        from: body.email,
+        to: candidate.email,
+        subject: 'templates',
+        html: data1,
+      };
 
-
-  const data = await ejs.renderFile(__dirname + "/template.ejs", { name: 'bharathiraja', age: 25 });
-  const mainOptions = {
-    from: 'vignesh1041996@gmail.com',
-    to: ['bharathiraja996574@gmail.com', 'vignesh1041996@gmail.com'],
-    subject: 'templates',
-    html: data
-  };
-
-  transporter.sendMail(mainOptions, (err, info) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('Message sent: ' + info.response);
+      transporter.sendMail(mainOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Message sent: ' + info.response);
+        }
+      });
     }
   });
-  //   const data = await EmployerRegistration.findById(userId)
-  //   if (!data) {
-  //     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
-  //   }
-  //   const { candidates } = body
-  //   candidates.forEach(async (e) => {
-  //     await EmployerMailNotification.create({...body, ...{userId:userId, candidateId:e}});
-  //  });
 
-  // let email = await emailService.sendEmailTemplate('bharathiraja996574@gmail.com', 'asdasdas', data)
-  return { messages: 'Send Notification Mail Successfully...' }
-}
+  return { messages: 'Send Notification Mail Successfully...' };
+};
 
 const getAll_Mail_notification_employerside = async (userId) => {
   const data = await EmployerMailNotification.aggregate([
@@ -1216,7 +1396,7 @@ const getAll_Mail_notification_employerside = async (userId) => {
               sslcPassedYear: '$candidatedetails.sslcPassedYear',
               sslcMedium: '$candidatedetails.sslcMedium',
               sslcBoard: '$candidatedetails.sslcBoard',
-              sslcQualification: "$candidatedetails.sslcqualifications.qualification",
+              sslcQualification: '$candidatedetails.sslcqualifications.qualification',
               pgUniversity: '$candidatedetails.pgUniversity',
               pgMarks: '$candidatedetails.pgUniversity',
               pgGradingSystem: '$candidatedetails.pgUniversity',
@@ -1248,8 +1428,8 @@ const getAll_Mail_notification_employerside = async (userId) => {
             },
           },
         ],
-        as: 'candidateregistrations'
-      }
+        as: 'candidateregistrations',
+      },
     },
     {
       $lookup: {
@@ -1272,8 +1452,8 @@ const getAll_Mail_notification_employerside = async (userId) => {
         //       },
         //     },
         // ],
-        as: 'employerdetails'
-      }
+        as: 'employerdetails',
+      },
     },
     {
       $unwind: {
@@ -1294,11 +1474,11 @@ const getAll_Mail_notification_employerside = async (userId) => {
         candidateId: 1,
         mailId: 1,
         date: 1,
-      }
-    }
-  ])
-  return data
-}
+      },
+    },
+  ]);
+  return data;
+};
 
 // getAll_Mail_notification_candidateside
 
@@ -1335,8 +1515,8 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         //   }
         // }
         // ],
-        as: 'employerregistrations'
-      }
+        as: 'employerregistrations',
+      },
     },
     {
       $unwind: {
@@ -1349,8 +1529,8 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
-        as: 'employerdetails'
-      }
+        as: 'employerdetails',
+      },
     },
     {
       $unwind: {
@@ -1363,8 +1543,8 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         from: 'candidatepostjobs',
         localField: 'mailId',
         foreignField: 'jobId',
-        as: 'candidatepostjobs'
-      }
+        as: 'candidatepostjobs',
+      },
     },
     {
       $unwind: {
@@ -1389,12 +1569,11 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         employerregistrations: '$employerregistrations',
         date: 1,
         appliedStatus: '$candidatepostjobs.approvedStatus',
-      }
-    }
-  ])
-  return data
-
-}
+      },
+    },
+  ]);
+  return data;
+};
 // get jobpost data
 const get_job_post = async (id) => {
   const data = await EmployerDetails.aggregate([
@@ -1408,8 +1587,8 @@ const get_job_post = async (id) => {
         from: 'employerregistrations',
         localField: 'userId',
         foreignField: '_id',
-        as: 'employerregistrations'
-      }
+        as: 'employerregistrations',
+      },
     },
     {
       $unwind: {
@@ -1446,11 +1625,11 @@ const get_job_post = async (id) => {
         openings: 1,
         date: 1,
         time: 1,
-      }
+      },
     },
-  ])
-  return data
-}
+  ]);
+  return data;
+};
 
 // get notification job id
 const get_job_post_candidate = async (id, candidateId) => {
@@ -1466,8 +1645,8 @@ const get_job_post_candidate = async (id, candidateId) => {
         from: 'employerregistrations',
         localField: 'userId',
         foreignField: '_id',
-        as: 'employerregistrations'
-      }
+        as: 'employerregistrations',
+      },
     },
     {
       $unwind: {
@@ -1480,8 +1659,8 @@ const get_job_post_candidate = async (id, candidateId) => {
         from: 'candidateregistrations',
         localField: 'candidateId',
         foreignField: '_id',
-        as: 'candidateregistrations'
-      }
+        as: 'candidateregistrations',
+      },
     },
     {
       $unwind: {
@@ -1501,8 +1680,8 @@ const get_job_post_candidate = async (id, candidateId) => {
             },
           },
         ],
-        as: 'candidatepostjobs'
-      }
+        as: 'candidatepostjobs',
+      },
     },
     {
       $unwind: {
@@ -1544,11 +1723,11 @@ const get_job_post_candidate = async (id, candidateId) => {
               openings: 1,
               date: 1,
               time: 1,
-            }
-          }
+            },
+          },
         ],
-        as: 'employerdetails'
-      }
+        as: 'employerdetails',
+      },
     },
     {
       $unwind: {
@@ -1569,26 +1748,25 @@ const get_job_post_candidate = async (id, candidateId) => {
         jobDetails: '$employerdetails',
         candiadteName: '$candidateregistrations.name',
         aboutCompany: '$employerregistrations.aboutCompany',
-        appliedStatus: '$candidatepostjobs.approvedStatus'
-      }
+        appliedStatus: '$candidatepostjobs.approvedStatus',
+      },
     },
-  ])
-  return data
-}
+  ]);
+  return data;
+};
 
-// notification status change 
+// notification status change
 
 const candidate_mailnotification_Change = async (id, body) => {
-  const data = await EmployerMailNotification.findById(id)
+  const data = await EmployerMailNotification.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   const value = await EmployerMailNotification.findByIdAndUpdate({ _id: id }, body, { new: true });
-  return value
-}
+  return value;
+};
 
-
-// 
+//
 const neighbour_api = async (lat, long, type, radius) => {
   // console.log(location,type,radius)
   let response = await Axios.get(
@@ -1617,11 +1795,11 @@ const All_Plans = async (userId) => {
             $group: {
               _id: null,
               total: { $sum: 1 },
-            }
-          }
+            },
+          },
         ],
-        as: 'planpayments'
-      }
+        as: 'planpayments',
+      },
     },
     {
       $unwind: {
@@ -1631,12 +1809,12 @@ const All_Plans = async (userId) => {
     },
     {
       $project: {
-        numberOfUsers: '$planpayments.total'
-      }
-    }
-  ])
+        numberOfUsers: '$planpayments.total',
+      },
+    },
+  ]);
   return data;
-}
+};
 
 const all_plans_users_details = async (id) => {
   const data = await PlanPayment.aggregate([
@@ -1656,12 +1834,12 @@ const all_plans_users_details = async (id) => {
               from: 'employerdetails',
               localField: '_id',
               foreignField: 'userId',
-              as: 'employerdetails'
-            }
+              as: 'employerdetails',
+            },
           },
         ],
-        as: 'employerregistrations'
-      }
+        as: 'employerregistrations',
+      },
     },
     {
       $unwind: {
@@ -1687,12 +1865,12 @@ const all_plans_users_details = async (id) => {
         contactName: '$employerregistrations.contactName',
         mobileNumber: '$employerregistrations.mobileNumber',
         location: '$employerregistrations.location',
-        employerdetails: '$employerregistrations.employerdetails'
-      }
-    }
-  ])
-  return data
-}
+        employerdetails: '$employerregistrations.employerdetails',
+      },
+    },
+  ]);
+  return data;
+};
 
 const keySkillData = async (key) => {
   // const re = new RegExp(key.toLowerCase())
@@ -1700,47 +1878,70 @@ const keySkillData = async (key) => {
   // let fn = re.exec.bind(re);
   // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   // let filtered = data.filter(fn);
-  var query = new RegExp('^' + key + '$', "i")
-  const data = await Skill.find({ Skill_Title: { $regex: key, $options: 'i' } }).sort({ Skill_Title: 1 }).select('Skill_Title').limit(50)
-  return data
-}
+  var query = new RegExp('^' + key + '$', 'i');
+  const data = await Skill.find({ Skill_Title: { $regex: key, $options: 'i' } })
+    .sort({ Skill_Title: 1 })
+    .select('Skill_Title')
+    .limit(50);
+  return data;
+};
 
 const location = async (key) => {
-  const re = new RegExp(key.toLowerCase())
+  const re = new RegExp(key.toLowerCase());
   // console.log(re)
   let fn = re.exec.bind(re);
-  let data = ["nagapattinam", "mayiladuthurai", "madurai", "krishnagiri", "karur", "kanniyakumari", "erode", "dindigul", "dharmapuri", "ariyalur", "chennai", "kanchipuram", "villupuram", "pondicherry", "cuddalore", "kallakuruchi", "nagapattinam", "salem", "bangalore", "coimbatore",]
+  let data = [
+    'nagapattinam',
+    'mayiladuthurai',
+    'madurai',
+    'krishnagiri',
+    'karur',
+    'kanniyakumari',
+    'erode',
+    'dindigul',
+    'dharmapuri',
+    'ariyalur',
+    'chennai',
+    'kanchipuram',
+    'villupuram',
+    'pondicherry',
+    'cuddalore',
+    'kallakuruchi',
+    'nagapattinam',
+    'salem',
+    'bangalore',
+    'coimbatore',
+  ];
   let filtered = data.filter(fn);
-  return filtered
-}
+  return filtered;
+};
 
 const create_Recruiter = async (userId, body) => {
-  const data = await Recruiters.create({ ...body, ...{ userId: userId } })
-  return data
-}
+  const data = await Recruiters.create({ ...body, ...{ userId: userId } });
+  return data;
+};
 
 const get_Recruiter = async (userId) => {
-  const data = await Recruiters.find({ userId: userId })
-  return data
-}
-
+  const data = await Recruiters.find({ userId: userId });
+  return data;
+};
 
 const get_Recruiter_id = async (id) => {
-  const data = await Recruiters.findById(id)
-  return data
-}
+  const data = await Recruiters.findById(id);
+  return data;
+};
 
 const Recruiter_edit = async (id, body) => {
   // console.log(id, body)
-  const data = await Recruiters.findByIdAndUpdate({ _id: id }, body, { new: true })
-  return data
-}
+  const data = await Recruiters.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return data;
+};
 
 const Recruiter_delete = async (id) => {
   // console.log(id, body)
-  const data = await Recruiters.deleteOne({ _id: id })
-  return data
-}
+  const data = await Recruiters.deleteOne({ _id: id });
+  return data;
+};
 module.exports = {
   createEmpDetails,
   getByIdUser,

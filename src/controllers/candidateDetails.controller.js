@@ -211,7 +211,7 @@ const recentSearch_byId = catchAsync(async(req,res) => {
 
 
 const candidate_detials = catchAsync(async(req,res) => {
-  const user = await candidateDetailsService.candidate_detials(req.params.id)
+  const user = await candidateDetailsService.candidate_detials(req.params.id, req.params.jobid)
   res.send(user)
 })
 
