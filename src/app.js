@@ -79,7 +79,6 @@ app.use(cors());
 app.options('*', cors());
 app.use(cookieparser());
 var allowCrossDomain = function (req, res, next) {
-  console.log("asdasdsdasdasasdasdaasdasdadsagdhagdg")
   res.header('Content-Security-Policy', "frame-ancestors 'self'")
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
