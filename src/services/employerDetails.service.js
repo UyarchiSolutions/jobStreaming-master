@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification } = require('../models/employerDetails.model');
+const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification} = require('../models/employerDetails.model');
 const { PlanPayment } = require('../models/planPaymentDetails.model');
 const { CandidatePostjob } = require('../models/candidateDetails.model');
 const { CandidateRegistration } = require('../models');
@@ -12,6 +12,7 @@ const moment = require('moment');
 const { format } = require('morgan');
 const { create } = require('../models/candidateRegistration.model');
 const Axios = require('axios');
+const {emailService} = require('../services');
 
 //keySkill
 
@@ -887,9 +888,9 @@ const send_mail_and_notification = async (userId, body) => {
   }
   const { candidates } = body
   candidates.forEach(async (e) => {
-    await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
-  });
-  return { messages: 'Send Notification Mail Successfully...' }
+    await EmployerMailNotification.create({...body, ...{userId:userId, candidateId:e}});
+ });
+  return {messages:'Send Notification Mail Successfully...'}
 }
 
 const getAll_Mail_notification_employerside = async (userId) => {
@@ -1682,6 +1683,33 @@ const location = async (key) => {
   return filtered
 }
 
+const create_Recruiter = async (userId, body) => {
+   const data = await Recruiters.create({...body, ...{userId:userId} })
+  return data
+}
+
+const get_Recruiter = async (userId) => {
+  const data = await Recruiters.find({userId:userId})
+ return data
+}
+
+
+const get_Recruiter_id = async (id) => {
+  const data = await Recruiters.findById(id)
+ return data
+}
+
+const Recruiter_edit = async (id, body) => {
+  // console.log(id, body)
+  const data = await Recruiters.findByIdAndUpdate({_id:id}, body, {new:true})
+ return data
+}
+
+const Recruiter_delete = async (id) => {
+  // console.log(id, body)
+  const data = await Recruiters.deleteOne({_id:id})
+   return data
+}
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -1717,4 +1745,9 @@ module.exports = {
   update_active_deactive,
   get_job_post,
   get_job_post_candidate,
+  create_Recruiter,
+  get_Recruiter,
+  get_Recruiter_id,
+  Recruiter_edit,
+  Recruiter_delete,
 };

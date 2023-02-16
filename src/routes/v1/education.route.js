@@ -22,4 +22,6 @@ router.route('/get_Rolecategory/:id').get(educationController.get_Rolecategory);
 router.route('/get_Industry').get(educationController.get_Industry);
 router.route('/get_Role/:id').get(educationController.get_Role);
 router.route('/get_allcourse').get(educationController.get_allcourse);
+router.route('/get_all_specialization').post(educationController.get_all_specialization);
+router.route('/get_Qualification').post(educationController.get_Qualification);
 module.exports = router;
