@@ -97,7 +97,6 @@ const forget_password_set = async (id, body) => {
 }
  
 const UsersLogin = async (userBody) => {
-    let Boolean = false
     const { email, password } = userBody;
     let userName = await CandidateRegistration.findOne({ email: email });
     if (!userName) {

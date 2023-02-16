@@ -123,6 +123,15 @@ const maskmail_email = async (to) => {
   await transport.sendMail(msg);
 };
 
+
+const notification_mail = async (candidate, body) => {
+  console.log(candidate);
+  const msg = { from: '"Uyarchi solutions" <noreply-tj@uyarchi.com>', to, subject: 'maskmailer checked' };
+  console.log(msg);
+  await transport.sendMail(msg);
+};
+
+
 module.exports = {
   transport,
   sendEmail,
@@ -134,4 +143,5 @@ module.exports = {
   sendVerificationEmailEmp,
   sendforgotEmailEmp,
   maskmail,
+  notification_mail,
 };

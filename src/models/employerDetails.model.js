@@ -406,6 +406,9 @@ const EmployerMailNotificationSchema = mongoose.Schema(
     mailId: {
       type: String,
     },
+    mail:{
+      type:String,
+    },
     email: {
       type: String,
     },

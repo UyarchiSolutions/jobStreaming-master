@@ -12,6 +12,7 @@ const moment = require('moment');
 const { format } = require('morgan');
 const { create } = require('../models/candidateRegistration.model');
 const Axios = require('axios');
+const {emailService} = require('../services');
 
 //keySkill
 
@@ -888,6 +889,9 @@ const send_mail_and_notification = async (userId, body) => {
   const {candidates} = body
   candidates.forEach(async (e) => {
     await EmployerMailNotification.create({...body, ...{userId:userId, candidateId:e}});
+    if(body.mail == "mail"){
+      await emailService.notification_mail(e, body)
+   }
  });
   return {messages:'Send Notification Mail Successfully...'}
 }
