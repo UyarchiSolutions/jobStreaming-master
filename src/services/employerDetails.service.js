@@ -147,11 +147,48 @@ const getByIdUser = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'departments',
+        localField: 'department',
+        foreignField: '_id',
+        as: 'departments',
+      },
+    },
+    {
       $unwind: {
-        path: '$candidatepostjobs',
+        path: '$departments',
         preserveNullAndEmptyArrays: true,
       },
     },
+    {
+      $lookup: {
+        from: 'rolecategories',
+        localField: 'roleCategory',
+        foreignField: '_id',
+        as: 'rolecategories',
+      },
+    },
+    {
+      $unwind: {
+        path: '$rolecategories',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    
     {
       $project: {
         appliedcount: '$candidatepostjobs.count',
@@ -190,6 +227,12 @@ const getByIdUser = async (id) => {
         expiredDate: 1,
         createdAt: 1,
         adminStatus: 1,
+        recruiterName:1,
+        recruiterEmail:1,
+        recruiterNumber:1, 
+        roleName:'$jobroles.Job_role',
+        categoryName:'$rolecategories.Role_Category',
+        departmentName:'$departments.Department',
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
@@ -1884,8 +1927,8 @@ const keySkillData = async (key) => {
   // let fn = re.exec.bind(re);
   // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   // let filtered = data.filter(fn);
-  var query = new RegExp(key);
-  const data = await Skill.find({ Skill_Title: { $regex: /^angularjs/i } }).sort({ Skill_Title: 1 }).limit(7);
+  var query = /^joh?/i
+  const data = await Skill.find({ Skill_Title: { $regex: query } }).sort({ Skill_Title: 1 }).limit(7);
     // .sort({ Skill_Title: 1 })
     // .select('Skill_Title')
   return data;
