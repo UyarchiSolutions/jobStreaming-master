@@ -111,24 +111,25 @@ const get_allcourse = async () => {
 };
 
 const get_all_specialization = async (body) => {
-  const {arr} = body
-  let data = await AllSpecialization.find({ courseId:{$in:arr} });
+  const { arr } = body
+  let data = await AllSpecialization.find({ courseId: { $in: arr } });
   return data;
 };
 
 const get_Qualification = async (body) => {
-  const {arr} = body
-  let data = await AllCourse.find({ QualificationId:{$in:arr} });
-  // const data = await AllCourse.aggregate([
-  //   {
-  //     $match:{ QualificationId:{$in:arr} },
-  //   },
-  //   {
-  //     $project:{
 
-  //     }
-  //   }
-  // ])
+  const { arr } = body
+  let data = await Qualification.aggregate([
+    { $match: { $and: [{ _id: { $in: arr } }] } },
+    {
+      $lookup: {
+        from: 'allcourses',
+        localField: '_id',
+        foreignField: 'QualificationId',
+        as: 'allCourses',
+      },
+    },
+  ])
   return data;
 };
 
