@@ -33,7 +33,7 @@ server.listen(config.port, () => {
 
 io.sockets.on('connection', async (socket) => {
   socket.on('groupchat', async (data) => {
-    await chetModule.chat_room_create(data,io)
+    await chetModule.chat_room_create(data, io)
   });
   socket.on('', (msg) => {
     console.log('message: ' + msg);
@@ -82,11 +82,16 @@ var allowCrossDomain = function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization');
+  res.header('Content-Security-Policy', "frame-ancestors 'none'")
   if (req.method === "OPTIONS") res.send(200);
   else next();
 }
 app.use(allowCrossDomain);
-
+app.use(function (req, res, next) {
+  /* Clickjacking prevention */
+  res.header('Content-Security-Policy', "frame-ancestors 'none'")
+  next()
+})
 // jwt authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
