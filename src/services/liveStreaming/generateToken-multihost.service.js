@@ -43,7 +43,7 @@ const generateToken = async (req) => {
     room.cloudRecording = true;
     room.save();
   }
-  return { uid, token, channel: chennel };
+  return { uid, token, channel: chennel, room };
 };
 
 const generateToken_sub = async (req) => {
@@ -136,7 +136,7 @@ const recording_start = async (req) => {
           bucket: 'streamingupload',
           accessKey: 'AKIA3323XNN7Y2RU77UG',
           secretKey: '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',
-          fileNamePrefix: ['multihost', token.Uid.toString()],
+          fileNamePrefix: ['multihost', token.UId.toString()],
         },
       },
     },

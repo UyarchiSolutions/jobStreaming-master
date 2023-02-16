@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
-const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification} = require('../models/employerDetails.model');
+const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification } = require('../models/employerDetails.model');
 const { PlanPayment } = require('../models/planPaymentDetails.model');
-const { CandidatePostjob} = require('../models/candidateDetails.model');
+const { CandidatePostjob } = require('../models/candidateDetails.model');
 const { CandidateRegistration } = require('../models');
 const { CreatePlan } = require('../models/createPlan.model');
 const { Skill } = require('../models/education.model');
@@ -17,8 +17,8 @@ const Axios = require('axios');
 
 const createEmpDetails = async (userId, userBody) => {
   // let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
-  let app = await EmployerRegistration.findOne({_id:userId})
-  if(!app){
+  let app = await EmployerRegistration.findOne({ _id: userId })
+  if (!app) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
   // const {validity} = userBody;
@@ -26,51 +26,51 @@ const createEmpDetails = async (userId, userBody) => {
   let creat1 = moment().format('HHmmss');
   let data;
   let values
-  if(userBody.jobortemplate == "job"){
-  let expiredDate
-  // console.log(validity);
-  const plan = await PlanPayment.findOne({userId:userId, active:true})
-  let pay
-  if(plan){
-  pay = await  CreatePlan.findOne({_id:plan.planId})
-  }
-  if(pay){
-   expiredDate = moment().add(pay.jobPostVAlidity, 'days').format('YYYY-MM-DD');
-  }else{
-    expiredDate = moment().add(1, 'days').format('YYYY-MM-DD');
-  }
-  if(!userBody.interviewDate){
-    values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time:creat1 } };
-  }else{
-     values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time:creat1, interviewstartDate:interviewDate.startDate, interviewendDate:interviewDate.endDate, } };
-  }
-  const freeCount = await EmployerDetails.find({userId:userId})
-  const usser = await EmployerRegistration.findById(userId)
-  console.log(freeCount.length, usser.freePlanCount)
-  if(freeCount.length  >= usser.freePlanCount){
-  const da = await PlanPayment.findOne({userId:userId, active:true})
-  if(!da){
-    throw new ApiError(httpStatus.NOT_FOUND, 'your not pay the plan');
-  }
-  if(date > da.expDate){
-    await PlanPayment.findByIdAndUpdate({_id:da._id}, {active:false}, {new:true})
-    throw new ApiError(httpStatus.NOT_FOUND, 'plan time expired');
-  }
-     const createPlan = await CreatePlan.findOne({_id:da.planId})
-     if(da.countjobPost == createPlan.jobPost){
-      await PlanPayment.findByIdAndUpdate({_id:da._id}, {active:false}, {new:true})
-      throw new ApiError(httpStatus.NOT_FOUND, 'jobpost limit over...');
-     }
-    // }
-    let count = da.countjobPost += 1
-    await PlanPayment.findByIdAndUpdate({_id:da._id}, {countjobPost:count}, {new:true})
-  }
+  if (userBody.jobortemplate == "job") {
+    let expiredDate
+    // console.log(validity);
+    const plan = await PlanPayment.findOne({ userId: userId, active: true })
+    let pay
+    if (plan) {
+      pay = await CreatePlan.findOne({ _id: plan.planId })
+    }
+    if (pay) {
+      expiredDate = moment().add(pay.jobPostVAlidity, 'days').format('YYYY-MM-DD');
+    } else {
+      expiredDate = moment().add(1, 'days').format('YYYY-MM-DD');
+    }
+    if (!userBody.interviewDate) {
+      values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time: creat1 } };
+    } else {
+      values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time: creat1, interviewstartDate: interviewDate.startDate, interviewendDate: interviewDate.endDate, } };
+    }
+    const freeCount = await EmployerDetails.find({ userId: userId })
+    const usser = await EmployerRegistration.findById(userId)
+    console.log(freeCount.length, usser.freePlanCount)
+    if (freeCount.length >= usser.freePlanCount) {
+      const da = await PlanPayment.findOne({ userId: userId, active: true })
+      if (!da) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'your not pay the plan');
+      }
+      if (date > da.expDate) {
+        await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true })
+        throw new ApiError(httpStatus.NOT_FOUND, 'plan time expired');
+      }
+      const createPlan = await CreatePlan.findOne({ _id: da.planId })
+      if (da.countjobPost == createPlan.jobPost) {
+        await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true })
+        throw new ApiError(httpStatus.NOT_FOUND, 'jobpost limit over...');
+      }
+      // }
+      let count = da.countjobPost += 1
+      await PlanPayment.findByIdAndUpdate({ _id: da._id }, { countjobPost: count }, { new: true })
+    }
 
-  data = await EmployerDetails.create(values);
-}else{
-  values = { ...userBody, ...{ userId: userId, date: date, time:creat1 } };
-  data = await EmployerDetails.create(values);
-}
+    data = await EmployerDetails.create(values);
+  } else {
+    values = { ...userBody, ...{ userId: userId, date: date, time: creat1 } };
+    data = await EmployerDetails.create(values);
+  }
   // if(freeCount == usser.freePlanCount){
   // }
   return data;
@@ -79,11 +79,11 @@ const createEmpDetails = async (userId, userBody) => {
 const createEmpDetailsRepost = async (id, userBody) => {
   const { userId } = userBody;
   let expiredDate
-  const plan = await PlanPayment.findOne({userId:userId, active:true})
-  const pay = await  CreatePlan.findOne({_id:plan.planId})
-  if(pay){
-   expiredDate = moment().add(pay.jobPostVAlidity, 'days').format('YYYY-MM-DD');
-  }else{
+  const plan = await PlanPayment.findOne({ userId: userId, active: true })
+  const pay = await CreatePlan.findOne({ _id: plan.planId })
+  if (pay) {
+    expiredDate = moment().add(pay.jobPostVAlidity, 'days').format('YYYY-MM-DD');
+  } else {
     expiredDate = moment().add(1, 'days').format('YYYY-MM-DD');
   }
   // let expiredDate = moment().add(validity, 'days').format('YYYY-MM-DD');
@@ -93,11 +93,11 @@ const createEmpDetailsRepost = async (id, userBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'employerDetails not found');
   }
-  let values = { ...userBody, ...{ expiredDate: expiredDate, date: date, adminStatus: 'Pending', time:creat1} };
+  let values = { ...userBody, ...{ expiredDate: expiredDate, date: date, adminStatus: 'Pending', time: creat1 } };
   console.log(values)
   const data = await EmployerDetails.findByIdAndUpdate({ _id: id }, values, { new: true });
   let count = plan.countjobPost += 1
-  await PlanPayment.findByIdAndUpdate({_id:plan._id}, {countjobPost:count}, {new:true})
+  await PlanPayment.findByIdAndUpdate({ _id: plan._id }, { countjobPost: count }, { new: true })
   await data.save();
   return data;
 };
@@ -117,12 +117,12 @@ const getByIdUser = async (id) => {
       $lookup: {
         from: 'candidatepostjobs',
         localField: '_id',
-        foreignField: 'jobId', 
-        pipeline:[
+        foreignField: 'jobId',
+        pipeline: [
           {
             $group: {
-               _id: null,
-               count: { $sum:1}
+              _id: null,
+              count: { $sum: 1 }
             }
           }
         ],
@@ -137,7 +137,7 @@ const getByIdUser = async (id) => {
     },
     {
       $project: {
-        appliedcount:"$candidatepostjobs.count",
+        appliedcount: "$candidatepostjobs.count",
         keySkill: 1,
         dates: dates,
         date: 1,
@@ -199,7 +199,7 @@ const getById = async (id) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'employerDetails not found');
   }
   return data;
-  
+
 };
 
 
@@ -208,9 +208,9 @@ const update_active_deactive = async (id, body) => {
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'employerDetails not found');
   }
-  const value = await EmployerDetails.findByIdAndUpdate({_id:id}, {active:body.active}, {new:true})
+  const value = await EmployerDetails.findByIdAndUpdate({ _id: id }, { active: body.active }, { new: true })
   return value;
-  
+
 };
 
 const data_Id = async (id) => {
@@ -310,40 +310,40 @@ const deleteById = async (id) => {
 };
 
 
-const countPostjobError = async (userId) =>{
+const countPostjobError = async (userId) => {
   let date = moment().format('YYYY-MM-DD');
   // let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
-  let app = await EmployerRegistration.findOne({_id:userId})
-  if(!app){
+  let app = await EmployerRegistration.findOne({ _id: userId })
+  if (!app) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
-  const freeCount = await EmployerDetails.find({userId:userId})
+  const freeCount = await EmployerDetails.find({ userId: userId })
   const usser = await EmployerRegistration.findById(userId)
-  const daaa = await PlanPayment.findOne({userId:userId, active:true})
-  if(freeCount.length == usser.freePlanCount && !daaa){ 
+  const daaa = await PlanPayment.findOne({ userId: userId, active: true })
+  if (freeCount.length == usser.freePlanCount && !daaa) {
     throw new ApiError(httpStatus.NOT_FOUND, 'your free post over..');
   }
-   if(freeCount.length >= usser.freePlanCount){
-   const da = await PlanPayment.findOne({userId:userId, active:true})
-   if(!da){
-    throw new ApiError(httpStatus.NOT_FOUND, 'your not pay the plan');
-   }
-   const createPlan = await CreatePlan.findOne({_id:da.planId})
-   if(da.countjobPost == createPlan.jobPost){
-    throw new ApiError(httpStatus.NOT_FOUND, 'jobpost limit over...');
-   }
-   if(date > da.expDate){
-    await PlanPayment.findByIdAndUpdate({_id:da._id}, {active:false}, {new:true})
-    throw new ApiError(httpStatus.NOT_FOUND, 'plan time expired');
+  if (freeCount.length >= usser.freePlanCount) {
+    const da = await PlanPayment.findOne({ userId: userId, active: true })
+    if (!da) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'your not pay the plan');
+    }
+    const createPlan = await CreatePlan.findOne({ _id: da.planId })
+    if (da.countjobPost == createPlan.jobPost) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'jobpost limit over...');
+    }
+    if (date > da.expDate) {
+      await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true })
+      throw new ApiError(httpStatus.NOT_FOUND, 'plan time expired');
+    }
   }
-}
-  return {message:"button enable"}
+  return { message: "button enable" }
 }
 
 
 const EmployerspostDraft = async (userId, userBody) => {
-  let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
-  if(!app){
+  let app = await EmployerRegistration.findOne({ _id: userId, adminStatus: "Approved" })
+  if (!app) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
   let date = moment().format('YYYY-MM-DD');
@@ -357,18 +357,18 @@ const EmployerspostDraft = async (userId, userBody) => {
   // }else{
   //   expiredDate = moment().add(1, 'days').format('YYYY-MM-DD');
   // }
-  let values ;
+  let values;
   console.log(userBody.interviewDate, "huhi")
-  if(!userBody.interviewDate){
+  if (!userBody.interviewDate) {
     console.log("fer")
-     values = { ...userBody, ...{ userId: userId, date: date, time:creat1} };
-  }else{
-     values = { ...userBody, ...{ userId: userId, date: date, time:creat1, interviewstartDate:interviewDate.startDate, interviewendDate:interviewDate.endDate} };
+    values = { ...userBody, ...{ userId: userId, date: date, time: creat1 } };
+  } else {
+    values = { ...userBody, ...{ userId: userId, date: date, time: creat1, interviewstartDate: interviewDate.startDate, interviewendDate: interviewDate.endDate } };
   }
   let data1 = await EmployerPostDraft.create(values);
   return data1
 }
- 
+
 
 const draftData_employerside = async (userId) => {
   const data = await EmployerPostDraft.aggregate([
@@ -383,7 +383,7 @@ const draftData_employerside = async (userId) => {
 
 const draftData_employerside_ById = async (id) => {
   const data = await EmployerPostDraft.findById(id)
-  if(!data){
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   return data
@@ -391,14 +391,14 @@ const draftData_employerside_ById = async (id) => {
 
 const draftData_delete = async (id) => {
   const data = await EmployerPostDraft.findById(id)
-  if(!data){
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   await data.remove();
 }
 
 // postjob_candidate_Applied_datas
-const getAllApplied_postjobs_Candidates = async (userId)=> {
+const getAllApplied_postjobs_Candidates = async (userId) => {
   const data = await EmployerDetails.aggregate([
     {
       $match: {
@@ -409,20 +409,20 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
       $lookup: {
         from: 'candidatepostjobs',
         localField: '_id',
-        foreignField: 'jobId', 
-        pipeline:[
+        foreignField: 'jobId',
+        pipeline: [
           {
             $lookup: {
               from: 'candidateregistrations',
               localField: 'userId',
-              foreignField: '_id', 
-              pipeline:[
+              foreignField: '_id',
+              pipeline: [
                 {
                   $lookup: {
                     from: 'candidatedetails',
                     localField: '_id',
                     foreignField: 'userId',
-                    pipeline:[
+                    pipeline: [
                       {
                         $lookup: {
                           from: 'qualifications',
@@ -656,74 +656,74 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
                     createdAt: 1,
                     updatedAt: 1,
                     // candidateDetails: '$candidatedetails',
-                    keyskill:'$candidatedetails.keyskill',
-                    currentSkill:'$candidatedetails.currentSkill',
-                    preferredSkill:'$candidatedetails.preferredSkill',
-                    active:'$candidatedetails.active',
-                    image:'$candidatedetails.image',
-                    dob:'$candidatedetails.dob',
-                    experienceYear:'$candidatedetails.experienceYear',
-                    experienceMonth:'$candidatedetails.experienceMonth',
-                    expectedctc:'$candidatedetails.expectedctc',
-                    currentctc:'$candidatedetails.currentctc',
-                    locationCurrent:'$candidatedetails.locationCurrent',
-                    locationNative:'$candidatedetails.locationNative',
-                    noticeperiod:'$candidatedetails.noticeperiod',
-                    gender:'$candidatedetails.gender',
-                    maritalStatus:'$candidatedetails.maritalStatus',
-                    ugMarks:'$candidatedetails.ugMarks',
-                    ugGradingSystem:'$candidatedetails.ugGradingSystem',
-                    ugCourseType:'$candidatedetails.ugCourseType',
-                    ugCourseDurationTo:'$candidatedetails.ugCourseDurationTo',
-                    ugCourseDurationFrom:'$candidatedetails.ugCourseDurationFrom',
-                    relocate:'$candidatedetails.relocate',
-                    languages:'$candidatedetails.languages',
-                    ugUniversity:'$candidatedetails.ugUniversity',
-                    drQualification:'$candidatedetails.qualifications.qualification',
-                    drcourses:'$candidatedetails.drcourses.Course',
-                    drSpecialization:'$candidatedetails.drspecializations.Specialization',
-                    pgQualification:'$candidatedetails.pgqualifications.qualification',
-                    pgCourse:'$candidatedetails.pgcourses.Course',
-                    pgSpecialization:'$candidatedetails.pgspecializations.Specialization',
-                    ugQualification:'$candidatedetails.ugqualifications.qualification',
-                    ugCourse:'$candidatedetails.ugcourses.Course',
-                    ugSpecialization:'$candidatedetails.specializations.Specialization',
-                    role:'$candidatedetails.jobroles.Job_role',
-                    roleCategory:'$candidatedetails.rolecategories.Role_Category',
-                    department:'$candidatedetails.departments.Department',
-                    industry:'$candidatedetails.industries.Industry',
-                    sslctotalmarks:'$candidatedetails.sslctotalmarks',
-                    sslcPassedYear:'$candidatedetails.sslcPassedYear',
-                    sslcMedium:'$candidatedetails.sslcMedium',
-                    sslcBoard:'$candidatedetails.sslcBoard',
-                    sslcQualification:"$candidatedetails.sslcqualifications.qualification",
-                    pgUniversity:'$candidatedetails.pgUniversity',
-                    pgMarks:'$candidatedetails.pgUniversity',
-                    pgGradingSystem:'$candidatedetails.pgUniversity',
-                    pgCourseType:'$candidatedetails.pgUniversity',
-                    pgCourseDurationTo:'$candidatedetails.pgUniversity',
-                    pgCourseDurationFrom:'$candidatedetails.pgUniversity',
-                    hstotalmarks:'$candidatedetails.hstotalmarks',
-                    hsPassedYear:'$candidatedetails.hsPassedYear',
-                    hsMedium:'$candidatedetails.hsMedium',
-                    hsBoard:'$candidatedetails.hsBoard',
-                    drMarks:'$candidatedetails.drMarks',
-                    drGradingSystem:'$candidatedetails.drGradingSystem',
-                    drCourseType:'$candidatedetails.drCourseType',
-                    drCourseDurationTo:'$candidatedetails.drCourseDurationTo',
-                    drCourseDurationFrom:'$candidatedetails.drCourseDurationFrom',
-                    hsQualification:'$candidatedetails.hscqualifications.qualification',
-                    keyskillSet:'$candidatedetails.keyskillSet',
-                    drUniversity:'$candidatedetails.drUniversity',
-                    experienceMonthSet:'$candidatedetails.experienceMonthSet',
-                    locationSet:'$candidatedetails.locationSet',
-                    experienceYearSet:'$candidatedetails.experienceYearSet',
-                    designationSet:'$candidatedetails.designationSet',
-                    currentIndustry:'$candidatedetails.currentIndustry',
-                    currentDepartment:'$candidatedetails.currentDepartment',
-                    role_Category:'$candidatedetails.role_Category',
-                    salaryFrom:'$candidatedetails.salaryFrom',
-                    SalaryTo:'$candidatedetails.SalaryTo',
+                    keyskill: '$candidatedetails.keyskill',
+                    currentSkill: '$candidatedetails.currentSkill',
+                    preferredSkill: '$candidatedetails.preferredSkill',
+                    active: '$candidatedetails.active',
+                    image: '$candidatedetails.image',
+                    dob: '$candidatedetails.dob',
+                    experienceYear: '$candidatedetails.experienceYear',
+                    experienceMonth: '$candidatedetails.experienceMonth',
+                    expectedctc: '$candidatedetails.expectedctc',
+                    currentctc: '$candidatedetails.currentctc',
+                    locationCurrent: '$candidatedetails.locationCurrent',
+                    locationNative: '$candidatedetails.locationNative',
+                    noticeperiod: '$candidatedetails.noticeperiod',
+                    gender: '$candidatedetails.gender',
+                    maritalStatus: '$candidatedetails.maritalStatus',
+                    ugMarks: '$candidatedetails.ugMarks',
+                    ugGradingSystem: '$candidatedetails.ugGradingSystem',
+                    ugCourseType: '$candidatedetails.ugCourseType',
+                    ugCourseDurationTo: '$candidatedetails.ugCourseDurationTo',
+                    ugCourseDurationFrom: '$candidatedetails.ugCourseDurationFrom',
+                    relocate: '$candidatedetails.relocate',
+                    languages: '$candidatedetails.languages',
+                    ugUniversity: '$candidatedetails.ugUniversity',
+                    drQualification: '$candidatedetails.qualifications.qualification',
+                    drcourses: '$candidatedetails.drcourses.Course',
+                    drSpecialization: '$candidatedetails.drspecializations.Specialization',
+                    pgQualification: '$candidatedetails.pgqualifications.qualification',
+                    pgCourse: '$candidatedetails.pgcourses.Course',
+                    pgSpecialization: '$candidatedetails.pgspecializations.Specialization',
+                    ugQualification: '$candidatedetails.ugqualifications.qualification',
+                    ugCourse: '$candidatedetails.ugcourses.Course',
+                    ugSpecialization: '$candidatedetails.specializations.Specialization',
+                    role: '$candidatedetails.jobroles.Job_role',
+                    roleCategory: '$candidatedetails.rolecategories.Role_Category',
+                    department: '$candidatedetails.departments.Department',
+                    industry: '$candidatedetails.industries.Industry',
+                    sslctotalmarks: '$candidatedetails.sslctotalmarks',
+                    sslcPassedYear: '$candidatedetails.sslcPassedYear',
+                    sslcMedium: '$candidatedetails.sslcMedium',
+                    sslcBoard: '$candidatedetails.sslcBoard',
+                    sslcQualification: "$candidatedetails.sslcqualifications.qualification",
+                    pgUniversity: '$candidatedetails.pgUniversity',
+                    pgMarks: '$candidatedetails.pgUniversity',
+                    pgGradingSystem: '$candidatedetails.pgUniversity',
+                    pgCourseType: '$candidatedetails.pgUniversity',
+                    pgCourseDurationTo: '$candidatedetails.pgUniversity',
+                    pgCourseDurationFrom: '$candidatedetails.pgUniversity',
+                    hstotalmarks: '$candidatedetails.hstotalmarks',
+                    hsPassedYear: '$candidatedetails.hsPassedYear',
+                    hsMedium: '$candidatedetails.hsMedium',
+                    hsBoard: '$candidatedetails.hsBoard',
+                    drMarks: '$candidatedetails.drMarks',
+                    drGradingSystem: '$candidatedetails.drGradingSystem',
+                    drCourseType: '$candidatedetails.drCourseType',
+                    drCourseDurationTo: '$candidatedetails.drCourseDurationTo',
+                    drCourseDurationFrom: '$candidatedetails.drCourseDurationFrom',
+                    hsQualification: '$candidatedetails.hscqualifications.qualification',
+                    keyskillSet: '$candidatedetails.keyskillSet',
+                    drUniversity: '$candidatedetails.drUniversity',
+                    experienceMonthSet: '$candidatedetails.experienceMonthSet',
+                    locationSet: '$candidatedetails.locationSet',
+                    experienceYearSet: '$candidatedetails.experienceYearSet',
+                    designationSet: '$candidatedetails.designationSet',
+                    currentIndustry: '$candidatedetails.currentIndustry',
+                    currentDepartment: '$candidatedetails.currentDepartment',
+                    role_Category: '$candidatedetails.role_Category',
+                    salaryFrom: '$candidatedetails.salaryFrom',
+                    SalaryTo: '$candidatedetails.SalaryTo',
                   },
                 },
               ],
@@ -747,32 +747,32 @@ const getAllApplied_postjobs_Candidates = async (userId)=> {
       },
     },
     {
-      $project:{
-        candidateId:'$candidatepostjobs.candidateregistrations._id',
-        employerCommand:'$candidatepostjobs.employerCommand',
-        postjobId:'$candidatepostjobs._id',
-        status:'$candidatepostjobs.approvedStatus',
-        candidateData:'$candidatepostjobs.candidateregistrations',
+      $project: {
+        candidateId: '$candidatepostjobs.candidateregistrations._id',
+        employerCommand: '$candidatepostjobs.employerCommand',
+        postjobId: '$candidatepostjobs._id',
+        status: '$candidatepostjobs.approvedStatus',
+        candidateData: '$candidatepostjobs.candidateregistrations',
       }
     }
   ])
-  return data 
+  return data
 }
 
-const statusChange_employer  = async (id, updateBody) => {
-const data = await CandidatePostjob.findById(id)
-if(!data){
-  throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
-}
-const Data = await CandidatePostjob.findByIdAndUpdate({ _id: id }, updateBody, { new: true });
-return Data
+const statusChange_employer = async (id, updateBody) => {
+  const data = await CandidatePostjob.findById(id)
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  const Data = await CandidatePostjob.findByIdAndUpdate({ _id: id }, updateBody, { new: true });
+  return Data
 }
 
 const getByIdAll_CandidateDetails = async (id) => {
   const data = await CandidateRegistration.aggregate([
     {
       $match: {
-        $and: [{ userId: { $eq: id} }],
+        $and: [{ userId: { $eq: id } }],
       },
     },
     {
@@ -780,52 +780,52 @@ const getByIdAll_CandidateDetails = async (id) => {
         from: 'candidatedetails',
         localField: '_id',
         foreignField: 'userId',
-        as:'candidatedetails'
-        }
-      },
-      {
-        $project:{
-          name:1,
-          email:1,
-          mobileNumber:1,
-          resume:1,
-          keyskill:'$candidatedetails.keyskill',
-          currentSkill:'$candidatedetails.currentSkill',
-          preferredSkill:'$candidatedetails.preferredSkill',
-          experienceMonth:'$candidatedetails.experienceMonth',
-          experienceYear:'$candidatedetails.experienceYear',
-          salaryRangeFrom:'$candidatedetails.salaryRangeFrom',
-          salaryRangeTo:'$candidatedetails.salaryRangeTo',
-          locationCurrent:'$candidatedetails.locationCurrent',
-          education:'$candidatedetails.education',
-          specification:'$candidatedetails.specification',
-          university:'$candidatedetails.university',
-          courseType:'$candidatedetails.courseType',
-          passingYear:'$candidatedetails.passingYear',
-          gradingSystem:'$candidatedetails.gradingSystem',
-          availability:'$candidatedetails.availability',
-          gender:'$candidatedetails.gender',
-          maritalStatus:'$candidatedetails.maritalStatus',
-          mark:'$candidatedetails.mark',
-          image:'$candidatedetails.image',
-        }
+        as: 'candidatedetails'
       }
+    },
+    {
+      $project: {
+        name: 1,
+        email: 1,
+        mobileNumber: 1,
+        resume: 1,
+        keyskill: '$candidatedetails.keyskill',
+        currentSkill: '$candidatedetails.currentSkill',
+        preferredSkill: '$candidatedetails.preferredSkill',
+        experienceMonth: '$candidatedetails.experienceMonth',
+        experienceYear: '$candidatedetails.experienceYear',
+        salaryRangeFrom: '$candidatedetails.salaryRangeFrom',
+        salaryRangeTo: '$candidatedetails.salaryRangeTo',
+        locationCurrent: '$candidatedetails.locationCurrent',
+        education: '$candidatedetails.education',
+        specification: '$candidatedetails.specification',
+        university: '$candidatedetails.university',
+        courseType: '$candidatedetails.courseType',
+        passingYear: '$candidatedetails.passingYear',
+        gradingSystem: '$candidatedetails.gradingSystem',
+        availability: '$candidatedetails.availability',
+        gender: '$candidatedetails.gender',
+        maritalStatus: '$candidatedetails.maritalStatus',
+        mark: '$candidatedetails.mark',
+        image: '$candidatedetails.image',
+      }
+    }
   ])
   return data
 }
 
 // comment
 
-const employer_comment = async (userId, Body) =>{
-  let values = {...Body, ...{userId:userId}}
+const employer_comment = async (userId, Body) => {
+  let values = { ...Body, ...{ userId: userId } }
   return await Employercomment.create(values)
 }
 
 //edit comment 
 
-const comment_edit = async (id, body)  => {
+const comment_edit = async (id, body) => {
   const data = await Employercomment.findById(id)
-  if(!data){
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   const Data = await Employercomment.findByIdAndUpdate({ _id: id }, body, { new: true });
@@ -835,27 +835,27 @@ const comment_edit = async (id, body)  => {
 // mail template
 
 const mail_template_create = async (userId, body) => {
-    const data = await EmployerRegistration.findById(userId)
-    if(!data){
-      throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
-    }
-   return await EmployerMailTemplate.create({...body, ...{userId:userId}})
+  const data = await EmployerRegistration.findById(userId)
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  return await EmployerMailTemplate.create({ ...body, ...{ userId: userId } })
 }
 
 const mail_template_data = async (userId) => {
   const data = await EmployerMailTemplate.aggregate([
     {
       $match: {
-        $and: [{ userId: { $eq: userId} }],
+        $and: [{ userId: { $eq: userId } }],
       },
     },
   ])
-  return data 
+  return data
 }
 
 const mail_template_data_Id = async (id) => {
   const data = await EmployerMailTemplate.findById(id)
-  if(!data){
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   return data
@@ -863,40 +863,40 @@ const mail_template_data_Id = async (id) => {
 
 const mail_template_data_Update = async (id, body) => {
   const data = await EmployerMailTemplate.findById(id)
-  if(!data){
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-   const value = await EmployerMailTemplate.findByIdAndUpdate({ _id: id }, body, { new: true });
-   return value
+  const value = await EmployerMailTemplate.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return value
 }
 
 const mail_template_data_delete = async (id, body) => {
   const data = await EmployerMailTemplate.findById(id)
-  if(!data){
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-   await data.remove();
+  await data.remove();
 }
 
 // notofication send candidate
 
 const send_mail_and_notification = async (userId, body) => {
   const data = await EmployerRegistration.findById(userId)
-  if(!data){
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  const {candidates} = body
+  const { candidates } = body
   candidates.forEach(async (e) => {
-    await EmployerMailNotification.create({...body, ...{userId:userId, candidateId:e}});
- });
-  return {messages:'Send Notification Mail Successfully...'}
+    await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
+  });
+  return { messages: 'Send Notification Mail Successfully...' }
 }
 
 const getAll_Mail_notification_employerside = async (userId) => {
   const data = await EmployerMailNotification.aggregate([
     {
       $match: {
-        $and: [{ userId: { $eq: userId} }],
+        $and: [{ userId: { $eq: userId } }],
       },
     },
     {
@@ -904,13 +904,13 @@ const getAll_Mail_notification_employerside = async (userId) => {
         from: 'candidateregistrations',
         localField: 'candidateId',
         foreignField: '_id',
-        pipeline:[
+        pipeline: [
           {
             $lookup: {
               from: 'candidatedetails',
               localField: '_id',
               foreignField: 'userId',
-              pipeline:[
+              pipeline: [
                 {
                   $lookup: {
                     from: 'qualifications',
@@ -1144,81 +1144,81 @@ const getAll_Mail_notification_employerside = async (userId) => {
               createdAt: 1,
               updatedAt: 1,
               // candidateDetails: '$candidatedetails',
-              keyskill:'$candidatedetails.keyskill',
-              currentSkill:'$candidatedetails.currentSkill',
-              preferredSkill:'$candidatedetails.preferredSkill',
-              active:'$candidatedetails.active',
-              image:'$candidatedetails.image',
-              dob:'$candidatedetails.dob',
-              experienceYear:'$candidatedetails.experienceYear',
-              experienceMonth:'$candidatedetails.experienceMonth',
-              expectedctc:'$candidatedetails.expectedctc',
-              currentctc:'$candidatedetails.currentctc',
-              locationCurrent:'$candidatedetails.locationCurrent',
-              locationNative:'$candidatedetails.locationNative',
-              noticeperiod:'$candidatedetails.noticeperiod',
-              gender:'$candidatedetails.gender',
-              maritalStatus:'$candidatedetails.maritalStatus',
-              ugMarks:'$candidatedetails.ugMarks',
-              ugGradingSystem:'$candidatedetails.ugGradingSystem',
-              ugCourseType:'$candidatedetails.ugCourseType',
-              ugCourseDurationTo:'$candidatedetails.ugCourseDurationTo',
-              ugCourseDurationFrom:'$candidatedetails.ugCourseDurationFrom',
-              relocate:'$candidatedetails.relocate',
-              languages:'$candidatedetails.languages',
-              ugUniversity:'$candidatedetails.ugUniversity',
-              drQualification:'$candidatedetails.qualifications.qualification',
-              drcourses:'$candidatedetails.drcourses.Course',
-              drSpecialization:'$candidatedetails.drspecializations.Specialization',
-              pgQualification:'$candidatedetails.pgqualifications.qualification',
-              pgCourse:'$candidatedetails.pgcourses.Course',
-              pgSpecialization:'$candidatedetails.pgspecializations.Specialization',
-              ugQualification:'$candidatedetails.ugqualifications.qualification',
-              ugCourse:'$candidatedetails.ugcourses.Course',
-              ugSpecialization:'$candidatedetails.specializations.Specialization',
-              role:'$candidatedetails.jobroles.Job_role',
-              roleCategory:'$candidatedetails.rolecategories.Role_Category',
-              department:'$candidatedetails.departments.Department',
-              industry:'$candidatedetails.industries.Industry',
-              sslctotalmarks:'$candidatedetails.sslctotalmarks',
-              sslcPassedYear:'$candidatedetails.sslcPassedYear',
-              sslcMedium:'$candidatedetails.sslcMedium',
-              sslcBoard:'$candidatedetails.sslcBoard',
-              sslcQualification:"$candidatedetails.sslcqualifications.qualification",
-              pgUniversity:'$candidatedetails.pgUniversity',
-              pgMarks:'$candidatedetails.pgUniversity',
-              pgGradingSystem:'$candidatedetails.pgUniversity',
-              pgCourseType:'$candidatedetails.pgUniversity',
-              pgCourseDurationTo:'$candidatedetails.pgUniversity',
-              pgCourseDurationFrom:'$candidatedetails.pgUniversity',
-              hstotalmarks:'$candidatedetails.hstotalmarks',
-              hsPassedYear:'$candidatedetails.hsPassedYear',
-              hsMedium:'$candidatedetails.hsMedium',
-              hsBoard:'$candidatedetails.hsBoard',
-              drMarks:'$candidatedetails.drMarks',
-              drGradingSystem:'$candidatedetails.drGradingSystem',
-              drCourseType:'$candidatedetails.drCourseType',
-              drCourseDurationTo:'$candidatedetails.drCourseDurationTo',
-              drCourseDurationFrom:'$candidatedetails.drCourseDurationFrom',
-              hsQualification:'$candidatedetails.hscqualifications.qualification',
-              keyskillSet:'$candidatedetails.keyskillSet',
-              drUniversity:'$candidatedetails.drUniversity',
-              experienceMonthSet:'$candidatedetails.experienceMonthSet',
-              locationSet:'$candidatedetails.locationSet',
-              experienceYearSet:'$candidatedetails.experienceYearSet',
-              designationSet:'$candidatedetails.designationSet',
-              currentIndustry:'$candidatedetails.currentIndustry',
-              currentDepartment:'$candidatedetails.currentDepartment',
-              role_Category:'$candidatedetails.role_Category',
-              salaryFrom:'$candidatedetails.salaryFrom',
-              SalaryTo:'$candidatedetails.SalaryTo',
+              keyskill: '$candidatedetails.keyskill',
+              currentSkill: '$candidatedetails.currentSkill',
+              preferredSkill: '$candidatedetails.preferredSkill',
+              active: '$candidatedetails.active',
+              image: '$candidatedetails.image',
+              dob: '$candidatedetails.dob',
+              experienceYear: '$candidatedetails.experienceYear',
+              experienceMonth: '$candidatedetails.experienceMonth',
+              expectedctc: '$candidatedetails.expectedctc',
+              currentctc: '$candidatedetails.currentctc',
+              locationCurrent: '$candidatedetails.locationCurrent',
+              locationNative: '$candidatedetails.locationNative',
+              noticeperiod: '$candidatedetails.noticeperiod',
+              gender: '$candidatedetails.gender',
+              maritalStatus: '$candidatedetails.maritalStatus',
+              ugMarks: '$candidatedetails.ugMarks',
+              ugGradingSystem: '$candidatedetails.ugGradingSystem',
+              ugCourseType: '$candidatedetails.ugCourseType',
+              ugCourseDurationTo: '$candidatedetails.ugCourseDurationTo',
+              ugCourseDurationFrom: '$candidatedetails.ugCourseDurationFrom',
+              relocate: '$candidatedetails.relocate',
+              languages: '$candidatedetails.languages',
+              ugUniversity: '$candidatedetails.ugUniversity',
+              drQualification: '$candidatedetails.qualifications.qualification',
+              drcourses: '$candidatedetails.drcourses.Course',
+              drSpecialization: '$candidatedetails.drspecializations.Specialization',
+              pgQualification: '$candidatedetails.pgqualifications.qualification',
+              pgCourse: '$candidatedetails.pgcourses.Course',
+              pgSpecialization: '$candidatedetails.pgspecializations.Specialization',
+              ugQualification: '$candidatedetails.ugqualifications.qualification',
+              ugCourse: '$candidatedetails.ugcourses.Course',
+              ugSpecialization: '$candidatedetails.specializations.Specialization',
+              role: '$candidatedetails.jobroles.Job_role',
+              roleCategory: '$candidatedetails.rolecategories.Role_Category',
+              department: '$candidatedetails.departments.Department',
+              industry: '$candidatedetails.industries.Industry',
+              sslctotalmarks: '$candidatedetails.sslctotalmarks',
+              sslcPassedYear: '$candidatedetails.sslcPassedYear',
+              sslcMedium: '$candidatedetails.sslcMedium',
+              sslcBoard: '$candidatedetails.sslcBoard',
+              sslcQualification: "$candidatedetails.sslcqualifications.qualification",
+              pgUniversity: '$candidatedetails.pgUniversity',
+              pgMarks: '$candidatedetails.pgUniversity',
+              pgGradingSystem: '$candidatedetails.pgUniversity',
+              pgCourseType: '$candidatedetails.pgUniversity',
+              pgCourseDurationTo: '$candidatedetails.pgUniversity',
+              pgCourseDurationFrom: '$candidatedetails.pgUniversity',
+              hstotalmarks: '$candidatedetails.hstotalmarks',
+              hsPassedYear: '$candidatedetails.hsPassedYear',
+              hsMedium: '$candidatedetails.hsMedium',
+              hsBoard: '$candidatedetails.hsBoard',
+              drMarks: '$candidatedetails.drMarks',
+              drGradingSystem: '$candidatedetails.drGradingSystem',
+              drCourseType: '$candidatedetails.drCourseType',
+              drCourseDurationTo: '$candidatedetails.drCourseDurationTo',
+              drCourseDurationFrom: '$candidatedetails.drCourseDurationFrom',
+              hsQualification: '$candidatedetails.hscqualifications.qualification',
+              keyskillSet: '$candidatedetails.keyskillSet',
+              drUniversity: '$candidatedetails.drUniversity',
+              experienceMonthSet: '$candidatedetails.experienceMonthSet',
+              locationSet: '$candidatedetails.locationSet',
+              experienceYearSet: '$candidatedetails.experienceYearSet',
+              designationSet: '$candidatedetails.designationSet',
+              currentIndustry: '$candidatedetails.currentIndustry',
+              currentDepartment: '$candidatedetails.currentDepartment',
+              role_Category: '$candidatedetails.role_Category',
+              salaryFrom: '$candidatedetails.salaryFrom',
+              SalaryTo: '$candidatedetails.SalaryTo',
               // candidateDetails:'$candidatedetails'
             },
           },
         ],
-        as:'candidateregistrations'
-        }
-    },   
+        as: 'candidateregistrations'
+      }
+    },
     {
       $lookup: {
         from: 'employerdetails',
@@ -1240,30 +1240,30 @@ const getAll_Mail_notification_employerside = async (userId) => {
         //       },
         //     },
         // ],
-        as:'employerdetails'
-        }
-      }, 
-      {
-        $unwind: {
-          path: '$employerdetails',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $project:{
-          jobTittle:'$employerdetails.jobTittle',
-          // comment:'$employermailtemplates.employercomments.comment',
-          // commentId:'$employermailtemplates.employercomments._id',
-          status:1,
-          candidateDetail:'$candidateregistrations',
-          subject:1,
-          signature:1,
-          email:1,
-          candidateId:1,
-          mailId:1,
-          date:1,
-        }
+        as: 'employerdetails'
       }
+    },
+    {
+      $unwind: {
+        path: '$employerdetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        jobTittle: '$employerdetails.jobTittle',
+        // comment:'$employermailtemplates.employercomments.comment',
+        // commentId:'$employermailtemplates.employercomments._id',
+        status: 1,
+        candidateDetail: '$candidateregistrations',
+        subject: 1,
+        signature: 1,
+        email: 1,
+        candidateId: 1,
+        mailId: 1,
+        date: 1,
+      }
+    }
   ])
   return data
 }
@@ -1274,7 +1274,7 @@ const getAll_Mail_notification_candidateside = async (userId) => {
   const data = await EmployerMailNotification.aggregate([
     {
       $match: {
-        $and: [{ candidateId: { $eq: userId} }],
+        $and: [{ candidateId: { $eq: userId } }],
       },
     },
     {
@@ -1283,92 +1283,92 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         localField: 'userId',
         foreignField: '_id',
         // pipeline:[
-          // {
-          //   $lookup: {
-          //     from: 'employermailtemplates',
-          //     localField: '_id',
-          //     foreignField: 'userId',
-          //     as:'employermailtemplates'
-          //     }
-          //   },
-            // {
-            //   $project:{
-            //     companyName:1,
-            //     city:'$employermailtemplates.jobLocation',
-            //     jobTitle:'$employermailtemplates.jobTitle',
-            //     experienceFrom:'$employermailtemplates.experienceFrom',
-            //     experienceTo:'$employermailtemplates.experienceTo',
-            //     ctc:'$employermailtemplates.ctc',
-            //     date:'$employermailtemplates.date',
-            //   }
-            // }
+        // {
+        //   $lookup: {
+        //     from: 'employermailtemplates',
+        //     localField: '_id',
+        //     foreignField: 'userId',
+        //     as:'employermailtemplates'
+        //     }
+        //   },
+        // {
+        //   $project:{
+        //     companyName:1,
+        //     city:'$employermailtemplates.jobLocation',
+        //     jobTitle:'$employermailtemplates.jobTitle',
+        //     experienceFrom:'$employermailtemplates.experienceFrom',
+        //     experienceTo:'$employermailtemplates.experienceTo',
+        //     ctc:'$employermailtemplates.ctc',
+        //     date:'$employermailtemplates.date',
+        //   }
+        // }
         // ],
-        as:'employerregistrations'
-        }
-      },
-      {
-        $unwind: {
-          path: '$employerregistrations',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: 'employerdetails',
-          localField: 'mailId',
-          foreignField: '_id',
-          as:'employerdetails'
-          }
-        },
-        {
-          $unwind: {
-            path: '$employerdetails',
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-        {
-          $lookup: {
-            from: 'candidatepostjobs',
-            localField: 'mailId',
-            foreignField: 'jobId',
-            as:'candidatepostjobs'
-            }
-          },
-          {
-            $unwind: {
-              path: '$candidatepostjobs',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-      {
-        $project:{
-          subject:1,
-          signature:1,
-          email:1,
-          status:1,
-          jobTittle:'$employerdetails.jobTittle',
-          jobLocation:'$employerdetails.jobLocation',
-          salaryRangeFrom:'$employerdetails.salaryRangeFrom',
-          salaryRangeTo:'$employerdetails.salaryRangeTo',
-          experienceFrom:'$employerdetails.experienceFrom',
-          experienceTo:'$employerdetails.experienceTo',
-          company:'$employerregistrations.name',
-          employerdetails:'$employerdetails',
-          employerregistrations:'$employerregistrations',
-          date:1,
-          appliedStatus:'$candidatepostjobs.approvedStatus',
-        }
+        as: 'employerregistrations'
       }
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'mailId',
+        foreignField: '_id',
+        as: 'employerdetails'
+      }
+    },
+    {
+      $unwind: {
+        path: '$employerdetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: 'mailId',
+        foreignField: 'jobId',
+        as: 'candidatepostjobs'
+      }
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        subject: 1,
+        signature: 1,
+        email: 1,
+        status: 1,
+        jobTittle: '$employerdetails.jobTittle',
+        jobLocation: '$employerdetails.jobLocation',
+        salaryRangeFrom: '$employerdetails.salaryRangeFrom',
+        salaryRangeTo: '$employerdetails.salaryRangeTo',
+        experienceFrom: '$employerdetails.experienceFrom',
+        experienceTo: '$employerdetails.experienceTo',
+        company: '$employerregistrations.name',
+        employerdetails: '$employerdetails',
+        employerregistrations: '$employerregistrations',
+        date: 1,
+        appliedStatus: '$candidatepostjobs.approvedStatus',
+      }
+    }
   ])
   return data
 
 }
 // get jobpost data
 const get_job_post = async (id) => {
-   const data = await EmployerDetails.aggregate([
+  const data = await EmployerDetails.aggregate([
     {
       $match: {
-        $and: [{ _id: { $eq: id} }],
+        $and: [{ _id: { $eq: id } }],
       },
     },
     {
@@ -1376,170 +1376,170 @@ const get_job_post = async (id) => {
         from: 'employerregistrations',
         localField: 'userId',
         foreignField: '_id',
-        as:'employerregistrations'
-        }
+        as: 'employerregistrations'
+      }
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
       },
-      {
-        $unwind: {
-          path: '$employerregistrations',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $project:{
-          companyType:'$employerregistrations.companyType',
-          mobileNumber:'$employerregistrations.mobileNumber',
-          contactName:'$employerregistrations.contactName',
-          email:'$employerregistrations.email',
-          name:'$employerregistrations.name',
-          keySkill:1,
-          jobTittle:1,
-          recruiterName:1,
-          contactNumber:1,
-          jobDescription:1,
-          educationalQualification:1,
-          salaryRangeFrom:1,
-          salaryRangeTo:1,
-          experienceFrom:1,
-          experienceTo:1,
-          interviewType:1,
-          candidateDescription:1,
-          salaryDescription:1,
-          urltoApply:1,
-          workplaceType:1,
-          industry:1,
-          preferedIndustry:1,
-          jobLocation:1,
-          employmentType:1,
-          openings:1,
-          date:1,
-          time:1,
-        }
-      },
-   ])
-   return data
+    },
+    {
+      $project: {
+        companyType: '$employerregistrations.companyType',
+        mobileNumber: '$employerregistrations.mobileNumber',
+        contactName: '$employerregistrations.contactName',
+        email: '$employerregistrations.email',
+        name: '$employerregistrations.name',
+        keySkill: 1,
+        jobTittle: 1,
+        recruiterName: 1,
+        contactNumber: 1,
+        jobDescription: 1,
+        educationalQualification: 1,
+        salaryRangeFrom: 1,
+        salaryRangeTo: 1,
+        experienceFrom: 1,
+        experienceTo: 1,
+        interviewType: 1,
+        candidateDescription: 1,
+        salaryDescription: 1,
+        urltoApply: 1,
+        workplaceType: 1,
+        industry: 1,
+        preferedIndustry: 1,
+        jobLocation: 1,
+        employmentType: 1,
+        openings: 1,
+        date: 1,
+        time: 1,
+      }
+    },
+  ])
+  return data
 }
 
 // get notification job id
 const get_job_post_candidate = async (id, candidateId) => {
   // console.log(candidateId)
   const data = await EmployerMailNotification.aggregate([
-   {
-     $match: {
-       $and: [{ _id: { $eq: id} }],
-     },
-   },
-   {
-     $lookup: {
-       from: 'employerregistrations',
-       localField: 'userId',
-       foreignField: '_id',
-       as:'employerregistrations'
-       }
-     },
-     {
-       $unwind: {
-         path: '$employerregistrations',
-         preserveNullAndEmptyArrays: true,
-       },
-     },
-     {
+    {
+      $match: {
+        $and: [{ _id: { $eq: id } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'employerregistrations'
+      }
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $lookup: {
         from: 'candidateregistrations',
         localField: 'candidateId',
         foreignField: '_id',
-        as:'candidateregistrations'
-        }
+        as: 'candidateregistrations'
+      }
+    },
+    {
+      $unwind: {
+        path: '$candidateregistrations',
+        preserveNullAndEmptyArrays: true,
       },
-      {
-        $unwind: {
-          path: '$candidateregistrations',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-        {
-          $lookup: {
-            from: 'candidatepostjobs',
-            localField: 'mailId',
-            foreignField: 'jobId',
-            pipeline:[
-              {
-                $match: {
-                  $and: [{ userId: { $eq: candidateId} }],
-                },
-              },  
-            ],
-            as:'candidatepostjobs'
-            }
-          },
+    },
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: 'mailId',
+        foreignField: 'jobId',
+        pipeline: [
           {
-            $unwind: {
-              path: '$candidatepostjobs',
-              preserveNullAndEmptyArrays: true,
+            $match: {
+              $and: [{ userId: { $eq: candidateId } }],
             },
           },
-     {
+        ],
+        as: 'candidatepostjobs'
+      }
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $lookup: {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
-        pipeline:[
+        pipeline: [
           {
-          $project:{
-            keySkill:1,
-            jobTittle:1,
-            recruiterName:1,
-            contactNumber:1,
-            jobDescription:1,
-            educationalQualification:1,
-            salaryRangeFrom:1,
-            salaryRangeTo:1,
-            experienceFrom:1,
-            experienceTo:1,
-            interviewType:1,
-            candidateDescription:1,
-            salaryDescription:1,
-            urltoApply:1,
-            workplaceType:1,
-            industry:1,
-            preferedIndustry:1,
-            jobLocation:1,
-            employmentType:1,
-            interviewstartDate:1,
-            interviewendDate:1,
-            startTime:1,
-            endTime:1,
-            openings:1,
-            date:1,
-            time:1,
+            $project: {
+              keySkill: 1,
+              jobTittle: 1,
+              recruiterName: 1,
+              contactNumber: 1,
+              jobDescription: 1,
+              educationalQualification: 1,
+              salaryRangeFrom: 1,
+              salaryRangeTo: 1,
+              experienceFrom: 1,
+              experienceTo: 1,
+              interviewType: 1,
+              candidateDescription: 1,
+              salaryDescription: 1,
+              urltoApply: 1,
+              workplaceType: 1,
+              industry: 1,
+              preferedIndustry: 1,
+              jobLocation: 1,
+              employmentType: 1,
+              interviewstartDate: 1,
+              interviewendDate: 1,
+              startTime: 1,
+              endTime: 1,
+              openings: 1,
+              date: 1,
+              time: 1,
+            }
           }
-        }
         ],
-        as:'employerdetails'
-        }
+        as: 'employerdetails'
+      }
+    },
+    {
+      $unwind: {
+        path: '$employerdetails',
+        preserveNullAndEmptyArrays: true,
       },
-      {
-        $unwind: {
-          path: '$employerdetails',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-     {
-       $project:{
-         subject:1,
-         signature:1,
-         email:1,
-         companyType:'$employerregistrations.companyType',
-         mobileNumber:'$employerregistrations.mobileNumber',
-         contactName:'$employerregistrations.contactName',
-         email:'$employerregistrations.email',
-         name:'$employerregistrations.name',
-         jobDetails:'$employerdetails',
-         candiadteName:'$candidateregistrations.name',
-         aboutCompany:'$employerregistrations.aboutCompany',
-         appliedStatus:'$candidatepostjobs.approvedStatus'
-       }
-     },
+    },
+    {
+      $project: {
+        subject: 1,
+        signature: 1,
+        email: 1,
+        companyType: '$employerregistrations.companyType',
+        mobileNumber: '$employerregistrations.mobileNumber',
+        contactName: '$employerregistrations.contactName',
+        email: '$employerregistrations.email',
+        name: '$employerregistrations.name',
+        jobDetails: '$employerdetails',
+        candiadteName: '$candidateregistrations.name',
+        aboutCompany: '$employerregistrations.aboutCompany',
+        appliedStatus: '$candidatepostjobs.approvedStatus'
+      }
+    },
   ])
   return data
 }
@@ -1548,7 +1548,7 @@ const get_job_post_candidate = async (id, candidateId) => {
 
 const candidate_mailnotification_Change = async (id, body) => {
   const data = await EmployerMailNotification.findById(id)
-  if(!data){
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
   const value = await EmployerMailNotification.findByIdAndUpdate({ _id: id }, body, { new: true });
@@ -1569,10 +1569,10 @@ const neighbour_api = async (lat, long, type, radius) => {
 // plan details
 
 const All_Plans = async (userId) => {
-   const data = await CreatePlan.aggregate([
+  const data = await CreatePlan.aggregate([
     {
       $match: {
-        $and: [{ userId: { $eq: userId} }],
+        $and: [{ userId: { $eq: userId } }],
       },
     },
     {
@@ -1580,37 +1580,37 @@ const All_Plans = async (userId) => {
         from: 'planpayments',
         localField: '_id',
         foreignField: 'planId',
-        pipeline:[
-               {
-                $group: {
-                  _id: null,
-                  total: {$sum: 1},
-                }
-               }
+        pipeline: [
+          {
+            $group: {
+              _id: null,
+              total: { $sum: 1 },
+            }
+          }
         ],
-        as:'planpayments'
-        }
-      },
-      {
-        $unwind: {
-          preserveNullAndEmptyArrays: true,
-          path: '$planpayments',
-        },
-      },
-      {
-        $project:{
-          numberOfUsers:'$planpayments.total'
-        }
+        as: 'planpayments'
       }
-   ])
-   return data ;
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$planpayments',
+      },
+    },
+    {
+      $project: {
+        numberOfUsers: '$planpayments.total'
+      }
+    }
+  ])
+  return data;
 }
 
 const all_plans_users_details = async (id) => {
   const data = await PlanPayment.aggregate([
     {
       $match: {
-        $and: [{ planId: { $eq: id} }],
+        $and: [{ planId: { $eq: id } }],
       },
     },
     {
@@ -1618,46 +1618,46 @@ const all_plans_users_details = async (id) => {
         from: 'employerregistrations',
         localField: 'userId',
         foreignField: '_id',
-        pipeline:[
+        pipeline: [
           {
             $lookup: {
               from: 'employerdetails',
               localField: '_id',
               foreignField: 'userId',
-              as:'employerdetails'
-              }
-            },
+              as: 'employerdetails'
+            }
+          },
         ],
-        as:'employerregistrations'
-        }
-      },
-      {
-        $unwind: {
-          preserveNullAndEmptyArrays: true,
-          path: '$employerregistrations',
-        },
-      },
-      {
-        $project:{
-          cvCountUser:1,
-          cvCount:1,
-          countjobPost:1,
-          active:1,
-          cashType:1,
-          payAmount:1,
-          paymentStatus:1,
-          date:1,
-          time:1,
-          expDate:1,
-          companyname:'$employerregistrations.name',
-          email:'$employerregistrations.email',
-          companyType:'$employerregistrations.companyType',
-          contactName:'$employerregistrations.contactName',
-          mobileNumber:'$employerregistrations.mobileNumber',
-          location:'$employerregistrations.location',
-          employerdetails:'$employerregistrations.employerdetails'
-        }
+        as: 'employerregistrations'
       }
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$employerregistrations',
+      },
+    },
+    {
+      $project: {
+        cvCountUser: 1,
+        cvCount: 1,
+        countjobPost: 1,
+        active: 1,
+        cashType: 1,
+        payAmount: 1,
+        paymentStatus: 1,
+        date: 1,
+        time: 1,
+        expDate: 1,
+        companyname: '$employerregistrations.name',
+        email: '$employerregistrations.email',
+        companyType: '$employerregistrations.companyType',
+        contactName: '$employerregistrations.contactName',
+        mobileNumber: '$employerregistrations.mobileNumber',
+        location: '$employerregistrations.location',
+        employerdetails: '$employerregistrations.employerdetails'
+      }
+    }
   ])
   return data
 }
@@ -1668,7 +1668,8 @@ const keySkillData = async (key) => {
   // let fn = re.exec.bind(re);
   // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   // let filtered = data.filter(fn);
-  const data = await Skill.find({ Skill_Title: { $regex: key, $options: 'i' } }).limit(50)
+  var query = new RegExp('^' + key + '$',"i")
+  const data = await Skill.find({ Skill_Title: { $regex: key, $options: 'i' } }).sort({Skill_Title:1}).select('Skill_Title').limit(50)
   return data
 }
 
@@ -1676,7 +1677,7 @@ const location = async (key) => {
   const re = new RegExp(key.toLowerCase())
   // console.log(re)
   let fn = re.exec.bind(re);
-  let data = ["nagapattinam","mayiladuthurai","madurai","krishnagiri","karur","kanniyakumari","erode","dindigul","dharmapuri","ariyalur","chennai","kanchipuram","villupuram","pondicherry","cuddalore","kallakuruchi","nagapattinam","salem","bangalore","coimbatore",]
+  let data = ["nagapattinam", "mayiladuthurai", "madurai", "krishnagiri", "karur", "kanniyakumari", "erode", "dindigul", "dharmapuri", "ariyalur", "chennai", "kanchipuram", "villupuram", "pondicherry", "cuddalore", "kallakuruchi", "nagapattinam", "salem", "bangalore", "coimbatore",]
   let filtered = data.filter(fn);
   return filtered
 }
