@@ -61,7 +61,8 @@ const login = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.UsersLogin(req.body);
   console.log(user)
   let details = await KeySkill.find({userId:user._id})
-  if(details){
+  console.log(details)
+  if(details.length != 0){
     Boolean = true
   }
   console.log(Boolean)

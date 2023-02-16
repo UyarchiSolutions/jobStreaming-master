@@ -1031,10 +1031,13 @@ const send_mail_and_notification = async (userId, body) => {
         contactName: '$employerregistrations.contactName',
         email: '$employerregistrations.email',
         name: '$employerregistrations.name',
+        aboutCompany: '$employerregistrations.aboutCompany',
+        location:'$employerregistrations.location',
+        choosefile:'$employerregistrations.choosefile',
       },
     },
   ]);
-  console.log(employer);
+  console.log(employer[0].keySkill);
   const { candidates, subject, signature, email } = body;
   candidates.forEach(async (e) => {
     await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
@@ -1045,44 +1048,47 @@ const send_mail_and_notification = async (userId, body) => {
         name: candidate.name,
         subject: subject,
         signature: signature,
-        keySkill: keySkill,
-        preferedIndustry: preferedIndustry,
-        preferredSkill: preferredSkill,
-        adminStatus: adminStatus,
-        active: active,
-        jobTittle: jobTittle,
-        contactNumber: contactNumber,
-        jobDescription: jobDescription,
-        educationalQualification: educationalQualification,
-        salaryRangeFrom: salaryRangeFrom,
-        salaryRangeTo: salaryRangeTo,
-        experienceFrom: experienceFrom,
-        experienceTo: experienceTo,
-        interviewType: interviewType,
-        candidateDescription: candidateDescription,
-        salaryDescription: salaryDescription,
-        urltoApply: urltoApply,
-        workplaceType: workplaceType,
-        industry: industry,
-        jobLocation: jobLocation,
-        employmentType: employmentType,
-        openings: openings,
-        role: role,
-        roleCategory: roleCategory,
-        department: department,
-        industry: industry,
-        interviewstartDate: interviewstartDate,
-        interviewendDate: interviewendDate,
-        startTime: startTime,
-        endTime: endTime,
-        recruiterName: recruiterName,
-        date: date,
-        time: time,
-        companyType: companyType,
-        mobileNumber: mobileNumber,
-        contactName: contactName,
-        email: email,
-        name: name,
+        keySkill: employer[0].keySkill,
+        preferedIndustry: employer[0].preferedIndustry,
+        preferredSkill: employer[0].preferredSkill,
+        adminStatus: employer[0].adminStatus,
+        active: employer[0].active,
+        jobTittle: employer[0].jobTittle,
+        contactNumber: employer[0].contactNumber,
+        jobDescription: employer[0].jobDescription,
+        educationalQualification: employer[0].educationalQualification,
+        salaryRangeFrom: employer[0].salaryRangeFrom,
+        salaryRangeTo: employer[0].salaryRangeTo,
+        experienceFrom: employer[0].experienceFrom,
+        experienceTo: employer[0].experienceTo,
+        interviewType: employer[0].interviewType,
+        candidateDescription: employer[0].candidateDescription,
+        salaryDescription: employer[0].salaryDescription,
+        urltoApply: employer[0].urltoApply,
+        workplaceType: employer[0].workplaceType,
+        industry: employer[0].industry,
+        jobLocation: employer[0].jobLocation,
+        employmentType: employer[0].employmentType,
+        openings: employer[0].openings,
+        role: employer[0].role,
+        roleCategory: employer[0].roleCategory,
+        department: employer[0].department,
+        industry: employer[0].industry,
+        interviewstartDate: employer[0].interviewstartDate,
+        interviewendDate: employer[0].interviewendDate,
+        startTime: employer[0].startTime,
+        endTime: employer[0].endTime,
+        recruiterName: employer[0].recruiterName,
+        date: employer[0].date,
+        time: employer[0].time,
+        companyType: employer[0].companyType,
+        mobileNumber: employer[0].mobileNumber,
+        contactName: employer[0].contactName,
+        email: employer[0].email,
+        companyname: employer[0].name,
+        aboutCompany:employer[0].aboutCompany,
+        location:employer[0].location,
+        choosefile:employer[0].choosefile,
       });
       const mainOptions = {
         from: body.email,
@@ -1878,11 +1884,10 @@ const keySkillData = async (key) => {
   // let fn = re.exec.bind(re);
   // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   // let filtered = data.filter(fn);
-  var query = new RegExp('^' + key + '$', 'i');
-  const data = await Skill.find({ Skill_Title: { $regex: key, $options: 'i' } })
-    .sort({ Skill_Title: 1 })
-    .select('Skill_Title')
-    .limit(50);
+  var query = new RegExp(key);
+  const data = await Skill.find({ Skill_Title: { $regex: /^angularjs/i } }).sort({ Skill_Title: 1 }).limit(7);
+    // .sort({ Skill_Title: 1 })
+    // .select('Skill_Title')
   return data;
 };
 

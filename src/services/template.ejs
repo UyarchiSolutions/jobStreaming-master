@@ -50,14 +50,14 @@ border-radius: 5px;
 
 
 <div style="display: flex;padding: 15px;background: #E7E9ED;margin-top: 12px;">
-  <h5 style="margin-left: 20px;">Subject :</h5>
-  <h5 style="margin-left: 200px;">UI UX Designer</h5>
+  <h5 style="margin-left: 20px;">Subject :<%=subject %></h5>
+  <h5 style="margin-left: 200px;"><%=jobTittle%></h5>
 </div>
 
 
 <div class="subject" style="padding:20px;">
   <p>The sender of this email is registered with Treatjobs.com as EMPLOYER NAME.</p>
-  <p style="font-size: 14px; margin: 10px 0;">Dear Candidate name</p>
+  <p style="font-size: 14px; margin: 10px 0;">Dear Candidate <%=name %></p>
   <p style="margin-left: 30px;">You are receiving this mail because the recruiter considers your profile to be suitable for the following job opportunity 
       posted on Treatjobs.com, and would like you to apply for the job.</p>
 </div>
@@ -67,8 +67,8 @@ border-radius: 5px;
 ">
   <div style="width:70%;padding:0 20px;">
 
-      <h5>UI UX Designer</h5>
-      <p style="margin: 10px 0;">JP Morgan</p>
+      <h5><%=jobTittle%></h5>
+      <p style="margin: 10px 0;"><%=companyname%></p>
       <div style="width: 80%; display: flex;flex-wrap: wrap;gap: 10px;">
           <div style="width: 50%;">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -76,31 +76,30 @@ border-radius: 5px;
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3197 0.800781H3.67969V5.60078H6.20363C5.97385 5.25754 5.83984 4.84477 5.83984 4.4007V2.7207H10.1598V4.4007C10.1598 4.84477 10.0258 5.25754 9.79606 5.60078H12.3197V0.800781Z" fill="#8493A3"/>
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M6.64017 8.48047H0.796875V15.2005H15.1969V8.48047H9.35701C9.15962 9.04029 8.62596 9.44148 7.99859 9.44148C7.37123 9.44148 6.83757 9.04029 6.64017 8.48047Z" fill="#8493A3"/>
                   </svg>
-UI UX Designer                    
+                  <%=jobTittle%>                    
           </div>
           <div style="width: 40%;">
              
-              ₹ 0 to 2 lacs                   
+              ₹ <%=salaryRangeFrom%><%=salaryRangeTo%>                    
           </div>
           <div style="width: 50%;">
               <svg width="16" height="19" viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M7.99687 18.5996C7.99687 18.5996 15.1969 11.7761 15.1969 7.79961C15.1969 3.82316 11.9733 0.599609 7.99687 0.599609C4.02042 0.599609 0.796875 3.82316 0.796875 7.79961C0.796875 11.7761 7.99687 18.5996 7.99687 18.5996ZM7.99531 9.6C8.98942 9.6 9.79531 8.79411 9.79531 7.8C9.79531 6.80589 8.98942 6 7.99531 6C7.0012 6 6.19531 6.80589 6.19531 7.8C6.19531 8.79411 7.0012 9.6 7.99531 9.6Z" fill="#8493A3"/>
                   </svg>
                   
-Chennai                   
+                  <%=jobLocation%>                   
           </div>
           <div style="width: 40%;">
-              1+ Years                 
+            <%=salaryRangeFrom%>+Years                 
           </div>
           <div style="width: 50%;">
               <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M9.51599 7.90035C10.9714 7.30205 11.9961 5.8703 11.9961 4.19922C11.9961 1.99008 10.2052 0.199219 7.99609 0.199219C5.78695 0.199219 3.99609 1.99008 3.99609 4.19922C3.99609 5.87045 5.02102 7.30231 6.47659 7.90051C3.23025 8.35175 0.796875 10.3197 0.796875 14.0978C0.796875 17.6273 2.92041 17.5022 5.8465 17.3299C6.52557 17.2899 7.24787 17.2473 7.99687 17.2473C8.74588 17.2473 9.46818 17.2899 10.1472 17.3299C13.0733 17.5022 15.1969 17.6273 15.1969 14.0978C15.1969 10.3192 12.7629 8.35127 9.51599 7.90035Z" fill="#8493A3"/>
                   </svg>
-                  
-Hiring 2 Candidates                
+                  <%=openings%>                 
           </div>
           <div style="width: 40%;">
-              Posted 2 Day ago                
+            <%=date%>               
           </div>
         
       </div>
@@ -133,49 +132,39 @@ Hiring 2 Candidates
 
 <div style="display: flex;">
   <label>Key Skills :</label>
-  <p>Adobe XD, Figma, Illustrator </p>
+  <p><%=keySkill%></p>
 </div>
 
 <div style="display: flex;">
   <label>Qualification</label>
-  <p>UG </p>
-</div>
-
-<div style="display: flex;">
-  <label>Key Skills</label>
-  <p>Adobe XD, Figma, Illustrator </p>
+  <p><%=educationalQualification%> </p>
 </div>
 
 <div style="display: flex;">
   <label>Employment Type :</label>
-  <p>Full Time </p>
-</div>
-
-<div style="display: flex;">
-  <label>Key Skills</label>
-  <p>Adobe XD, Figma, Illustrator </p>
+  <p><%=employmentType%></p>
 </div>
 
 <div style="display: flex;">
   <label>Work Mode :</label>
-  <p>Work From Home </p>
+  <p><%=workplaceType%></p>
 </div>
 
 <div style="display: flex;">
   <label>Department :</label>
-  <p>BFSI, Investments & Trading </p>
+  <p><%=department%></p>
 </div>
 
 <div style="display: flex;">
   <label>Role :</label>
-  <p>Ux Ui Designer </p>
+  <p><%=role%></p>
 </div>
 
 <div style="display: flex;">
   <label>Job Description : </label>
  <ul>
-  <li>Required Skill set</li>
-  <li>Proficient in Node.js or Java</li>
+  <li><%=jobDescription%></li>
+  <!-- <li>Proficient in Node.js or Java</li>
   <li>Hands on Angular2+/React.js</li>
   <li>Expertise in AWS/Azure/Google Cloud</li>
   <li>Expertise in Docker and Kubernetes</li>
@@ -183,15 +172,15 @@ Hiring 2 Candidates
   <li>Experience with Agile software development practices</li>
   <li>Experience with Continuous Integration and Delivery</li>
   <li>Experience with unit test frameworks and peer code review</li>
-  <li>Experience with unit test frameworks and peer code review</li>
+  <li>Experience with unit test frameworks and peer code review</li> -->
  </ul>
 </div>
 
 <div style="display: flex;">
   <label>Candidate Description : </label>
  <ul>
-  <li>Required Skill set</li>
-  <li>Proficient in Node.js or Java</li>
+  <li><%=candidateDescription%></li>
+  <!-- <li>Proficient in Node.js or Java</li>
   <li>Hands on Angular2+/React.js</li>
   <li>Expertise in AWS/Azure/Google Cloud</li>
   <li>Expertise in Docker and Kubernetes</li>
@@ -199,25 +188,25 @@ Hiring 2 Candidates
   <li>Experience with Agile software development practices</li>
   <li>Experience with Continuous Integration and Delivery</li>
   <li>Experience with unit test frameworks and peer code review</li>
-  <li>Experience with unit test frameworks and peer code review</li>
+  <li>Experience with unit test frameworks and peer code review</li> -->
  </ul>
 </div>
 <div style="display: flex;">
   <label>Perks & Benefits : : </label>
  <ul>
-  <li>Required Skill set</li>
-  <li>Proficient in Node.js or Java</li>
-  <li>Hands on Angular2+/React.js</li>
+  <li><%=salaryDescription%></li>
+  <!-- <li>Proficient in Node.js or Java</li>
+  <li>Hands on Angular2+/React.js</li> -->
  </ul>
 </div>
 
 
-<div style="display: flex;">
+<!-- <div style="display: flex;">
   <label>Key Skills</label>
   <p>Adobe XD, Figma, Illustrator </p>
 </div>
 
-</div>
+</div> -->
 
 
 
@@ -226,13 +215,12 @@ Hiring 2 Candidates
 
   <div class="head" style="display: flex;padding: 20px 0 20px 40px;">
       <div style="width: 70%;">
-          <h5>JP Morgan</h5>
-          <p style="margin-top: 10px;">Anna Salai, Teynampet, 
-              Chennai </p>
+          <h5><%=companyname%></h5>
+          <p style="margin-top: 10px;"><%=jobLocation%></p>
       </div>
       <div style="width: 30%; display: flex;">
           <img src="../../assets/image/Google-Icon.jpg" height="50px">
-          <a style="margin-left: 20px;font-size: 13px;color: #0A2647;" href>View Company profile</a>
+          <a style="margin-left: 20px;font-size: 13px;color: #0A2647;" href><%=urltoApply%></a>
       </div>
   </div>
 
@@ -240,15 +228,15 @@ Hiring 2 Candidates
   <div style="margin-left: 40px;">
       <div style="display: flex;">
           <label style="width: 180px;font-weight: 500;">Website :</label>
-          <p style="text-decoration: underline;">Websitelink.com</p>
+          <p style="text-decoration: underline;"><%=urltoApply%></p>
       </div>
       <div style="display: flex;margin-top: 10px;">
-          <label style="width: 180px;font-weight: 500;">About Company :</label>
+          <label style="width: 180px;font-weight: 500;">About Company :<%=aboutCompany%></label>
           <ul style="list-style: none;padding-left: 0;">
-              <li>Required Skill set</li>
-              <li>Proficient in Node.js or Java</li>
+              <li><%=choosefile%></li>
+              <!-- <li>Proficient in Node.js or Java</li>
               <li>Hands on Angular2+/React.js</li>
-              <li>Expertise in AWS/Azure/Google Cloud</li>
+              <li>Expertise in AWS/Azure/Google Cloud</li> -->
             
              </ul>
       </div>
@@ -259,15 +247,15 @@ Hiring 2 Candidates
 <div style="padding: 20px 0 20px 40px;">
   <div style="display: flex;">
       <label style="width: 180px;font-weight: 500;">Recruiter Name :</label>
-      <p>Aravind Daya</p>
+      <p><%=recruiterName%></p>
   </div>
   <div style="display: flex;margin: 10px 0;">
       <label style="width: 180px;font-weight: 500;">Mobile Number :</label>
-      <p>9887878745</p>
+      <p><%=contactNumber%></p>
   </div>
   <div style="display: flex;">
       <label style="width: 180px;font-weight: 500;">Email ID :</label>
-      <p>abcd@gmail.com</p>
+      <p><%=email%></p>
   </div>
 </div>
 
@@ -276,10 +264,8 @@ Hiring 2 Candidates
 <div  style="padding: 20px 20px 20px 40px;box-shadow: 0px 2px 2px #88888867, 0px -2px 2px #88888852;">
   <div style="display: flex;">
       <label style="min-width: 180px;font-weight: 500;">Signature :</label>
-      <p>Name : Aravind<br>
-          Contact : 9898989898<br>
-          Prior experience in at least one Relational database technologies
-          experience in at least one Relational database technologies Priorin at least one Relational database technologies</p>
+      <p>Name :<%=recruiterName%> <br>
+          Contact : <%=contactNumber%><br><%=signature%></p>
   </div>
 </div>
 
