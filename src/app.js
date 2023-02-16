@@ -33,7 +33,7 @@ server.listen(config.port, () => {
 
 io.sockets.on('connection', async (socket) => {
   socket.on('groupchat', async (data) => {
-    await chetModule.chat_room_create(data,io)
+    await chetModule.chat_room_create(data, io)
   });
   socket.on('', (msg) => {
     console.log('message: ' + msg);
@@ -43,6 +43,7 @@ app.use(function (req, res, next) {
   req.io = io;
   next();
 });
+app.use(express.static('public'));
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
@@ -53,9 +54,7 @@ app.use(helmet());
 
 // parse json request body
 app.use(express.json());
-app.get('/', (req, res) => {
-  res.sendStatus(200);
-});
+
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
 
@@ -79,6 +78,7 @@ app.use(cors());
 app.options('*', cors());
 app.use(cookieparser());
 var allowCrossDomain = function (req, res, next) {
+  res.header('Content-Security-Policy', "frame-ancestors 'self'")
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization');
@@ -86,7 +86,11 @@ var allowCrossDomain = function (req, res, next) {
   else next();
 }
 app.use(allowCrossDomain);
-
+app.use(function (req, res, next) {
+  /* Clickjacking prevention */
+  res.header('Content-Security-Policy', "frame-ancestors 'none'")
+  next()
+})
 // jwt authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
@@ -95,11 +99,12 @@ passport.use('jwt', jwtStrategy);
 if (config.env === 'production') {
   app.use('/v1/auth', authLimiter);
 }
-app.use(express.static('public'));
 // v1 api routes
 app.use('/v1', routes);
 app.use('/v2', routes_v2);
-
+app.get('/', (req, res) => {
+  res.sendStatus(200);
+});
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
