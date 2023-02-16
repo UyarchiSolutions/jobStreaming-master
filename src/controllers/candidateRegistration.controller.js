@@ -59,13 +59,13 @@ const forget_password_set = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   let Boolean = false
   const user = await candidateRegistrationService.UsersLogin(req.body);
-  console.log(user)
+  // console.log(user)
   let details = await KeySkill.find({userId:user._id})
-  console.log(details)
+  // console.log(details)
   if(details.length != 0){
     Boolean = true
   }
-  console.log(Boolean)
+  // console.log(Boolean)
   const tokens = await tokenService.generateAuthTokens(user);
   res.send({ user, tokens, Boolean });
 });

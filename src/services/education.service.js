@@ -131,6 +131,16 @@ const get_Qualification = async (body) => {
   // ])
   return data;
 };
+
+const get_Department_all = async (limit) => {
+  let data = await Department.find().limit(parseInt(limit));
+  return data;
+};
+
+const get_Role_all = async (limit) => {
+  let data = await Role.find().limit(parseInt(limit));
+  return data;
+};
 module.exports = {
   createQualification,
   get_sslc_course,
@@ -150,4 +160,6 @@ module.exports = {
   get_allcourse,
   get_all_specialization,
   get_Qualification,
+  get_Role_all,
+  get_Department_all,
 };
