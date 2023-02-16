@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification} = require('../models/employerDetails.model');
+const { EmployerDetails, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification } = require('../models/employerDetails.model');
 const { PlanPayment } = require('../models/planPaymentDetails.model');
 const { CandidatePostjob } = require('../models/candidateDetails.model');
 const { CandidateRegistration } = require('../models');
@@ -12,7 +12,7 @@ const moment = require('moment');
 const { format } = require('morgan');
 const { create } = require('../models/candidateRegistration.model');
 const Axios = require('axios');
-const {emailService} = require('../services');
+const { emailService } = require('../services');
 
 //keySkill
 
@@ -880,17 +880,48 @@ const mail_template_data_delete = async (id, body) => {
 }
 
 // notofication send candidate
+var ejs = require("ejs");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'muthamizhyadav@gmail.com',
+    pass: 'dramjibzgemvmmsp'
+  }
+});
 
 const send_mail_and_notification = async (userId, body) => {
-  const data = await EmployerRegistration.findById(userId)
-  if (!data) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
-  }
-  const { candidates } = body
-  candidates.forEach(async (e) => {
-    await EmployerMailNotification.create({...body, ...{userId:userId, candidateId:e}});
- });
-  return {messages:'Send Notification Mail Successfully...'}
+
+
+  const data = await ejs.renderFile(__dirname + "/template.ejs", { name: 'bharathiraja', age: 25 });
+  const mainOptions = {
+    from: 'vignesh1041996@gmail.com',
+    to: ['bharathiraja996574@gmail.com', 'vignesh1041996@gmail.com'],
+    subject: 'templates',
+    html: data
+  };
+
+  transporter.sendMail(mainOptions, (err, info) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('Message sent: ' + info.response);
+    }
+  });
+  //   const data = await EmployerRegistration.findById(userId)
+  //   if (!data) {
+  //     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  //   }
+  //   const { candidates } = body
+  //   candidates.forEach(async (e) => {
+  //     await EmployerMailNotification.create({...body, ...{userId:userId, candidateId:e}});
+  //  });
+
+  // let email = await emailService.sendEmailTemplate('bharathiraja996574@gmail.com', 'asdasdas', data)
+  return { messages: 'Send Notification Mail Successfully...' }
 }
 
 const getAll_Mail_notification_employerside = async (userId) => {
@@ -1669,8 +1700,8 @@ const keySkillData = async (key) => {
   // let fn = re.exec.bind(re);
   // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   // let filtered = data.filter(fn);
-  var query = new RegExp('^' + key + '$',"i")
-  const data = await Skill.find({ Skill_Title: { $regex: key, $options: 'i' } }).sort({Skill_Title:1}).select('Skill_Title').limit(50)
+  var query = new RegExp('^' + key + '$', "i")
+  const data = await Skill.find({ Skill_Title: { $regex: key, $options: 'i' } }).sort({ Skill_Title: 1 }).select('Skill_Title').limit(50)
   return data
 }
 
@@ -1684,31 +1715,31 @@ const location = async (key) => {
 }
 
 const create_Recruiter = async (userId, body) => {
-   const data = await Recruiters.create({...body, ...{userId:userId} })
+  const data = await Recruiters.create({ ...body, ...{ userId: userId } })
   return data
 }
 
 const get_Recruiter = async (userId) => {
-  const data = await Recruiters.find({userId:userId})
- return data
+  const data = await Recruiters.find({ userId: userId })
+  return data
 }
 
 
 const get_Recruiter_id = async (id) => {
   const data = await Recruiters.findById(id)
- return data
+  return data
 }
 
 const Recruiter_edit = async (id, body) => {
   // console.log(id, body)
-  const data = await Recruiters.findByIdAndUpdate({_id:id}, body, {new:true})
- return data
+  const data = await Recruiters.findByIdAndUpdate({ _id: id }, body, { new: true })
+  return data
 }
 
 const Recruiter_delete = async (id) => {
   // console.log(id, body)
-  const data = await Recruiters.deleteOne({_id:id})
-   return data
+  const data = await Recruiters.deleteOne({ _id: id })
+  return data
 }
 module.exports = {
   createEmpDetails,

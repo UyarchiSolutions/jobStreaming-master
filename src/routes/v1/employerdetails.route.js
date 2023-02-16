@@ -36,7 +36,7 @@ router.route('/mail_template_data_Update/:id').put(employerDetailsController.mai
 router.route('/mail_template_data_delete/:id').delete(employerDetailsController.mail_template_data_delete);
 
 // send notification mail
-router.route('/send_mail_and_notification').post(authorization, employerDetailsController.send_mail_and_notification);
+router.route('/send_mail_and_notification').post(employerDetailsController.send_mail_and_notification);
 router.route('/getAll_Mail_notification_employerside').get(authorization, employerDetailsController.getAll_Mail_notification_employerside);
 router.route('/getAll_Mail_notification_candidateside').get(auth, employerDetailsController.getAll_Mail_notification_candidateside);
 router.route('/candidate_mailnotification_Change/:id').put(employerDetailsController.candidate_mailnotification_Change);

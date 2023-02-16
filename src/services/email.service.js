@@ -32,6 +32,13 @@ const sendEmailEmp = async (to, subject, text) => {
   await transport.sendMail(msg);
 };
 
+
+
+const sendEmailTemplate = async (to, subject, text) => {
+  const msg = { from: config.email.from, to, subject, text };
+  // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
+  await transport.sendMail(msg);
+};
 const forgetEmail = async (to, subject, text, otp, userId) => {
   const msg = { from: config.email.from, to, subject, text };
   await OTPModel.findOneAndUpdate({ userId: userId }, { otp: otp }, { new: true });
@@ -144,4 +151,5 @@ module.exports = {
   sendforgotEmailEmp,
   maskmail,
   notification_mail,
+  sendEmailTemplate
 };
