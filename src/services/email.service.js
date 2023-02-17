@@ -87,7 +87,7 @@ const sendVerificationEmail = async (to, token, mobilenumber) => {
   console.log(to);
   const subject = 'Email Verification';
   // replace this url with the link to the reset password page of your front-end app
-  const resetPasswordUrl = `https://job.lotsmart.in/#/VeriftOPT?mobilenumber=${mobilenumber}`;
+  const resetPasswordUrl = `https://job.lotsmart.in/VeriftOPT?mobilenumber=${mobilenumber}`;
   const text = `Dear user,
 To set your password, click on this link: ${resetPasswordUrl}
 If you did not request any password sets, then ignore this email.`;

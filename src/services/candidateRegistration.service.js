@@ -147,6 +147,7 @@ const change_password = async (id, body) => {
 }
 
 const change_pass = async (userId, body) => {
+  console.log(userId)
   const {oldpassword, newpassword, confirmpassword} = body
   let userName = await CandidateRegistration.findById(userId);
   if (!userName) {
@@ -181,6 +182,16 @@ const getAllLatLong = async (body) => {
    const data = await CandidateRegistration.find({currentAddress:address})
     return {data:data, count:data.length} 
 };
+
+
+const deactivate = async (id) => {
+  const value = CandidateRegistration.findById(id)
+  if(!value){
+    throw new ApiError(httpStatus.UNAUTHORIZED, "not found"); 
+  }
+  const data = await CandidateRegistration.findByIdAndUpdate({ _id: id }, { active: false }, { new: true });
+  return data;
+}
 
 // const updateUserById = async (userId, updateBody) => {
 //   const user = await getUserById(userId);
@@ -220,6 +231,7 @@ module.exports = {
     forget_password_set,
     change_pass,
     getAllLatLong,
+    deactivate,
 //   getUserById,
 //   getUserByEmail,
 //   updateUserById,
