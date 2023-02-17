@@ -5,6 +5,7 @@ const {
   Employercomment,
   EmployerMailTemplate,
   EmployerMailNotification,
+  Recruiters,
 } = require('../models/employerDetails.model');
 const { PlanPayment } = require('../models/planPaymentDetails.model');
 const { CandidatePostjob } = require('../models/candidateDetails.model');

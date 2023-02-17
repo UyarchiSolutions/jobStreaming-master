@@ -1465,8 +1465,17 @@ const candidateSearch_front_page = async (id, body) => {
     }else if(Salary == "4 to 6 lac"){
       salary1 = 400000
       salary2 = 600000
-    }else if(Salary == "4 to 6 lac"){
-
+    }else if(Salary == "6 to 10 lac"){
+      salary1 = 600000
+      salary2 = 1000000
+    }else if(Salary == "10 to 20 lac"){
+      salary1 = 1000000
+      salary2 = 2000000
+    }else if(Salary == "20 to 30 lac"){
+      salary1 = 2000000
+      salary2 = 3000000
+    }else{
+      
     }
 
     salarySearch = { salaryRangeFrom: { $lte: parseInt(salary1) }, salaryRangeTo: { $gte: parseInt(salary2) } };
