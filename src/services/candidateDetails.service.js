@@ -1331,7 +1331,7 @@ const candidateSearch_front_page = async (id, body) => {
     experienceAnotherfrom,
     experienceAnotherto,
     location,
-    preferredindustry,
+    preferredIndustry,
     salary,
     workmode,
     education,
@@ -1348,7 +1348,7 @@ const candidateSearch_front_page = async (id, body) => {
     experienceAnotherfrom != null ||
     experienceAnotherto != null ||
     location != null ||
-    preferredindustry != 0 ||
+    preferredIndustry != 0 ||
     salary != null ||
     workmode != null ||
     education != null ||
@@ -1384,7 +1384,7 @@ const candidateSearch_front_page = async (id, body) => {
   }
   if (experienceAnotherfrom != null && experienceAnotherto != null) {
     experienceAnotherSearch = [
-      { experienceFrom: { $gte: parseInt(experienceAnotherfrom) } },
+      { experienceFrom: { $eq: parseInt(experienceAnotherfrom) } },
       { experienceTo: { $lte: parseInt(experienceAnotherto) } },
     ];
   }
@@ -1400,8 +1400,8 @@ const candidateSearch_front_page = async (id, body) => {
   if (education != null) {
     educationSearch = { educationalQualification: { $in: education } };
   }
-  if (preferredindustry != null) {
-    preferredindustrySearch = [{ preferedIndustry: {$elemMatch:{ $in: preferredindustry } }}];
+  if (preferredIndustry.length != 0) {
+    preferredindustrySearch = [{ preferedIndustry: {$elemMatch:{ $in: preferredIndustry } }}];
   }
   if (salary != null) {
     salarySearch = { salaryRangeFrom: { $lte: parseInt(salary) }, salaryRangeTo: { $gte: parseInt(salary) } };
@@ -1422,14 +1422,15 @@ const candidateSearch_front_page = async (id, body) => {
   if (location != null) {
     locationSearch = { jobLocation: { $regex: location, $options: 'i' }  };
   }
-  // console.log(experienceSearch,
-  //   locationSearch,
-  //   salarySearch,
-  //   preferredindustrySearch,
-  //   workmodeSearch,
-  //   educationSearch,
-  //   roleSearch,
-  //   companytypeSearch,);
+  console.log(experienceSearch,
+    locationSearch,
+    salarySearch,
+     preferredindustrySearch,
+    workmodeSearch,
+    educationSearch,
+    roleSearch,
+    experienceAnotherSearch,
+    companytypeSearch,);
   const data = await EmployerDetails.aggregate([
     {
       $match: {
@@ -1443,6 +1444,11 @@ const candidateSearch_front_page = async (id, body) => {
     },
     {
       $match: {
+        $and: preferredindustrySearch,
+      },
+    },
+    {
+      $match: {
         $and: [
           //  { jobortemplate: { $eq: 'job' } },
           experienceSearch,
@@ -1452,7 +1458,7 @@ const candidateSearch_front_page = async (id, body) => {
           educationSearch,
           roleSearch,
           companytypeSearch,
-        ],preferredindustrySearch
+        ]
       },
     },
     {
