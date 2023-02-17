@@ -1325,20 +1325,23 @@ const candidateSearch_front_page = async (id, body) => {
   let creat1 = moment().format('HH:mm:ss');
   let values = { ...body, ...{ userId: id, date:date, time:creat1 } };
   // let values = {...body, ...{userId:userId}}
+  let salary1 ;
+  let salary2 ;
   let {
     search,
     experience,
     experienceAnotherfrom,
     experienceAnotherto,
-    location,
+    Location,
     preferredIndustry,
-    salary,
+    Salary,
     workmode,
+    department,
     education,
-    salaryfilter,
+    // salaryfilter,
     role,
     freshness,
-    locationfilter,
+    // locationfilter,
     companytype,
     postedby,
   } = body;
@@ -1347,17 +1350,18 @@ const candidateSearch_front_page = async (id, body) => {
     experience != null ||
     experienceAnotherfrom != null ||
     experienceAnotherto != null ||
-    location != null ||
-    preferredIndustry != 0 ||
-    salary != null ||
-    workmode != null ||
-    education != null ||
-    salaryfilter != null ||
-    role != null ||
-    freshness != null ||
-    locationfilter != null ||
-    companytype != null ||
-    postedby != null
+    Location.length != 0 ||
+    preferredIndustry.length != 0 ||
+    Salary.length != 0 ||
+    workmode.length != 0 ||
+    department.length != 0 ||
+    education.length != 0 ||
+    // salaryfilter != null ||
+    role.length != 0 ||
+    freshness.length != 0 ||
+    // locationfilter != null ||
+    companytype.length != 0 ||
+    postedby.length != 0
   ) {
     await CandidateRecentSearchjobCandidate.create(values);
   }
@@ -1373,39 +1377,41 @@ const candidateSearch_front_page = async (id, body) => {
   let preferredindustrySearch = [{ active: true }];
   let workmodeSearch = { active: true };
   let educationSearch = { active: true };
-  let salaryfilterSearch = { active: true };
+  let departmentSearch = {active:true};
+  // let salaryfilterSearch = { active: true };
   let roleSearch = { active: true };
   let freshnessSearch = { active: true };
-  let locationfilterSearch = { active: true };
+  // let locationfilterSearch = { active: true };
   let companytypeSearch = { active: true };
-  let postedbySearch = { active: true };
-  if (postedby != null) {
-    postedbySearch = { companyType: { $in: postedby } };
+  // let postedbySearch = { active: true };
+
+  if (companytype.length != 0) {
+    companytypeSearch = { companyType: { $in: companytype } };
   }
+
   if (experienceAnotherfrom != null && experienceAnotherto != null) {
     experienceAnotherSearch = [
       { experienceFrom: { $eq: parseInt(experienceAnotherfrom) } },
       { experienceTo: { $lte: parseInt(experienceAnotherto) } },
     ];
   }
-  if (workmode != null) {
+
+  if (workmode.length != 0) {
     workmodeSearch = { workplaceType: { $in: workmode } };
   }
-  if (companytype != null) {
-    companytypeSearch = { industry: { $in: companytype } };
+
+  if (department.length != 0) {
+    departmentSearch = { department: { $in: department } };
   }
-  if (role != null) {
+
+  if (role.length != 0) {
     roleSearch = { role: { $in: role } };
   }
-  if (education != null) {
-    educationSearch = { educationalQualification: { $in: education } };
-  }
+
   if (preferredIndustry.length != 0) {
     preferredindustrySearch = [{ preferedIndustry: {$elemMatch:{ $in: preferredIndustry } }}];
   }
-  if (salary != null) {
-    salarySearch = { salaryRangeFrom: { $lte: parseInt(salary) }, salaryRangeTo: { $gte: parseInt(salary) } };
-  }
+
   if (search.length != 0) {
     // search = search.split(',');
     allSearch = [
@@ -1419,18 +1425,65 @@ const candidateSearch_front_page = async (id, body) => {
     // experienceSearch = { experienceFrom: { $lte: parseInt(experience) },experienceTo: { $gte: parseInt(experience) } }
     experienceSearch = { experienceFrom: { $eq: parseInt(experience) } };
   }
-  if (location != null) {
-    locationSearch = { jobLocation: { $regex: location, $options: 'i' }  };
+
+  if (Location.length != 0) {
+    locationSearch = { jobLocation:{$in:Location}  };
   }
-  console.log(experienceSearch,
-    locationSearch,
-    salarySearch,
-     preferredindustrySearch,
-    workmodeSearch,
-    educationSearch,
-    roleSearch,
-    experienceAnotherSearch,
-    companytypeSearch,);
+
+  if (freshness.length != 0) {
+    let one = []
+    for(let i = 0; i<=freshness.length; i++){
+      if(freshness[i] == "1"){
+        one.push(moment().subtract(1, 'days').format('YYYY-MM-DD'))
+      }
+      if(freshness[i] == "3"){
+         one.push(moment().subtract(3, 'days').format('YYYY-MM-DD'))
+      }
+      if(freshness[i] == "7"){
+         one.push(moment().subtract(7, 'days').format('YYYY-MM-DD'))
+      }
+      if(freshness[i] == "15"){
+         one.push(moment().subtract(15, 'days').format('YYYY-MM-DD'))
+      }
+      if(freshness[i] == "30"){
+         one.push(moment().subtract(30, 'days').format('YYYY-MM-DD'))
+      }
+    }
+    freshnessSearch = { date:{$in:one}  };
+  }
+
+  if (Salary.length != 0) {
+    if(Salary == "0 to 1 lac"){
+      salary1 = 0
+      salary2 = 100000
+    }else if(Salary == "1 to 2 lac"){
+      salary1 = 100000
+      salary2 = 200000
+    }else if(Salary == "2 to 4 lac"){
+      salary1 = 200000
+      salary2 = 400000
+    }else if(Salary == "4 to 6 lac"){
+      salary1 = 400000
+      salary2 = 600000
+    }else if(Salary == "4 to 6 lac"){
+
+    }
+
+    salarySearch = { salaryRangeFrom: { $lte: parseInt(salary1) }, salaryRangeTo: { $gte: parseInt(salary2) } };
+  }
+
+  if (education.length != 0) {
+    educationSearch = { course: {$elemMatch:{ $in: education }}};
+  }
+  //  console.log(experienceSearch,
+  //   locationSearch,
+  //   salarySearch,
+  //   preferredindustrySearch,
+  //   workmodeSearch,
+  //   educationSearch,
+  //   roleSearch,
+  //   experienceAnotherSearch,
+  //   companytypeSearch,);
   const data = await EmployerDetails.aggregate([
     {
       $match: {
@@ -1458,6 +1511,8 @@ const candidateSearch_front_page = async (id, body) => {
           educationSearch,
           roleSearch,
           companytypeSearch,
+          departmentSearch,
+          freshnessSearch,
         ]
       },
     },
@@ -1469,7 +1524,7 @@ const candidateSearch_front_page = async (id, body) => {
         pipeline: [
           {
             $match: {
-              $and: [postedbySearch],
+              $and: [companytypeSearch],
             },
           },
         ],
