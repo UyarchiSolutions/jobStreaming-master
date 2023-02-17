@@ -1348,7 +1348,7 @@ const candidateSearch_front_page = async (id, body) => {
     experienceAnotherfrom != null ||
     experienceAnotherto != null ||
     location != null ||
-    preferredindustry != null ||
+    preferredindustry != 0 ||
     salary != null ||
     workmode != null ||
     education != null ||
@@ -1370,7 +1370,7 @@ const candidateSearch_front_page = async (id, body) => {
   let locationSearch = { active: true };
   let allSearch = [{ active: true }];
   let salarySearch = { active: true };
-  let preferredindustrySearch = { active: true };
+  let preferredindustrySearch = [{ active: true }];
   let workmodeSearch = { active: true };
   let educationSearch = { active: true };
   let salaryfilterSearch = { active: true };
@@ -1401,7 +1401,7 @@ const candidateSearch_front_page = async (id, body) => {
     educationSearch = { educationalQualification: { $in: education } };
   }
   if (preferredindustry != null) {
-    preferredindustrySearch = { preferedIndustry: { $eq: preferredindustry } };
+    preferredindustrySearch = [{ preferedIndustry: {$elemMatch:{ $in: preferredindustry } }}];
   }
   if (salary != null) {
     salarySearch = { salaryRangeFrom: { $lte: parseInt(salary) }, salaryRangeTo: { $gte: parseInt(salary) } };
@@ -1448,12 +1448,11 @@ const candidateSearch_front_page = async (id, body) => {
           experienceSearch,
           locationSearch,
           salarySearch,
-          preferredindustrySearch,
           workmodeSearch,
           educationSearch,
           roleSearch,
           companytypeSearch,
-        ],
+        ],preferredindustrySearch
       },
     },
     {
