@@ -1385,7 +1385,7 @@ const candidateSearch_front_page = async (id, body) => {
   if (experienceAnotherfrom != null && experienceAnotherto != null) {
     experienceAnotherSearch = [
       { experienceFrom: { $gte: parseInt(experienceAnotherfrom) } },
-      { experienceFrom: { $lte: parseInt(experienceAnotherto) } },
+      { experienceTo: { $lte: parseInt(experienceAnotherto) } },
     ];
   }
   if (workmode != null) {
@@ -1417,7 +1417,7 @@ const candidateSearch_front_page = async (id, body) => {
 
   if (experience != null) {
     // experienceSearch = { experienceFrom: { $lte: parseInt(experience) },experienceTo: { $gte: parseInt(experience) } }
-    experienceSearch = { experienceFrom: { $gte: parseInt(experience) } };
+    experienceSearch = { experienceFrom: { $eq: parseInt(experience) } };
   }
   if (location != null) {
     locationSearch = { jobLocation: { $regex: location, $options: 'i' }  };
