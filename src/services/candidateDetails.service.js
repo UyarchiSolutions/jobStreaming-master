@@ -1521,7 +1521,6 @@ const candidateSearch_front_page = async (id, body) => {
           workmodeSearch,
           educationSearch,
           roleSearch,
-          companytypeSearch,
           departmentSearch,
           freshnessSearch,
         ]
