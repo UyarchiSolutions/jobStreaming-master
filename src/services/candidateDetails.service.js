@@ -1420,7 +1420,7 @@ const candidateSearch_front_page = async (id, body) => {
     experienceSearch = { experienceFrom: { $gte: parseInt(experience) } };
   }
   if (location != null) {
-    locationSearch = { jobLocation: { $eq: location } };
+    locationSearch = { jobLocation: { $regex: location, $options: 'i' }  };
   }
   // console.log(experienceSearch,
   //   locationSearch,
