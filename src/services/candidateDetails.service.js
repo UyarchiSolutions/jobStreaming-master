@@ -786,6 +786,7 @@ const getByIdAppliedJobs = async (userId) => {
         updatedAt: '$employerdetails.updatedAt',
         date: '$employerdetails.date',
         time: '$employerdetails.time',
+        jodId:'$employerdetails._id',
         candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
       },
     },
@@ -972,6 +973,7 @@ const getByIdSavedJobs = async (userId) => {
         jobTittle: '$employerdetails.jobTittle',
         date: '$employerdetails.date',
         time: '$employerdetails.time',
+        jobId:'$employerdetails._id',
         candidatepostjobsStatus: { $ifNull: ['$employerdetails.candidatepostjobs.status', false] },
         candidatepostjobs: { $ifNull: ['$employerdetails.candidatepostjobs', false] },
         approvedStatus: '$employerdetails.candidatepostjobs.approvedStatus',
@@ -1475,7 +1477,7 @@ const candidateSearch_front_page = async (id, body) => {
       salary1 = 2000000
       salary2 = 3000000
     }else{
-      
+      salary2 = 3000000
     }
 
     salarySearch = { salaryRangeFrom: { $lte: parseInt(salary1) }, salaryRangeTo: { $gte: parseInt(salary2) } };
