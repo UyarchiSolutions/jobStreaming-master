@@ -41,5 +41,6 @@ router.route('/recentSearch_byId/:id').get(candidateDetailsController.recentSear
 router.route('/candidate_detials/:id/:jobid').get(candidateDetailsController.candidate_detials);
 router.route('/updateEducation').post(authorization,candidateDetailsController.updateEducation);
 router.route('/createdSearchhistoryData_byId/:id').get(candidateDetailsController.createdSearchhistoryData_byId);
+router.route('/edit_details').put(authorization, candidateDetailsController.edit_details);
 // router.route('/createSearchCandidate').post(authorization, candidateDetailsController.createSearchCandidate);
 module.exports = router;
