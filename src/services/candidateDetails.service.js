@@ -729,6 +729,7 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         startTime:1,
         endTime:1,
         appliedCount: '$employerpostjobs.count',
+        appliedStatus:'$candidatepostjobs.approvedStatus',
         candidatesubmitButton: { $ifNull: ['$candidatepostjobs.status', false] },
         saveButton: { $ifNull: ['$candidatesavejobs.status', false] },
       },
