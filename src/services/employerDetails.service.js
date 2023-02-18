@@ -294,6 +294,48 @@ const getById_Get = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'departments',
+        localField: 'department',
+        foreignField: '_id',
+        as: 'departments',
+      },
+    },
+    {
+      $unwind: {
+        path: '$departments',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'rolecategories',
+        localField: 'roleCategory',
+        foreignField: '_id',
+        as: 'rolecategories',
+      },
+    },
+    {
+      $unwind: {
+        path: '$rolecategories',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $project: {
         keySkill: 1,
         date: 1,
@@ -339,6 +381,12 @@ const getById_Get = async (id) => {
         interviewendDate:1,
         startTime:1,
         endTime:1,
+        roleName:'$jobroles.Job_role',
+        categoryName:'$rolecategories.Role_Category',
+        departmentName:'$departments.Department',
+        department:1,
+        roleCategory:1,
+        role:1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
