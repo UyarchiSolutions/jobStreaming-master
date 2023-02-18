@@ -1940,35 +1940,35 @@ const keySkillData = async (key) => {
   return data;
 };
 
-const location = async (key) => {
-  const re = new RegExp(key.toLowerCase());
-  // console.log(re)
-  let fn = re.exec.bind(re);
-  let data = [
-    'nagapattinam',
-    'mayiladuthurai',
-    'madurai',
-    'krishnagiri',
-    'karur',
-    'kanniyakumari',
-    'erode',
-    'dindigul',
-    'dharmapuri',
-    'ariyalur',
-    'chennai',
-    'kanchipuram',
-    'villupuram',
-    'pondicherry',
-    'cuddalore',
-    'kallakuruchi',
-    'nagapattinam',
-    'salem',
-    'bangalore',
-    'coimbatore',
-  ];
-  let filtered = data.filter(fn);
-  return filtered;
-};
+// const location = async (key) => {
+//   const re = new RegExp(key.toLowerCase());
+//   // console.log(re)
+//   let fn = re.exec.bind(re);
+//   let data = [
+//     'nagapattinam',
+//     'mayiladuthurai',
+//     'madurai',
+//     'krishnagiri',
+//     'karur',
+//     'kanniyakumari',
+//     'erode',
+//     'dindigul',
+//     'dharmapuri',
+//     'ariyalur',
+//     'chennai',
+//     'kanchipuram',
+//     'villupuram',
+//     'pondicherry',
+//     'cuddalore',
+//     'kallakuruchi',
+//     'nagapattinam',
+//     'salem',
+//     'bangalore',
+//     'coimbatore',
+//   ];
+//   let filtered = data.filter(fn);
+//   return filtered;
+// };
 
 const create_Recruiter = async (userId, body) => {
   const data = await Recruiters.create({ ...body, ...{ userId: userId } });
@@ -2027,7 +2027,7 @@ module.exports = {
   All_Plans,
   all_plans_users_details,
   keySkillData,
-  location,
+  // location,
   update_active_deactive,
   get_job_post,
   get_job_post_candidate,
