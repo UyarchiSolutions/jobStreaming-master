@@ -396,7 +396,6 @@ const updateEducation = async (userId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
   let data ;
-  // if(updateBody.update == "advance details"){
   totalCTC = 0;
   if (updateBody.experienceYear != 0) {
     let currentctc_th = updateBody.currentctc_th;
@@ -412,18 +411,12 @@ const updateEducation = async (userId, updateBody) => {
       expCTC_end = expCTC[1] * 100000;
     }
   }
+  console.log(totalCTC)
   data = await KeySkill.findOneAndUpdate(
     { userId: userId },
     { ...updateBody, ...{ expCTC_strat: expCTC_strat, expCTC_end: expCTC_end, totalCTC: totalCTC } },
     { new: true }
   );
-  // }
-  // if(updateBody.update == "educational details"){
-  //   data = await KeySkill.findOneAndUpdate({ userId: userId }, updateBody, { new: true });
-  // }
-  // if(updateBody.update == "job alert"){
-  //   data = await KeySkill.findOneAndUpdate({ userId: userId }, updateBody, { new: true });
-  // }
   await data.save();
   return data;
 };
