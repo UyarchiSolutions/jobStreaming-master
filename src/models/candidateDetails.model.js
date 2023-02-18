@@ -423,6 +423,9 @@ const candidateSaveJobSchema = mongoose.Schema(
     savejobId: {
       type: String,
     },
+    applied_side:{
+      type:String,
+    },
     status: {
       type: Boolean,
       default: true,
