@@ -444,8 +444,7 @@ const edit_details = async (id, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
-  const data = await KeySkill.findOneAndUpdate({ _id: id }, updateBody, { new: true });
-  await data.save();
+  const data = await KeySkill.findOneAndUpdate({ userId: id }, updateBody, { new: true });
   return data;
 };
 

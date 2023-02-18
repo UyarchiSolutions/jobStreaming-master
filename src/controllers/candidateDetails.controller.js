@@ -66,7 +66,6 @@ const updateEducation = catchAsync(async(req,res) => {
 const edit_details = catchAsync(async(req,res) => {
   let userId = req.userId 
     const user = await candidateDetailsService.edit_details(userId, req.body)
-    await user.save();
     res.send(user)
 })
 
