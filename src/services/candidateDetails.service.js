@@ -399,7 +399,7 @@ const updateEducation = async (userId, updateBody) => {
   if (updateBody.experienceYear != 0) {
     let currentctc_th = updateBody.currentctc_th;
     let currentctc = updateBody.currentctc * 100000;
-    totalCTC = parseint(currentctc_th) + parseint(currentctc);
+    totalCTC = parseInt(currentctc_th) + parseInt(currentctc);
   }
   expCTC = updateBody.expectedctc.split('-');
   expCTC_strat = 0;
