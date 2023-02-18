@@ -440,7 +440,7 @@ const updateByIdImage = async (id, updateBody) => {
 
 
 const edit_details = async (id, updateBody) => {
-  const user = await KeySkill.findOne({userId:userId});
+  const user = await KeySkill.findOne({userId:id});
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
