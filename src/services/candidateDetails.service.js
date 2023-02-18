@@ -1477,32 +1477,24 @@ const candidateSearch_front_page = async (id, body) => {
   }
 
   if (Salary.length != 0) {
-    if (Salary == '0 to 1 lac') {
-      salary1 = 0;
-      salary2 = 100000;
-    } else if (Salary == '1 to 2 lac') {
-      salary1 = 100000;
-      salary2 = 200000;
-    } else if (Salary == '2 to 4 lac') {
-      salary1 = 200000;
-      salary2 = 400000;
-    } else if (Salary == '4 to 6 lac') {
-      salary1 = 400000;
-      salary2 = 600000;
-    } else if (Salary == '6 to 10 lac') {
-      salary1 = 600000;
-      salary2 = 1000000;
-    } else if (Salary == '10 to 20 lac') {
-      salary1 = 1000000;
-      salary2 = 2000000;
-    } else if (Salary == '20 to 30 lac') {
-      salary1 = 2000000;
-      salary2 = 3000000;
-    } else {
-      salary2 = 3000000;
-    }
+    let salary_macth = [];
+    Salary.forEach((a) => {
+      let value = a.split('-');
+      let start = value[0] * 100000;
 
-    salarySearch = { salaryRangeFrom: { $lte: parseInt(salary1) }, salaryRangeTo: { $gte: parseInt(salary2) } };
+      let end = 0;
+      if (value[1] != 'more') {
+        end = value[1] * 100000;
+      }
+      if (end != 0) {
+        salary_macth.push({ $and: [{ salaryRangeFrom: { $gte: start } }, { salaryRangeTo: { $lte: end } }] });
+      } else {
+        salary_macth.push({ $and: [{ salaryRangeFrom: { $gte: start } }] });
+      }
+    });
+    console.log(salary_macth);
+    salarySearch = { $or: salary_macth };
+    // salarySearch = { salaryRangeFrom: { $lte: parseInt(salary1) }, salaryRangeTo: { $gte: parseInt(salary2) } };
   }
 
   if (education.length != 0) {

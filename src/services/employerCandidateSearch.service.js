@@ -349,7 +349,7 @@ const outSearch_employer = async (userId, body) => {
   }
 
   if (keyskills.length != 0) {
-    console.log(keyskills)
+    console.log(keyskills);
     anykeywordsSearch = [
       { currentSkill: { $elemMatch: { $in: keyskills } } },
       { preferredSkill: { $elemMatch: { $in: keyskills } } },
@@ -371,7 +371,7 @@ const outSearch_employer = async (userId, body) => {
   }
 
   if (Location.length != 0) {
-    locationSearch = [{ locationCurrent: { $in: Location } },{ locationNative: { $in: Location } }]
+    locationSearch = [{ locationCurrent: { $in: Location } }, { locationNative: { $in: Location } }];
   }
 
   if (course.length != 0) {
@@ -384,8 +384,38 @@ const outSearch_employer = async (userId, body) => {
     ];
   }
   if (salary.length != 0) {
-    salarySearch = { expectedctc: { $in: salary } };
+    let salary_macth = [];
+    salary.forEach((a) => {
+      let value = a.split('-');
+      let start = value[0] * 100000;
+
+      let end = 0;
+      if (value[1] != 'more') {
+        end = value[1] * 100000;
+      }
+      if (end != 0) {
+        salary_macth.push({
+          $or: [
+            {
+              $and: [
+                { expCTC_strat: { $gte: start } },
+                { $or: [{ expCTC_end: { $lte: end } }, { expCTC_end: { $eq: 0 } }] },
+              ],
+            },
+            {
+              $and: [{ totalCTC: { $gte: start } }, { totalCTC: { $lte: end } }],
+            },
+          ],
+        });
+      } else {
+        salary_macth.push({
+          $or: [{ expCTC_strat: { $gte: start } }, { totalCTC: { $gte: start } }],
+        });
+      }
+    });
+    salarySearch = { $or: salary_macth };
   }
+
   if (gender != null) {
     genderSearch = { gender: { $eq: gender } };
   }
@@ -394,17 +424,17 @@ const outSearch_employer = async (userId, body) => {
     displayDetailsSearch = [{ date: { $gte: sc } }];
   }
   // console.log(
-    // keyskillSearch,
-    // locationSearch,
-    // expSearch,
-    // displayDetailsSearch,
-    // genderSearch,
-    // salarySearch,
-    // roleSearch,
-    // departmentSearch,
-    // industrySearch,
-    // noticeperiodSearch,
-    // anykeywordsSearch
+  // keyskillSearch,
+  // locationSearch,
+  // expSearch,
+  // displayDetailsSearch,
+  // genderSearch,
+  //  salarySearch,
+  // roleSearch,
+  // departmentSearch,
+  // industrySearch,
+  // noticeperiodSearch,
+  // anykeywordsSearch
   // );
   const data = await KeySkill.aggregate([
     {
@@ -658,7 +688,7 @@ const outSearch_employer = async (userId, body) => {
         from: 'candidateregistrations',
         localField: 'userId',
         foreignField: '_id',
-        pipeline:[
+        pipeline: [
           {
             $match: {
               $and: displayDetailsSearch,
@@ -753,6 +783,10 @@ const outSearch_employer = async (userId, body) => {
         role_Category: 1,
         salaryFrom: 1,
         SalaryTo: 1,
+        currentctc_th:1,
+        expCTC_end:1,
+        expCTC_strat:1,
+        totalCTC:1
       },
     },
   ]);
