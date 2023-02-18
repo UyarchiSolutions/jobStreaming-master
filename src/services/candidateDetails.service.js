@@ -395,6 +395,8 @@ const updateEducation = async (userId, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
+  let data ;
+  if(updateBody.update == "advance details"){
   totalCTC = 0;
   if (updateBody.experienceYear != 0) {
     let currentctc_th = updateBody.currentctc_th;
@@ -410,11 +412,18 @@ const updateEducation = async (userId, updateBody) => {
       expCTC_end = expCTC[1] * 100000;
     }
   }
-  const data = await KeySkill.findOneAndUpdate(
+  data = await KeySkill.findOneAndUpdate(
     { userId: userId },
     { ...updateBody, ...{ expCTC_strat: expCTC_strat, expCTC_end: expCTC_end, totalCTC: totalCTC } },
     { new: true }
   );
+  }
+  if(updateBody.update == "educational details"){
+    data = await KeySkill.findOneAndUpdate({ userId: userId }, updateBody, { new: true });
+  }
+  if(updateBody.update == "job alert"){
+    data = await KeySkill.findOneAndUpdate({ userId: userId }, updateBody, { new: true });
+  }
   await data.save();
   return data;
 };
@@ -623,7 +632,6 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         preserveNullAndEmptyArrays: true,
       },
     },
-
     {
       $lookup: {
         from: 'candidatepostjobs',
@@ -705,6 +713,10 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         expiredDate: 1,
         date: 1,
         time: 1,
+        recruiterName:1,
+        recruiterEmail:1,
+        recruiterNumber:1,
+
         appliedCount: '$employerpostjobs.count',
         candidatesubmitButton: { $ifNull: ['$candidatepostjobs.status', false] },
         saveButton: { $ifNull: ['$candidatesavejobs.status', false] },
