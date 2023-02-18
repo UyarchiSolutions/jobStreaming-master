@@ -18,17 +18,22 @@ const moment = require('moment');
 
 const createkeySkill = async (userId, userBody) => {
   console.log(userId);
-  // let secondarySkill;
-  // let pasrSkill;
-  // let keyskill = userBody.keyskill.split(',');
-  // let currentSkill = userBody.currentSkill.split(',');
-  // let preferredSkill = userBody.preferredSkill.split(',');
-  // if (userBody.secondarySkill != null) {
-  //   secondarySkill = userBody.secondarySkill.split(',');
-  // }
-  // if (userBody.pasrSkill != null) {
-  //   pasrSkill = userBody.pasrSkill.split(',');
-  // }
+  totalCTC = 0;
+  if (userBody.experienceYear != 0) {
+    let currentctc_th = userBody.currentctc_th;
+    let currentctc = userBody.currentctc * 100000;
+    totalCTC = currentctc_th + currentctc;
+  }
+  expCTC = userBody.expectedctc.split('-');
+  expCTC_strat = 0;
+  expCTC_end = 0;
+  if (expCTC.length != 0) {
+    expCTC_strat = expCTC[0] * 100000;
+    if (expCTC[1] != 'more') {
+      expCTC_end = expCTC[1] * 100000;
+    }
+  }
+
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HHmmss');
   let values = {
@@ -37,11 +42,9 @@ const createkeySkill = async (userId, userBody) => {
       userId: userId,
       date: date,
       time: creat1,
-      // keyskill: keyskill,
-      // currentSkill: currentSkill,
-      // preferredSkill: preferredSkill,
-      // secondarySkill: secondarySkill,
-      // pasrSkill: pasrSkill,
+      totalCTC: totalCTC,
+      expCTC_strat: expCTC_strat,
+      expCTC_end: expCTC_end,
     },
   };
   let data = await KeySkill.create(values);
@@ -60,7 +63,7 @@ const getByIdUser = async (id) => {
         from: 'candidatedetails',
         localField: '_id',
         foreignField: 'userId',
-        pipeline:[
+        pipeline: [
           {
             $lookup: {
               from: 'qualifications',
@@ -294,75 +297,75 @@ const getByIdUser = async (id) => {
         createdAt: 1,
         updatedAt: 1,
         // candidateDetails: '$candidatedetails',
-        keyskill:'$candidatedetails.keyskill',
-        currentSkill:'$candidatedetails.currentSkill',
-        preferredSkill:'$candidatedetails.preferredSkill',
-        active:'$candidatedetails.active',
-        image:'$candidatedetails.image',
-        dob:'$candidatedetails.dob',
-        experienceYear:'$candidatedetails.experienceYear',
-        experienceMonth:'$candidatedetails.experienceMonth',
-        expectedctc:'$candidatedetails.expectedctc',
-        currentctc:'$candidatedetails.currentctc',
-        locationCurrent:'$candidatedetails.locationCurrent',
-        locationNative:'$candidatedetails.locationNative',
-        noticeperiod:'$candidatedetails.noticeperiod',
-        gender:'$candidatedetails.gender',
-        maritalStatus:'$candidatedetails.maritalStatus',
-        ugMarks:'$candidatedetails.ugMarks',
-        ugGradingSystem:'$candidatedetails.ugGradingSystem',
-        ugCourseType:'$candidatedetails.ugCourseType',
-        ugCourseDurationTo:'$candidatedetails.ugCourseDurationTo',
-        ugCourseDurationFrom:'$candidatedetails.ugCourseDurationFrom',
-        relocate:'$candidatedetails.relocate',
-        languages:'$candidatedetails.languages',
-        ugUniversity:'$candidatedetails.ugUniversity',
-        drQualification:'$candidatedetails.qualifications.qualification',
-        drcourses:'$candidatedetails.drcourses.Course',
-        drSpecialization:'$candidatedetails.drspecializations.Specialization',
-        pgQualification:'$candidatedetails.pgqualifications.qualification',
-        pgCourse:'$candidatedetails.pgcourses.Course',
-        pgSpecialization:'$candidatedetails.pgspecializations.Specialization',
-        ugQualification:'$candidatedetails.ugqualifications.qualification',
-        ugCourse:'$candidatedetails.ugcourses.Course',
-        ugSpecialization:'$candidatedetails.specializations.Specialization',
-        role:'$candidatedetails.jobroles.Job_role',
-        roleCategory:'$candidatedetails.rolecategories.Role_Category',
-        department:'$candidatedetails.departments.Department',
-        industry:'$candidatedetails.industries.Industry',
-        sslctotalmarks:'$candidatedetails.sslctotalmarks',
-        sslcPassedYear:'$candidatedetails.sslcPassedYear',
-        sslcMedium:'$candidatedetails.sslcMedium',
-        sslcBoard:'$candidatedetails.sslcBoard',
-        sslcQualification:"$candidatedetails.sslcqualifications.qualification",
-        pgUniversity:'$candidatedetails.pgUniversity',
-        pgMarks:'$candidatedetails.pgUniversity',
-        pgGradingSystem:'$candidatedetails.pgUniversity',
-        pgCourseType:'$candidatedetails.pgUniversity',
-        pgCourseDurationTo:'$candidatedetails.pgUniversity',
-        pgCourseDurationFrom:'$candidatedetails.pgUniversity',
-        hstotalmarks:'$candidatedetails.hstotalmarks',
-        hsPassedYear:'$candidatedetails.hsPassedYear',
-        hsMedium:'$candidatedetails.hsMedium',
-        hsBoard:'$candidatedetails.hsBoard',
-        drMarks:'$candidatedetails.drMarks',
-        drGradingSystem:'$candidatedetails.drGradingSystem',
-        drCourseType:'$candidatedetails.drCourseType',
-        drCourseDurationTo:'$candidatedetails.drCourseDurationTo',
-        drCourseDurationFrom:'$candidatedetails.drCourseDurationFrom',
-        hsQualification:'$candidatedetails.hscqualifications.qualification',
-        keyskillSet:'$candidatedetails.keyskillSet',
-        drUniversity:'$candidatedetails.drUniversity',
-        experienceMonthSet:'$candidatedetails.experienceMonthSet',
-        locationSet:'$candidatedetails.locationSet',
-        experienceYearSet:'$candidatedetails.experienceYearSet',
-        designationSet:'$candidatedetails.designationSet',
-        currentIndustry:'$candidatedetails.currentIndustry',
-        currentDepartment:'$candidatedetails.currentDepartment',
-        role_Category:'$candidatedetails.role_Category',
-        salaryFrom:'$candidatedetails.salaryFrom',
-        SalaryTo:'$candidatedetails.SalaryTo',
-        candidateDetails:'$candidatedetails'
+        keyskill: '$candidatedetails.keyskill',
+        currentSkill: '$candidatedetails.currentSkill',
+        preferredSkill: '$candidatedetails.preferredSkill',
+        active: '$candidatedetails.active',
+        image: '$candidatedetails.image',
+        dob: '$candidatedetails.dob',
+        experienceYear: '$candidatedetails.experienceYear',
+        experienceMonth: '$candidatedetails.experienceMonth',
+        expectedctc: '$candidatedetails.expectedctc',
+        currentctc: '$candidatedetails.currentctc',
+        locationCurrent: '$candidatedetails.locationCurrent',
+        locationNative: '$candidatedetails.locationNative',
+        noticeperiod: '$candidatedetails.noticeperiod',
+        gender: '$candidatedetails.gender',
+        maritalStatus: '$candidatedetails.maritalStatus',
+        ugMarks: '$candidatedetails.ugMarks',
+        ugGradingSystem: '$candidatedetails.ugGradingSystem',
+        ugCourseType: '$candidatedetails.ugCourseType',
+        ugCourseDurationTo: '$candidatedetails.ugCourseDurationTo',
+        ugCourseDurationFrom: '$candidatedetails.ugCourseDurationFrom',
+        relocate: '$candidatedetails.relocate',
+        languages: '$candidatedetails.languages',
+        ugUniversity: '$candidatedetails.ugUniversity',
+        drQualification: '$candidatedetails.qualifications.qualification',
+        drcourses: '$candidatedetails.drcourses.Course',
+        drSpecialization: '$candidatedetails.drspecializations.Specialization',
+        pgQualification: '$candidatedetails.pgqualifications.qualification',
+        pgCourse: '$candidatedetails.pgcourses.Course',
+        pgSpecialization: '$candidatedetails.pgspecializations.Specialization',
+        ugQualification: '$candidatedetails.ugqualifications.qualification',
+        ugCourse: '$candidatedetails.ugcourses.Course',
+        ugSpecialization: '$candidatedetails.specializations.Specialization',
+        role: '$candidatedetails.jobroles.Job_role',
+        roleCategory: '$candidatedetails.rolecategories.Role_Category',
+        department: '$candidatedetails.departments.Department',
+        industry: '$candidatedetails.industries.Industry',
+        sslctotalmarks: '$candidatedetails.sslctotalmarks',
+        sslcPassedYear: '$candidatedetails.sslcPassedYear',
+        sslcMedium: '$candidatedetails.sslcMedium',
+        sslcBoard: '$candidatedetails.sslcBoard',
+        sslcQualification: '$candidatedetails.sslcqualifications.qualification',
+        pgUniversity: '$candidatedetails.pgUniversity',
+        pgMarks: '$candidatedetails.pgUniversity',
+        pgGradingSystem: '$candidatedetails.pgUniversity',
+        pgCourseType: '$candidatedetails.pgUniversity',
+        pgCourseDurationTo: '$candidatedetails.pgUniversity',
+        pgCourseDurationFrom: '$candidatedetails.pgUniversity',
+        hstotalmarks: '$candidatedetails.hstotalmarks',
+        hsPassedYear: '$candidatedetails.hsPassedYear',
+        hsMedium: '$candidatedetails.hsMedium',
+        hsBoard: '$candidatedetails.hsBoard',
+        drMarks: '$candidatedetails.drMarks',
+        drGradingSystem: '$candidatedetails.drGradingSystem',
+        drCourseType: '$candidatedetails.drCourseType',
+        drCourseDurationTo: '$candidatedetails.drCourseDurationTo',
+        drCourseDurationFrom: '$candidatedetails.drCourseDurationFrom',
+        hsQualification: '$candidatedetails.hscqualifications.qualification',
+        keyskillSet: '$candidatedetails.keyskillSet',
+        drUniversity: '$candidatedetails.drUniversity',
+        experienceMonthSet: '$candidatedetails.experienceMonthSet',
+        locationSet: '$candidatedetails.locationSet',
+        experienceYearSet: '$candidatedetails.experienceYearSet',
+        designationSet: '$candidatedetails.designationSet',
+        currentIndustry: '$candidatedetails.currentIndustry',
+        currentDepartment: '$candidatedetails.currentDepartment',
+        role_Category: '$candidatedetails.role_Category',
+        salaryFrom: '$candidatedetails.salaryFrom',
+        SalaryTo: '$candidatedetails.SalaryTo',
+        candidateDetails: '$candidatedetails',
       },
     },
   ]);
@@ -786,7 +789,7 @@ const getByIdAppliedJobs = async (userId) => {
         updatedAt: '$employerdetails.updatedAt',
         date: '$employerdetails.date',
         time: '$employerdetails.time',
-        jodId:'$employerdetails._id',
+        jodId: '$employerdetails._id',
         candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
       },
     },
@@ -973,7 +976,7 @@ const getByIdSavedJobs = async (userId) => {
         jobTittle: '$employerdetails.jobTittle',
         date: '$employerdetails.date',
         time: '$employerdetails.time',
-        jobId:'$employerdetails._id',
+        jobId: '$employerdetails._id',
         candidatepostjobsStatus: { $ifNull: ['$employerdetails.candidatepostjobs.status', false] },
         candidatepostjobs: { $ifNull: ['$employerdetails.candidatepostjobs', false] },
         approvedStatus: '$employerdetails.candidatepostjobs.approvedStatus',
@@ -1075,13 +1078,13 @@ const createdSearchhistory = async (userId, body) => {
   console.log(userId);
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HH:mm:ss');
-  let values = { ...body, ...{ userId: userId, date:date, time:creat1} };
+  let values = { ...body, ...{ userId: userId, date: date, time: creat1 } };
   let data = await CandidateSearchjobCandidate.create(values);
   return data;
 };
 
 const createdSearchhistoryData = async (userId) => {
-  let data = await CandidateSearchjobCandidate.aggregate([  
+  let data = await CandidateSearchjobCandidate.aggregate([
     {
       $sort: { createdAt: -1 },
     },
@@ -1093,7 +1096,7 @@ const createdSearchhistoryData = async (userId) => {
     {
       $limit: 10,
     },
-]);
+  ]);
   return data;
 };
 
@@ -1198,7 +1201,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'candidateDetails not found');
   }
-  if(search.length == 0){
+  if (search.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'job alert data not found');
   }
   // console.log(search,locetion)
@@ -1219,7 +1222,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
         $and: [
           { jobLocation: { $eq: locetion } },
           { keySkill: { $elemMatch: { $in: search } } },
-          { experienceFrom: { $eq: (expYear) } },
+          { experienceFrom: { $eq: expYear } },
         ],
       },
     },
@@ -1235,10 +1238,10 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
         from: 'candidatepostjobs',
         localField: '_id',
         foreignField: 'jobId',
-        pipeline:[
+        pipeline: [
           {
-            $match:{ userId: { $eq: userId } }
-          }
+            $match: { userId: { $eq: userId } },
+          },
         ],
         as: 'candidatepostjobs',
       },
@@ -1302,7 +1305,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
         companyType: '$employerregistrations.companyType',
         name: '$employerregistrations.name',
         regitserStatus: '$employerregistrations.adminStatus',
-        appliedStatus:'$candidatepostjobs.approvedStatus'
+        appliedStatus: '$candidatepostjobs.approvedStatus',
       },
     },
   ]);
@@ -1318,17 +1321,17 @@ const getByIdEmployerDetails = async (id) => {
 };
 
 const candidateSearch_front_page = async (id, body) => {
-  console.log(id)
+  console.log(id);
   const check = await CandidateRegistration.findById(id);
   if (!check) {
     throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
   }
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HH:mm:ss');
-  let values = { ...body, ...{ userId: id, date:date, time:creat1 } };
+  let values = { ...body, ...{ userId: id, date: date, time: creat1 } };
   // let values = {...body, ...{userId:userId}}
-  let salary1 ;
-  let salary2 ;
+  let salary1;
+  let salary2;
   let {
     search,
     experience,
@@ -1379,7 +1382,7 @@ const candidateSearch_front_page = async (id, body) => {
   let preferredindustrySearch = [{ active: true }];
   let workmodeSearch = { active: true };
   let educationSearch = { active: true };
-  let departmentSearch = {active:true};
+  let departmentSearch = { active: true };
   // let salaryfilterSearch = { active: true };
   let roleSearch = { active: true };
   let freshnessSearch = { active: true };
@@ -1411,7 +1414,7 @@ const candidateSearch_front_page = async (id, body) => {
   }
 
   if (preferredIndustry.length != 0) {
-    preferredindustrySearch = [{ preferedIndustry: {$elemMatch:{ $in: preferredIndustry } }}];
+    preferredindustrySearch = [{ preferedIndustry: { $elemMatch: { $in: preferredIndustry } } }];
   }
 
   if (search.length != 0) {
@@ -1429,62 +1432,62 @@ const candidateSearch_front_page = async (id, body) => {
   }
 
   if (Location.length != 0) {
-    locationSearch = { jobLocation:{$in:Location}  };
+    locationSearch = { jobLocation: { $in: Location } };
   }
 
   if (freshness.length != 0) {
-    let one = []
-    for(let i = 0; i<=freshness.length; i++){
-      if(freshness[i] == "1"){
-        one.push(moment().subtract(1, 'days').format('YYYY-MM-DD'))
+    let one = [];
+    for (let i = 0; i <= freshness.length; i++) {
+      if (freshness[i] == '1') {
+        one.push(moment().subtract(1, 'days').format('YYYY-MM-DD'));
       }
-      if(freshness[i] == "3"){
-         one.push(moment().subtract(3, 'days').format('YYYY-MM-DD'))
+      if (freshness[i] == '3') {
+        one.push(moment().subtract(3, 'days').format('YYYY-MM-DD'));
       }
-      if(freshness[i] == "7"){
-         one.push(moment().subtract(7, 'days').format('YYYY-MM-DD'))
+      if (freshness[i] == '7') {
+        one.push(moment().subtract(7, 'days').format('YYYY-MM-DD'));
       }
-      if(freshness[i] == "15"){
-         one.push(moment().subtract(15, 'days').format('YYYY-MM-DD'))
+      if (freshness[i] == '15') {
+        one.push(moment().subtract(15, 'days').format('YYYY-MM-DD'));
       }
-      if(freshness[i] == "30"){
-         one.push(moment().subtract(30, 'days').format('YYYY-MM-DD'))
+      if (freshness[i] == '30') {
+        one.push(moment().subtract(30, 'days').format('YYYY-MM-DD'));
       }
     }
-    freshnessSearch = { date:{$in:one}  };
+    freshnessSearch = { date: { $in: one } };
   }
 
   if (Salary.length != 0) {
-    if(Salary == "0 to 1 lac"){
-      salary1 = 0
-      salary2 = 100000
-    }else if(Salary == "1 to 2 lac"){
-      salary1 = 100000
-      salary2 = 200000
-    }else if(Salary == "2 to 4 lac"){
-      salary1 = 200000
-      salary2 = 400000
-    }else if(Salary == "4 to 6 lac"){
-      salary1 = 400000
-      salary2 = 600000
-    }else if(Salary == "6 to 10 lac"){
-      salary1 = 600000
-      salary2 = 1000000
-    }else if(Salary == "10 to 20 lac"){
-      salary1 = 1000000
-      salary2 = 2000000
-    }else if(Salary == "20 to 30 lac"){
-      salary1 = 2000000
-      salary2 = 3000000
-    }else{
-      salary2 = 3000000
+    if (Salary == '0 to 1 lac') {
+      salary1 = 0;
+      salary2 = 100000;
+    } else if (Salary == '1 to 2 lac') {
+      salary1 = 100000;
+      salary2 = 200000;
+    } else if (Salary == '2 to 4 lac') {
+      salary1 = 200000;
+      salary2 = 400000;
+    } else if (Salary == '4 to 6 lac') {
+      salary1 = 400000;
+      salary2 = 600000;
+    } else if (Salary == '6 to 10 lac') {
+      salary1 = 600000;
+      salary2 = 1000000;
+    } else if (Salary == '10 to 20 lac') {
+      salary1 = 1000000;
+      salary2 = 2000000;
+    } else if (Salary == '20 to 30 lac') {
+      salary1 = 2000000;
+      salary2 = 3000000;
+    } else {
+      salary2 = 3000000;
     }
 
     salarySearch = { salaryRangeFrom: { $lte: parseInt(salary1) }, salaryRangeTo: { $gte: parseInt(salary2) } };
   }
 
   if (education.length != 0) {
-    educationSearch = { course: {$elemMatch:{ $in: education }}};
+    educationSearch = { course: { $elemMatch: { $in: education } } };
   }
   //  console.log(experienceSearch,
   //   locationSearch,
@@ -1523,7 +1526,7 @@ const candidateSearch_front_page = async (id, body) => {
           roleSearch,
           departmentSearch,
           freshnessSearch,
-        ]
+        ],
       },
     },
     {
@@ -1549,10 +1552,10 @@ const candidateSearch_front_page = async (id, body) => {
         from: 'candidatepostjobs',
         localField: '_id',
         foreignField: 'jobId',
-        pipeline:[
+        pipeline: [
           {
-            $match:{ userId: { $eq: id } }
-          }
+            $match: { userId: { $eq: id } },
+          },
         ],
         as: 'candidatepostjobs',
       },
@@ -1564,39 +1567,39 @@ const candidateSearch_front_page = async (id, body) => {
       },
     },
     {
-      $project:{
-        keySkill:1,
-        jobTittle:1,
-        recruiterName:1,
-        contactNumber:1,
-        jobDescription:1,
-        educationalQualification:1,
-        salaryRangeFrom:1,
-        salaryRangeTo:1,
-        experienceFrom:1,
-        experienceTo:1,
-        interviewType:1,
-        candidateDescription:1,
-        salaryDescription:1,
-        urltoApply:1,
-        workplaceType:1,
-        industry:1,
-        preferedIndustry:1,
-        jobLocation:1,
-        employmentType:1,
-        openings:1,
-        date:1,
-        expiredDate:1,
-        date:1,
-        time:1,
+      $project: {
+        keySkill: 1,
+        jobTittle: 1,
+        recruiterName: 1,
+        contactNumber: 1,
+        jobDescription: 1,
+        educationalQualification: 1,
+        salaryRangeFrom: 1,
+        salaryRangeTo: 1,
+        experienceFrom: 1,
+        experienceTo: 1,
+        interviewType: 1,
+        candidateDescription: 1,
+        salaryDescription: 1,
+        urltoApply: 1,
+        workplaceType: 1,
+        industry: 1,
+        preferedIndustry: 1,
+        jobLocation: 1,
+        employmentType: 1,
+        openings: 1,
+        date: 1,
+        expiredDate: 1,
+        date: 1,
+        time: 1,
         companyType: '$employerregistrations.companyType',
         mobileNumber: '$employerregistrations.mobileNumber',
         contactName: '$employerregistrationscontactName',
         email: '$employerregistrations.email',
         name: '$employerregistrations.name',
-        appliedStatus:'$candidatepostjobs.approvedStatus',
-      }
-    }
+        appliedStatus: '$candidatepostjobs.approvedStatus',
+      },
+    },
   ]);
   return data;
 };
@@ -1618,16 +1621,15 @@ const recentSearch = async (userId) => {
   return data;
 };
 
-
 const recentSearch_byId = async (id) => {
-  const data = await CandidateRecentSearchjobCandidate.findById(id)
+  const data = await CandidateRecentSearchjobCandidate.findById(id);
   return data;
 };
 // candidate education details
 const educationDetails = async (userId, body) => {
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HHmmss');
-  const data = await EducationDeatils.create({ ...body, ...{ userId: userId, date:date, time:creat1} });
+  const data = await EducationDeatils.create({ ...body, ...{ userId: userId, date: date, time: creat1 } });
   return data;
 };
 
@@ -1652,7 +1654,7 @@ const candidate_detials = async (id, jobid) => {
         from: 'candidatepostjobs',
         localField: '_id',
         foreignField: 'userId',
-        pipeline:[
+        pipeline: [
           {
             $match: {
               $and: [{ jobId: { $eq: jobid } }],
@@ -1673,7 +1675,7 @@ const candidate_detials = async (id, jobid) => {
         from: 'candidatedetails',
         localField: '_id',
         foreignField: 'userId',
-        pipeline:[
+        pipeline: [
           {
             $lookup: {
               from: 'qualifications',
@@ -1907,76 +1909,76 @@ const candidate_detials = async (id, jobid) => {
         createdAt: 1,
         updatedAt: 1,
         // candidateDetails: '$candidatedetails',
-        keyskill:'$candidatedetails.keyskill',
-        currentSkill:'$candidatedetails.currentSkill',
-        preferredSkill:'$candidatedetails.preferredSkill',
-        active:'$candidatedetails.active',
-        image:'$candidatedetails.image',
-        dob:'$candidatedetails.dob',
-        experienceYear:'$candidatedetails.experienceYear',
-        experienceMonth:'$candidatedetails.experienceMonth',
-        expectedctc:'$candidatedetails.expectedctc',
-        currentctc:'$candidatedetails.currentctc',
-        locationCurrent:'$candidatedetails.locationCurrent',
-        locationNative:'$candidatedetails.locationNative',
-        noticeperiod:'$candidatedetails.noticeperiod',
-        gender:'$candidatedetails.gender',
-        maritalStatus:'$candidatedetails.maritalStatus',
-        ugMarks:'$candidatedetails.ugMarks',
-        ugGradingSystem:'$candidatedetails.ugGradingSystem',
-        ugCourseType:'$candidatedetails.ugCourseType',
-        ugCourseDurationTo:'$candidatedetails.ugCourseDurationTo',
-        ugCourseDurationFrom:'$candidatedetails.ugCourseDurationFrom',
-        relocate:'$candidatedetails.relocate',
-        languages:'$candidatedetails.languages',
-        ugUniversity:'$candidatedetails.ugUniversity',
-        drQualification:'$candidatedetails.qualifications.qualification',
-        drcourses:'$candidatedetails.drcourses.Course',
-        drSpecialization:'$candidatedetails.drspecializations.Specialization',
-        pgQualification:'$candidatedetails.pgqualifications.qualification',
-        pgCourse:'$candidatedetails.pgcourses.Course',
-        pgSpecialization:'$candidatedetails.pgspecializations.Specialization',
-        ugQualification:'$candidatedetails.ugqualifications.qualification',
-        ugCourse:'$candidatedetails.ugcourses.Course',
-        ugSpecialization:'$candidatedetails.specializations.Specialization',
-        role:'$candidatedetails.jobroles.Job_role',
-        roleCategory:'$candidatedetails.rolecategories.Role_Category',
-        department:'$candidatedetails.departments.Department',
-        industry:'$candidatedetails.industries.Industry',
-        sslctotalmarks:'$candidatedetails.sslctotalmarks',
-        sslcPassedYear:'$candidatedetails.sslcPassedYear',
-        sslcMedium:'$candidatedetails.sslcMedium',
-        sslcBoard:'$candidatedetails.sslcBoard',
-        sslcQualification:"$candidatedetails.sslcqualifications.qualification",
-        pgUniversity:'$candidatedetails.pgUniversity',
-        pgMarks:'$candidatedetails.pgUniversity',
-        pgGradingSystem:'$candidatedetails.pgUniversity',
-        pgCourseType:'$candidatedetails.pgUniversity',
-        pgCourseDurationTo:'$candidatedetails.pgUniversity',
-        pgCourseDurationFrom:'$candidatedetails.pgUniversity',
-        hstotalmarks:'$candidatedetails.hstotalmarks',
-        hsPassedYear:'$candidatedetails.hsPassedYear',
-        hsMedium:'$candidatedetails.hsMedium',
-        hsBoard:'$candidatedetails.hsBoard',
-        drMarks:'$candidatedetails.drMarks',
-        drGradingSystem:'$candidatedetails.drGradingSystem',
-        drCourseType:'$candidatedetails.drCourseType',
-        drCourseDurationTo:'$candidatedetails.drCourseDurationTo',
-        drCourseDurationFrom:'$candidatedetails.drCourseDurationFrom',
-        hsQualification:'$candidatedetails.hscqualifications.qualification',
-        keyskillSet:'$candidatedetails.keyskillSet',
-        drUniversity:'$candidatedetails.drUniversity',
-        experienceMonthSet:'$candidatedetails.experienceMonthSet',
-        locationSet:'$candidatedetails.locationSet',
-        experienceYearSet:'$candidatedetails.experienceYearSet',
-        designationSet:'$candidatedetails.designationSet',
-        currentIndustry:'$candidatedetails.currentIndustry',
-        currentDepartment:'$candidatedetails.currentDepartment',
-        role_Category:'$candidatedetails.role_Category',
-        salaryFrom:'$candidatedetails.salaryFrom',
-        SalaryTo:'$candidatedetails.SalaryTo',
-        appliedStatus:'$candidatepostjobs.approvedStatus',
-        postjobId:'$candidatepostjobs._id',
+        keyskill: '$candidatedetails.keyskill',
+        currentSkill: '$candidatedetails.currentSkill',
+        preferredSkill: '$candidatedetails.preferredSkill',
+        active: '$candidatedetails.active',
+        image: '$candidatedetails.image',
+        dob: '$candidatedetails.dob',
+        experienceYear: '$candidatedetails.experienceYear',
+        experienceMonth: '$candidatedetails.experienceMonth',
+        expectedctc: '$candidatedetails.expectedctc',
+        currentctc: '$candidatedetails.currentctc',
+        locationCurrent: '$candidatedetails.locationCurrent',
+        locationNative: '$candidatedetails.locationNative',
+        noticeperiod: '$candidatedetails.noticeperiod',
+        gender: '$candidatedetails.gender',
+        maritalStatus: '$candidatedetails.maritalStatus',
+        ugMarks: '$candidatedetails.ugMarks',
+        ugGradingSystem: '$candidatedetails.ugGradingSystem',
+        ugCourseType: '$candidatedetails.ugCourseType',
+        ugCourseDurationTo: '$candidatedetails.ugCourseDurationTo',
+        ugCourseDurationFrom: '$candidatedetails.ugCourseDurationFrom',
+        relocate: '$candidatedetails.relocate',
+        languages: '$candidatedetails.languages',
+        ugUniversity: '$candidatedetails.ugUniversity',
+        drQualification: '$candidatedetails.qualifications.qualification',
+        drcourses: '$candidatedetails.drcourses.Course',
+        drSpecialization: '$candidatedetails.drspecializations.Specialization',
+        pgQualification: '$candidatedetails.pgqualifications.qualification',
+        pgCourse: '$candidatedetails.pgcourses.Course',
+        pgSpecialization: '$candidatedetails.pgspecializations.Specialization',
+        ugQualification: '$candidatedetails.ugqualifications.qualification',
+        ugCourse: '$candidatedetails.ugcourses.Course',
+        ugSpecialization: '$candidatedetails.specializations.Specialization',
+        role: '$candidatedetails.jobroles.Job_role',
+        roleCategory: '$candidatedetails.rolecategories.Role_Category',
+        department: '$candidatedetails.departments.Department',
+        industry: '$candidatedetails.industries.Industry',
+        sslctotalmarks: '$candidatedetails.sslctotalmarks',
+        sslcPassedYear: '$candidatedetails.sslcPassedYear',
+        sslcMedium: '$candidatedetails.sslcMedium',
+        sslcBoard: '$candidatedetails.sslcBoard',
+        sslcQualification: '$candidatedetails.sslcqualifications.qualification',
+        pgUniversity: '$candidatedetails.pgUniversity',
+        pgMarks: '$candidatedetails.pgUniversity',
+        pgGradingSystem: '$candidatedetails.pgUniversity',
+        pgCourseType: '$candidatedetails.pgUniversity',
+        pgCourseDurationTo: '$candidatedetails.pgUniversity',
+        pgCourseDurationFrom: '$candidatedetails.pgUniversity',
+        hstotalmarks: '$candidatedetails.hstotalmarks',
+        hsPassedYear: '$candidatedetails.hsPassedYear',
+        hsMedium: '$candidatedetails.hsMedium',
+        hsBoard: '$candidatedetails.hsBoard',
+        drMarks: '$candidatedetails.drMarks',
+        drGradingSystem: '$candidatedetails.drGradingSystem',
+        drCourseType: '$candidatedetails.drCourseType',
+        drCourseDurationTo: '$candidatedetails.drCourseDurationTo',
+        drCourseDurationFrom: '$candidatedetails.drCourseDurationFrom',
+        hsQualification: '$candidatedetails.hscqualifications.qualification',
+        keyskillSet: '$candidatedetails.keyskillSet',
+        drUniversity: '$candidatedetails.drUniversity',
+        experienceMonthSet: '$candidatedetails.experienceMonthSet',
+        locationSet: '$candidatedetails.locationSet',
+        experienceYearSet: '$candidatedetails.experienceYearSet',
+        designationSet: '$candidatedetails.designationSet',
+        currentIndustry: '$candidatedetails.currentIndustry',
+        currentDepartment: '$candidatedetails.currentDepartment',
+        role_Category: '$candidatedetails.role_Category',
+        salaryFrom: '$candidatedetails.salaryFrom',
+        SalaryTo: '$candidatedetails.SalaryTo',
+        appliedStatus: '$candidatepostjobs.approvedStatus',
+        postjobId: '$candidatepostjobs._id',
       },
     },
   ]);
@@ -2019,6 +2021,6 @@ module.exports = {
   candidate_detials,
   updateEducation,
   createdSearchhistoryData_byId,
-  
+
   // createSearchCandidate,
 };
