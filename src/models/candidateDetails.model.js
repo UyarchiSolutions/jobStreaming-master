@@ -41,7 +41,7 @@ const keySkillSchema = mongoose.Schema(
       type: Number,
     },
     expectedctc: {
-      type: Number,
+      type: String,
     },
     currentctc: {
       type: Number,
