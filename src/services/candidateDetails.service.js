@@ -22,7 +22,7 @@ const createkeySkill = async (userId, userBody) => {
   if (userBody.experienceYear != 0) {
     let currentctc_th = userBody.currentctc_th;
     let currentctc = userBody.currentctc * 100000;
-    totalCTC = parseint(currentctc_th) + parseint(currentctc);
+    totalCTC = parseInt(currentctc_th) + parseInt(currentctc);
   }
   expCTC = userBody.expectedctc.split('-');
   expCTC_strat = 0;
