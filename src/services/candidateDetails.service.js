@@ -396,12 +396,12 @@ const updateEducation = async (userId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
   totalCTC = 0;
-  if (userBody.experienceYear != 0) {
-    let currentctc_th = userBody.currentctc_th;
-    let currentctc = userBody.currentctc * 100000;
+  if (updateBody.experienceYear != 0) {
+    let currentctc_th = updateBody.currentctc_th;
+    let currentctc = updateBody.currentctc * 100000;
     totalCTC = currentctc_th + currentctc;
   }
-  expCTC = userBody.expectedctc.split('-');
+  expCTC = updateBody.expectedctc.split('-');
   expCTC_strat = 0;
   expCTC_end = 0;
   if (expCTC.length != 0) {
