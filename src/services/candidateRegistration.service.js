@@ -13,14 +13,15 @@ const moment = require('moment');
 
 const createCandidate = async (userBody) => {
     const {password,confirmpassword} = userBody
+    let date = moment().format('YYYY-MM-DD');
   if (await CandidateRegistration.isEmailTaken(userBody.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
   if(password != confirmpassword){
     throw new ApiError(httpStatus.BAD_REQUEST, 'Confirm Password Incorrect');
   }
-
- let data = await CandidateRegistration.create(userBody);
+  let values = { ...userBody, ...{date: date} };
+ let data = await CandidateRegistration.create(values);
  return data
 };
 

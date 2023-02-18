@@ -83,6 +83,9 @@ const userSchema = mongoose.Schema(
     latestdate:{
       type:String,
     },
+    date:{
+      type:String,
+    },
     active:{
       type:Boolean,
       default:true,
