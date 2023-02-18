@@ -397,6 +397,7 @@ const updateEducation = async (userId, updateBody) => {
   }
   let data ;
   let totalCTC = 0;
+  console.log(updateBody.currentctc_th, updateBody.currentctc)
   if (updateBody.experienceYear != 0) {
     let currentctc_th = updateBody.currentctc_th;
     let currentctc = updateBody.currentctc * 100000;

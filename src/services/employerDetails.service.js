@@ -330,6 +330,15 @@ const getById_Get = async (id) => {
         expiredDate: 1,
         createdAt: 1,
         adminStatus: 1,
+        salaryDescription:1,
+        urltoApply:1,
+        recruiterName:1,
+        recruiterEmail:1,
+        recruiterNumber:1,
+        interviewstartDate:1,
+        interviewendDate:1,
+        startTime:1,
+        endTime:1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
