@@ -19,7 +19,7 @@ router.route('/candidateSearch').post(candidateDetailsController.candidateSearch
 router.route('/getByIdEmployerDetailsShownCandidate/:id').get(authorization, candidateDetailsController.getByIdEmployerDetailsShownCandidate);
 router.route('/createCandidatePostjob').post(authorization, candidateDetailsController.createCandidatePostjob);
 router.route('/createCandidateSavejob').post(authorization, candidateDetailsController.createCandidateSavejob);
-router.route('/getByIdAppliedJobs').get(authorization, candidateDetailsController.getByIdAppliedJobs);
+router.route('/getByIdAppliedJobs/:search').get(authorization, candidateDetailsController.getByIdAppliedJobs);
 router.route('/deleteByIdSavejOb/:id').delete(candidateDetailsController.deleteByIdSavejOb);
 router.route('/getByIdSavedJobs').get(authorization, candidateDetailsController.getByIdSavedJobs);
 router.route('/applyJobsView/:userId').get(candidateDetailsController.applyJobsView);

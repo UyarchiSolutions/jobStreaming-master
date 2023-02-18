@@ -749,12 +749,18 @@ const createCandidateSavejob = async (userId, userBody) => {
   return data;
 };
 
-const getByIdAppliedJobs = async (userId) => {
+const getByIdAppliedJobs = async (userId, status) => {
   console.log(userId);
+  let search
+  if(status == "null"){
+    search = {active:{$eq:true}}
+  }else{
+    search= {approvedStatus:{$eq:status}}
+  }
   const data = await CandidatePostjob.aggregate([
     {
       $match: {
-        $and: [{ userId: { $eq: userId } }],
+        $and: [{ userId: { $eq: userId } },search],
       },
     },
     {
