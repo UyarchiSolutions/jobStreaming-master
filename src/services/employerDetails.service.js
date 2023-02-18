@@ -335,6 +335,28 @@ const getById_Get = async (id) => {
         preserveNullAndEmptyArrays: true,
       },
     },
+    // {
+    //   $lookup: {
+    //     from: 'qualifications',
+    //     let: {userId: "$qualification"},
+    //     pipeline: [
+    //       {
+    //         $match: {
+    //           $expr: {
+    //             $in: ['$_id',"$$userId"],  // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+    //           },
+    //         },
+    //       },
+    //     ], 
+    //     as: 'qualifications',
+    //   },
+    // },
+    // {
+    //   $unwind: {
+    //     path: '$qualifications',
+    //     preserveNullAndEmptyArrays: true,
+    //   },
+    // },
     {
       $project: {
         keySkill: 1,
@@ -387,6 +409,7 @@ const getById_Get = async (id) => {
         department:1,
         roleCategory:1,
         role:1,
+        // qualifications:'$qualifications',
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
