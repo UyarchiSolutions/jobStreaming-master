@@ -2040,8 +2040,8 @@ const getAll_Mail_notification_employerside = async (userId,range,page) => {
         date: 1,
       },
     },
-    { $skip: range * page },
-    { $limit: range },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
   ]);
   const count = await EmployerMailNotification.aggregate([
     {
