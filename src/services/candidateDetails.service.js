@@ -1398,6 +1398,8 @@ const candidateSearch_front_page = async (id, body) => {
     // locationfilter,
     companytype,
     postedby,
+    range,
+    page,
   } = body;
   if (
     search.length != 0 ||
@@ -1641,8 +1643,8 @@ const candidateSearch_front_page = async (id, body) => {
         appliedStatus: '$candidatepostjobs.approvedStatus',
       },
     },
-    // { $skip: range * page },
-    // { $limit: range },
+    { $skip: range * page },
+    { $limit: range },
   ]);
   return {data:data, count:data.length};
 };
