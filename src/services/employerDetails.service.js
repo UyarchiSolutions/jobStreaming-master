@@ -1164,7 +1164,10 @@ const send_mail_and_notification = async (userId, body) => {
       },
     },
   ]);
-  console.log(employer[0].keySkill);
+  let ago = moment(employer[0].date, 'YYYY.MM.DD').fromNow();
+  // let date2 = moment().format('YYYY-MM-DD')
+  // let Difference_In_Time = employer[0].date.getTime() -  date2.getTime()
+  // let Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
   const { candidates, subject, signature, email } = body;
   candidates.forEach(async (e) => {
     await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
@@ -1217,6 +1220,7 @@ const send_mail_and_notification = async (userId, body) => {
         location: employer[0].location,
         choosefile: employer[0].choosefile,
         mailId:body.mailId,
+        daysAgo:ago,
       }
       );
       const mainOptions = {

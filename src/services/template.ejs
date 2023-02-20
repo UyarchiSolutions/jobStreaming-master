@@ -52,7 +52,7 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="150px" />
       </div>
       <h4 style="text-align: center">"New Mail For You"</h4>
-      <p style="text-align: center; font-weight: 500">"Chennai"</p>
+      <p style="text-align: center; font-weight: 500"><%=jobLocation%></p>
 
       <div
         class="job-preview"
@@ -66,12 +66,13 @@
       >
         <div style="display: flex; padding: 15px; background: #e7e9ed; margin-top: 12px">
           <h5 style="margin-left: 20px">Subject :</h5>
-          <h5 style="margin-left: 200px">UI UX Designer</h5>
+          <h5 style="margin-left: 200px"><%=subject%></h5>
         </div>
 
         <div class="subject" style="padding: 20px">
           <p>
-            The sender of this email is registered with Treatjobs.com as <span style="font-weight: 700">EMPLOYER NAME</span>
+            The sender of this email is registered with Treatjobs.com as
+            <span style="font-weight: 700"><%=recruiterName%></span>
           </p>
           <p style="font-size: 14px; margin: 10px 0">Dear Candidate <%=name%></p>
           <p style="margin-left: 30px">
@@ -93,9 +94,8 @@
           "
         >
           <div style="width: 70%; padding: 0 20px">
-            <h2>UI UX Designer</h2>
-            <p style="margin: 10px 0">JP Morgan</p>
-
+            <h2><%=jobTittle%></h2>
+            <p style="margin: 10px 0"><%=companyname%></p>
             <table style="width: 80%">
               <tr style="width: 50%; height: 35px; vertical-align: top">
                 <td>
@@ -119,9 +119,9 @@
                       fill="#8493A3"
                     />
                   </svg>
-                  UI UX Designer
+                  <%=jobTittle%>
                 </td>
-                <td>₹ 0 to 2 lacs</td>
+                <td>₹ <%=salaryRangeFrom%> to <%-salaryRangeTo%> lacs</td>
               </tr>
 
               <tr style="width: 50%; height: 35px; vertical-align: top">
@@ -135,9 +135,9 @@
                     />
                   </svg>
 
-                  Chennai
+                  <%=jobLocation%>
                 </td>
-                <td>1+ Years</td>
+                <td><%=experienceFrom%>+ Years</td>
               </tr>
 
               <tr style="width: 50%; height: 35px; vertical-align: top">
