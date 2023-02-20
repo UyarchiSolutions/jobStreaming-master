@@ -103,6 +103,11 @@ const comment_edit = catchAsync(async(req,res) => {
   res.send(user)
 })
 
+const employer_comment_id = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.employer_comment_id(req.params.id)
+  res.send(user)
+})
+
 const mail_template_create = catchAsync(async(req,res) => {
   const userId = req.userId
   const user = await employerDetailsService.mail_template_create(userId, req.body)
@@ -258,4 +263,5 @@ module.exports = {
   get_Recruiter_id,
   Recruiter_edit,
   Recruiter_delete,
+  employer_comment_id,
 };

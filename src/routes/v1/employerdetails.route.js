@@ -27,6 +27,7 @@ router.route('/statusChange_employer/:id').put(employerDetailsController.statusC
 router.route('/getByIdAll_CandidateDetails/:id').get(employerDetailsController.getByIdAll_CandidateDetails);
 router.route('/employer_comment').post(authorization, employerDetailsController.employer_comment);
 router.route('/comment_edit/:id').put(employerDetailsController.comment_edit);
+router.route('/employer_comment_id/:id').get(employerDetailsController.employer_comment_id);
 
 // mail
 router.route('/mail_template_create').post(authorization, employerDetailsController.mail_template_create);

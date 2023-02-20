@@ -990,6 +990,11 @@ const employer_comment = async (userId, Body) => {
   return await Employercomment.create(values);
 };
 
+const employer_comment_id = async (id) => {
+  const data = await Employercomment.findById(id)
+  return data
+};
+
 //edit comment
 
 const comment_edit = async (id, body) => {
@@ -2118,6 +2123,7 @@ const Recruiter_delete = async (id) => {
   const data = await Recruiters.deleteOne({ _id: id });
   return data;
 };
+
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -2158,4 +2164,5 @@ module.exports = {
   get_Recruiter_id,
   Recruiter_edit,
   Recruiter_delete,
+  employer_comment_id,
 };

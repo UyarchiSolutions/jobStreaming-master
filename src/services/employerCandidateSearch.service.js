@@ -574,6 +574,8 @@ const outSearch_employer = async (userId, body) => {
     noticeperiod,
     experience,
     gender,
+    range,
+    page,
   } = body;
   if (
     keyskills.length != 0 ||
@@ -1072,6 +1074,8 @@ const outSearch_employer = async (userId, body) => {
         totalCTC:1
       },
     },
+    { $skip: range * page },
+    { $limit: range },
   ]);
   return data;
 };
