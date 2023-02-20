@@ -1472,6 +1472,20 @@ const getAll_Mail_notification_employerside = async (userId) => {
                     preserveNullAndEmptyArrays: true,
                   },
                 },
+                {
+                  $lookup: {
+                    from: 'candidatepostjobs',
+                    localField: '_id',
+                    foreignField: 'jobId',
+                    as:'candidatepostjobs'
+                    }
+                  },
+                  {
+                    $unwind: {
+                      path: '$candidatepostjobs',
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  },
               ],
               as: 'candidatedetails',
             },
@@ -1563,6 +1577,7 @@ const getAll_Mail_notification_employerside = async (userId) => {
               role_Category: '$candidatedetails.role_Category',
               salaryFrom: '$candidatedetails.salaryFrom',
               SalaryTo: '$candidatedetails.SalaryTo',
+              candidatepostjobs:'$candidatedetails.candidatepostjobs'
               // candidateDetails:'$candidatedetails'
             },
           },
