@@ -1641,8 +1641,10 @@ const candidateSearch_front_page = async (id, body) => {
         appliedStatus: '$candidatepostjobs.approvedStatus',
       },
     },
+    // { $skip: range * page },
+    // { $limit: range },
   ]);
-  return data;
+  return {data:data, count:data.length};
 };
 
 const recentSearch = async (userId) => {
