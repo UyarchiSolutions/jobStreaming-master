@@ -779,6 +779,27 @@ const getAllApplied_postjobs_Candidates = async (userId) => {
                           preserveNullAndEmptyArrays: true,
                         },
                       },
+                      {
+                        $lookup: {
+                          from: 'employercomments',
+                          localField: 'userId',
+                          foreignField: 'candidateId',
+                          pipeline:[
+                          {
+                            $match: {
+                              $and: [{ userId: { $eq: userId } }],
+                            },
+                          },
+                        ],
+                          as: 'employercomments',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$employercomments',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
                     ],
                     as: 'candidatedetails',
                   },
@@ -801,6 +822,8 @@ const getAllApplied_postjobs_Candidates = async (userId) => {
                     resume: 1,
                     createdAt: 1,
                     updatedAt: 1,
+                    comment:'$employercomments.comment',
+                    commentId:'$employercomments._id',
                     // candidateDetails: '$candidatedetails',
                     keyskill: '$candidatedetails.keyskill',
                     currentSkill: '$candidatedetails.currentSkill',

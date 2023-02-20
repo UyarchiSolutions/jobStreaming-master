@@ -360,8 +360,31 @@ const getSaveSeprate = async (userId) => {
       },
     },
     {
+      $lookup: {
+        from: 'employercomments',
+        localField: 'candidateId',
+        foreignField: 'candidateId',
+        pipeline:[
+          {
+            $match: {
+              $and: [{ userId: { $eq: userId } }],
+            },
+          },
+        ],
+        as: 'employercomments',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employercomments',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $project: {
         candidateData: '$candidateregistrations',
+        comments:'$employercomments.comment',
+        commentId:'$employercomments._id'
       },
     },
   ]);
