@@ -387,8 +387,8 @@ const getSaveSeprate = async (userId,range,page) => {
         commentId:'$employercomments._id'
       },
     },
-    { $skip: range * page },
-    { $limit: range },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
   ]);
   const count = await CreateSavetoFolderseprate.aggregate([
     {
