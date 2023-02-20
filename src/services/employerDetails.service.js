@@ -1216,11 +1216,12 @@ const send_mail_and_notification = async (userId, body) => {
         aboutCompany: employer[0].aboutCompany,
         location: employer[0].location,
         choosefile: employer[0].choosefile,
+        mailId:body.mailId,
       }
       );
       const mainOptions = {
         from: body.email,
-        to: candidate[0].email,
+        to: candidate.email,
         subject: 'templates',
         html: data1,
       };
