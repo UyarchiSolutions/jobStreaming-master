@@ -1590,22 +1590,22 @@ const getAll_Mail_notification_employerside = async (userId) => {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
-        // pipeline:[
-        //   {
-        //     $lookup: {
-        //       from: 'employercomments',
-        //       localField: 'userId',
-        //       foreignField: 'userId',
-        //       as:'employercomments'
-        //       }
-        //     },
-        //     {
-        //       $unwind: {
-        //         path: '$employercomments',
-        //         preserveNullAndEmptyArrays: true,
-        //       },
-        //     },
-        // ],
+        pipeline:[
+          {
+            $lookup: {
+              from: 'employercomments',
+              localField: 'userId',
+              foreignField: 'userId',
+              as:'employercomments'
+              }
+            },
+            {
+              $unwind: {
+                path: '$employercomments',
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+        ],
         as: 'employerdetails',
       },
     },
@@ -1618,8 +1618,8 @@ const getAll_Mail_notification_employerside = async (userId) => {
     {
       $project: {
         jobTittle: '$employerdetails.jobTittle',
-        // comment:'$employermailtemplates.employercomments.comment',
-        // commentId:'$employermailtemplates.employercomments._id',
+        comment:'$employerdetails.employercomments.comment',
+        commentId:'$employerdetails.employercomments._id',
         status: 1,
         candidateDetail: '$candidateregistrations',
         subject: 1,
