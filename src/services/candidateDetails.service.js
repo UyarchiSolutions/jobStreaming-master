@@ -672,25 +672,25 @@ const candidateSearch = async (body) => {
     {
       $unwind: '$employerregistrations',
     },
-    {
-      $lookup: {
-        from: 'candidatepostjobs',
-        localField: '_id',
-        foreignField: 'jobId',
-        pipeline: [
-          {
-            $match: { userId: { $eq: id } },
-          },
-        ],
-        as: 'candidatepostjobs',
-      },
-    },
-    {
-      $unwind: {
-        path: '$candidatepostjobs',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
+    // {
+    //   $lookup: {
+    //     from: 'candidatepostjobs',
+    //     localField: '_id',
+    //     foreignField: 'jobId',
+    //     pipeline: [
+    //       {
+    //         $match: { userId: { $eq: id } },
+    //       },
+    //     ],
+    //     as: 'candidatepostjobs',
+    //   },
+    // },
+    // {
+    //   $unwind: {
+    //     path: '$candidatepostjobs',
+    //     preserveNullAndEmptyArrays: true,
+    //   },
+    // },
     {
       $project: {
         keySkill: 1,
@@ -722,7 +722,7 @@ const candidateSearch = async (body) => {
         contactName: '$employerregistrationscontactName',
         email: '$employerregistrations.email',
         name: '$employerregistrations.name',
-        appliedStatus: '$candidatepostjobs.approvedStatus',
+        // appliedStatus: '$candidatepostjobs.approvedStatus',
       },
     },
     { $skip: range * page },
