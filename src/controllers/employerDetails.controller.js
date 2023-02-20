@@ -78,7 +78,7 @@ const draftData_delete = catchAsync(async(req,res) => {
 })
 
 const getAllApplied_postjobs_Candidates = catchAsync(async(req,res) => {
-  const user = await employerDetailsService.getAllApplied_postjobs_Candidates(req.params.id)
+  const user = await employerDetailsService.getAllApplied_postjobs_Candidates(req.params.id, req.params.range, req.params.page)
   res.send(user)
 })
 
@@ -143,7 +143,7 @@ const send_mail_and_notification = catchAsync(async(req,res) => {
 
 const getAll_Mail_notification_employerside = catchAsync(async(req,res) => {
   const userId = req.userId
- const user = await employerDetailsService.getAll_Mail_notification_employerside(userId)
+ const user = await employerDetailsService.getAll_Mail_notification_employerside(userId, req.params.range, req.params.page)
  res.send(user)
 })
 
