@@ -468,18 +468,41 @@ const candidateSearch = async (body) => {
     experience,
     experienceAnotherfrom,
     experienceAnotherto,
-    location,
-    preferredindustry,
-    salary,
+    Location,
+    preferredIndustry,
+    Salary,
     workmode,
+    department,
     education,
-    salaryfilter,
+    // salaryfilter,
     role,
     freshness,
-    locationfilter,
+    // locationfilter,
     companytype,
     postedby,
+    range,
+    page,
   } = body;
+  if (
+    search.length != 0 ||
+    experience != null ||
+    experienceAnotherfrom != null ||
+    experienceAnotherto != null ||
+    Location.length != 0 ||
+    preferredIndustry.length != 0 ||
+    Salary.length != 0 ||
+    workmode.length != 0 ||
+    department.length != 0 ||
+    education.length != 0 ||
+    // salaryfilter != null ||
+    role.length != 0 ||
+    freshness.length != 0 ||
+    // locationfilter != null ||
+    companytype.length != 0 ||
+    postedby.length != 0
+  ) {
+    await CandidateRecentSearchjobCandidate.create(values);
+  }
   //  await CandidateSearchjobCandidate.create(values);
 
   //  search = ["fbhfghfh","software engineer"]
@@ -489,42 +512,44 @@ const candidateSearch = async (body) => {
   let locationSearch = { active: true };
   let allSearch = [{ active: true }];
   let salarySearch = { active: true };
-  let preferredindustrySearch = { active: true };
+  let preferredindustrySearch = [{ active: true }];
   let workmodeSearch = { active: true };
   let educationSearch = { active: true };
-  let salaryfilterSearch = { active: true };
+  let departmentSearch = { active: true };
+  // let salaryfilterSearch = { active: true };
   let roleSearch = { active: true };
   let freshnessSearch = { active: true };
-  let locationfilterSearch = { active: true };
+  // let locationfilterSearch = { active: true };
   let companytypeSearch = { active: true };
-  let postedbySearch = { active: true };
-  if (postedby != null) {
-    postedbySearch = { companyType: { $in: postedby } };
+  // let postedbySearch = { active: true };
+
+  if (companytype.length != 0) {
+    companytypeSearch = { companyType: { $in: companytype } };
   }
+
   if (experienceAnotherfrom != null && experienceAnotherto != null) {
     experienceAnotherSearch = [
-      { experienceFrom: { $gte: parseInt(experienceAnotherfrom) } },
-      { experienceFrom: { $lte: parseInt(experienceAnotherto) } },
+      { experienceFrom: { $eq: parseInt(experienceAnotherfrom) } },
+      { experienceTo: { $lte: parseInt(experienceAnotherto) } },
     ];
   }
-  if (workmode != null) {
+
+  if (workmode.length != 0) {
     workmodeSearch = { workplaceType: { $in: workmode } };
   }
-  if (companytype != null) {
-    companytypeSearch = { industry: { $in: companytype } };
+
+  if (department.length != 0) {
+    departmentSearch = { department: { $in: department } };
   }
-  if (role != null) {
+
+  if (role.length != 0) {
     roleSearch = { role: { $in: role } };
   }
-  if (education != null) {
-    educationSearch = { educationalQualification: { $in: education } };
+
+  if (preferredIndustry.length != 0) {
+    preferredindustrySearch = [{ preferedIndustry: { $elemMatch: { $in: preferredIndustry } } }];
   }
-  if (preferredindustry != null) {
-    preferredindustrySearch = { preferedIndustry: { $eq: preferredindustry } };
-  }
-  if (salary != null) {
-    salarySearch = { salaryRangeFrom: { $lte: parseInt(salary) }, salaryRangeTo: { $gte: parseInt(salary) } };
-  }
+
   if (search.length != 0) {
     // search = search.split(',');
     allSearch = [
@@ -536,18 +561,67 @@ const candidateSearch = async (body) => {
 
   if (experience != null) {
     // experienceSearch = { experienceFrom: { $lte: parseInt(experience) },experienceTo: { $gte: parseInt(experience) } }
-    experienceSearch = { experienceFrom: { $gte: parseInt(experience) } };
+    experienceSearch = { experienceFrom: { $eq: parseInt(experience) } };
   }
-  if (location != null) {
-    locationSearch = { jobLocation: { $eq: location } };
+
+  if (Location.length != 0) {
+    locationSearch = { jobLocation: { $in: Location } };
   }
-  // console.log(experienceSearch,
+
+  if (freshness.length != 0) {
+    let one = [];
+    for (let i = 0; i <= freshness.length; i++) {
+      if (freshness[i] == '1') {
+        one.push(moment().subtract(1, 'days').format('YYYY-MM-DD'));
+      }
+      if (freshness[i] == '3') {
+        one.push(moment().subtract(3, 'days').format('YYYY-MM-DD'));
+      }
+      if (freshness[i] == '7') {
+        one.push(moment().subtract(7, 'days').format('YYYY-MM-DD'));
+      }
+      if (freshness[i] == '15') {
+        one.push(moment().subtract(15, 'days').format('YYYY-MM-DD'));
+      }
+      if (freshness[i] == '30') {
+        one.push(moment().subtract(30, 'days').format('YYYY-MM-DD'));
+      }
+    }
+    freshnessSearch = { date: { $in: one } };
+  }
+
+  if (Salary.length != 0) {
+    let salary_macth = [];
+    Salary.forEach((a) => {
+      let value = a.split('-');
+      let start = value[0] * 100000;
+
+      let end = 0;
+      if (value[1] != 'more') {
+        end = value[1] * 100000;
+      }
+      if (end != 0) {
+        salary_macth.push({ $and: [{ salaryRangeFrom: { $gte: start } }, { salaryRangeTo: { $lte: end } }] });
+      } else {
+        salary_macth.push({ $and: [{ salaryRangeFrom: { $gte: start } }] });
+      }
+    });
+    console.log(salary_macth);
+    salarySearch = { $or: salary_macth };
+    // salarySearch = { salaryRangeFrom: { $lte: parseInt(salary1) }, salaryRangeTo: { $gte: parseInt(salary2) } };
+  }
+
+  if (education.length != 0) {
+    educationSearch = { course: { $elemMatch: { $in: education } } };
+  }
+  //  console.log(experienceSearch,
   //   locationSearch,
   //   salarySearch,
   //   preferredindustrySearch,
   //   workmodeSearch,
   //   educationSearch,
   //   roleSearch,
+  //   experienceAnotherSearch,
   //   companytypeSearch,);
   const data = await EmployerDetails.aggregate([
     {
@@ -562,16 +636,21 @@ const candidateSearch = async (body) => {
     },
     {
       $match: {
+        $and: preferredindustrySearch,
+      },
+    },
+    {
+      $match: {
         $and: [
-          // { adminStatus: { $eq: 'Approved' } },
+          //  { jobortemplate: { $eq: 'job' } },
           experienceSearch,
           locationSearch,
           salarySearch,
-          preferredindustrySearch,
           workmodeSearch,
           educationSearch,
           roleSearch,
-          companytypeSearch,
+          departmentSearch,
+          freshnessSearch,
         ],
       },
     },
@@ -583,7 +662,7 @@ const candidateSearch = async (body) => {
         pipeline: [
           {
             $match: {
-              $and: [postedbySearch],
+              $and: [companytypeSearch],
             },
           },
         ],
@@ -593,8 +672,63 @@ const candidateSearch = async (body) => {
     {
       $unwind: '$employerregistrations',
     },
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: '_id',
+        foreignField: 'jobId',
+        pipeline: [
+          {
+            $match: { userId: { $eq: id } },
+          },
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        keySkill: 1,
+        jobTittle: 1,
+        recruiterName: 1,
+        contactNumber: 1,
+        jobDescription: 1,
+        educationalQualification: 1,
+        salaryRangeFrom: 1,
+        salaryRangeTo: 1,
+        experienceFrom: 1,
+        experienceTo: 1,
+        interviewType: 1,
+        candidateDescription: 1,
+        salaryDescription: 1,
+        urltoApply: 1,
+        workplaceType: 1,
+        industry: 1,
+        preferedIndustry: 1,
+        jobLocation: 1,
+        employmentType: 1,
+        openings: 1,
+        date: 1,
+        expiredDate: 1,
+        date: 1,
+        time: 1,
+        companyType: '$employerregistrations.companyType',
+        mobileNumber: '$employerregistrations.mobileNumber',
+        contactName: '$employerregistrationscontactName',
+        email: '$employerregistrations.email',
+        name: '$employerregistrations.name',
+        appliedStatus: '$candidatepostjobs.approvedStatus',
+      },
+    },
+    { $skip: range * page },
+    { $limit: range },
   ]);
-  return data;
+  return {data:data, count:data.length};
 };
 
 const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
