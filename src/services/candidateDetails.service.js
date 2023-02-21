@@ -741,6 +741,20 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
     },
     {
       $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
         from: 'employerregistrations',
         localField: 'userId',
         foreignField: '_id',
@@ -847,7 +861,8 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         industry: 1,
         preferedIndustry: 1,
         functionalArea: 1,
-        role: 1,
+        // role: 1,
+        role:'$jobroles.Job_role',
         jobLocation: 1,
         employmentType: 1,
         openings: 1,
