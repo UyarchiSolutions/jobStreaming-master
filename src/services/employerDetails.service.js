@@ -1561,6 +1561,8 @@ const send_mail_and_notification = async (userId, body) => {
         startTime: 1,
         endTime: 1,
         recruiterName: 1,
+        recruiterEmail:1,
+        recruiterNumber:1,
         date: 1,
         time: 1,
         companyType: '$employerregistrations.companyType',
@@ -1578,7 +1580,6 @@ const send_mail_and_notification = async (userId, body) => {
   let ago = moment(employer[0].date, 'YYYY.MM.DD').fromNow();
   let lakhsFrom = parseInt(employer[0].salaryRangeFrom/100000)
   let lakhsTo = parseInt(employer[0].salaryRangeTo/100000)
-
   const { candidates, subject, signature, email } = body;
   candidates.forEach(async (e) => {
     await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
@@ -1589,7 +1590,7 @@ const send_mail_and_notification = async (userId, body) => {
         name: candidate.name,
         subject: subject,
         signature: signature,
-        keySkill: employer[0].keySkill,
+        keySkill: employer[0].keySkill.toString(),
         preferedIndustry: employer[0].preferedIndustry,
         preferredSkill: employer[0].preferredSkill,
         adminStatus: employer[0].adminStatus,
@@ -1639,6 +1640,7 @@ const send_mail_and_notification = async (userId, body) => {
       const mainOptions = {
         from: body.email,
         to: candidate.email,
+        // to:"vignesh1041996@gmail.com",
         subject: 'templates',
         html: data1,
       };

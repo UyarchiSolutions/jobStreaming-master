@@ -55,7 +55,7 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="150px" />
       </div>
       <h4 style="text-align: center">"New Mail For You"</h4>
-      <p style="text-align: center; font-weight: 500">"Chennai"</p>
+      <p style="text-align: center; font-weight: 500"><%=jobLocation%></p>
 
       <div
         class="job-preview"
@@ -69,14 +69,14 @@
       >
         <div style="display: flex; background: #e7e9ed; margin-top: 12px">
           <h2 style="margin-left: 20px">Subject :</h2>
-          <h2 style="margin-left: 200px">UI UX Designer</h2>
+          <h2 style="margin-left: 200px"><%=subject%></h2>
         </div>
 
         <div class="subject" style="padding: 20px">
           <p>
-            The sender of this email is registered with Treatjobs.com as <span style="font-weight: 700">EMPLOYER NAME</span>
+            The sender of this email is registered with Treatjobs.com as <span style="font-weight: 700"><%=recruiterNumber%></span>
           </p>
-          <p style="font-size: 14px; margin: 10px 0">Dear Candidate name</p>
+          <p style="font-size: 14px; margin: 10px 0">Dear <%=name%></p>
           <p style="margin-left: 30px">
             You are receiving this mail because the recruiter considers your profile to be suitable for the following job
             opportunity posted on Treatjobs.com, and would like you
@@ -95,47 +95,47 @@
             border-bottom: solid rgba(0, 0, 0, 0.193) 2px;
           "
         >
-          <div style="width: 70%; padding: 0 20px">
-            <h2>UI UX Designer</h2>
-            <p style="margin: 10px 0; font-size: 16px; font-weight: 700">JP Morgan</p>
+          <div style="width: 70%; padding: 0 14px">
+            <h2><%=jobTittle%></h2>
+            <p style="margin: 10px 0; font-size: 16px; font-weight: 700"><%=companyname%></p>
 
             <table style="width: 80%">
               <tr style="width: 50%; height: 28px; vertical-align: top">
                 <td style="font-weight: 700">
                   <img src="file:///C:/Users/Admin/Downloads/figma/src/assets/image/Group%20131.png" />
-                  UI UX Designer
+                  <%=role%>
                 </td>
-                <td style="font-weight: 500">₹ 0 to 2 lacs</td>
+                <td style="font-weight: 700">₹ <%=salaryRangeFrom%> to <%=salaryRangeTo%> lacs</td>
               </tr>
 
               <tr style="width: 50%; height: 28px; vertical-align: top">
                 <td style="font-weight: 700">
                   <img src="file:///C:/Users/Admin/Downloads/figma/src/assets/image/Group%207.png" />
 
-                  Chennai
+                  <%=jobLocation%>
                 </td>
-                <td style="font-weight: 500">1+ Years</td>
+                <td style="font-weight: 700"><%=experienceFrom%>+ Years</td>
               </tr>
 
               <tr style="width: 50%; height: 28p; vertical-align: top">
                 <td style="font-weight: 700">
                   <img src="file:///C:/Users/Admin/Downloads/figma/src/assets/image/Union.png" />
 
-                  Hiring 2 Candidates
+                  Hiring <%=openings%> Candidates
                 </td>
-                <td style="font-weight: 500">Posted 2 Day ago</td>
+                <td style="font-weight: 700">Posted <%=daysAgo%> Day ago</td>
               </tr>
             </table>
           </div>
 
           <div style="width: 20%">
             <table>
-              <tr>
+              <tr style="margin-bottom: 50px;">
                 <img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/logo_gmail_lockup_default_1x_r5.png" height="70px" />
               </tr>
 
-              <tr>
-                <button
+              <tr style="height: 50px;">
+                <a
                   style="
                     background-color: #0a2647;
                     height: fit-content;
@@ -145,10 +145,12 @@
                     border: none;
                     margin-top: 50px;
                     width: 150px;
+                    text-decoration: none;
                   "
+                  href="https://job.lotsmart.in/canlogin#?=<%=mailId%>"
                 >
                   Apply Now
-                </button>
+              </a>
               </tr>
             </table>
           </div>
@@ -164,85 +166,59 @@
 
           <table style="margin-left: 20px">
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
-              <td style="font-weight: 700; width: 200px">Key Skills</td>
-              <td style="font-weight: 500">Adobe XD, Figma, Illustrator</td>
+              <td style="font-weight: 700; width: 200px">Key Skills :</td>
+              <td style="font-weight: 500"><%=keySkill%></td>
             </tr>
 
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
-              <td style="font-weight: 700; width: 200px">Qualification</td>
+              <td style="font-weight: 700; width: 200px">Qualification :</td>
               <td style="font-weight: 500">UG</td>
             </tr>
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
-              <td style="font-weight: 700; width: 200px">Employment Type</td>
-              <td style="font-weight: 500">Full Time</td>
+              <td style="font-weight: 700; width: 200px">Employment Type :</td>
+              <td style="font-weight: 500"><%=employmentType%></td>
             </tr>
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
-              <td style="font-weight: 700; width: 200px">Work Mode</td>
-              <td style="font-weight: 500">Work From Home</td>
+              <td style="font-weight: 700; width: 200px">Work Mode :</td>
+              <td style="font-weight: 500"><%=workplaceType%></td>
             </tr>
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
-              <td style="font-weight: 700; width: 200px">Department</td>
-              <td style="font-weight: 500">BFSI, Investments & Trading</td>
+              <td style="font-weight: 700; width: 200px">Department :</td>
+              <td style="font-weight: 500"><%=department%></td>
             </tr>
 
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
-              <td style="font-weight: 700; width: 200px">Role</td>
-              <td style="font-weight: 500">Ux Ui Designer</td>
+              <td style="font-weight: 700; width: 200px">Role :</td>
+              <td style="font-weight: 500"><%=role%></td>
             </tr>
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
               <td style="font-weight: 700; width: 200px">Job Description :</td>
               <td style="font-weight: 500">
-                <ul style="padding-left: 0px; margin-top: 0; font-weight: 500">
-                  <li>Required Skill set</li>
-                  <li>Proficient in Node.js or Java</li>
-                  <li>Hands on Angular2+/React.js</li>
-                  <li>Expertise in AWS/Azure/Google Cloud</li>
-                  <li>Expertise in Docker and Kubernetes</li>
-                  <li>Prior experience in at least one Relational technologies</li>
-                  <li>Experience with Agile software development practices</li>
-                  <li>Experience with Continuous Integration and Delivery</li>
-                  <li>Experience with unit test frameworks and peer code review</li>
-                  <li>Experience with unit test frameworks and peer code review</li>
-                </ul>
+                <%=jobDescription%>
               </td>
             </tr>
 
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
               <td style="font-weight: 700; width: 200px">Candidate Description :</td>
               <td style="font-weight: 500">
-                <ul style="padding-left: 0px; margin-top: 0; font-weight: 500">
-                  <li>Required Skill set</li>
-                  <li>Proficient in Node.js or Java</li>
-                  <li>Hands on Angular2+/React.js</li>
-                  <li>Expertise in AWS/Azure/Google Cloud</li>
-                  <li>Expertise in Docker and Kubernetes</li>
-                  <li>Prior experience in at least one Relational technologies</li>
-                  <li>Experience with Agile software development practices</li>
-                  <li>Experience with Continuous Integration and Delivery</li>
-                  <li>Experience with unit test frameworks and peer code review</li>
-                  <li>Experience with unit test frameworks and peer code review</li>
-                </ul>
+                <%=candidateDescription%>
               </td>
             </tr>
 
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
               <td style="font-weight: 700; width: 200px">Perks & Benefits :</td>
               <td style="font-weight: 500">
-                <ul style="padding-left: 0px; margin-top: 0; font-weight: 500">
-                  <li>Required Skill set</li>
-                  <li>Proficient in Node.js or Java</li>
-                  <li>Hands on Angular2+/React.js</li>
-                </ul>
+                <%=salaryDescription%>
               </td>
             </tr>
 
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
               <td style="font-weight: 700; width: 200px">Industry :</td>
-              <td style="font-weight: 500">IT Services,Consulting</td>
+              <td style="font-weight: 500"><%=industry%></td>
             </tr>
             <tr style="padding: 10px 0; height: 28px; vertical-align: top">
               <td style="font-weight: 700; width: 200px">Preferred Industry :</td>
-              <td style="font-weight: 500">IT Services,Consulting</td>
+              <td style="font-weight: 500"><%=preferedIndustry%></td>
             </tr>
           </table>
         </div>
@@ -257,29 +233,24 @@
         >
           <div class="head" style="display: flex; padding: 20px 0 0px 40px">
             <div style="width: 70%">
-              <h2>JP Morgan</h2>
-              <p style="margin-top: 10px">Anna Salai, Teynampet, Chennai</p>
+              <h2><%=companyname%></h2>
+              <p style="margin-top: 10px"><%=jobLocation%></p>
             </div>
             <div style="width: 30%; display: flex">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" height="50px" />
-              <a style="margin-left: 20px; font-size: 13px; color: #0a2647" href>View Company profile</a>
+              <img src="<%=logo%>" height="50px" />
+              <a style="margin-left: 20px;text-decoration: none; font-size: 13px; color: #0a2647" href="<%=urltoApply%>">View Company profile</a>
             </div>
           </div>
 
           <table style="margin-left: 40px">
             <tr style="height: 28px; vertical-align: top">
               <td style="width: 180px; font-weight: 700">Website :</td>
-              <td style="text-decoration: underline; padding-left: 15px; font-weight: 500">Websitelink.com</td>
+              <td style="text-decoration: underline; font-weight: 500;padding-left: 20px;"><%=urltoApply%></td>
             </tr>
             <tr style="height: 28px; vertical-align: top">
               <td style="width: 180px; font-weight: 700">About Company :</td>
-              <td style="font-weight: 500">
-                <ul style="list-style: none; padding-left: 0px; margin-top: 0; font-weight: 500">
-                  <li>Required Skill set</li>
-                  <li>Proficient in Node.js or Java</li>
-                  <li>Hands on Angular2+/React.js</li>
-                  <li>Expertise in AWS/Azure/Google Cloud</li>
-                </ul>
+              <td style="font-weight: 500;padding-left: 20px;">
+                <%=aboutCompany%>
               </td>
             </tr>
           </table>
@@ -287,33 +258,32 @@
 
         <table style="margin-left: 40px">
           <tr style="height: 38px; vertical-align: top; padding-bottom: 20px">
-            <td style="width: 180px; font-weight: 700; padding-top: 20px">Recruiter Name :</td>
-            <td style="padding-top: 20px; padding-left: 15px; font-weight: 500">Aravind Daya</td>
+            <td style="max-width: 180px; font-weight: 700; padding-top: 20px">Recruiter Name :</td>
+            <td style="padding-top: 20px; padding-left: 95px; font-weight: 500"><%=recruiterName%></td>
           </tr>
           <tr style="vertical-align: top; height: 28px">
-            <td style="width: 180px; font-weight: 700; padding-top: 5px">Mobile Number :</td>
-            <td style="padding-left: 15px; font-weight: 500; padding-top: 5px">9887878745</td>
+            <td style="max-width: 180px; font-weight: 700; padding-top: 5px">Mobile Number :</td>
+            <td style="padding-left: 95px; font-weight: 500; padding-top: 5px"><%=recruiterNumber%></td>
           </tr>
           <tr style="height: 28px; vertical-align: top">
-            <td style="width: 180px; font-weight: 700; padding-bottom: 20px">Email ID :</td>
-            <td style="padding-bottom: 20px; padding-left: 15px; font-weight: 500">abcd@gmail.com</td>
+            <td style="max-width: 180px; font-weight: 700; padding-bottom: 20px">Email ID :</td>
+            <td style="padding-bottom: 20px; padding-left: 95px; font-weight: 500"><%=recruiterEmail%></td>
           </tr>
         </table>
+
+       
 
         <table
           style="
             padding: 20px 20px 20px 40px;
             border-top: solid rgba(0, 0, 0, 0.193) 2px;
-            border-bottom: solid rgba(0, 0, 0, 0.193) 2px;
+            border-bottom: solid rgba(0, 0, 0, 0.193) 2px;padding-right: 50%;min-width: 100%;
           "
         >
-          <tr style="vertical-align: text-top">
-            <td style="min-width: 180px; font-weight: 700">Signature :</td>
-            <td style="padding-left: 15px; font-weight: 500">
-              Name : Aravind<br />
-              Contact : 9898989898<br />
-              Prior experience in at least one Relational database technologies experience in at least one Relational
-              database technologies Priorin at least one Relational database technologies
+          <tr style="vertical-align: text-top;">
+            <td style="max-width: 180px; font-weight: 700">Signature :</td>
+            <td style="padding-left: 130px; font-weight: 500">
+              <%=signature%>
             </td>
           </tr>
         </table>
@@ -334,9 +304,9 @@
         <!-- <button style="background-color: #0A2647;color: white;padding: 6px 20px;border-radius: 5px;border:none;margin-top: 10px;">Apply Now</button> -->
         <tr style="width: 50%">
           <td style="padding-left: 370px">
-            <button style="background-color: #0a2647; color: white; padding: 12px 20px; border-radius: 5px; border: none">
+            <a style="background-color: #0a2647; color: white; padding: 12px 20px;text-decoration: none; border-radius: 5px; border: none" href="https://job.lotsmart.in/canlogin#?=<%=mailId%>">
               Apply Now
-            </button>
+            </a>
           </td>
         </tr>
       </table>

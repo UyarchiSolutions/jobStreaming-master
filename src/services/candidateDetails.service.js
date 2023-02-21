@@ -1426,6 +1426,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
   let expYear = user.experienceYearSet;
   // let expMonth = user.experienceMonthSet
   // console.log(search,expYear, expMonth)
+  console.log(user)
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'candidateDetails not found');
   }
