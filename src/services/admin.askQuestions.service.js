@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
-const { Faqe } = require('../models/admin.askQusetions.model')
+const { Faqe } = require('../models/admin.askQusetions.model');
+const { findByIdAndUpdate } = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 
 const createFaqe = async (body) => {
@@ -19,8 +20,28 @@ const get_Faqe_id = async (id) => {
   return data;
 };
 
+
+const get_Faqe_update = async (id, body) => {
+  const data = Faqe.findById(id);
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  let value = await Faqe.findByIdAndUpdate({_id:id}, body, {new:true})
+  return value;
+};
+
+const get_Faqe_delete = async (id) => {
+  const data = Faqe.findById(id);
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  await data.remove();
+  return data;
+};
 module.exports = {
     createFaqe,
     getAllFaqe,
     get_Faqe_id,
+    get_Faqe_update,
+    get_Faqe_delete,
 };
