@@ -11,7 +11,16 @@ const getAllFaqe = async () => {
   return data;
 };
 
+const get_Faqe_id = async (id) => {
+  const data = Faqe.findById(id);
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  return data;
+};
+
 module.exports = {
     createFaqe,
     getAllFaqe,
+    get_Faqe_id,
 };

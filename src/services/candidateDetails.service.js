@@ -906,6 +906,20 @@ const getByIdAppliedJobs = async (userId, status) => {
         pipeline: [
           {
             $lookup: {
+              from: 'jobroles',
+              localField: 'role',
+              foreignField: '_id',
+              as: 'jobroles',
+            },
+          },
+          {
+            $unwind: {
+              path: '$jobroles',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
               from: 'candidatesavejobs',
               localField: '_id',
               foreignField: 'savejobId',
@@ -964,7 +978,7 @@ const getByIdAppliedJobs = async (userId, status) => {
         industry: '$employerdetails.industry',
         preferredindustry: '$employerdetails.preferredindustry',
         functionalArea: '$employerdetails.functionalArea',
-        role: '$employerdetails.role',
+        // role: '$employerdetails.role',
         jobLocation: '$employerdetails.jobLocation',
         employmentType: '$employerdetails.employmentType',
         openings: '$employerdetails.openings',
@@ -973,6 +987,7 @@ const getByIdAppliedJobs = async (userId, status) => {
         date: '$employerdetails.date',
         time: '$employerdetails.time',
         jodId: '$employerdetails._id',
+        role:'$employerdetails.jobroles.Job_role',
         candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
       },
     },
@@ -1184,6 +1199,20 @@ const getByIdSavedJobsView = async (userId) => {
         pipeline: [
           {
             $lookup: {
+              from: 'jobroles',
+              localField: 'role',
+              foreignField: '_id',
+              as: 'jobroles',
+            },
+          },
+          {
+            $unwind: {
+              path: '$jobroles',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
               from: 'candidatepostjobs',
               localField: '_id',
               foreignField: 'jobId',
@@ -1240,7 +1269,7 @@ const getByIdSavedJobsView = async (userId) => {
         industry: '$employerdetails.industry',
         preferredindustry: '$employerdetails.preferredindustry',
         functionalArea: '$employerdetails.functionalArea',
-        role: '$employerdetails.role',
+        // role: '$employerdetails.role',
         jobLocation: '$employerdetails.jobLocation',
         employmentType: '$employerdetails.employmentType',
         openings: '$employerdetails.openings',
@@ -1249,6 +1278,7 @@ const getByIdSavedJobsView = async (userId) => {
         jobTittle: '$employerdetails.jobTittle',
         date: '$employerdetails.date',
         time: '$employerdetails.time',
+        role:'$employerdetails.jobroles.Job_role',
         candidatepostjobs: { $ifNull: ['$employerdetails.candidatepostjobs', false] },
         approvedStatus: '$employerdetails.candidatepostjobs.approvedStatus',
       },
@@ -1447,6 +1477,20 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
       $unwind: '$employerregistrations',
     },
     {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $project: {
         keySkill: 1,
         date: 1,
@@ -1468,7 +1512,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
         interviewerName: 1,
         preferredindustry: 1,
         functionalArea: 1,
-        role: 1,
+        // role: 1,
         jobLocation: 1,
         employmentType: 1,
         openings: 1,
@@ -1489,6 +1533,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
         name: '$employerregistrations.name',
         regitserStatus: '$employerregistrations.adminStatus',
         appliedStatus: '$candidatepostjobs.approvedStatus',
+        role:'$jobroles.Job_role'
       },
     },
   ]);
@@ -1744,6 +1789,20 @@ const candidateSearch_front_page = async (id, body) => {
       },
     },
     {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $project: {
         keySkill: 1,
         jobTittle: 1,
@@ -1775,6 +1834,7 @@ const candidateSearch_front_page = async (id, body) => {
         email: '$employerregistrations.email',
         name: '$employerregistrations.name',
         appliedStatus: '$candidatepostjobs.approvedStatus',
+        role:'$jobroles.Job_role'
       },
     },
     { $skip: range * page },

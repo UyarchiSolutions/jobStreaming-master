@@ -1555,7 +1555,7 @@ const send_mail_and_notification = async (userId, body) => {
         role: '$jobroles.Job_role',
         roleCategory: '$rolecategories.Role_Category',
         department: '$departments.Department',
-        industry: '$industries.Industry',
+        industry1: '$industries.Industry',
         interviewstartDate: 1,
         interviewendDate: 1,
         startTime: 1,
@@ -1568,6 +1568,7 @@ const send_mail_and_notification = async (userId, body) => {
         contactName: '$employerregistrations.contactName',
         email: '$employerregistrations.email',
         name: '$employerregistrations.name',
+        logo:'$employerregistrations.logo',
         aboutCompany: '$employerregistrations.aboutCompany',
         location: '$employerregistrations.location',
         choosefile: '$employerregistrations.choosefile',
@@ -1575,9 +1576,9 @@ const send_mail_and_notification = async (userId, body) => {
     },
   ]);
   let ago = moment(employer[0].date, 'YYYY.MM.DD').fromNow();
-  // let date2 = moment().format('YYYY-MM-DD')
-  // let Difference_In_Time = employer[0].date.getTime() -  date2.getTime()
-  // let Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+  let lakhsFrom = parseInt(employer[0].salaryRangeFrom/100000)
+  let lakhsTo = parseInt(employer[0].salaryRangeTo/100000)
+
   const { candidates, subject, signature, email } = body;
   candidates.forEach(async (e) => {
     await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
@@ -1597,8 +1598,8 @@ const send_mail_and_notification = async (userId, body) => {
         contactNumber: employer[0].contactNumber,
         jobDescription: employer[0].jobDescription,
         educationalQualification: employer[0].educationalQualification,
-        salaryRangeFrom: employer[0].salaryRangeFrom,
-        salaryRangeTo: employer[0].salaryRangeTo,
+        salaryRangeFrom: lakhsFrom,
+        salaryRangeTo: lakhsTo,
         experienceFrom: employer[0].experienceFrom,
         experienceTo: employer[0].experienceTo,
         interviewType: employer[0].interviewType,
@@ -1606,14 +1607,13 @@ const send_mail_and_notification = async (userId, body) => {
         salaryDescription: employer[0].salaryDescription,
         urltoApply: employer[0].urltoApply,
         workplaceType: employer[0].workplaceType,
-        industry: employer[0].industry,
         jobLocation: employer[0].jobLocation,
         employmentType: employer[0].employmentType,
         openings: employer[0].openings,
         role: employer[0].role,
         roleCategory: employer[0].roleCategory,
         department: employer[0].department,
-        industry: employer[0].industry,
+        industry: employer[0].industry1,
         interviewstartDate: employer[0].interviewstartDate,
         interviewendDate: employer[0].interviewendDate,
         startTime: employer[0].startTime,
@@ -1625,11 +1625,14 @@ const send_mail_and_notification = async (userId, body) => {
         mobileNumber: employer[0].mobileNumber,
         contactName: employer[0].contactName,
         email: employer[0].email,
+        recruiterEmail:employer[0].recruiterEmail,
+        recruiterNumber:employer[0].recruiterNumber,
         companyname: employer[0].name,
         aboutCompany: employer[0].aboutCompany,
         location: employer[0].location,
         choosefile: employer[0].choosefile,
         mailId:body.mailId,
+        logo:employer[0].logo,
         daysAgo:ago,
       }
       );
@@ -2874,6 +2877,22 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
+        pipeline:[
+          {
+            $lookup: {
+              from: 'jobroles',
+              localField: 'role',
+              foreignField: '_id',
+              as: 'jobroles',
+            },
+          },
+          {
+            $unwind: {
+              path: '$jobroles',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
         as: 'employerdetails',
       },
     },
@@ -2914,6 +2933,7 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         employerregistrations: '$employerregistrations',
         date: 1,
         appliedStatus: '$candidatepostjobs.approvedStatus',
+        role:'$employerdetails.jobroles.Job_role'
       },
     },
   ]);

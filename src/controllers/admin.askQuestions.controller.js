@@ -14,7 +14,13 @@ const getAll_faqe = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+
+const get_Faqe_id = catchAsync(async (req, res) => {
+  const data = await faqeService.get_Faqe_id(req.params.id);
+  res.send(data);
+});
 module.exports = {
-    createfaqe,
+  createfaqe,
   getAll_faqe,
+  get_Faqe_id,
 };
