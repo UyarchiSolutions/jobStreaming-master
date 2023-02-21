@@ -1581,10 +1581,11 @@ const send_mail_and_notification = async (userId, body) => {
   let lakhsFrom = parseInt(employer[0].salaryRangeFrom/100000)
   let lakhsTo = parseInt(employer[0].salaryRangeTo/100000)
   const { candidates, subject, signature, email } = body;
+  let da ;
   candidates.forEach(async (e) => {
-    await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
+    da = await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
     const candidate = await CandidateRegistration.findById(e);
-    // console.log(candidate)
+     console.log(da)
     if (body.mail == 'job') {
        const data1 = await ejs.renderFile(__dirname + '/template.ejs', {
         name: candidate.name,
@@ -1632,7 +1633,7 @@ const send_mail_and_notification = async (userId, body) => {
         aboutCompany: employer[0].aboutCompany,
         location: employer[0].location,
         choosefile: employer[0].choosefile,
-        mailId:body.mailId,
+        mailId:da._id,
         logo:employer[0].logo,
         daysAgo:ago,
       }

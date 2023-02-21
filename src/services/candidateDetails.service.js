@@ -1420,82 +1420,44 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
 
   // ])
   // let products1 = []
-  const user = await KeySkill.findOne({ userId: userId });
-  let search = user.keyskillSet;
-  let locetion = user.locationSet;
-  let expYear = user.experienceYearSet;
-  // let expMonth = user.experienceMonthSet
-  // console.log(search,expYear, expMonth)
-  console.log(user)
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'candidateDetails not found');
-  }
-  if (search.length == 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'job alert data not found');
-  }
-  // console.log(search,locetion)
-  //  user.forEach(async (e) => {
-  //   // const product = await Product.findById(e)
-  //   products1.push(e);
-  // });
-  // const data = await EmployerDetails.find({ keySkill: {$elemMatch:{$in:user.keyskillSet}}, location:user.locationSet})
-  //    user.forEach(async (e) => {
-  //   // const product = await Product.findById(e)
-  //   products1.push(e);
-  // });
-  //  experienceSearch = { experienceFrom: { $lte: parseInt(expYear) },experienceTo: { $gte: parseInt(expYear) } }
-
-  const data = await EmployerDetails.aggregate([
+  const user = await KeySkill.aggregate([
     {
       $match: {
-        $and: [
-          { jobLocation: { $eq: locetion } },
-          { keySkill: { $elemMatch: { $in: search } } },
-          { experienceFrom: { $eq: expYear } },
-        ],
+        $and: [{ userId: { $eq: userId } }],
       },
     },
-    // {
-    //   $match: {
-    //     $and: [
-    //       { jobortemplate: { $eq: "job" } },
-    //     ],
-    //   },
-    // },
     {
       $lookup: {
-        from: 'candidatepostjobs',
-        localField: '_id',
-        foreignField: 'jobId',
-        pipeline: [
-          {
-            $match: { userId: { $eq: userId } },
-          },
-        ],
-        as: 'candidatepostjobs',
+        from: 'departments',
+        localField: 'currentDepartment',
+        foreignField: '_id',
+        as: 'departments',
       },
     },
     {
       $unwind: {
-        path: '$candidatepostjobs',
+        path: '$departments',
         preserveNullAndEmptyArrays: true,
       },
     },
     {
       $lookup: {
-        from: 'employerregistrations',
-        localField: 'userId',
+        from: 'rolecategories',
+        localField: 'role_Category',
         foreignField: '_id',
-        as: 'employerregistrations',
+        as: 'rolecategories',
       },
     },
     {
-      $unwind: '$employerregistrations',
+      $unwind: {
+        path: '$rolecategories',
+        preserveNullAndEmptyArrays: true,
+      },
     },
     {
       $lookup: {
         from: 'jobroles',
-        localField: 'role',
+        localField: 'designationSet',
         foreignField: '_id',
         as: 'jobroles',
       },
@@ -1507,53 +1469,169 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
       },
     },
     {
-      $project: {
-        keySkill: 1,
-        date: 1,
-        adminStatus: 1,
-        active: 1,
-        jobTittle: 1,
-        designation: 1,
-        recruiterName: 1,
-        contactNumber: 1,
-        jobDescription: 1,
-        salaryRangeFrom: 1,
-        salaryRangeTo: 1,
-        experienceFrom: 1,
-        experienceTo: 1,
-        interviewType: 1,
-        candidateDescription: 1,
-        workplaceType: 1,
-        industry: 1,
-        interviewerName: 1,
-        preferredindustry: 1,
-        functionalArea: 1,
-        // role: 1,
-        jobLocation: 1,
-        employmentType: 1,
-        openings: 1,
-        interviewDate: 1,
-        interviewTime: 1,
-        location: 1,
-        interviewerName: 1,
-        interviewerContactNumber: 1,
-        validity: 1,
-        educationalQualification: 1,
-        userId: 1,
-        expiredDate: 1,
-        createdAt: 1,
-        companyName: '$employerregistrations.companyName',
-        email: '$employerregistrations.email',
-        mobileNumber: '$employerregistrations.mobileNumber',
-        companyType: '$employerregistrations.companyType',
-        name: '$employerregistrations.name',
-        regitserStatus: '$employerregistrations.adminStatus',
-        appliedStatus: '$candidatepostjobs.approvedStatus',
-        role:'$jobroles.Job_role'
+      $lookup: {
+        from: 'industries',
+        localField: 'currentIndustry',
+        foreignField: '_id',
+        as: 'industries',
       },
     },
+    {
+      $unwind: {
+        path: '$industries',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project:{
+        keyskillSet:1,
+        salaryFrom:1,
+        SalaryTo:1,
+        locationSet:1,
+        experienceYearSet:1,
+        experienceMonthSet:1,
+        designationSet:'$jobroles.Job_role',
+        role_Category:'$rolecategories.Role_Category',
+        currentDepartment:'$departments.Department',
+        currentIndustry:'$industries.Industry',
+      }
+    }
   ]);
-  return data;
+  // let search = user[0].keyskillSet;
+  // let locetion = user[0].locationSet;
+  // let expYear = user[0].experienceYearSet;
+  // let salaryFrom = user[0].salaryFrom;
+  // let locationSet = user[0].locationSet;
+  // // let expMonth = user.experienceMonthSet
+  // // console.log(search,expYear, expMonth)
+  console.log(user)
+  // if (!user) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, 'candidateDetails not found');
+  // }
+  // if (search.length == 0) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, 'job alert data not found');
+  // }
+  // // console.log(search,locetion)
+  // //  user.forEach(async (e) => {
+  // //   // const product = await Product.findById(e)
+  // //   products1.push(e);
+  // // });
+  // // const data = await EmployerDetails.find({ keySkill: {$elemMatch:{$in:user.keyskillSet}}, location:user.locationSet})
+  // //    user.forEach(async (e) => {
+  // //   // const product = await Product.findById(e)
+  // //   products1.push(e);
+  // // });
+  // //  experienceSearch = { experienceFrom: { $lte: parseInt(expYear) },experienceTo: { $gte: parseInt(expYear) } }
+
+  // const data = await EmployerDetails.aggregate([
+  //   {
+  //     $match: {
+  //       $and: [
+  //         { jobLocation: { $eq: locetion } },
+  //         { keySkill: { $elemMatch: { $in: search } } },
+  //         { experienceFrom: { $eq: expYear } },
+  //       ],
+  //     },
+  //   },
+  //   // {
+  //   //   $match: {
+  //   //     $and: [
+  //   //       { jobortemplate: { $eq: "job" } },
+  //   //     ],
+  //   //   },
+  //   // },
+  //   {
+  //     $lookup: {
+  //       from: 'candidatepostjobs',
+  //       localField: '_id',
+  //       foreignField: 'jobId',
+  //       pipeline: [
+  //         {
+  //           $match: { userId: { $eq: userId } },
+  //         },
+  //       ],
+  //       as: 'candidatepostjobs',
+  //     },
+  //   },
+  //   {
+  //     $unwind: {
+  //       path: '$candidatepostjobs',
+  //       preserveNullAndEmptyArrays: true,
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: 'employerregistrations',
+  //       localField: 'userId',
+  //       foreignField: '_id',
+  //       as: 'employerregistrations',
+  //     },
+  //   },
+  //   {
+  //     $unwind: '$employerregistrations',
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: 'jobroles',
+  //       localField: 'role',
+  //       foreignField: '_id',
+  //       as: 'jobroles',
+  //     },
+  //   },
+  //   {
+  //     $unwind: {
+  //       path: '$jobroles',
+  //       preserveNullAndEmptyArrays: true,
+  //     },
+  //   },
+  //   {
+  //     $project: {
+  //       keySkill: 1,
+  //       date: 1,
+  //       adminStatus: 1,
+  //       active: 1,
+  //       jobTittle: 1,
+  //       designation: 1,
+  //       recruiterName: 1,
+  //       contactNumber: 1,
+  //       jobDescription: 1,
+  //       salaryRangeFrom: 1,
+  //       salaryRangeTo: 1,
+  //       experienceFrom: 1,
+  //       experienceTo: 1,
+  //       interviewType: 1,
+  //       candidateDescription: 1,
+  //       workplaceType: 1,
+  //       industry: 1,
+  //       interviewerName: 1,
+  //       preferredindustry: 1,
+  //       functionalArea: 1,
+  //       // role: 1,
+  //       jobLocation: 1,
+  //       employmentType: 1,
+  //       openings: 1,
+  //       interviewDate: 1,
+  //       interviewTime: 1,
+  //       location: 1,
+  //       interviewerName: 1,
+  //       interviewerContactNumber: 1,
+  //       validity: 1,
+  //       educationalQualification: 1,
+  //       userId: 1,
+  //       expiredDate: 1,
+  //       createdAt: 1,
+  //       companyName: '$employerregistrations.companyName',
+  //       email: '$employerregistrations.email',
+  //       mobileNumber: '$employerregistrations.mobileNumber',
+  //       companyType: '$employerregistrations.companyType',
+  //       name: '$employerregistrations.name',
+  //       regitserStatus: '$employerregistrations.adminStatus',
+  //       appliedStatus: '$candidatepostjobs.approvedStatus',
+  //       role:'$jobroles.Job_role'
+  //     },
+  //   },
+  // ]);
+  // return data;
 };
 
 const getByIdEmployerDetails = async (id) => {
