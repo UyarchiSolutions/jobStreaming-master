@@ -18,15 +18,15 @@ const moment = require('moment');
 
 const createkeySkill = async (userId, userBody) => {
   console.log(userId);
-  totalCTC = 0;
+  let totalCTC = 0;
   if (userBody.experienceYear != 0) {
     let currentctc_th = userBody.currentctc_th;
     let currentctc = userBody.currentctc * 100000;
     totalCTC = parseInt(currentctc_th) + parseInt(currentctc);
   }
-  expCTC = userBody.expectedctc.split('-');
-  expCTC_strat = 0;
-  expCTC_end = 0;
+  let expCTC = userBody.expectedctc.split('-');
+  let expCTC_strat = 0;
+  let expCTC_end = 0;
   if (expCTC.length != 0) {
     expCTC_strat = expCTC[0] * 100000;
     if (expCTC[1] != 'more') {
@@ -395,14 +395,14 @@ const updateEducation = async (userId, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
-  let data ;
+  let data;
   let totalCTC = 0;
-  let currentctc_th
-  console.log(updateBody.currentctc_th, updateBody.currentctc)
+  let currentctc_th;
+  console.log(updateBody.currentctc_th, updateBody.currentctc);
   if (updateBody.experienceYear != 0) {
     currentctc_th = updateBody.currentctc_th;
-    if(!updateBody.currentctc_th){
-      currentctc_th = 0
+    if (!updateBody.currentctc_th) {
+      currentctc_th = 0;
     }
     let currentctc = updateBody.currentctc * 100000;
     totalCTC = parseInt(currentctc_th) + parseInt(currentctc);
@@ -416,7 +416,7 @@ const updateEducation = async (userId, updateBody) => {
       expCTC_end = expCTC[1] * 100000;
     }
   }
-  console.log(totalCTC)
+  console.log(totalCTC);
   data = await KeySkill.findOneAndUpdate(
     { userId: userId },
     { ...updateBody, ...{ expCTC_strat: expCTC_strat, expCTC_end: expCTC_end, totalCTC: totalCTC } },
@@ -436,9 +436,8 @@ const updateByIdImage = async (id, updateBody) => {
   return data;
 };
 
-
 const edit_details = async (id, updateBody) => {
-  const user = await KeySkill.findOne({userId:id});
+  const user = await KeySkill.findOne({ userId: id });
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
@@ -728,7 +727,7 @@ const candidateSearch = async (body) => {
     { $skip: range * page },
     { $limit: range },
   ]);
-  return {data:data, count:data.length};
+  return { data: data, count: data.length };
 };
 
 const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
@@ -862,7 +861,7 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         preferedIndustry: 1,
         functionalArea: 1,
         // role: 1,
-        role:'$jobroles.Job_role',
+        role: '$jobroles.Job_role',
         jobLocation: 1,
         employmentType: 1,
         openings: 1,
@@ -870,15 +869,15 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         expiredDate: 1,
         date: 1,
         time: 1,
-        recruiterName:1,
-        recruiterEmail:1,
-        recruiterNumber:1,
-        interviewstartDate:1,
-        interviewendDate:1,
-        startTime:1,
-        endTime:1,
+        recruiterName: 1,
+        recruiterEmail: 1,
+        recruiterNumber: 1,
+        interviewstartDate: 1,
+        interviewendDate: 1,
+        startTime: 1,
+        endTime: 1,
         appliedCount: '$employerpostjobs.count',
-        appliedStatus:'$candidatepostjobs.approvedStatus',
+        appliedStatus: '$candidatepostjobs.approvedStatus',
         candidatesubmitButton: { $ifNull: ['$candidatepostjobs.status', false] },
         saveButton: { $ifNull: ['$candidatesavejobs.status', false] },
       },
@@ -901,16 +900,16 @@ const createCandidateSavejob = async (userId, userBody) => {
 
 const getByIdAppliedJobs = async (userId, status) => {
   console.log(userId);
-  let search
-  if(status == "null"){
-    search = {active:{$eq:true}}
-  }else{
-    search= {approvedStatus:{$eq:status}}
+  let search;
+  if (status == 'null') {
+    search = { active: { $eq: true } };
+  } else {
+    search = { approvedStatus: { $eq: status } };
   }
   const data = await CandidatePostjob.aggregate([
     {
       $match: {
-        $and: [{ userId: { $eq: userId } },search],
+        $and: [{ userId: { $eq: userId } }, search],
       },
     },
     {
@@ -1002,7 +1001,7 @@ const getByIdAppliedJobs = async (userId, status) => {
         date: '$employerdetails.date',
         time: '$employerdetails.time',
         jodId: '$employerdetails._id',
-        role:'$employerdetails.jobroles.Job_role',
+        role: '$employerdetails.jobroles.Job_role',
         candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
       },
     },
@@ -1293,7 +1292,7 @@ const getByIdSavedJobsView = async (userId) => {
         jobTittle: '$employerdetails.jobTittle',
         date: '$employerdetails.date',
         time: '$employerdetails.time',
-        role:'$employerdetails.jobroles.Job_role',
+        role: '$employerdetails.jobroles.Job_role',
         candidatepostjobs: { $ifNull: ['$employerdetails.candidatepostjobs', false] },
         approvedStatus: '$employerdetails.candidatepostjobs.approvedStatus',
       },
@@ -1425,7 +1424,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
   let locetion = user.locationSet;
   let expYear = user.experienceYearSet;
   let salaryFrom = user.salaryFrom;
-  let  SalaryTo = user.SalaryTo;
+  let SalaryTo = user.SalaryTo;
   let currentIndustry = user.currentIndustry;
   let currentDepartment = user.currentDepartment;
   let role_Category = user.role_Category;
@@ -1433,7 +1432,22 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
   let locationSet = user.locationSet;
   // let expMonth = user.experienceMonthSet
   // console.log(search,expYear, expMonth)
-  console.log(user)
+  let expCTC = salaryFrom.split('-');
+  let expCTC_strat = 0;
+  let expCTC_end = 0;
+  if (expCTC.length != 0) {
+    expCTC_strat = expCTC[0] * 100000;
+    if (expCTC[1] != 'more') {
+      expCTC_end = expCTC[1] * 100000;
+    }
+  }
+  let start;
+  if (expCTC_end != 0) {
+    start = { salaryRangeFrom: { $gte: expCTC_strat }, salaryRangeTo: { $lte: expCTC_end } };
+  } else {
+    start = { salaryRangeFrom: { $gte: expCTC_strat } };
+  }
+  console.log(start)
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'candidateDetails not found');
   }
@@ -1459,6 +1473,11 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
           { jobLocation: { $eq: locetion } },
           { keySkill: { $elemMatch: { $in: search } } },
           { experienceFrom: { $eq: expYear } },
+          { industry: { $eq: currentIndustry } },
+          { department: { $eq: currentDepartment } },
+          { role: { $eq: designationSet } },
+          { jobLocation: { $eq: locationSet } },
+          start,
         ],
       },
     },
@@ -1556,7 +1575,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
         name: '$employerregistrations.name',
         regitserStatus: '$employerregistrations.adminStatus',
         appliedStatus: '$candidatepostjobs.approvedStatus',
-        role:'$jobroles.Job_role'
+        role: '$jobroles.Job_role',
       },
     },
   ]);
@@ -1857,13 +1876,13 @@ const candidateSearch_front_page = async (id, body) => {
         email: '$employerregistrations.email',
         name: '$employerregistrations.name',
         appliedStatus: '$candidatepostjobs.approvedStatus',
-        role:'$jobroles.Job_role'
+        role: '$jobroles.Job_role',
       },
     },
     { $skip: range * page },
     { $limit: range },
   ]);
-  return {data:data, count:data.length};
+  return { data: data, count: data.length };
 };
 
 const recentSearch = async (userId) => {
