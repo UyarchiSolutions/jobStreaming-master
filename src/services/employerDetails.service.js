@@ -188,7 +188,7 @@ const getByIdUser = async (id) => {
         path: '$jobroles',
         preserveNullAndEmptyArrays: true,
       },
-    },   
+    },
     {
       $project: {
         appliedcount: '$candidatepostjobs.count',
@@ -227,15 +227,15 @@ const getByIdUser = async (id) => {
         expiredDate: 1,
         createdAt: 1,
         adminStatus: 1,
-        recruiterName:1,
-        recruiterEmail:1,
-        recruiterNumber:1, 
-        roleName:'$jobroles.Job_role',
-        categoryName:'$rolecategories.Role_Category',
-        departmentName:'$departments.Department',
-        department:1,
-        roleCategory:1,
-        role:1,
+        recruiterName: 1,
+        recruiterEmail: 1,
+        recruiterNumber: 1,
+        roleName: '$jobroles.Job_role',
+        categoryName: '$rolecategories.Role_Category',
+        departmentName: '$departments.Department',
+        department: 1,
+        roleCategory: 1,
+        role: 1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
@@ -337,69 +337,75 @@ const getById_Get = async (id) => {
     {
       $lookup: {
         from: 'qualifications',
-        let: {userId: "$qualification"},
+        let: { userId: '$qualification' },
         pipeline: [
           {
             $match: {
               $expr: {
-                $in: ['$_id',"$$userId"],  // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
               },
             },
           },
           {
-            $group:{_id:{qualification:"$qualification"}}
+            $group: { _id: { qualification: '$qualification' } },
           },
-          {$project:{
-            _id:null,
-            qualification:"$_id.qualification",
-          }}
-        ], 
+          {
+            $project: {
+              _id: null,
+              qualification: '$_id.qualification',
+            },
+          },
+        ],
         as: 'qualifications',
       },
     },
     {
       $lookup: {
         from: 'allcourses',
-        let: {userId: "$course"},
+        let: { userId: '$course' },
         pipeline: [
           {
             $match: {
               $expr: {
-                $in: ['$_id',"$$userId"],  // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
               },
             },
           },
           {
-            $group:{_id:{Course:"$Course"}}
+            $group: { _id: { Course: '$Course' } },
           },
-          {$project:{
-            _id:null,
-            Course:"$_id.Course",
-          }}
-        ], 
+          {
+            $project: {
+              _id: null,
+              Course: '$_id.Course',
+            },
+          },
+        ],
         as: 'allcourses',
       },
     },
     {
       $lookup: {
         from: 'allspecializations',
-        let: {userId: "$specialization"},
+        let: { userId: '$specialization' },
         pipeline: [
           {
             $match: {
               $expr: {
-                $in: ['$_id',"$$userId"],  // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
               },
             },
           },
           {
-            $group:{_id:{Specialization:"$Specialization"}}
+            $group: { _id: { Specialization: '$Specialization' } },
           },
-          {$project:{
-            _id:null,
-            Specialization:"$_id.Specialization",
-          }}
-        ], 
+          {
+            $project: {
+              _id: null,
+              Specialization: '$_id.Specialization',
+            },
+          },
+        ],
         as: 'allspecializations',
       },
     },
@@ -441,24 +447,24 @@ const getById_Get = async (id) => {
         expiredDate: 1,
         createdAt: 1,
         adminStatus: 1,
-        salaryDescription:1,
-        urltoApply:1,
-        recruiterName:1,
-        recruiterEmail:1,
-        recruiterNumber:1,
-        interviewstartDate:1,
-        interviewendDate:1,
-        startTime:1,
-        endTime:1,
-        roleName:'$jobroles.Job_role',
-        categoryName:'$rolecategories.Role_Category',
-        departmentName:'$departments.Department',
-        department:1,
-        roleCategory:1,
-        role:1,
-        qualifications:'$qualifications',
-        allcourses:'$allcourses',
-        allspecializations:'$allspecializations',
+        salaryDescription: 1,
+        urltoApply: 1,
+        recruiterName: 1,
+        recruiterEmail: 1,
+        recruiterNumber: 1,
+        interviewstartDate: 1,
+        interviewendDate: 1,
+        startTime: 1,
+        endTime: 1,
+        roleName: '$jobroles.Job_role',
+        categoryName: '$rolecategories.Role_Category',
+        departmentName: '$departments.Department',
+        department: 1,
+        roleCategory: 1,
+        role: 1,
+        qualifications: '$qualifications',
+        allcourses: '$allcourses',
+        allspecializations: '$allspecializations',
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
@@ -593,7 +599,7 @@ const draftData_delete = async (id) => {
 };
 
 // postjob_candidate_Applied_datas
-const getAllApplied_postjobs_Candidates = async (userId,range,page) => {
+const getAllApplied_postjobs_Candidates = async (userId, range, page) => {
   const data = await EmployerDetails.aggregate([
     {
       $match: {
@@ -833,13 +839,13 @@ const getAllApplied_postjobs_Candidates = async (userId,range,page) => {
                           from: 'employercomments',
                           localField: 'userId',
                           foreignField: 'candidateId',
-                          pipeline:[
-                          {
-                            $match: {
-                              $and: [{ userId: { $eq: userId } }],
+                          pipeline: [
+                            {
+                              $match: {
+                                $and: [{ userId: { $eq: userId } }],
+                              },
                             },
-                          },
-                        ],
+                          ],
                           as: 'employercomments',
                         },
                       },
@@ -871,8 +877,8 @@ const getAllApplied_postjobs_Candidates = async (userId,range,page) => {
                     resume: 1,
                     createdAt: 1,
                     updatedAt: 1,
-                    comment:'$employercomments.comment',
-                    commentId:'$employercomments._id',
+                    comment: '$employercomments.comment',
+                    commentId: '$employercomments._id',
                     // candidateDetails: '$candidatedetails',
                     keyskill: '$candidatedetails.keyskill',
                     currentSkill: '$candidatedetails.currentSkill',
@@ -1216,13 +1222,13 @@ const getAllApplied_postjobs_Candidates = async (userId,range,page) => {
                           from: 'employercomments',
                           localField: 'userId',
                           foreignField: 'candidateId',
-                          pipeline:[
-                          {
-                            $match: {
-                              $and: [{ userId: { $eq: userId } }],
+                          pipeline: [
+                            {
+                              $match: {
+                                $and: [{ userId: { $eq: userId } }],
+                              },
                             },
-                          },
-                        ],
+                          ],
                           as: 'employercomments',
                         },
                       },
@@ -1254,8 +1260,8 @@ const getAllApplied_postjobs_Candidates = async (userId,range,page) => {
                     resume: 1,
                     createdAt: 1,
                     updatedAt: 1,
-                    comment:'$employercomments.comment',
-                    commentId:'$employercomments._id',
+                    comment: '$employercomments.comment',
+                    commentId: '$employercomments._id',
                     // candidateDetails: '$candidatedetails',
                     keyskill: '$candidatedetails.keyskill',
                     currentSkill: '$candidatedetails.currentSkill',
@@ -1357,7 +1363,7 @@ const getAllApplied_postjobs_Candidates = async (userId,range,page) => {
       },
     },
   ]);
-  return {data:data, count:count.length};
+  return { data: data, count: count.length };
 };
 
 const statusChange_employer = async (id, updateBody) => {
@@ -1423,8 +1429,8 @@ const employer_comment = async (userId, Body) => {
 };
 
 const employer_comment_id = async (id) => {
-  const data = await Employercomment.findById(id)
-  return data
+  const data = await Employercomment.findById(id);
+  return data;
 };
 
 //edit comment
@@ -1611,8 +1617,8 @@ const send_mail_and_notification = async (userId, body) => {
         startTime: 1,
         endTime: 1,
         recruiterName: 1,
-        recruiterEmail:1,
-        recruiterNumber:1,
+        recruiterEmail: 1,
+        recruiterNumber: 1,
         date: 1,
         time: 1,
         companyType: '$employerregistrations.companyType',
@@ -1620,7 +1626,7 @@ const send_mail_and_notification = async (userId, body) => {
         contactName: '$employerregistrations.contactName',
         email: '$employerregistrations.email',
         name: '$employerregistrations.name',
-        logo:'$employerregistrations.logo',
+        logo: '$employerregistrations.logo',
         aboutCompany: '$employerregistrations.aboutCompany',
         location: '$employerregistrations.location',
         choosefile: '$employerregistrations.choosefile',
@@ -1628,16 +1634,16 @@ const send_mail_and_notification = async (userId, body) => {
     },
   ]);
   let ago = moment(employer[0].date, 'YYYY.MM.DD').fromNow();
-  let lakhsFrom = parseInt(employer[0].salaryRangeFrom/100000)
-  let lakhsTo = parseInt(employer[0].salaryRangeTo/100000)
+  let lakhsFrom = parseInt(employer[0].salaryRangeFrom / 100000);
+  let lakhsTo = parseInt(employer[0].salaryRangeTo / 100000);
   const { candidates, subject, signature, email } = body;
-  let da ;
+  let da;
   candidates.forEach(async (e) => {
     da = await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
     const candidate = await CandidateRegistration.findById(e);
-     console.log(da)
+    console.log(da);
     if (body.mail == 'job') {
-       const data1 = await ejs.renderFile(__dirname + '/template.ejs', {
+      const data1 = await ejs.renderFile(__dirname + '/template.ejs', {
         name: candidate.name,
         subject: subject,
         signature: signature,
@@ -1677,17 +1683,16 @@ const send_mail_and_notification = async (userId, body) => {
         mobileNumber: employer[0].mobileNumber,
         contactName: employer[0].contactName,
         email: employer[0].email,
-        recruiterEmail:employer[0].recruiterEmail,
-        recruiterNumber:employer[0].recruiterNumber,
+        recruiterEmail: employer[0].recruiterEmail,
+        recruiterNumber: employer[0].recruiterNumber,
         companyname: employer[0].name,
         aboutCompany: employer[0].aboutCompany,
         location: employer[0].location,
         choosefile: employer[0].choosefile,
-        mailId:da._id,
-        logo:employer[0].logo,
-        daysAgo:ago,
-      }
-      );
+        mailId: da._id,
+        logo: employer[0].logo,
+        daysAgo: ago,
+      });
       const mainOptions = {
         from: body.email,
         to: candidate.email,
@@ -1709,7 +1714,7 @@ const send_mail_and_notification = async (userId, body) => {
   return { messages: 'Send Notification Mail Successfully...' };
 };
 
-const getAll_Mail_notification_employerside = async (userId,range,page) => {
+const getAll_Mail_notification_employerside = async (userId, range, page) => {
   const data = await EmployerMailNotification.aggregate([
     {
       $match: {
@@ -1938,20 +1943,6 @@ const getAll_Mail_notification_employerside = async (userId,range,page) => {
                     preserveNullAndEmptyArrays: true,
                   },
                 },
-                {
-                  $lookup: {
-                    from: 'candidatepostjobs',
-                    localField: '_id',
-                    foreignField: 'jobId',
-                    as:'candidatepostjobs'
-                    }
-                  },
-                  {
-                    $unwind: {
-                      path: '$candidatepostjobs',
-                      preserveNullAndEmptyArrays: true,
-                    },
-                  },
               ],
               as: 'candidatedetails',
             },
@@ -2043,7 +2034,7 @@ const getAll_Mail_notification_employerside = async (userId,range,page) => {
               role_Category: '$candidatedetails.role_Category',
               salaryFrom: '$candidatedetails.salaryFrom',
               SalaryTo: '$candidatedetails.SalaryTo',
-              candidatepostjobs:'$candidatedetails.candidatepostjobs'
+              // candidatepostjobs:'$candidatedetails.candidatepostjobs'
               // candidateDetails:'$candidatedetails'
             },
           },
@@ -2053,24 +2044,49 @@ const getAll_Mail_notification_employerside = async (userId,range,page) => {
     },
     {
       $lookup: {
+        from: 'candidatepostjobs',
+        let: { mailId: '$mailId' },
+        localField: 'candidateregistrations._id',
+        foreignField: 'userId',
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ['$jobId', '$$mailId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
-        pipeline:[
+        pipeline: [
           {
             $lookup: {
               from: 'employercomments',
               localField: 'userId',
               foreignField: 'userId',
-              as:'employercomments'
-              }
+              as: 'employercomments',
             },
-            {
-              $unwind: {
-                path: '$employercomments',
-                preserveNullAndEmptyArrays: true,
-              },
+          },
+          {
+            $unwind: {
+              path: '$employercomments',
+              preserveNullAndEmptyArrays: true,
             },
+          },
         ],
         as: 'employerdetails',
       },
@@ -2084,9 +2100,9 @@ const getAll_Mail_notification_employerside = async (userId,range,page) => {
     {
       $project: {
         jobTittle: '$employerdetails.jobTittle',
-        comment:'$employerdetails.employercomments.comment',
-        commentId:'$employerdetails.employercomments._id',
-        status: 1,
+        comment: '$employerdetails.employercomments.comment',
+        commentId: '$employerdetails.employercomments._id',
+        status:  '$candidatepostjobs.approvedStatus',
         candidateDetail: '$candidateregistrations',
         subject: 1,
         signature: 1,
@@ -2332,15 +2348,15 @@ const getAll_Mail_notification_employerside = async (userId,range,page) => {
                     from: 'candidatepostjobs',
                     localField: '_id',
                     foreignField: 'jobId',
-                    as:'candidatepostjobs'
-                    }
+                    as: 'candidatepostjobs',
                   },
-                  {
-                    $unwind: {
-                      path: '$candidatepostjobs',
-                      preserveNullAndEmptyArrays: true,
-                    },
+                },
+                {
+                  $unwind: {
+                    path: '$candidatepostjobs',
+                    preserveNullAndEmptyArrays: true,
                   },
+                },
               ],
               as: 'candidatedetails',
             },
@@ -2432,7 +2448,7 @@ const getAll_Mail_notification_employerside = async (userId,range,page) => {
               role_Category: '$candidatedetails.role_Category',
               salaryFrom: '$candidatedetails.salaryFrom',
               SalaryTo: '$candidatedetails.SalaryTo',
-              candidatepostjobs:'$candidatedetails.candidatepostjobs'
+              candidatepostjobs: '$candidatedetails.candidatepostjobs',
               // candidateDetails:'$candidatedetails'
             },
           },
@@ -2445,21 +2461,21 @@ const getAll_Mail_notification_employerside = async (userId,range,page) => {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
-        pipeline:[
+        pipeline: [
           {
             $lookup: {
               from: 'employercomments',
               localField: 'userId',
               foreignField: 'userId',
-              as:'employercomments'
-              }
+              as: 'employercomments',
             },
-            {
-              $unwind: {
-                path: '$employercomments',
-                preserveNullAndEmptyArrays: true,
-              },
+          },
+          {
+            $unwind: {
+              path: '$employercomments',
+              preserveNullAndEmptyArrays: true,
             },
+          },
         ],
         as: 'employerdetails',
       },
@@ -2473,8 +2489,8 @@ const getAll_Mail_notification_employerside = async (userId,range,page) => {
     {
       $project: {
         jobTittle: '$employerdetails.jobTittle',
-        comment:'$employerdetails.employercomments.comment',
-        commentId:'$employerdetails.employercomments._id',
+        comment: '$employerdetails.employercomments.comment',
+        commentId: '$employerdetails.employercomments._id',
         status: 1,
         candidateDetail: '$candidateregistrations',
         subject: 1,
@@ -2486,7 +2502,7 @@ const getAll_Mail_notification_employerside = async (userId,range,page) => {
       },
     },
   ]);
-  return {data:data, count:count.length};
+  return { data: data, count: count.length };
 };
 
 // getbyId notification
@@ -2724,15 +2740,15 @@ const getbyId_notification = async (id) => {
                     from: 'candidatepostjobs',
                     localField: '_id',
                     foreignField: 'jobId',
-                    as:'candidatepostjobs'
-                    }
+                    as: 'candidatepostjobs',
                   },
-                  {
-                    $unwind: {
-                      path: '$candidatepostjobs',
-                      preserveNullAndEmptyArrays: true,
-                    },
+                },
+                {
+                  $unwind: {
+                    path: '$candidatepostjobs',
+                    preserveNullAndEmptyArrays: true,
                   },
+                },
               ],
               as: 'candidatedetails',
             },
@@ -2824,7 +2840,7 @@ const getbyId_notification = async (id) => {
               role_Category: '$candidatedetails.role_Category',
               salaryFrom: '$candidatedetails.salaryFrom',
               SalaryTo: '$candidatedetails.SalaryTo',
-              candidatepostjobs:'$candidatedetails.candidatepostjobs'
+              candidatepostjobs: '$candidatedetails.candidatepostjobs',
               // candidateDetails:'$candidatedetails'
             },
           },
@@ -2837,21 +2853,21 @@ const getbyId_notification = async (id) => {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
-        pipeline:[
+        pipeline: [
           {
             $lookup: {
               from: 'employercomments',
               localField: 'userId',
               foreignField: 'userId',
-              as:'employercomments'
-              }
+              as: 'employercomments',
             },
-            {
-              $unwind: {
-                path: '$employercomments',
-                preserveNullAndEmptyArrays: true,
-              },
+          },
+          {
+            $unwind: {
+              path: '$employercomments',
+              preserveNullAndEmptyArrays: true,
             },
+          },
         ],
         as: 'employerdetails',
       },
@@ -2865,8 +2881,8 @@ const getbyId_notification = async (id) => {
     {
       $project: {
         jobTittle: '$employerdetails.jobTittle',
-        comment:'$employerdetails.employercomments.comment',
-        commentId:'$employerdetails.employercomments._id',
+        comment: '$employerdetails.employercomments.comment',
+        commentId: '$employerdetails.employercomments._id',
         status: 1,
         candidateDetail: '$candidateregistrations',
         subject: 1,
@@ -2878,8 +2894,8 @@ const getbyId_notification = async (id) => {
       },
     },
   ]);
-  return data
-}
+  return data;
+};
 
 // getAll_Mail_notification_candidateside
 
@@ -2930,7 +2946,7 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
-        pipeline:[
+        pipeline: [
           {
             $lookup: {
               from: 'jobroles',
@@ -2986,7 +3002,7 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         employerregistrations: '$employerregistrations',
         date: 1,
         appliedStatus: '$candidatepostjobs.approvedStatus',
-        role:'$employerdetails.jobroles.Job_role'
+        role: '$employerdetails.jobroles.Job_role',
       },
     },
   ]);
@@ -3296,8 +3312,10 @@ const keySkillData = async (key) => {
   // let fn = re.exec.bind(re);
   // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   // let filtered = data.filter(fn);
-  var query = new RegExp("\^" + key, "i");
-  const data = await Skill.find({ Skill_Title: { $regex: query } }).sort({ Skill_Title: 1 }).limit(7);
+  var query = new RegExp('^' + key, 'i');
+  const data = await Skill.find({ Skill_Title: { $regex: query } })
+    .sort({ Skill_Title: 1 })
+    .limit(7);
   // .sort({ Skill_Title: 1 })
   // .select('Skill_Title')
   return data;
