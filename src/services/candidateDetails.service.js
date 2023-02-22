@@ -754,6 +754,95 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
     },
     {
       $lookup: {
+        from: 'qualifications',
+        let: { userId: '$qualification' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group: { _id: { qualification: '$qualification' } },
+          },
+          {
+            $project: {
+              _id: null,
+              qualification: '$_id.qualification',
+            },
+          },
+        ],
+        as: 'qualifications',
+      },
+    },
+    {
+      $lookup: {
+        from: 'allcourses',
+        let: { userId: '$course' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group: { _id: { Course: '$Course' } },
+          },
+          {
+            $project: {
+              _id: null,
+              Course: '$_id.Course',
+            },
+          },
+        ],
+        as: 'allcourses',
+      },
+    },
+    {
+      $lookup: {
+        from: 'allspecializations',
+        let: { userId: '$specialization' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group: { _id: { Specialization: '$Specialization' } },
+          },
+          {
+            $project: {
+              _id: null,
+              Specialization: '$_id.Specialization',
+            },
+          },
+        ],
+        as: 'allspecializations',
+      },
+    },
+    {
+      $lookup: {
+        from: 'departments',
+        localField: 'department',
+        foreignField: '_id',
+        as: 'departments',
+      },
+    },
+    {
+      $unwind: {
+        path: '$departments',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
         from: 'employerregistrations',
         localField: 'userId',
         foreignField: '_id',
@@ -874,8 +963,12 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         recruiterNumber: 1,
         interviewstartDate: 1,
         interviewendDate: 1,
+        department:'$departments.Department',
         startTime: 1,
         endTime: 1,
+        qualifications: '$qualifications',
+        allcourses: '$allcourses',
+        allspecializations: '$allspecializations',
         appliedCount: '$employerpostjobs.count',
         appliedStatus: '$candidatepostjobs.approvedStatus',
         candidatesubmitButton: { $ifNull: ['$candidatepostjobs.status', false] },

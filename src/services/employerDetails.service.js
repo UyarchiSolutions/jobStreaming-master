@@ -1515,7 +1515,7 @@ const send_mail_and_notification = async (userId, body) => {
     candidates.forEach(async (e) => {
        await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
       const candidate = await CandidateRegistration.findById(e);
-
+          // console.log(candidate.email)
          data1 = await ejs.renderFile(__dirname + '/mailtemplate.ejs', {
           name: candidate.name,
           subject: subject,
