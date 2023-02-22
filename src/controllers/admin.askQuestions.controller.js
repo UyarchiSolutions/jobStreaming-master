@@ -41,6 +41,11 @@ const create_enquiry_candidate = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const create_enquiry_dummy = catchAsync(async (req, res) => {
+  const data = await faqeService.create_enquiry_dummy(req.body);
+  res.send(data);
+});
+
 
 const get_all_enquiry = catchAsync(async (req, res) => {
   const data = await faqeService.get_all_enquiry();
@@ -61,4 +66,5 @@ module.exports = {
   create_enquiry_candidate,
   get_all_enquiry,
   get_id_enquiry,
+  create_enquiry_dummy,
 };

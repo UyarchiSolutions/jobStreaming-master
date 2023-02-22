@@ -71,6 +71,11 @@ const create_enquiry_candidate = async (userId, body) => {
   return Enquiry.create(values);
 };
 
+// dummy
+const create_enquiry_dummy = async (body) => {
+  return Enquiry.create(body);
+};
+
 const get_all_enquiry = async () => {
   const data = await Enquiry.find()
   return data
@@ -91,4 +96,5 @@ module.exports = {
   create_enquiry_candidate,
   get_all_enquiry,
   get_id_enquiry,
+  create_enquiry_dummy,
 };

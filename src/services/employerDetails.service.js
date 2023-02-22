@@ -1504,11 +1504,45 @@ const transporter = nodemailer.createTransport({
   },
 });
 const send_mail_and_notification = async (userId, body) => {
+  const { candidates, subject, signature,message, email } = body;
   const data = await EmployerRegistration.findById(userId);
   // console.log(userId)
+  var data1 ; 
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
+  if(body.mail == "mail"){
+    candidates.forEach(async (e) => {
+       await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
+      const candidate = await CandidateRegistration.findById(e);
+
+         data1 = await ejs.renderFile(__dirname + '/mailtemplate.ejs', {
+          name: candidate.name,
+          subject: subject,
+          signature: signature,
+          message:message,
+          contactName:data.contactName,
+          email:candidate.email
+        })
+
+      const mainOptions = {
+        from: body.email,
+        // to: candidate.email,
+        to:"vignesh1041996@gmail.com",
+        subject: 'templates',
+        html: data1,
+      };
+  
+      transporter.sendMail(mainOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Message sent: ' + info.response);
+        }
+      });
+    })
+  }else{
+
   const employer = await EmployerDetails.aggregate([
     {
       $match: {
@@ -1637,19 +1671,17 @@ const send_mail_and_notification = async (userId, body) => {
   let ago = moment(employer[0].date, 'YYYY.MM.DD').fromNow();
   let lakhsFrom = parseInt(employer[0].salaryRangeFrom / 100000);
   let lakhsTo = parseInt(employer[0].salaryRangeTo / 100000);
-  const { candidates, subject, signature, email } = body;
-  let da;
+
   candidates.forEach(async (e) => {
-    da = await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
+    const da = await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
     const candidate = await CandidateRegistration.findById(e);
-    console.log(da);
-    if (body.mail == 'job') {
-      const data1 = await ejs.renderFile(__dirname + '/template.ejs', {
+    // if (body.mail == 'job') {
+       data1 = await ejs.renderFile(__dirname + '/template.ejs', {
         name: candidate.name,
         subject: subject,
         signature: signature,
         keySkill: employer[0].keySkill.toString(),
-        preferedIndustry: employer[0].preferedIndustry,
+        preferedIndustry: employer[0].preferedIndustry.toString(),
         preferredSkill: employer[0].preferredSkill,
         adminStatus: employer[0].adminStatus,
         active: employer[0].active,
@@ -1696,8 +1728,8 @@ const send_mail_and_notification = async (userId, body) => {
       });
       const mainOptions = {
         from: body.email,
-        to: candidate.email,
-        // to:"vignesh1041996@gmail.com",
+        // to: candidate.email,
+        to:"vignesh1041996@gmail.com",
         subject: 'templates',
         html: data1,
       };
@@ -1709,8 +1741,9 @@ const send_mail_and_notification = async (userId, body) => {
           console.log('Message sent: ' + info.response);
         }
       });
-    }
+    // }
   });
+}
 
   return { messages: 'Send Notification Mail Successfully...' };
 };

@@ -424,6 +424,9 @@ const EmployerMailNotificationSchema = mongoose.Schema(
     subject: {
       type: String,
     },
+    message:{
+      type:String,
+    },
     date: {
       type: String,
       default: moment().format('YYYY-MM-DD'),
