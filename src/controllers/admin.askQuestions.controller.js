@@ -10,7 +10,7 @@ const createfaqe = catchAsync(async (req, res) => {
 });
 
 const getAll_faqe = catchAsync(async (req, res) => {
-  const data = await faqeService.getAllFaqe();
+  const data = await faqeService.getAllFaqe(req.params.range, req.params.page);
   res.send(data);
 });
 

@@ -348,7 +348,28 @@ const getSaveSeprate = async (userId,range,page) => {
               salaryFrom: '$candidatedetails.salaryFrom',
               SalaryTo: '$candidatedetails.SalaryTo',    
             }
-          }    
+          },   
+          {
+            $lookup: {
+              from: 'employercomments',
+              localField: '_id',
+              foreignField: 'candidateId',
+              pipeline:[
+                {
+                  $match: {
+                    $and: [{ userId: { $eq: userId } }],
+                  },
+                },
+              ],
+              as: 'employercomments',
+            },
+          },
+          {
+            $unwind: {
+              path: '$employercomments',
+              preserveNullAndEmptyArrays: true,
+            },
+          }, 
         ],
         as: 'candidateregistrations',
       },
@@ -359,32 +380,12 @@ const getSaveSeprate = async (userId,range,page) => {
         preserveNullAndEmptyArrays: true,
       },
     },
-    {
-      $lookup: {
-        from: 'employercomments',
-        localField: 'candidateId',
-        foreignField: 'candidateId',
-        pipeline:[
-          {
-            $match: {
-              $and: [{ userId: { $eq: userId } }],
-            },
-          },
-        ],
-        as: 'employercomments',
-      },
-    },
-    {
-      $unwind: {
-        path: '$employercomments',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
+    
     {
       $project: {
         candidateData: '$candidateregistrations',
-        comments:'$employercomments.comment',
-        commentId:'$employercomments._id'
+        comments:'$candidateregistrations.employercomments.comment',
+        commentId:'$candidateregistrations.employercomments._id'
       },
     },
     { $skip: parseInt(range) * parseInt(page) },
@@ -1332,20 +1333,6 @@ const outSearch_employer = async (userId, body) => {
     },
     {
       $lookup: {
-        from: 'employercomments',
-        localField: '_id',
-        foreignField: 'candidateId',
-        as: 'employercomments',
-      },
-    },
-    {
-      $unwind: {
-        path: '$employercomments',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $lookup: {
         from: 'candidateregistrations',
         localField: 'userId',
         foreignField: '_id',
@@ -1361,6 +1348,20 @@ const outSearch_employer = async (userId, body) => {
     },
     {
       $unwind: '$candidateregistrations',
+    },
+    {
+      $lookup: {
+        from: 'employercomments',
+        localField: 'userId',
+        foreignField: 'candidateId',
+        as: 'employercomments',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employercomments',
+        preserveNullAndEmptyArrays: true,
+      },
     },
     {
       $project: {
