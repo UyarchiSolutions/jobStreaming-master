@@ -18,6 +18,7 @@ const getAllFaqe = async (range, page) => {
 };
 
 const get_Faqe_id = async (id) => {
+  console.log(id)
   const data = Faqe.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
