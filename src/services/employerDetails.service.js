@@ -918,7 +918,8 @@ const getAllApplied_postjobs_Candidates = async (userId,range,page) => {
     {
       $project: {
         candidateId: '$candidatepostjobs.candidateregistrations._id',
-        employerCommand: '$candidatepostjobs.employerCommand',
+        employerCommand: '$candidateregistrations.candidatedetails.employercomments.comment',
+        commandIdId: '$candidateregistrations.candidatedetails.employercomments._id',
         postjobId: '$candidatepostjobs._id',
         status: '$candidatepostjobs.approvedStatus',
         candidateData: '$candidatepostjobs.candidateregistrations',
