@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const { Faqe, Enquiry} = require('../models/admin.askQusetions.model');
 const { findByIdAndUpdate } = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
+const moment = require('moment');
 
 const createFaqe = async (body) => {
   return Faqe.create(body);
@@ -73,7 +74,28 @@ const create_enquiry_candidate = async (userId, body) => {
 
 // dummy
 const create_enquiry_dummy = async (body) => {
-  return Enquiry.create(body);
+
+  let currentDate = moment().format('YYYY-MM-DD');
+  const Buy = await Enquiry.find({ date: currentDate });
+  let center = '';
+  if (Buy.length < 9) {
+    center = '0000';
+  }
+  if (Buy.length < 99 && Buy.length >= 9) {
+    center = '000';
+  }
+  if (Buy.length < 999 && Buy.length >= 99) {
+    center = '00';
+  }
+  if (Buy.length < 9999 && Buy.length >= 999) {
+    center = '0';
+  }
+  let iddd = '';
+  let totalcount = Buy.length + 1;
+
+  iddd = 'EQ' + center + totalcount;
+  let values = {...body, ...{eq_id:iddd, date:currentDate}}
+  return Enquiry.create(values);
 };
 
 const get_all_enquiry = async () => {
