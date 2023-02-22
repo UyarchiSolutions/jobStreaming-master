@@ -188,8 +188,7 @@ const getByIdUser = async (id) => {
         path: '$jobroles',
         preserveNullAndEmptyArrays: true,
       },
-    },
-    
+    },   
     {
       $project: {
         appliedcount: '$candidatepostjobs.count',
@@ -335,28 +334,76 @@ const getById_Get = async (id) => {
         preserveNullAndEmptyArrays: true,
       },
     },
-    // {
-    //   $lookup: {
-    //     from: 'qualifications',
-    //     let: {userId: "$qualification"},
-    //     pipeline: [
-    //       {
-    //         $match: {
-    //           $expr: {
-    //             $in: ['$_id',"$$userId"],  // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
-    //           },
-    //         },
-    //       },
-    //     ], 
-    //     as: 'qualifications',
-    //   },
-    // },
-    // {
-    //   $unwind: {
-    //     path: '$qualifications',
-    //     preserveNullAndEmptyArrays: true,
-    //   },
-    // },
+    {
+      $lookup: {
+        from: 'qualifications',
+        let: {userId: "$qualification"},
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id',"$$userId"],  // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group:{_id:{qualification:"$qualification"}}
+          },
+          {$project:{
+            _id:null,
+            qualification:"$_id.qualification",
+          }}
+        ], 
+        as: 'qualifications',
+      },
+    },
+    {
+      $lookup: {
+        from: 'allcourses',
+        let: {userId: "$course"},
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id',"$$userId"],  // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group:{_id:{Course:"$Course"}}
+          },
+          {$project:{
+            _id:null,
+            Course:"$_id.Course",
+          }}
+        ], 
+        as: 'allcourses',
+      },
+    },
+    {
+      $lookup: {
+        from: 'allspecializations',
+        let: {userId: "$specialization"},
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id',"$$userId"],  // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group:{_id:{Specialization:"$Specialization"}}
+          },
+          {$project:{
+            _id:null,
+            Specialization:"$_id.Specialization",
+          }}
+        ], 
+        as: 'allspecializations',
+      },
+    },
+
     {
       $project: {
         keySkill: 1,
@@ -409,7 +456,9 @@ const getById_Get = async (id) => {
         department:1,
         roleCategory:1,
         role:1,
-        // qualifications:'$qualifications',
+        qualifications:'$qualifications',
+        allcourses:'$allcourses',
+        allspecializations:'$allspecializations',
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
