@@ -29,10 +29,16 @@ const get_Faqe_delete = catchAsync(async (req, res) => {
   const data = await faqeService.get_Faqe_delete(req.params.id);
   res.send(data);
 });
+
+const exiting_faqe_data = catchAsync(async (req, res) => {
+  const data = await faqeService.exiting_faqe_data();
+  res.send(data);
+});
 module.exports = {
   createfaqe,
   getAll_faqe,
   get_Faqe_id,
   get_Faqe_update,
   get_Faqe_delete,
+  exiting_faqe_data,
 };

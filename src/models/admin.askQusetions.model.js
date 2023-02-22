@@ -20,7 +20,11 @@ const faqeSchema = mongoose.Schema({
   answer: {
     type: String,
   },
-});
+},
+{
+  timestamps: true,
+}
+);
 const Faqe = mongoose.model('faqe', faqeSchema);
 
 module.exports = {Faqe};

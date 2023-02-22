@@ -43,10 +43,32 @@ const get_Faqe_delete = async (id) => {
   await data.remove();
   return data;
 };
+
+const exiting_faqe_data = async () => {
+  const data = await Faqe.aggregate([
+    { $sort: { createdAt: -1 } },
+    {
+      $group: {
+        _id: { heading: '$heading'},
+        count: {
+          $sum: 1,
+        },
+      },
+    },
+    {
+      $project: {
+        heading: '$_id.heading',
+        count: 1,
+      },
+    },
+  ]);
+  return data;
+};
 module.exports = {
   createFaqe,
   getAllFaqe,
   get_Faqe_id,
   get_Faqe_update,
   get_Faqe_delete,
+  exiting_faqe_data,
 };
