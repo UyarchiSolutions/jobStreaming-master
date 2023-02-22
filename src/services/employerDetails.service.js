@@ -1527,8 +1527,8 @@ const send_mail_and_notification = async (userId, body) => {
 
       const mainOptions = {
         from: body.email,
-        // to: candidate.email,
-        to:"vignesh1041996@gmail.com",
+        to: candidate.email,
+        // to:"vignesh1041996@gmail.com",
         subject: 'templates',
         html: data1,
       };
@@ -1728,8 +1728,8 @@ const send_mail_and_notification = async (userId, body) => {
       });
       const mainOptions = {
         from: body.email,
-        // to: candidate.email,
-        to:"vignesh1041996@gmail.com",
+        to: candidate.email,
+        // to:"vignesh1041996@gmail.com",
         subject: 'templates',
         html: data1,
       };
