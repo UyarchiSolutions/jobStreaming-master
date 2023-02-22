@@ -225,6 +225,11 @@ const createdSearchhistoryData_byId = catchAsync(async(req,res) => {
   const user = await candidateDetailsService.createdSearchhistoryData_byId(req.params.id)
   res.send(user)
 })
+
+const candidate_detials_id = catchAsync(async(req,res) => {
+  const user = await candidateDetailsService.candidate_detials_id(req.params.id)
+  res.send(user)
+})
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -258,5 +263,6 @@ module.exports = {
   updateEducation,
   createdSearchhistoryData_byId,
   edit_details,
+  candidate_detials_id,
   // createSearchCandidate,
 };
