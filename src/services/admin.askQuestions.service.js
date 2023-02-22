@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Faqe } = require('../models/admin.askQusetions.model');
+const { Faqe, Enquiry} = require('../models/admin.askQusetions.model');
 const { findByIdAndUpdate } = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 
@@ -64,6 +64,13 @@ const exiting_faqe_data = async () => {
   ]);
   return data;
 };
+
+// enquiry create
+const create_enquiry_candidate = async (userId, body) => {
+  const values = {...body, ...{userId:userId}}
+  return Enquiry.create(values);
+};
+
 module.exports = {
   createFaqe,
   getAllFaqe,
@@ -71,4 +78,5 @@ module.exports = {
   get_Faqe_update,
   get_Faqe_delete,
   exiting_faqe_data,
+  create_enquiry_candidate,
 };

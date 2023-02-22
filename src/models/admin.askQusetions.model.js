@@ -11,7 +11,7 @@ const faqeSchema = mongoose.Schema({
   },
   heading: {
     type: String,
-    //    Enum:['true','false'],
+    //  Enum:['true','false'],
   },
   active: {
     type: Boolean,
@@ -27,4 +27,39 @@ const faqeSchema = mongoose.Schema({
 );
 const Faqe = mongoose.model('faqe', faqeSchema);
 
-module.exports = {Faqe};
+const enquirySchema = mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  name: {
+    type: String,
+  },
+  emailId: {
+    type: String,
+    //  Enum:['true','false'],
+  },
+  mobileNumber: {
+    type: String,
+  },
+  enquiry: {
+    type: String,
+  },
+  whooseSend:{
+    type:String,
+  },
+  userId:{
+    type:String,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+},
+{
+  timestamps: true,
+}
+);
+const Enquiry = mongoose.model('enquiry', enquirySchema);
+
+module.exports = {Faqe, Enquiry};

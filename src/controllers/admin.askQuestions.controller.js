@@ -34,6 +34,13 @@ const exiting_faqe_data = catchAsync(async (req, res) => {
   const data = await faqeService.exiting_faqe_data();
   res.send(data);
 });
+
+const create_enquiry_candidate = catchAsync(async (req, res) => {
+  const userId = req.userId;
+  const data = await faqeService.create_enquiry_candidate(userId, req.body);
+  res.send(data);
+});
+
 module.exports = {
   createfaqe,
   getAll_faqe,
@@ -41,4 +48,5 @@ module.exports = {
   get_Faqe_update,
   get_Faqe_delete,
   exiting_faqe_data,
+  create_enquiry_candidate,
 };
