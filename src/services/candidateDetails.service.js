@@ -1638,7 +1638,7 @@ const candidateSearch_front_page = async (id, body) => {
     freshness.length != 0 ||
     // locationfilter != null ||
     companytype.length != 0 ||
-    postedby.length != 0
+    postedby.length != 0 
   ) {
     await CandidateRecentSearchjobCandidate.create(values);
   }
@@ -1660,7 +1660,7 @@ const candidateSearch_front_page = async (id, body) => {
   let freshnessSearch = { active: true };
   // let locationfilterSearch = { active: true };
   let companytypeSearch = { active: true };
-  // let postedbySearch = { active: true };
+  let postedbySearch = { active: true };
 
   if (companytype.length != 0) {
     companytypeSearch = { companyType: { $in: companytype } };
@@ -1753,6 +1753,10 @@ const candidateSearch_front_page = async (id, body) => {
   if (education.length != 0) {
     educationSearch = { course: { $elemMatch: { $in: education } } };
   }
+
+  if (postedby.length != 0) {
+    postedbySearch = { postedBy: { $in: postedby } };
+  }
   //  console.log(experienceSearch,
   //   locationSearch,
   //   salarySearch,
@@ -1801,7 +1805,7 @@ const candidateSearch_front_page = async (id, body) => {
         pipeline: [
           {
             $match: {
-              $and: [companytypeSearch],
+              $and: [companytypeSearch,postedbySearch],
             },
           },
         ],
