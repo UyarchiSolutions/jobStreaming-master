@@ -12,4 +12,6 @@ router.route('/get_Faqe_update/:id').put(adminAskController.get_Faqe_update);
 router.route('/get_Faqe_delete/:id').delete(adminAskController.get_Faqe_delete);
 router.route('/exiting_faqe_data').get(adminAskController.exiting_faqe_data);
 router.route('/create_enquiry_candidate').post(authorization, adminAskController.create_enquiry_candidate);
+router.route('/get_all_enquiry').get(adminAskController.get_all_enquiry);
+router.route('/get_id_enquiry/data/:id').get(adminAskController.get_id_enquiry);
 module.exports = router;

@@ -71,6 +71,16 @@ const create_enquiry_candidate = async (userId, body) => {
   return Enquiry.create(values);
 };
 
+const get_all_enquiry = async () => {
+  const data = await Enquiry.find()
+  return data
+};
+
+
+const get_id_enquiry = async (id) => {
+  const data = await Enquiry.findById(id)
+  return data
+};
 module.exports = {
   createFaqe,
   getAllFaqe,
@@ -79,4 +89,6 @@ module.exports = {
   get_Faqe_delete,
   exiting_faqe_data,
   create_enquiry_candidate,
+  get_all_enquiry,
+  get_id_enquiry,
 };

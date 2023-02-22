@@ -41,6 +41,16 @@ const create_enquiry_candidate = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+
+const get_all_enquiry = catchAsync(async (req, res) => {
+  const data = await faqeService.get_all_enquiry();
+  res.send(data);
+});
+
+const get_id_enquiry = catchAsync(async (req, res) => {
+  const data = await faqeService.get_id_enquiry(req.params.id);
+  res.send(data);
+});
 module.exports = {
   createfaqe,
   getAll_faqe,
@@ -49,4 +59,6 @@ module.exports = {
   get_Faqe_delete,
   exiting_faqe_data,
   create_enquiry_candidate,
+  get_all_enquiry,
+  get_id_enquiry,
 };
