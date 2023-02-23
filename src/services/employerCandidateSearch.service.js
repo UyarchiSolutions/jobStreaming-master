@@ -951,10 +951,10 @@ const outSearch_employer = async (userId, body) => {
     salary.length != 0 ||
     course.length != 0 ||
     gender != null ||
-    role.length != 0 ||
-    department.length != 0 ||
-    industry.length != 0 ||
-    noticeperiod.length != 0 ||
+    // role.length != 0 ||
+    // department.length != 0 ||
+    // industry.length != 0 ||
+    // noticeperiod.length != 0 ||
     displayDetails != null
   ) {
     await CreateoutSearchHistory.create({ ...body, ...{ userId: userId, date: date, time: creat1 } });
