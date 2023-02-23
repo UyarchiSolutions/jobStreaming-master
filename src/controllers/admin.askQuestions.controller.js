@@ -48,7 +48,7 @@ const create_enquiry_dummy = catchAsync(async (req, res) => {
 
 
 const get_all_enquiry = catchAsync(async (req, res) => {
-  const data = await faqeService.get_all_enquiry();
+  const data = await faqeService.get_all_enquiry(req.params.range, req.params.page);
   res.send(data);
 });
 
