@@ -22,7 +22,7 @@ if (config.env !== 'test') {
  * @returns {Promise}
  */
 const sendVerificationEmail = async (to, token, mobilenumber) => {
-  console.log(to, token, mobilenumber)
+  // console.log(to, token, mobilenumber)
   data1 = await ejs.renderFile(__dirname + '/verifytemplate.ejs', {
     mobilenumber:mobilenumber,
     email:to,
@@ -39,8 +39,19 @@ const sendVerificationEmail = async (to, token, mobilenumber) => {
   await transport.sendMail(msg);
 };
 
-const sendEmailEmp = async (to, subject, text) => {
-  const msg = { from: config.email.from, to, subject, text };
+const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
+  data1 = await ejs.renderFile(__dirname + '/verifytemplate.ejs', {
+    mobilenumber:mobilenumber,
+    email:to,
+  })
+
+  const msg = {   
+    from: config.email.from,
+    to: to,
+    // to:"vignesh1041996@gmail.com",
+    subject: 'templates',
+    html: data1,
+  };
   // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   await transport.sendMail(msg);
 };
@@ -86,15 +97,15 @@ If you did not request any password resets, then ignore this email.`;
  * @param {string} token
  * @returns {Promise}
  */
-const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
-  const subject = 'Email Verification';
-  // replace this url with the link to the reset password page of your front-end app
-  const resetPasswordUrl = `https://job.lotsmart.in/empverify-otp?mobilenumber=${mobilenumber}`;
-  const text = `Dear user,
-To set your password, click on this link: ${resetPasswordUrl}
-If you did not request any password sets, then ignore this email.`;
-  await sendEmailEmp(to, subject, text, token);
-};
+// const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
+//   const subject = 'Email Verification';
+//   // replace this url with the link to the reset password page of your front-end app
+//   const resetPasswordUrl = `https://job.lotsmart.in/empverify-otp?mobilenumber=${mobilenumber}`;
+//   const text = `Dear user,
+// To set your password, click on this link: ${resetPasswordUrl}
+// If you did not request any password sets, then ignore this email.`;
+//   await sendEmailEmp(to, subject, text, token);
+// };
 
 // const sendVerificationEmail = async (to, token, mobilenumber) => {
 //   // console.log(to);
