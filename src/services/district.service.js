@@ -7,11 +7,12 @@ const createDistrict = async (districtBody) => {
 };
 
 const getAllDistrict = async (key) => {
-  const district = District.find({ district: { $regex: key, $options: 'i' } },);
-  if (!district) {
+  var query = new RegExp('^' + key, 'i');
+  const data = await District.find({ district: { $regex: query } }).sort({ district: 1 }).limit(7)
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'District Not Found');
   }
-  return district;
+  return data;
 };
 
 const getAllDistrict_all = async () => {

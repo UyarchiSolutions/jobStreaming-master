@@ -61,6 +61,11 @@ const get_Enquiry_update = catchAsync(async (req, res) => {
   const data = await faqeService.get_Enquiry_update(req.params.id, req.body);
   res.send(data);
 });
+
+const reply_enquiry = catchAsync(async (req, res) => {
+  const data = await faqeService.reply_enquiry(req.body);
+  res.send(data);
+});
 module.exports = {
   createfaqe,
   getAll_faqe,
@@ -73,4 +78,5 @@ module.exports = {
   get_id_enquiry,
   create_enquiry_dummy,
   get_Enquiry_update,
+  reply_enquiry,
 };

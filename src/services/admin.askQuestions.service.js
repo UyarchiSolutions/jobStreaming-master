@@ -3,6 +3,7 @@ const { Faqe, Enquiry} = require('../models/admin.askQusetions.model');
 const { findByIdAndUpdate } = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
+var ejs = require('ejs');
 
 const createFaqe = async (body) => {
   return Faqe.create(body);
@@ -117,6 +118,50 @@ const get_Enquiry_update = async (id, body) => {
   let value = await Enquiry.findByIdAndUpdate({ _id: id }, body, { new: true });
   return value;
 };
+
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  host: 'mail.uyarchi.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'noreply-tj@uyarchi.com',
+    pass: 'Thunivu@100',
+  },
+});
+const reply_enquiry = async (body) => {
+  const {enquiryId, subject, answer} = body
+  const data = await  Enquiry.findById(enquiryId);
+  console.log(data)
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  const data1 = await ejs.renderFile(__dirname + '/enquirytemplate.ejs', {
+    subject: subject,
+    question:data.enquiry,
+    answer: answer,
+    email:data.emailId
+  })
+
+const mainOptions = {
+  from: "noreply-tj@uyarchi.com",
+  to: data.emailId,
+  // to:"vignesh1041996@gmail.com",
+  subject: 'templates',
+  html: data1,
+};
+
+transporter.sendMail(mainOptions, (err, info) => {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log('Message sent: ' + info.response);
+  }
+});
+  let value = await Enquiry.findByIdAndUpdate({ _id: enquiryId }, {answer:answer}, { new: true });
+  
+  return value;
+};
 module.exports = {
   createFaqe,
   getAllFaqe,
@@ -129,4 +174,5 @@ module.exports = {
   get_id_enquiry,
   create_enquiry_dummy,
   get_Enquiry_update,
+  reply_enquiry,
 };
