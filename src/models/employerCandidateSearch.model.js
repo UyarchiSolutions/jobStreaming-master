@@ -167,7 +167,7 @@ const createoutSearchHistorySchema = mongoose.Schema(
     experienceto: {
       type: Number,
     },
-    location: {
+    Location: {
       type: Array,
     },
     qualification: {
@@ -228,7 +228,7 @@ const createoutSearchHistorySaveShema = mongoose.Schema(
     experienceto: {
       type: Number,
     },
-    location: {
+    Location: {
       type: Array,
     },
     qualification: {
