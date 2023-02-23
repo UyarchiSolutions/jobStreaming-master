@@ -16,6 +16,10 @@ const employerDetailsSchema = mongoose.Schema(
     jobTittle: {
       type: String,
     },
+    adminActive:{
+      type:Boolean,
+      default:true,
+    },
     userId: {
       type: String,
     },

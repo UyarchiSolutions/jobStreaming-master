@@ -484,6 +484,7 @@ const all_report = async (range,page) => {
                 keySkill:1,
                 preferedIndustry:1,
                 active:1,
+                adminActive:1,
                 jobTittle:1,
                 jobDescription:1,
                 salaryRangeFrom:1,
@@ -560,12 +561,12 @@ const all_report = async (range,page) => {
   return {data:data, count:count.length}
 };
 
-const deactive_admin = async (id, body) => {
+const deactive_admin = async (id) => {
   const data = EmployerDetails.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  let value = await EmployerDetails.findByIdAndUpdate({ _id: id }, {active:false, }, { new: true });
+  let value = await EmployerDetails.findByIdAndUpdate({ _id: id }, {active:false, adminActive:false}, { new: true });
   return value;
 };
 
@@ -584,4 +585,5 @@ module.exports = {
   reply_enquiry,
   create_report,
   all_report,
+  deactive_admin,
 };
