@@ -108,6 +108,15 @@ const get_id_enquiry = async (id) => {
   const data = await Enquiry.findById(id)
   return data
 };
+
+const get_Enquiry_update = async (id, body) => {
+  const data = Enquiry.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  let value = await Enquiry.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return value;
+};
 module.exports = {
   createFaqe,
   getAllFaqe,
@@ -119,4 +128,5 @@ module.exports = {
   get_all_enquiry,
   get_id_enquiry,
   create_enquiry_dummy,
+  get_Enquiry_update,
 };

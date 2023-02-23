@@ -15,4 +15,5 @@ router.route('/create_enquiry_candidate').post(authorization, adminAskController
 router.route('/get_all_enquiry').get(adminAskController.get_all_enquiry);
 router.route('/get_id_enquiry/data/:id').get(adminAskController.get_id_enquiry);
 router.route('/create_enquiry_dummy').post(adminAskController.create_enquiry_dummy);
+router.route('/get_Enquiry_update/:id').put(adminAskController.get_Enquiry_update);
 module.exports = router;
