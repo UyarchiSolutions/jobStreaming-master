@@ -54,6 +54,10 @@ const enquirySchema = mongoose.Schema({
   eq_id:{
     type:String,
   },
+  status:{
+    type:String,
+    default:'Pending',
+  },
   userId:{
     type:String,
   },
