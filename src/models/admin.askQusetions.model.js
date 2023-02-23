@@ -75,4 +75,36 @@ const enquirySchema = mongoose.Schema({
 );
 const Enquiry = mongoose.model('enquiry', enquirySchema);
 
-module.exports = {Faqe, Enquiry};
+const reportSchema = mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  report: {
+    type: String,
+  },
+  jobId: {
+    type: String,
+    //  Enum:['true','false'],
+  },
+  date:{
+    type:String,
+  },
+  time:{
+    type:String,
+  },
+  userId:{
+    type:String,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+},
+{
+  timestamps: true,
+}
+);
+const Report = mongoose.model('report', reportSchema);
+
+module.exports = {Faqe, Enquiry, Report};
