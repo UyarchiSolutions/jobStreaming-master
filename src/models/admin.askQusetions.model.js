@@ -48,6 +48,9 @@ const enquirySchema = mongoose.Schema({
   whooseSend:{
     type:String,
   },
+  answer:{
+    type:String,
+  },
   date:{
     type:String,
   },
