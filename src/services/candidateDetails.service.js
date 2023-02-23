@@ -482,26 +482,26 @@ const candidateSearch = async (body) => {
     range,
     page,
   } = body;
-  if (
-    search.length != 0 ||
-    experience != null ||
-    experienceAnotherfrom != null ||
-    experienceAnotherto != null ||
-    Location.length != 0 ||
-    preferredIndustry.length != 0 ||
-    Salary.length != 0 ||
-    workmode.length != 0 ||
-    department.length != 0 ||
-    education.length != 0 ||
-    // salaryfilter != null ||
-    role.length != 0 ||
-    freshness.length != 0 ||
-    // locationfilter != null ||
-    companytype.length != 0 ||
-    postedby.length != 0
-  ) {
-    await CandidateRecentSearchjobCandidate.create(values);
-  }
+  // if (
+  //   search.length != 0 ||
+  //   experience != null ||
+  //   experienceAnotherfrom != null ||
+  //   experienceAnotherto != null ||
+  //   Location.length != 0 ||
+  //   preferredIndustry.length != 0 ||
+  //   Salary.length != 0 ||
+  //   workmode.length != 0 ||
+  //   department.length != 0 ||
+  //   education.length != 0 ||
+  //   // salaryfilter != null ||
+  //   role.length != 0 ||
+  //   freshness.length != 0 ||
+  //   // locationfilter != null ||
+  //   companytype.length != 0 ||
+  //   postedby.length != 0
+  // ) {
+  //   await CandidateRecentSearchjobCandidate.create(values);
+  // }
   //  await CandidateSearchjobCandidate.create(values);
 
   //  search = ["fbhfghfh","software engineer"]
