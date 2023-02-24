@@ -566,7 +566,7 @@ const deactive_admin = async (id) => {
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  let value = await EmployerDetails.findByIdAndUpdate({ _id: id }, {active:false, adminActive:false}, { new: true });
+  let value = await EmployerDetails.findByIdAndUpdate({ _id: id }, {active:false, adminActive:true}, { new: true });
   return value;
 };
 

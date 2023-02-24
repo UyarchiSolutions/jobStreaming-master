@@ -18,7 +18,7 @@ const employerDetailsSchema = mongoose.Schema(
     },
     adminActive:{
       type:Boolean,
-      default:true,
+      default:false,
     },
     apply_method:{
       type:String,
