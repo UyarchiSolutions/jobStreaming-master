@@ -3487,6 +3487,21 @@ const get_admin_side_all_post_jobs_details = async (range,page) => {
         preserveNullAndEmptyArrays: true,
       },
     },
+
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'employerregistrations',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     {
       $project: {
         appliedcount: '$candidatepostjobs.count',
@@ -3541,13 +3556,12 @@ const get_admin_side_all_post_jobs_details = async (range,page) => {
             else: '$adminStatus',
           },
         },
-
-        //  companyName:"$employerregistrations.companyName",
-        //  email:"$employerregistrations.email",
-        //  mobileNumber:"$employerregistrations.mobileNumber",
-        //  companyType:"$employerregistrations.companyType",
-        //  name:"$employerregistrations.name",
-        //  regitserStatus:"$employerregistrations.adminStatus",
+         companyName:"$employerregistrations.companyName",
+         email:"$employerregistrations.email",
+         mobileNumber:"$employerregistrations.mobileNumber",
+         companyType:"$employerregistrations.companyType",
+         name:"$employerregistrations.name",
+         regitserStatus:"$employerregistrations.adminStatus",
       },
     },
     { $skip: parseInt(range) * parseInt(page) },
@@ -3622,6 +3636,20 @@ const get_admin_side_all_post_jobs_details = async (range,page) => {
       },
     },
     {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'employerregistrations',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $project: {
         appliedcount: '$candidatepostjobs.count',
         keySkill: 1,
@@ -3675,13 +3703,12 @@ const get_admin_side_all_post_jobs_details = async (range,page) => {
             else: '$adminStatus',
           },
         },
-
-        //  companyName:"$employerregistrations.companyName",
-        //  email:"$employerregistrations.email",
-        //  mobileNumber:"$employerregistrations.mobileNumber",
-        //  companyType:"$employerregistrations.companyType",
-        //  name:"$employerregistrations.name",
-        //  regitserStatus:"$employerregistrations.adminStatus",
+         companyName:"$employerregistrations.companyName",
+         email:"$employerregistrations.email",
+         mobileNumber:"$employerregistrations.mobileNumber",
+         companyType:"$employerregistrations.companyType",
+         name:"$employerregistrations.name",
+         regitserStatus:"$employerregistrations.adminStatus",
       },
     },
   ]);
