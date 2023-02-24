@@ -79,6 +79,11 @@ const all_report = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_report = catchAsync(async (req, res) => {
+  const data = await faqeService.get_report(req.params.id);
+  res.send(data);
+});
+
 const deactive_admin = catchAsync(async (req, res) => {
   const data = await faqeService.deactive_admin(req.params.id);
   res.send(data);
@@ -99,4 +104,5 @@ module.exports = {
   create_report,
   all_report,
   deactive_admin,
+  get_report,
 };

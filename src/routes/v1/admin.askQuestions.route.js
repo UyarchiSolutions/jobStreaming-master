@@ -20,4 +20,5 @@ router.route('/reply_enquiry/data').post(adminAskController.reply_enquiry);
 router.route('/create_report').post(authorization, adminAskController.create_report);
 router.route('/all_report/:range/:page').get(adminAskController.all_report);
 router.route('/deactive_admin/:id').put(adminAskController.deactive_admin);
+router.route('/get_report/data/:id').get(adminAskController.get_report);
 module.exports = router;

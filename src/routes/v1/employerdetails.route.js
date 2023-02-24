@@ -17,6 +17,8 @@ router.route('/getByIdEmpDetails/:id').get(employerDetailsController.getById_Get
 router.route('/data_Id/:id').get(employerDetailsController.data_Id);
 router.route('/countPostjobError').get(authorization, employerDetailsController.countPostjobError);
 router.route('/update_active_deactive/:id').put(employerDetailsController.update_active_deactive);
+router.route('/get_admin_side_all_post_jobs_details/:range/:page').get(employerDetailsController.get_admin_side_all_post_jobs_details);
+router.route('/get_all_job_applied_candiadtes/:id/:range/:page').get(employerDetailsController.get_all_job_applied_candiadtes);
 //sdfd
 router.route('/EmployerspostDraft').post(authorization, employerDetailsController.EmployerspostDraft);
 router.route('/draftData').get(authorization, employerDetailsController.draftData_employerside);

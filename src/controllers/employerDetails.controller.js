@@ -223,6 +223,16 @@ const All_Plans = catchAsync(async(req,res) => {
   const user = await employerDetailsService.Recruiter_delete(req.params.id)
   res.send(user)
  })
+
+ const get_admin_side_all_post_jobs_details = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.get_admin_side_all_post_jobs_details(req.params.range, req.params.page)
+  res.send(user)
+ })
+
+ const get_all_job_applied_candiadtes = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.get_all_job_applied_candiadtes(req.params.id, req.params.range, req.params.page)
+  res.send(user)
+ })
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -264,4 +274,6 @@ module.exports = {
   Recruiter_edit,
   Recruiter_delete,
   employer_comment_id,
+  get_admin_side_all_post_jobs_details,
+  get_all_job_applied_candiadtes,
 };
