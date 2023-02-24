@@ -3551,7 +3551,7 @@ const get_admin_side_all_post_jobs_details = async (range,page) => {
       },
     },
     { $skip: parseInt(range) * parseInt(page) },
-    { $limit: parseInt(range) },
+    { $limit: parseInt(range) },           
   ]);
   const count = await EmployerDetails.aggregate([
     {
