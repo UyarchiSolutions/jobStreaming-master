@@ -4087,6 +4087,20 @@ const get_all_job_applied_candiadtes = async (userId, range, page) => {
       $unwind: '$candidatepostjobs',
     },
     {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'employerregistrations',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $project: {
         candidateId: '$candidatepostjobs.candidateregistrations._id',
         employerCommand: '$candidateregistrations.candidatedetails.employercomments.comment',
@@ -4094,6 +4108,8 @@ const get_all_job_applied_candiadtes = async (userId, range, page) => {
         postjobId: '$candidatepostjobs._id',
         status: '$candidatepostjobs.approvedStatus',
         candidateData: '$candidatepostjobs.candidateregistrations',
+        companyname:'$employerregistrations.name',
+        location:'$employerregistrations.location'
       },
     },
     { $skip: parseInt(range) * parseInt(page) },
@@ -4481,6 +4497,16 @@ const get_all_job_applied_candiadtes = async (userId, range, page) => {
   return {data:data, count:count.length}
 }
 
+
+// manage Employer 
+
+const manage_employer = async (range, page) => {
+  const data = await EmployerRegistration.aggregate([
+    { $skip: parseInt(range) * parseInt(page) }, { $limit: parseInt(range) }
+  ])
+  const count = await EmployerRegistration.find()
+  return {data:data, count:count.length}
+}
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -4524,4 +4550,5 @@ module.exports = {
   employer_comment_id,
   get_admin_side_all_post_jobs_details,
   get_all_job_applied_candiadtes,
+  manage_employer,
 };

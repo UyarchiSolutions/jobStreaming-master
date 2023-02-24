@@ -233,6 +233,11 @@ const All_Plans = catchAsync(async(req,res) => {
   const user = await employerDetailsService.get_all_job_applied_candiadtes(req.params.id, req.params.range, req.params.page)
   res.send(user)
  })
+
+ const manage_employer = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.manage_employer(req.params.range, req.params.page)
+  res.send(user)
+ })
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -276,4 +281,5 @@ module.exports = {
   employer_comment_id,
   get_admin_side_all_post_jobs_details,
   get_all_job_applied_candiadtes,
+  manage_employer,
 };
