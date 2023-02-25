@@ -237,7 +237,7 @@ const get_all_candidates = catchAsync(async(req,res) => {
 })
 
 const CandidateRegistration_names = catchAsync(async(req,res) => {
-  const user = await candidateDetailsService.CandidateRegistration_names()
+  const user = await candidateDetailsService.CandidateRegistration_names(req.params.key)
   res.send(user)
 })
 module.exports = {

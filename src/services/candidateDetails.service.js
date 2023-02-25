@@ -2791,8 +2791,8 @@ const createdSearchhistoryData_byId = async (id) => {
   return data;
 };
 
-const CandidateRegistration_names = async () => {
-  let data = await CandidateRegistration.find().select("name")
+const CandidateRegistration_names = async (key) => {
+  let data = await CandidateRegistration.find( { name: { $regex: key, $options: 'i' } }).select("name")
   return data;
 };
 
