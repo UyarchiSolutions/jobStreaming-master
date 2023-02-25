@@ -99,6 +99,10 @@ const userEmpSchema = mongoose.Schema(
     postedBy: {
       type: String,
     },
+    data:{
+      type:Boolean,
+      default:true
+    },
     companyDescription: {
       type: String,
     },

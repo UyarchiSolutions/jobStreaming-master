@@ -4557,21 +4557,37 @@ const get_all_job_applied_candiadtes = async (userId, range, page) => {
 // manage Employer 
 
 const manage_employer = async (body) => {
-  let = { search, location, industry, sortBy, range, page} = body
+  let = { name, mobileNumber, location, industry, sortBy, range, page} = body
 
-  let searchfilter = { active: true };
-  let industryfiletr = { active: true };
-  let locationfilter = { active: true };
-  let sortByfilter = { active: true };
-  if(search.length != 0){
-    searchfilter = {$or:[{ contactName: { $in: search }},{ mobileNumber:{ $in: search } }, { email:{ $in: search } }]}
+  let searchfilter = { data: true };
+  let industryfiletr = { data: true };
+  let locationfilter = { data: true };
+  let sortByfilter = { data: true };
+  let mobilenumberfilter = { data: true };
+  if(name != null){
+    searchfilter = { name: { $eq: name }}
+  }
+
+  if(mobileNumber != null){
+    mobilenumberfilter = { mobileNumber: { $eq: mobileNumber }}
   }
 
   if(industry != null){
     industryfiletr = { industryType: { $eq: industry } };
   }
-  if(sortBy != null){
-    sortByfilter = { active: { $eq: sortBy } };
+  if (sortBy != null) {
+    if(sortBy == "debarred"){
+      sortByfilter = { adminStatus: { $eq: sortBy } };
+    }
+    if(sortBy == "inactive"){
+      sortByfilter = { active: { $eq: false } };
+    }
+    if(sortBy == "Active"){
+      sortByfilter = { active: { $eq: true } };
+    }
+    if(sortBy == "all"){
+      sortByfilter = { data: { $eq: true } };
+    }
   }
   if(location != null){
     locationfilter = { location:{ $regex: location, $options: 'i' } }
@@ -4580,7 +4596,7 @@ const manage_employer = async (body) => {
   const data = await EmployerRegistration.aggregate([ 
     {
       $match: {
-        $and: [locationfilter,sortByfilter,industryfiletr,searchfilter],
+        $and: [locationfilter,sortByfilter,industryfiletr,searchfilter, mobilenumberfilter],
       },
     },
     { $skip: parseInt(range) * parseInt(page) }, 
@@ -4589,7 +4605,7 @@ const manage_employer = async (body) => {
   const count = await EmployerRegistration.aggregate([
     {
       $match: {
-        $and: [locationfilter,sortByfilter,industryfiletr,searchfilter],
+        $and: [locationfilter,sortByfilter,industryfiletr,searchfilter, mobilenumberfilter],
       },
     },
   ])

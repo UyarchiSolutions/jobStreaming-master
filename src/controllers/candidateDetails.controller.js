@@ -240,6 +240,11 @@ const CandidateRegistration_names = catchAsync(async(req,res) => {
   const user = await candidateDetailsService.CandidateRegistration_names(req.params.key)
   res.send(user)
 })
+
+const CandidateRegistration_number = catchAsync(async(req,res) => {
+  const user = await candidateDetailsService.CandidateRegistration_number(req.params.key)
+  res.send(user)
+})
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -276,5 +281,6 @@ module.exports = {
   candidate_detials_id,
   get_all_candidates,
   CandidateRegistration_names,
+  CandidateRegistration_number,
   // createSearchCandidate,
 };

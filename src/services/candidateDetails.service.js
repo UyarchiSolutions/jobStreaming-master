@@ -2796,6 +2796,11 @@ const CandidateRegistration_names = async (key) => {
   return data;
 };
 
+const CandidateRegistration_number = async (key) => {
+  let data = await CandidateRegistration.find( { mobileNumber: { $regex: key, $options: 'i' } }).select("mobileNumber")
+  return data;
+};
+
 const get_all_candidates = async (body) => {
   let = { date1, date2, mobilenumber, skill, name, location, sortBy, range, page } = body;
 
@@ -3004,5 +3009,6 @@ module.exports = {
   candidate_detials_id,
   get_all_candidates,
   CandidateRegistration_names,
+  CandidateRegistration_number,
   // createSearchCandidate,
 };
