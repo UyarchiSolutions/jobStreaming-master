@@ -3417,11 +3417,52 @@ const Recruiter_delete = async (id) => {
 
 // get admin side all post jobs details
 
-const get_admin_side_all_post_jobs_details = async (range,page) => {
+const get_admin_side_all_post_jobs_details = async (body) => {
   let dates = moment().format('YYYY-MM-DD');
+  let = {date, search, location, salary, range, page} = body
+
+  let searchfilter = { active: true };
+  let datefiletr = { active: true };
+  let locationfilter = { active: true };
+  let salaryfilter = { active: true };
+
+  if(search.length != 0){
+    searchfilter = {$or:[{ keySkill: { $elemMatch: { $in: search } } },{ jobLocation:{ $in: search } }]}
+  }
+  if(date != null){
+    datefiletr = { date: { $eq: date } };
+  }
+  if(location != null){
+    locationfilter = { jobLocation:{ $regex: location, $options: 'i' } }
+  }
+  if(salary != null){
+    // let salary_macth = [];
+    // Salary.forEach((a) => {
+      let value = salary.split('-');
+      let start = value[0] * 100000;
+
+      let end = 0;
+      if (value[1] != 'more') {
+        end = value[1] * 100000;
+      }
+      if (end != 0) {
+        salaryfilter = { $and: [{ salaryRangeFrom: { $gte: start } }, { salaryRangeTo: { $lte: end } }] };
+      } else {
+        salaryfilter = { $and: [{ salaryRangeFrom: { $gte: start } }] };
+      }
+    // });
+    console.log(salaryfilter);
+    // salarySearch = { $or: salary_macth };
+    // salaryfilter = { jobLocation:{ $regex: key, $options: 'i' } },
+  }
   const data = await EmployerDetails.aggregate([
     {
       $sort: { date: -1, time: -1 },
+    },
+    {
+      $match: {
+        $and: [salaryfilter, locationfilter, datefiletr, searchfilter],
+      },
     },
     {
       $lookup: {

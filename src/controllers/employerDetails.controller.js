@@ -225,7 +225,7 @@ const All_Plans = catchAsync(async(req,res) => {
  })
 
  const get_admin_side_all_post_jobs_details = catchAsync(async(req,res) => {
-  const user = await employerDetailsService.get_admin_side_all_post_jobs_details(req.params.range, req.params.page)
+  const user = await employerDetailsService.get_admin_side_all_post_jobs_details(req.body)
   res.send(user)
  })
 

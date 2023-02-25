@@ -2791,6 +2791,13 @@ const createdSearchhistoryData_byId = async (id) => {
   let data = await CandidateSearchjobCandidate.findById(id);
   return data;
 };
+
+
+const get_all_candidates = async (range, page) => {
+  let data = await CandidateRegistration.aggregate([{ $skip: parseInt(range) * parseInt(page) }, { $limit: parseInt(range) }]);
+  let count = await CandidateRegistration.find()
+  return {data:data,  count:count.length};
+};
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -2825,5 +2832,6 @@ module.exports = {
   createdSearchhistoryData_byId,
   edit_details,
   candidate_detials_id,
+  get_all_candidates,
   // createSearchCandidate,
 };
