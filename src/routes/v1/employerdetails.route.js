@@ -20,6 +20,7 @@ router.route('/update_active_deactive/:id').put(employerDetailsController.update
 router.route('/get_admin_side_all_post_jobs_details').post(employerDetailsController.get_admin_side_all_post_jobs_details);
 router.route('/get_all_job_applied_candiadtes/:id/:range/:page').get(employerDetailsController.get_all_job_applied_candiadtes);
 router.route('/manage_employer').post(employerDetailsController.manage_employer);
+router.route('/update_manage_employer/:id').put(employerDetailsController.update_manage_employer);
 //sdfd
 router.route('/EmployerspostDraft').post(authorization, employerDetailsController.EmployerspostDraft);
 router.route('/draftData').get(authorization, employerDetailsController.draftData_employerside);

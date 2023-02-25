@@ -4576,7 +4576,7 @@ const manage_employer = async (body) => {
   if(location != null){
     locationfilter = { location:{ $regex: location, $options: 'i' } }
   }
-console.log(locationfilter)
+// console.log(locationfilter)
   const data = await EmployerRegistration.aggregate([ 
     {
       $match: {
@@ -4594,6 +4594,15 @@ console.log(locationfilter)
     },
   ])
   return {data:data, count:count.length}
+}
+
+const update_manage_employer = async (id, body) => {
+  const data = await EmployerRegistration.findById(id)
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  const value = await EmployerRegistration.findByIdAndUpdate({_id:id}, body, {new:true})
+  return value
 }
 module.exports = {
   createEmpDetails,
@@ -4639,4 +4648,5 @@ module.exports = {
   get_admin_side_all_post_jobs_details,
   get_all_job_applied_candiadtes,
   manage_employer,
+  update_manage_employer,
 };

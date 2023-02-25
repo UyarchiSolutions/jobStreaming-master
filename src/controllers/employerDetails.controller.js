@@ -238,6 +238,11 @@ const All_Plans = catchAsync(async(req,res) => {
   const user = await employerDetailsService.manage_employer(req.body)
   res.send(user)
  })
+
+ const update_manage_employer = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.update_manage_employer(req.params.id, req.body)
+  res.send(user)
+ })
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -282,4 +287,5 @@ module.exports = {
   get_admin_side_all_post_jobs_details,
   get_all_job_applied_candiadtes,
   manage_employer,
+  update_manage_employer,
 };

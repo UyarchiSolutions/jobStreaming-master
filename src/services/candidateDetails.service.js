@@ -728,109 +728,109 @@ const candidateSearch = async (body) => {
     { $limit: range },
   ]);
 
-    const count = await EmployerDetails.aggregate([
-      {
-        $match: {
-          $or: allSearch,
-        },
+  const count = await EmployerDetails.aggregate([
+    {
+      $match: {
+        $or: allSearch,
       },
-      {
-        $match: {
-          $and: experienceAnotherSearch,
-        },
+    },
+    {
+      $match: {
+        $and: experienceAnotherSearch,
       },
-      {
-        $match: {
-          $and: preferredindustrySearch,
-        },
+    },
+    {
+      $match: {
+        $and: preferredindustrySearch,
       },
-      {
-        $match: {
-          $and: [
-            //  { jobortemplate: { $eq: 'job' } },
-            experienceSearch,
-            locationSearch,
-            salarySearch,
-            workmodeSearch,
-            educationSearch,
-            roleSearch,
-            departmentSearch,
-            freshnessSearch,
-          ],
-        },
+    },
+    {
+      $match: {
+        $and: [
+          //  { jobortemplate: { $eq: 'job' } },
+          experienceSearch,
+          locationSearch,
+          salarySearch,
+          workmodeSearch,
+          educationSearch,
+          roleSearch,
+          departmentSearch,
+          freshnessSearch,
+        ],
       },
-      {
-        $lookup: {
-          from: 'employerregistrations',
-          localField: 'userId',
-          foreignField: '_id',
-          pipeline: [
-            {
-              $match: {
-                $and: [companytypeSearch],
-              },
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $match: {
+              $and: [companytypeSearch],
             },
-          ],
-          as: 'employerregistrations',
-        },
+          },
+        ],
+        as: 'employerregistrations',
       },
-      {
-        $unwind: '$employerregistrations',
+    },
+    {
+      $unwind: '$employerregistrations',
+    },
+    // {
+    //   $lookup: {
+    //     from: 'candidatepostjobs',
+    //     localField: '_id',
+    //     foreignField: 'jobId',
+    //     pipeline: [
+    //       {
+    //         $match: { userId: { $eq: id } },
+    //       },
+    //     ],
+    //     as: 'candidatepostjobs',
+    //   },
+    // },
+    // {
+    //   $unwind: {
+    //     path: '$candidatepostjobs',
+    //     preserveNullAndEmptyArrays: true,
+    //   },
+    // },
+    {
+      $project: {
+        keySkill: 1,
+        jobTittle: 1,
+        recruiterName: 1,
+        contactNumber: 1,
+        jobDescription: 1,
+        educationalQualification: 1,
+        salaryRangeFrom: 1,
+        salaryRangeTo: 1,
+        experienceFrom: 1,
+        experienceTo: 1,
+        interviewType: 1,
+        candidateDescription: 1,
+        salaryDescription: 1,
+        urltoApply: 1,
+        workplaceType: 1,
+        industry: 1,
+        preferedIndustry: 1,
+        jobLocation: 1,
+        employmentType: 1,
+        openings: 1,
+        date: 1,
+        expiredDate: 1,
+        date: 1,
+        time: 1,
+        companyType: '$employerregistrations.companyType',
+        mobileNumber: '$employerregistrations.mobileNumber',
+        contactName: '$employerregistrationscontactName',
+        email: '$employerregistrations.email',
+        name: '$employerregistrations.name',
+        // appliedStatus: '$candidatepostjobs.approvedStatus',
       },
-      // {
-      //   $lookup: {
-      //     from: 'candidatepostjobs',
-      //     localField: '_id',
-      //     foreignField: 'jobId',
-      //     pipeline: [
-      //       {
-      //         $match: { userId: { $eq: id } },
-      //       },
-      //     ],
-      //     as: 'candidatepostjobs',
-      //   },
-      // },
-      // {
-      //   $unwind: {
-      //     path: '$candidatepostjobs',
-      //     preserveNullAndEmptyArrays: true,
-      //   },
-      // },
-      {
-        $project: {
-          keySkill: 1,
-          jobTittle: 1,
-          recruiterName: 1,
-          contactNumber: 1,
-          jobDescription: 1,
-          educationalQualification: 1,
-          salaryRangeFrom: 1,
-          salaryRangeTo: 1,
-          experienceFrom: 1,
-          experienceTo: 1,
-          interviewType: 1,
-          candidateDescription: 1,
-          salaryDescription: 1,
-          urltoApply: 1,
-          workplaceType: 1,
-          industry: 1,
-          preferedIndustry: 1,
-          jobLocation: 1,
-          employmentType: 1,
-          openings: 1,
-          date: 1,
-          expiredDate: 1,
-          date: 1,
-          time: 1,
-          companyType: '$employerregistrations.companyType',
-          mobileNumber: '$employerregistrations.mobileNumber',
-          contactName: '$employerregistrationscontactName',
-          email: '$employerregistrations.email',
-          name: '$employerregistrations.name',
-          // appliedStatus: '$candidatepostjobs.approvedStatus',
-        },
-      },
-    ]);
+    },
+  ]);
 
   return { data: data, count: count.length };
 };
@@ -1068,7 +1068,7 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         recruiterNumber: 1,
         interviewstartDate: 1,
         interviewendDate: 1,
-        department:'$departments.Department',
+        department: '$departments.Department',
         startTime: 1,
         endTime: 1,
         qualifications: '$qualifications',
@@ -1645,7 +1645,7 @@ const SearchByIdcandidataSearchEmployerSet = async (userId) => {
   } else {
     start = { salaryRangeFrom: { $gte: expCTC_strat } };
   }
-  console.log(start)
+  console.log(start);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'candidateDetails not found');
   }
@@ -1836,7 +1836,7 @@ const candidateSearch_front_page = async (id, body) => {
     freshness.length != 0 ||
     // locationfilter != null ||
     companytype.length != 0 ||
-    postedby.length != 0 
+    postedby.length != 0
   ) {
     await CandidateRecentSearchjobCandidate.create(values);
   }
@@ -2003,7 +2003,7 @@ const candidateSearch_front_page = async (id, body) => {
         pipeline: [
           {
             $match: {
-              $and: [companytypeSearch,postedbySearch],
+              $and: [companytypeSearch, postedbySearch],
             },
           },
         ],
@@ -2468,7 +2468,6 @@ const candidate_detials = async (id, jobid) => {
   return data;
 };
 
-
 const candidate_detials_id = async (id) => {
   const data = await CandidateRegistration.aggregate([
     {
@@ -2792,13 +2791,168 @@ const createdSearchhistoryData_byId = async (id) => {
   return data;
 };
 
+const get_all_candidates = async (body) => {
+  let = { date, search, location, salary, sortBy, experience, range, page } = body;
 
-const get_all_candidates = async (range, page) => {
-  let data = await CandidateRegistration.aggregate([{ $skip: parseInt(range) * parseInt(page) }, { $limit: parseInt(range) }]);
-  let count = await CandidateRegistration.find()
-  return {data:data,  count:count.length};
+  let searchfilter = { data: true };
+  let datefiletr = { data: true };
+  let locationfilter = { data: true };
+  let salaryfilter = { data: true };
+  let sortByfilter = { data: true };
+  let experienceFilter = { data: true };
+  if (search.length != 0) {
+    searchfilter = { $or: [{ mobileNumber: { $in: search } }, { name: { $in: search } }, { email: { $in: search } },{ keyskill: { $elemMatch: { $in: search } } }] };
+  }
+
+  if (date != null) {
+    datefiletr = { date: { $eq: date } };
+  }
+  if (sortBy != null) {
+    if(sortBy == "debarred"){
+      sortByfilter = { adminStatus: { $eq: sortBy } };
+    }
+    if(sortBy == "inactive"){
+      sortByfilter = { active: { $eq: false } };
+    }
+    if(sortBy == "Active"){
+      sortByfilter = { active: { $eq: true } };
+    }
+    if(sortBy == "all"){
+      sortByfilter = { data: { $eq: true } };
+    }
+  }
+  if (location != null) {
+    locationfilter = { location: { $regex: location, $options: 'i' } };
+  }
+
+  if (experience != null) {
+    experienceFilter = { experienceYear:{ $eq: experience } };
+  }
+
+  if (salary != null) {
+        let value = salary.split('-');
+        let start = value[0] * 100000;
+  
+        let end = 0;
+        if (value[1] != 'more') {
+          end = value[1] * 100000;
+        }
+        if (end != 0) {
+   
+          salaryfilter = {$or: [
+              {
+                $and: [
+                  { expCTC_strat: { $gte: start } },
+                  { $or: [{ expCTC_end: { $lte: end } }, { expCTC_end: { $eq: 0 } }] },
+                ],
+              },
+              {
+                $and: [{ totalCTC: { $gte: start } }, { totalCTC: { $lte: end } }],
+              },
+            ]}
+        } else {
+          salaryfilter =  {$or: [{ expCTC_strat: { $gte: start } }, { totalCTC: { $gte: start } }] }
+        }
+  }
+
+  let data = await CandidateRegistration.aggregate([
+    // {
+    //   $match: {
+    //     $and: [salaryfilter, locationfilter, datefiletr, searchfilter,experienceFilter,sortByfilter],
+    //   },
+    // },
+    {
+      $lookup: {
+        from: 'candidatedetails',
+        localField: '_id',
+        foreignField: 'userId',
+        as: 'candidatedetails',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatedetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project:{
+        adminStatus:1,
+        active:1,
+        name:1,
+        email:1,
+        workStatus:1,
+        mobileNumber:1,
+        location:1,
+        date:1,
+        data:1,
+        resume:1,
+        latestdate:1,
+        expCTC_strat:'$candidatedetails.expCTC_strat',
+        expCTC_end:'$candidatedetails.expCTC_end',
+        totalCTC:'$candidatedetails.totalCTC',
+        keyskill:'$candidatedetails.keyskill',
+        experienceYear:'$candidatedetails.experienceYear',
+      }
+    },
+
+    {
+      $match: {
+        $and: [salaryfilter, locationfilter, datefiletr, searchfilter,experienceFilter,sortByfilter],
+      },
+    },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
+  ]);
+  let count = await CandidateRegistration.aggregate([    
+    // {
+  //   $match: {
+  //     $and: [salaryfilter, locationfilter, datefiletr, searchfilter,experienceFilter,sortByfilter],
+  //   },
+  // },
+  {
+    $lookup: {
+      from: 'candidatedetails',
+      localField: '_id',
+      foreignField: 'userId',
+      as: 'candidatedetails',
+    },
+  },
+  {
+    $unwind: {
+      path: '$candidatedetails',
+      preserveNullAndEmptyArrays: true,
+    },
+  },
+  {
+    $project:{
+      adminStatus:1,
+      active:1,
+      name:1,
+      email:1,
+      workStatus:1,
+      mobileNumber:1,
+      location:1,
+      date:1,
+      data:1,
+      resume:1,
+      latestdate:1,
+      expCTC_strat:'$candidatedetails.expCTC_strat',
+      expCTC_end:'$candidatedetails.expCTC_end',
+      totalCTC:'$candidatedetails.totalCTC',
+      keyskill:'$candidatedetails.keyskill',
+      experienceYear:'$candidatedetails.experienceYear',
+    }
+  },
+
+  {
+    $match: {
+      $and: [salaryfilter, locationfilter, datefiletr, searchfilter,experienceFilter,sortByfilter],
+    },
+  },
+]);
+  return { data: data, count: count.length };
 };
-
 
 module.exports = {
   createkeySkill,

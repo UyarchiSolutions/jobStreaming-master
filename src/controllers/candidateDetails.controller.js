@@ -232,7 +232,7 @@ const candidate_detials_id = catchAsync(async(req,res) => {
 })
 
 const get_all_candidates = catchAsync(async(req,res) => {
-  const user = await candidateDetailsService.get_all_candidates(req.params.range, req.params.page)
+  const user = await candidateDetailsService.get_all_candidates(req.body)
   res.send(user)
 })
 module.exports = {
