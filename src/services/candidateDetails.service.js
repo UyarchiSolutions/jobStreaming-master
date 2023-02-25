@@ -2792,7 +2792,7 @@ const createdSearchhistoryData_byId = async (id) => {
 };
 
 const get_all_candidates = async (body) => {
-  let = { date1, date2, mobilenumber, skill, search, location, sortBy, range, page } = body;
+  let = { date1, date2, mobilenumber, skill, name, location, sortBy, range, page } = body;
 
   let searchfilter = { data: true };
   let datefiletr = { data: true };
@@ -2802,8 +2802,8 @@ const get_all_candidates = async (body) => {
   // let experienceFilter = { data: true };
   let mobileNumberfilter = { data: true };
   let skillfilter = { data: true };
-  if (search != null) {
-    searchfilter = { name: { $eq: search } };
+  if (name != null) {
+    searchfilter = { name: { $eq: name } };
   }
   if (date1 != null && date2 != null) {
     datefiletr =  {$and:[{ date: { $gte: date1 } }, { date: { $lte: date2 } }]}
