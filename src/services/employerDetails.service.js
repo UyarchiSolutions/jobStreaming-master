@@ -3455,7 +3455,7 @@ const get_admin_side_all_post_jobs_details = async (body) => {
         salaryfilter = { $and: [{ salaryRangeFrom: { $gte: start } }] };
       }
     // });
-    console.log(salaryfilter);
+    // console.log(salaryfilter);
     // salarySearch = { $or: salary_macth };
     // salaryfilter = { jobLocation:{ $regex: key, $options: 'i' } },
   }
@@ -4556,11 +4556,43 @@ const get_all_job_applied_candiadtes = async (userId, range, page) => {
 
 // manage Employer 
 
-const manage_employer = async (range, page) => {
-  const data = await EmployerRegistration.aggregate([
-    { $skip: parseInt(range) * parseInt(page) }, { $limit: parseInt(range) }
+const manage_employer = async (body) => {
+  let = { search, location, industry, sortBy, range, page} = body
+
+  let searchfilter = { active: true };
+  let industryfiletr = { active: true };
+  let locationfilter = { active: true };
+  let sortByfilter = { active: true };
+  if(search.length != 0){
+    searchfilter = {$or:[{ contactName: { $in: search }},{ mobileNumber:{ $in: search } }, { email:{ $in: search } }]}
+  }
+
+  if(industry != null){
+    industryfiletr = { industryType: { $eq: industry } };
+  }
+  if(sortBy != null){
+    sortByfilter = { active: { $eq: sortBy } };
+  }
+  if(location != null){
+    locationfilter = { location:{ $regex: location, $options: 'i' } }
+  }
+console.log(locationfilter)
+  const data = await EmployerRegistration.aggregate([ 
+    {
+      $match: {
+        $and: [locationfilter,sortByfilter,industryfiletr,searchfilter],
+      },
+    },
+    { $skip: parseInt(range) * parseInt(page) }, 
+    { $limit: parseInt(range) }
   ])
-  const count = await EmployerRegistration.find()
+  const count = await EmployerRegistration.aggregate([
+    {
+      $match: {
+        $and: [locationfilter,sortByfilter,industryfiletr,searchfilter],
+      },
+    },
+  ])
   return {data:data, count:count.length}
 }
 module.exports = {

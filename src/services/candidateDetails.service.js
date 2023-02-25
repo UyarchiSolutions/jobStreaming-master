@@ -2798,6 +2798,8 @@ const get_all_candidates = async (range, page) => {
   let count = await CandidateRegistration.find()
   return {data:data,  count:count.length};
 };
+
+
 module.exports = {
   createkeySkill,
   getByIdUser,

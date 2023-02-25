@@ -62,7 +62,7 @@ const userEmpSchema = mongoose.Schema(
       type: Number,
     },
     mobileNumber: {
-      type: Number,
+      type: String,
       required: true,
     },
     lat: {

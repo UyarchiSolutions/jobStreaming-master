@@ -235,7 +235,7 @@ const All_Plans = catchAsync(async(req,res) => {
  })
 
  const manage_employer = catchAsync(async(req,res) => {
-  const user = await employerDetailsService.manage_employer(req.params.range, req.params.page)
+  const user = await employerDetailsService.manage_employer(req.body)
   res.send(user)
  })
 module.exports = {
