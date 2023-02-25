@@ -3613,6 +3613,11 @@ const get_admin_side_all_post_jobs_details = async (body) => {
       $sort: { date: -1, time: -1 },
     },
     {
+      $match: {
+        $and: [salaryfilter, locationfilter, datefiletr, searchfilter],
+      },
+    },
+    {
       $lookup: {
         from: 'candidatepostjobs',
         localField: '_id',
