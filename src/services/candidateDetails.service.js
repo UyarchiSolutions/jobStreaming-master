@@ -2792,20 +2792,21 @@ const createdSearchhistoryData_byId = async (id) => {
 };
 
 const get_all_candidates = async (body) => {
-  let = { date, search, location, salary, sortBy, experience, range, page } = body;
+  let = { date1, date2, mobilenumber, skill, search, location, sortBy, range, page } = body;
 
   let searchfilter = { data: true };
   let datefiletr = { data: true };
   let locationfilter = { data: true };
-  let salaryfilter = { data: true };
+  // let salaryfilter = { data: true };
   let sortByfilter = { data: true };
-  let experienceFilter = { data: true };
-  if (search.length != 0) {
-    searchfilter = { $or: [{ mobileNumber: { $in: search } }, { name: { $in: search } }, { email: { $in: search } },{ keyskill: { $elemMatch: { $in: search } } }] };
+  // let experienceFilter = { data: true };
+  let mobileNumberfilter = { data: true };
+  let skillfilter = { data: true };
+  if (search != null) {
+    searchfilter = { name: { $eq: search } };
   }
-
-  if (date != null) {
-    datefiletr = { date: { $eq: date } };
+  if (date1 != null && date2 != null) {
+    datefiletr =  {$and:[{ date: { $gte: date1 } }, { date: { $lte: date2 } }]}
   }
   if (sortBy != null) {
     if(sortBy == "debarred"){
@@ -2821,39 +2822,47 @@ const get_all_candidates = async (body) => {
       sortByfilter = { data: { $eq: true } };
     }
   }
+  if(mobilenumber != null){
+    mobileNumberfilter = { mobileNumber:{ $eq: mobilenumber } };
+  }
+
+  if(skill.length != 0){
+    skillfilter = { keyskill: { $elemMatch: { $in: skill } } };
+  }
+
   if (location != null) {
     locationfilter = { location: { $regex: location, $options: 'i' } };
   }
 
-  if (experience != null) {
-    experienceFilter = { experienceYear:{ $eq: parseInt(experience) } };
-  }
+  // if (experience != null) {
+  //   experienceFilter = { experienceYear:{ $eq: parseInt(experience) } };
+  // }
 
-  if (salary != null) {
-        let value = salary.split('-');
-        let start = value[0] * 100000;
+  // if (salary != null) {
+  //       let value = salary.split('-');
+  //       let start = value[0] * 100000;
   
-        let end = 0;
-        if (value[1] != 'more') {
-          end = value[1] * 100000;
-        }
-        if (end != 0) {
+  //       let end = 0;
+  //       if (value[1] != 'more') {
+  //         end = value[1] * 100000;
+  //       }
+  //       if (end != 0) {
    
-          salaryfilter = {$or: [
-              {
-                $and: [
-                  { expCTC_strat: { $gte: start } },
-                  { $or: [{ expCTC_end: { $lte: end } }, { expCTC_end: { $eq: 0 } }] },
-                ],
-              },
-              {
-                $and: [{ totalCTC: { $gte: start } }, { totalCTC: { $lte: end } }],
-              },
-            ]}
-        } else {
-          salaryfilter =  {$or: [{ expCTC_strat: { $gte: start } }, { totalCTC: { $gte: start } }] }
-        }
-  }
+  //         salaryfilter = {$or: [
+  //             {
+  //               $and: [
+  //                 { expCTC_strat: { $gte: start } },
+  //                 { $or: [{ expCTC_end: { $lte: end } }, { expCTC_end: { $eq: 0 } }] },
+  //               ],
+  //             },
+  //             {
+  //               $and: [{ totalCTC: { $gte: start } }, { totalCTC: { $lte: end } }],
+  //             },
+  //           ]}
+  //       } else {
+  //         salaryfilter =  {$or: [{ expCTC_strat: { $gte: start } }, { totalCTC: { $gte: start } }] }
+  //       }
+  // }
 
   let data = await CandidateRegistration.aggregate([
     // {
@@ -2898,7 +2907,7 @@ const get_all_candidates = async (body) => {
 
     {
       $match: {
-        $and: [salaryfilter, locationfilter, datefiletr, searchfilter,experienceFilter,sortByfilter],
+        $and: [locationfilter, datefiletr, searchfilter, mobileNumberfilter, skillfilter, sortByfilter],
       },
     },
     { $skip: parseInt(range) * parseInt(page) },
@@ -2947,7 +2956,7 @@ const get_all_candidates = async (body) => {
 
   {
     $match: {
-      $and: [salaryfilter, locationfilter, datefiletr, searchfilter,experienceFilter,sortByfilter],
+      $and: [locationfilter, datefiletr, searchfilter, mobileNumberfilter, skillfilter, sortByfilter],
     },
   },
 ]);
