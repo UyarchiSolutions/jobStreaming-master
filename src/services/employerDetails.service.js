@@ -3419,18 +3419,22 @@ const Recruiter_delete = async (id) => {
 
 const get_admin_side_all_post_jobs_details = async (body) => {
   let dates = moment().format('YYYY-MM-DD');
-  let = {date, search, location, salary, range, page} = body
+  let = {date, search, location, salary,sortBy, range, page} = body
 
   let searchfilter = { active: true };
   let datefiletr = { active: true };
   let locationfilter = { active: true };
   let salaryfilter = { active: true };
-
+  let sortByfilter = { active: true };
   if(search.length != 0){
     searchfilter = {$or:[{ keySkill: { $elemMatch: { $in: search } } },{ jobLocation:{ $in: search } }]}
   }
+
   if(date != null){
     datefiletr = { date: { $eq: date } };
+  }
+  if(sortBy != null){
+    sortByfilter = { adminStatuss: { $eq: sortBy } };
   }
   if(location != null){
     locationfilter = { jobLocation:{ $regex: location, $options: 'i' } }
@@ -3594,7 +3598,7 @@ const get_admin_side_all_post_jobs_details = async (body) => {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
             then: 'Expired',
-            else: '$adminStatus',
+            else: '$active',
           },
         },
          companyName:"$employerregistrations.companyName",
@@ -3604,6 +3608,9 @@ const get_admin_side_all_post_jobs_details = async (body) => {
          name:"$employerregistrations.name",
          regitserStatus:"$employerregistrations.adminStatus",
       },
+    },
+    {
+      $match: {$and:[sortByfilter]},
     },
     { $skip: parseInt(range) * parseInt(page) },
     { $limit: parseInt(range) },           
@@ -3756,6 +3763,9 @@ const get_admin_side_all_post_jobs_details = async (body) => {
          name:"$employerregistrations.name",
          regitserStatus:"$employerregistrations.adminStatus",
       },
+    },
+    {
+      $match: {$and:[sortByfilter]},
     },
   ]);
   return {data:data, count:count.length};
