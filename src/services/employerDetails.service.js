@@ -4637,6 +4637,23 @@ const update_manage_employer = async (id, body) => {
   const value = await EmployerRegistration.findByIdAndUpdate({_id:id}, body, {new:true})
   return value
 }
+
+const employer_name = async (key) => {
+  const data = await EmployerRegistration.find({ name:{ $regex: key, $options: 'i' } }).select("name")
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  return data
+}
+
+const employer_contactnumber = async (key) => {
+  const data = await EmployerRegistration.find({ mobileNumber:{ $regex: key, $options: 'i' } }).select("mobileNumber")
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  return data
+}
+
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -4682,4 +4699,6 @@ module.exports = {
   get_all_job_applied_candiadtes,
   manage_employer,
   update_manage_employer,
+  employer_name,
+  employer_contactnumber,
 };

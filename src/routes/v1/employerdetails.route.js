@@ -21,6 +21,8 @@ router.route('/get_admin_side_all_post_jobs_details').post(employerDetailsContro
 router.route('/get_all_job_applied_candiadtes/:id/:range/:page').get(employerDetailsController.get_all_job_applied_candiadtes);
 router.route('/manage_employer').post(employerDetailsController.manage_employer);
 router.route('/update_manage_employer/:id').put(employerDetailsController.update_manage_employer);
+router.route('/employer_name/:key').get(employerDetailsController.employer_name);
+router.route('/employer_contactnumber/:key').get(employerDetailsController.employer_contactnumber);
 //sdfd
 router.route('/EmployerspostDraft').post(authorization, employerDetailsController.EmployerspostDraft);
 router.route('/draftData').get(authorization, employerDetailsController.draftData_employerside);
