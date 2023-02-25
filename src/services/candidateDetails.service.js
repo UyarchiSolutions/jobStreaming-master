@@ -2826,7 +2826,7 @@ const get_all_candidates = async (body) => {
   }
 
   if (experience != null) {
-    experienceFilter = { experienceYear:{ $eq: experience } };
+    experienceFilter = { experienceYear:{ $eq: parseInt(experience) } };
   }
 
   if (salary != null) {
