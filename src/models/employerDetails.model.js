@@ -20,6 +20,10 @@ const employerDetailsSchema = mongoose.Schema(
       type:Boolean,
       default:false,
     },
+    data:{
+      type:Boolean,
+      default:true,
+    },
     apply_method:{
       type:String,
     },

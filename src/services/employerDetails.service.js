@@ -3419,54 +3419,69 @@ const Recruiter_delete = async (id) => {
 
 const get_admin_side_all_post_jobs_details = async (body) => {
   let dates = moment().format('YYYY-MM-DD');
-  let = {date, search, location, salary,sortBy, range, page} = body
+  let = {date1, date2, name, skill, location, sortBy, range, page} = body
 
-  let searchfilter = { active: true };
-  let datefiletr = { active: true };
-  let locationfilter = { active: true };
-  let salaryfilter = { active: true };
-  let sortByfilter = { active: true };
-  if(search.length != 0){
-    searchfilter = {$or:[{ keySkill: { $elemMatch: { $in: search } } },{ jobLocation:{ $in: search } }]}
+  let searchfilter = { data: true };
+  let datefiletr = { data: true };
+  let locationfilter = { data: true };
+  // let salaryfilter = { active: true };
+  let sortByfilter = { data: true };
+  let skillfilter = { data: true };
+  if(name != null){
+    searchfilter = { companyName: { $eq: name } }
   }
 
-  if(date != null){
-    datefiletr = { date: { $eq: date } };
+  if (date1 != null && date2 != null) {
+      datefiletr =  {$and:[{ date: { $gte: date1 } }, { date: { $lte: date2 } }]}
   }
-  if(sortBy != null){
-    sortByfilter = { adminStatuss: { $eq: sortBy } };
+
+
+  if (sortBy != null) {
+    if(sortBy == "Expired"){
+      sortByfilter = { adminStatuss: { $eq: sortBy } };
+    }
+    if(sortBy == "inactive"){
+      sortByfilter = { active: { $eq: false } };
+    }
+    if(sortBy == "Active"){
+      sortByfilter = { active: { $eq: true } };
+    }
+    if(sortBy == "all"){
+      sortByfilter = { data: { $eq: true } };
+    }
   }
+
   if(location != null){
     locationfilter = { jobLocation:{ $regex: location, $options: 'i' } }
   }
-  if(salary != null){
-    // let salary_macth = [];
-    // Salary.forEach((a) => {
-      let value = salary.split('-');
-      let start = value[0] * 100000;
 
-      let end = 0;
-      if (value[1] != 'more') {
-        end = value[1] * 100000;
-      }
-      if (end != 0) {
-        salaryfilter = { $and: [{ salaryRangeFrom: { $gte: start } }, { salaryRangeTo: { $lte: end } }] };
-      } else {
-        salaryfilter = { $and: [{ salaryRangeFrom: { $gte: start } }] };
-      }
+  if(skill.length != 0){
+    skillfilter = { keySkill: { $elemMatch: { $in: skill } } };
+  }
+  // console.log(skillfilter, searchfilter, datefiletr, locationfilter, sortByfilter)
+  // if(salary != null){
+  //   // let salary_macth = [];
+  //   // Salary.forEach((a) => {
+  //     let value = salary.split('-');
+  //     let start = value[0] * 100000;
+
+  //     let end = 0;
+  //     if (value[1] != 'more') {
+  //       end = value[1] * 100000;
+  //     }
+  //     if (end != 0) {
+  //       salaryfilter = { $and: [{ salaryRangeFrom: { $gte: start } }, { salaryRangeTo: { $lte: end } }] };
+  //     } else {
+  //       salaryfilter = { $and: [{ salaryRangeFrom: { $gte: start } }] };
+  //     }
     // });
     // console.log(salaryfilter);
     // salarySearch = { $or: salary_macth };
     // salaryfilter = { jobLocation:{ $regex: key, $options: 'i' } },
-  }
+  // }
   const data = await EmployerDetails.aggregate([
     {
       $sort: { date: -1, time: -1 },
-    },
-    {
-      $match: {
-        $and: [salaryfilter, locationfilter, datefiletr, searchfilter],
-      },
     },
     {
       $lookup: {
@@ -3594,6 +3609,7 @@ const get_admin_side_all_post_jobs_details = async (body) => {
         department: 1,
         roleCategory: 1,
         role: 1,
+        data:1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
@@ -3601,7 +3617,7 @@ const get_admin_side_all_post_jobs_details = async (body) => {
             else: '$active',
           },
         },
-         companyName:"$employerregistrations.companyName",
+         companyName:"$employerregistrations.name",
          email:"$employerregistrations.email",
          mobileNumber:"$employerregistrations.mobileNumber",
          companyType:"$employerregistrations.companyType",
@@ -3610,19 +3626,17 @@ const get_admin_side_all_post_jobs_details = async (body) => {
       },
     },
     {
-      $match: {$and:[sortByfilter]},
+      $match: {
+        $and: [skillfilter,locationfilter, datefiletr, searchfilter, sortByfilter],
+      },
     },
     { $skip: parseInt(range) * parseInt(page) },
     { $limit: parseInt(range) },           
   ]);
+
   const count = await EmployerDetails.aggregate([
     {
       $sort: { date: -1, time: -1 },
-    },
-    {
-      $match: {
-        $and: [salaryfilter, locationfilter, datefiletr, searchfilter],
-      },
     },
     {
       $lookup: {
@@ -3749,6 +3763,7 @@ const get_admin_side_all_post_jobs_details = async (body) => {
         department: 1,
         roleCategory: 1,
         role: 1,
+        data:1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
@@ -3765,7 +3780,9 @@ const get_admin_side_all_post_jobs_details = async (body) => {
       },
     },
     {
-      $match: {$and:[sortByfilter]},
+      $match: {
+        $and: [skillfilter,locationfilter, datefiletr, searchfilter, sortByfilter],
+      },
     },
   ]);
   return {data:data, count:count.length};
