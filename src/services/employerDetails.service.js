@@ -4639,7 +4639,7 @@ const update_manage_employer = async (id, body) => {
 }
 
 const employer_name = async (key) => {
-  const data = await EmployerRegistration.find({ name:{ $regex: key, $options: 'i' } }).select("name")
+  const data = await EmployerRegistration.find({ name:{ $regex: key, $options: 'i' } }).select("name").limit(7)
   if(!data){
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
@@ -4647,7 +4647,7 @@ const employer_name = async (key) => {
 }
 
 const employer_contactnumber = async (key) => {
-  const data = await EmployerRegistration.find({ mobileNumber:{ $regex: key, $options: 'i' } }).select("mobileNumber")
+  const data = await EmployerRegistration.find({ mobileNumber:{ $regex: key, $options: 'i' } }).select("mobileNumber").limit(7)
   if(!data){
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }

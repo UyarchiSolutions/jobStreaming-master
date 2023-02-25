@@ -2792,12 +2792,12 @@ const createdSearchhistoryData_byId = async (id) => {
 };
 
 const CandidateRegistration_names = async (key) => {
-  let data = await CandidateRegistration.find( { name: { $regex: key, $options: 'i' } }).select("name")
+  let data = await CandidateRegistration.find( { name: { $regex: key, $options: 'i' } }).select("name").limit(7)
   return data;
 };
 
 const CandidateRegistration_number = async (key) => {
-  let data = await CandidateRegistration.find( { mobileNumber: { $regex: key, $options: 'i' } }).select("mobileNumber")
+  let data = await CandidateRegistration.find( { mobileNumber: { $regex: key, $options: 'i' } }).select("mobileNumber").limit(7)
   return data;
 };
 
