@@ -235,6 +235,11 @@ const get_all_candidates = catchAsync(async(req,res) => {
   const user = await candidateDetailsService.get_all_candidates(req.body)
   res.send(user)
 })
+
+const CandidateRegistration_names = catchAsync(async(req,res) => {
+  const user = await candidateDetailsService.CandidateRegistration_names()
+  res.send(user)
+})
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -270,5 +275,6 @@ module.exports = {
   edit_details,
   candidate_detials_id,
   get_all_candidates,
+  CandidateRegistration_names,
   // createSearchCandidate,
 };

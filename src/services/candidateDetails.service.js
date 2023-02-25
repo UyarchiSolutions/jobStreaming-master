@@ -2791,6 +2791,11 @@ const createdSearchhistoryData_byId = async (id) => {
   return data;
 };
 
+const CandidateRegistration_names = async () => {
+  let data = await CandidateRegistration.find().select("name")
+  return data;
+};
+
 const get_all_candidates = async (body) => {
   let = { date1, date2, mobilenumber, skill, name, location, sortBy, range, page } = body;
 
@@ -2998,5 +3003,6 @@ module.exports = {
   edit_details,
   candidate_detials_id,
   get_all_candidates,
+  CandidateRegistration_names,
   // createSearchCandidate,
 };
