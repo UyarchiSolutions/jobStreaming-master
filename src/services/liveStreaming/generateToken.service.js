@@ -10,6 +10,8 @@ const appCertificate = '8ae85f97802448c2a47b98715ff90ffb';
 const Authorization = `Basic ${Buffer.from(`61b817e750214d58ba9d8148e7c89a1b:88401de254b2436a9da15b2f872937de`).toString(
   'base64'
 )}`;
+const { Groupchat, Ricehands } = require('../../models/liveStreaming/chat.model');
+
 const generateUid = async (req) => {
   const length = 5;
   const randomNo = Math.floor(Math.pow(10, length - 1) + Math.random() * 9 * Math.pow(10, length - 1));
@@ -37,9 +39,9 @@ const generateToken = async (req) => {
       participents: 3,
       created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
       expDate: expirationTimestamp * 1000,
+      type: "host"
     },
   });
-  console.log(role);
   const token = await geenerate_rtc_token(value._id, uid, role, expirationTimestamp);
   value.token = token;
   value.chennel = value._id;
@@ -48,11 +50,41 @@ const generateToken = async (req) => {
   value.cloud_recording = cloud_recording.value.token;
   value.uid_cloud = cloud_recording.value.Uid;
   value.cloud_id = cloud_recording.value._id;
-
   value.save();
-
+  await create_raice_hands(req, value._id);
   return { uid, token, value, cloud_recording };
 };
+const create_raice_hands = async (req, id) => {
+  const expirationTimeInSeconds = 3600;
+  const uid = await generateUid();
+  const uid_cloud = await generateUid();
+  const role = req.body.isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
+
+  const moment_curr = moment();
+  const currentTimestamp = moment_curr.add(30, 'minutes');
+  const expirationTimestamp =
+    new Date(new Date(currentTimestamp.format('YYYY-MM-DD') + ' ' + currentTimestamp.format('HH:mm:ss'))).getTime() / 1000;
+  let channel = new Date().getTime().toString();
+  let value = await tempTokenModel.create({
+    ...req.body,
+    ...{
+      date: moment().format('YYYY-MM-DD'),
+      time: moment().format('HHMMSS'),
+      created: moment(),
+      Uid: uid,
+      participents: 3,
+      created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+      expDate: expirationTimestamp * 1000,
+      type: "ricehands"
+    },
+  });
+  console.log(role);
+  const token = await geenerate_rtc_token(id, uid, role, expirationTimestamp);
+  value.token = token;
+  value.chennel = id;
+  value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
+  value.save();
+}
 const geenerate_rtc_token = async (chennel, uid, role, expirationTimestamp) => {
   return Agora.RtcTokenBuilder.buildTokenWithUid(appID, appCertificate, chennel, uid, role, expirationTimestamp);
 };
@@ -380,7 +412,6 @@ const get_sub_token = async (req) => {
         token: 1,
         hostUid: "$active_users.Uid",
         expDate_host: "$active_users.expDate",
-
       }
     }
   ])
@@ -389,6 +420,15 @@ const get_sub_token = async (req) => {
   }
   return value[0];
 };
+
+const get_raice_hands = async (id) => {
+  let value = await Ricehands.find({ streamId: id });
+  return value;
+}
+const get_raice_hands_token = async (id) => {
+  let value = await tempTokenModel.findOne({ type: "ricehands", chennel: id });
+  return value;
+}
 
 module.exports = {
   generateToken,
@@ -406,5 +446,7 @@ module.exports = {
   generateToken_sub,
   gettokenById_host,
   chat_rooms,
-  get_sub_token
+  get_sub_token,
+  get_raice_hands,
+  get_raice_hands_token
 };

@@ -38,4 +38,40 @@ const Groupchat_schema = mongoose.Schema({
 });
 
 const Groupchat = mongoose.model('groupchat', Groupchat_schema);
-module.exports = { Groupchat };
+
+
+const Ricehands_schema = mongoose.Schema({
+    _id: {
+        type: String,
+        default: v4,
+    },
+    riceuserId: {
+        type: String,
+    },
+    streamId: {
+        type: String,
+    },
+    tokenId: {
+        type: String,
+    },
+    status: {
+        type: String,
+    },
+    date: {
+        type: Number,
+    },
+    time: {
+        type: Number,
+    },
+    active: {
+        type: Boolean,
+        default: true,
+    },
+    type: {
+        type: String,
+    }
+
+});
+
+const Ricehands = mongoose.model('ricehands', Ricehands_schema);
+module.exports = { Groupchat, Ricehands };

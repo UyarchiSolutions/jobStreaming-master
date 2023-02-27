@@ -30,10 +30,15 @@ let io = socketIO(server);
 server.listen(config.port, () => {
   logger.info(`Listening to port ${config.port}`);
 });
-
 io.sockets.on('connection', async (socket) => {
   socket.on('groupchat', async (data) => {
     await chetModule.chat_room_create(data, io)
+  });
+  socket.on('admin_approve', async (data) => {
+    await chetModule.admin_approve(data, io)
+  });
+  socket.on('rice_hands', async (data) => {
+    await chetModule.rice_hands(data, io)
   });
   socket.on('', (msg) => {
     console.log('message: ' + msg);
