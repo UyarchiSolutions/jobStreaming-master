@@ -413,7 +413,7 @@ const getById_Get = async (id) => {
     {
       $project: {
         keySkill: 1,
-        preferedIndustry:1,
+        preferedIndustry: 1,
         date: 1,
         dates: dates,
         active: 1,
@@ -463,9 +463,9 @@ const getById_Get = async (id) => {
         department: 1,
         roleCategory: 1,
         role: 1,
-        apply_method:1,
-        recruiterList:1,
-        recruiterList1:1,
+        apply_method: 1,
+        recruiterList: 1,
+        recruiterList1: 1,
         qualifications: '$qualifications',
         allcourses: '$allcourses',
         allspecializations: '$allspecializations',
@@ -1497,6 +1497,7 @@ const mail_template_data_delete = async (id, body) => {
 // notofication send candidate
 var ejs = require('ejs');
 const nodemailer = require('nodemailer');
+const { HttpResponse } = require('aws-sdk');
 const transporter = nodemailer.createTransport({
   host: 'mail.uyarchi.com',
   port: 465,
@@ -1507,26 +1508,26 @@ const transporter = nodemailer.createTransport({
   },
 });
 const send_mail_and_notification = async (userId, body) => {
-  const { candidates, subject, signature,message, email } = body;
+  const { candidates, subject, signature, message, email } = body;
   const data = await EmployerRegistration.findById(userId);
   // console.log(userId)
-  var data1 ; 
+  var data1;
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  if(body.mail == "mail"){
+  if (body.mail == 'mail') {
     candidates.forEach(async (e) => {
-       await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
+      await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
       const candidate = await CandidateRegistration.findById(e);
-          // console.log(candidate.email)
-         data1 = await ejs.renderFile(__dirname + '/mailtemplate.ejs', {
-          name: candidate.name,
-          subject: subject,
-          signature: signature,
-          message:message,
-          contactName:data.contactName,
-          email:candidate.email
-        })
+      // console.log(candidate.email)
+      data1 = await ejs.renderFile(__dirname + '/mailtemplate.ejs', {
+        name: candidate.name,
+        subject: subject,
+        signature: signature,
+        message: message,
+        contactName: data.contactName,
+        email: candidate.email,
+      });
 
       const mainOptions = {
         from: body.email,
@@ -1535,7 +1536,7 @@ const send_mail_and_notification = async (userId, body) => {
         subject: 'templates',
         html: data1,
       };
-  
+
       transporter.sendMail(mainOptions, (err, info) => {
         if (err) {
           console.log(err);
@@ -1543,143 +1544,142 @@ const send_mail_and_notification = async (userId, body) => {
           console.log('Message sent: ' + info.response);
         }
       });
-    })
-  }else{
+    });
+  } else {
+    const employer = await EmployerDetails.aggregate([
+      {
+        $match: {
+          $and: [{ _id: { $eq: body.mailId } }],
+        },
+      },
+      {
+        $lookup: {
+          from: 'industries',
+          localField: 'industry',
+          foreignField: '_id',
+          as: 'industries',
+        },
+      },
+      {
+        $unwind: {
+          path: '$industries',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'departments',
+          localField: 'department',
+          foreignField: '_id',
+          as: 'departments',
+        },
+      },
+      {
+        $unwind: {
+          path: '$departments',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'rolecategories',
+          localField: 'roleCategory',
+          foreignField: '_id',
+          as: 'rolecategories',
+        },
+      },
+      {
+        $unwind: {
+          path: '$rolecategories',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'jobroles',
+          localField: 'role',
+          foreignField: '_id',
+          as: 'jobroles',
+        },
+      },
+      {
+        $unwind: {
+          path: '$jobroles',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'employerregistrations',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'employerregistrations',
+        },
+      },
+      {
+        $unwind: {
+          path: '$employerregistrations',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          keySkill: 1,
+          preferedIndustry: 1,
+          preferredSkill: 1,
+          adminStatus: 1,
+          active: 1,
+          jobTittle: 1,
+          contactNumber: 1,
+          jobDescription: 1,
+          educationalQualification: 1,
+          salaryRangeFrom: 1,
+          salaryRangeTo: 1,
+          experienceFrom: 1,
+          experienceTo: 1,
+          interviewType: 1,
+          candidateDescription: 1,
+          salaryDescription: 1,
+          urltoApply: 1,
+          workplaceType: 1,
+          industry: 1,
+          jobLocation: 1,
+          employmentType: 1,
+          openings: 1,
+          role: '$jobroles.Job_role',
+          roleCategory: '$rolecategories.Role_Category',
+          department: '$departments.Department',
+          industry1: '$industries.Industry',
+          interviewstartDate: 1,
+          interviewendDate: 1,
+          startTime: 1,
+          endTime: 1,
+          recruiterName: 1,
+          recruiterEmail: 1,
+          recruiterNumber: 1,
+          date: 1,
+          time: 1,
+          companyType: '$employerregistrations.companyType',
+          mobileNumber: '$employerregistrations.mobileNumber',
+          contactName: '$employerregistrations.contactName',
+          email: '$employerregistrations.email',
+          name: '$employerregistrations.name',
+          logo: '$employerregistrations.logo',
+          aboutCompany: '$employerregistrations.aboutCompany',
+          location: '$employerregistrations.location',
+          choosefile: '$employerregistrations.choosefile',
+        },
+      },
+    ]);
+    let ago = moment(employer[0].date, 'YYYY.MM.DD').fromNow();
+    let lakhsFrom = parseInt(employer[0].salaryRangeFrom / 100000);
+    let lakhsTo = parseInt(employer[0].salaryRangeTo / 100000);
 
-  const employer = await EmployerDetails.aggregate([
-    {
-      $match: {
-        $and: [{ _id: { $eq: body.mailId } }],
-      },
-    },
-    {
-      $lookup: {
-        from: 'industries',
-        localField: 'industry',
-        foreignField: '_id',
-        as: 'industries',
-      },
-    },
-    {
-      $unwind: {
-        path: '$industries',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $lookup: {
-        from: 'departments',
-        localField: 'department',
-        foreignField: '_id',
-        as: 'departments',
-      },
-    },
-    {
-      $unwind: {
-        path: '$departments',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $lookup: {
-        from: 'rolecategories',
-        localField: 'roleCategory',
-        foreignField: '_id',
-        as: 'rolecategories',
-      },
-    },
-    {
-      $unwind: {
-        path: '$rolecategories',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $lookup: {
-        from: 'jobroles',
-        localField: 'role',
-        foreignField: '_id',
-        as: 'jobroles',
-      },
-    },
-    {
-      $unwind: {
-        path: '$jobroles',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $lookup: {
-        from: 'employerregistrations',
-        localField: 'userId',
-        foreignField: '_id',
-        as: 'employerregistrations',
-      },
-    },
-    {
-      $unwind: {
-        path: '$employerregistrations',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $project: {
-        keySkill: 1,
-        preferedIndustry: 1,
-        preferredSkill: 1,
-        adminStatus: 1,
-        active: 1,
-        jobTittle: 1,
-        contactNumber: 1,
-        jobDescription: 1,
-        educationalQualification: 1,
-        salaryRangeFrom: 1,
-        salaryRangeTo: 1,
-        experienceFrom: 1,
-        experienceTo: 1,
-        interviewType: 1,
-        candidateDescription: 1,
-        salaryDescription: 1,
-        urltoApply: 1,
-        workplaceType: 1,
-        industry: 1,
-        jobLocation: 1,
-        employmentType: 1,
-        openings: 1,
-        role: '$jobroles.Job_role',
-        roleCategory: '$rolecategories.Role_Category',
-        department: '$departments.Department',
-        industry1: '$industries.Industry',
-        interviewstartDate: 1,
-        interviewendDate: 1,
-        startTime: 1,
-        endTime: 1,
-        recruiterName: 1,
-        recruiterEmail: 1,
-        recruiterNumber: 1,
-        date: 1,
-        time: 1,
-        companyType: '$employerregistrations.companyType',
-        mobileNumber: '$employerregistrations.mobileNumber',
-        contactName: '$employerregistrations.contactName',
-        email: '$employerregistrations.email',
-        name: '$employerregistrations.name',
-        logo: '$employerregistrations.logo',
-        aboutCompany: '$employerregistrations.aboutCompany',
-        location: '$employerregistrations.location',
-        choosefile: '$employerregistrations.choosefile',
-      },
-    },
-  ]);
-  let ago = moment(employer[0].date, 'YYYY.MM.DD').fromNow();
-  let lakhsFrom = parseInt(employer[0].salaryRangeFrom / 100000);
-  let lakhsTo = parseInt(employer[0].salaryRangeTo / 100000);
-
-  candidates.forEach(async (e) => {
-    const da = await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
-    const candidate = await CandidateRegistration.findById(e);
-    // if (body.mail == 'job') {
-       data1 = await ejs.renderFile(__dirname + '/template.ejs', {
+    candidates.forEach(async (e) => {
+      const da = await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
+      const candidate = await CandidateRegistration.findById(e);
+      // if (body.mail == 'job') {
+      data1 = await ejs.renderFile(__dirname + '/template.ejs', {
         name: candidate.name,
         subject: subject,
         signature: signature,
@@ -1744,9 +1744,9 @@ const send_mail_and_notification = async (userId, body) => {
           console.log('Message sent: ' + info.response);
         }
       });
-    // }
-  });
-}
+      // }
+    });
+  }
 
   return { messages: 'Send Notification Mail Successfully...' };
 };
@@ -2139,7 +2139,7 @@ const getAll_Mail_notification_employerside = async (userId, range, page) => {
         jobTittle: '$employerdetails.jobTittle',
         comment: '$employerdetails.employercomments.comment',
         commentId: '$employerdetails.employercomments._id',
-        status:  '$candidatepostjobs.approvedStatus',
+        status: '$candidatepostjobs.approvedStatus',
         candidateDetail: '$candidateregistrations',
         subject: 1,
         signature: 1,
@@ -3419,7 +3419,7 @@ const Recruiter_delete = async (id) => {
 
 const get_admin_side_all_post_jobs_details = async (body) => {
   let dates = moment().format('YYYY-MM-DD');
-  let = {date1, date2, name, skill, location, sortBy, range, page} = body
+  let = { date1, date2, name, skill, location, sortBy, range, page } = body;
 
   let searchfilter = { data: true };
   let datefiletr = { data: true };
@@ -3427,35 +3427,34 @@ const get_admin_side_all_post_jobs_details = async (body) => {
   // let salaryfilter = { active: true };
   let sortByfilter = { data: true };
   let skillfilter = { data: true };
-  if(name != null){
-    searchfilter = { companyName: { $eq: name } }
+  if (name != null) {
+    searchfilter = { companyName: { $eq: name } };
   }
 
   if (date1 != null && date2 != null) {
-      datefiletr =  {$and:[{ date: { $gte: date1 } }, { date: { $lte: date2 } }]}
+    datefiletr = { $and: [{ date: { $gte: date1 } }, { date: { $lte: date2 } }] };
   }
 
-
   if (sortBy != null) {
-    if(sortBy == "Expired"){
+    if (sortBy == 'Expired') {
       sortByfilter = { adminStatuss: { $eq: sortBy } };
     }
-    if(sortBy == "inactive"){
+    if (sortBy == 'inactive') {
       sortByfilter = { active: { $eq: false } };
     }
-    if(sortBy == "Active"){
+    if (sortBy == 'Active') {
       sortByfilter = { active: { $eq: true } };
     }
-    if(sortBy == "all"){
+    if (sortBy == 'all') {
       sortByfilter = { data: { $eq: true } };
     }
   }
 
-  if(location != null){
-    locationfilter = { jobLocation:{ $regex: location, $options: 'i' } }
+  if (location != null) {
+    locationfilter = { jobLocation: { $regex: location, $options: 'i' } };
   }
 
-  if(skill.length != 0){
+  if (skill.length != 0) {
     skillfilter = { keySkill: { $elemMatch: { $in: skill } } };
   }
   // console.log(skillfilter, searchfilter, datefiletr, locationfilter, sortByfilter)
@@ -3474,10 +3473,10 @@ const get_admin_side_all_post_jobs_details = async (body) => {
   //     } else {
   //       salaryfilter = { $and: [{ salaryRangeFrom: { $gte: start } }] };
   //     }
-    // });
-    // console.log(salaryfilter);
-    // salarySearch = { $or: salary_macth };
-    // salaryfilter = { jobLocation:{ $regex: key, $options: 'i' } },
+  // });
+  // console.log(salaryfilter);
+  // salarySearch = { $or: salary_macth };
+  // salaryfilter = { jobLocation:{ $regex: key, $options: 'i' } },
   // }
   const data = await EmployerDetails.aggregate([
     {
@@ -3609,7 +3608,7 @@ const get_admin_side_all_post_jobs_details = async (body) => {
         department: 1,
         roleCategory: 1,
         role: 1,
-        data:1,
+        data: 1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
@@ -3617,21 +3616,21 @@ const get_admin_side_all_post_jobs_details = async (body) => {
             else: '$active',
           },
         },
-         companyName:"$employerregistrations.name",
-         email:"$employerregistrations.email",
-         mobileNumber:"$employerregistrations.mobileNumber",
-         companyType:"$employerregistrations.companyType",
-         name:"$employerregistrations.name",
-         regitserStatus:"$employerregistrations.adminStatus",
+        companyName: '$employerregistrations.name',
+        email: '$employerregistrations.email',
+        mobileNumber: '$employerregistrations.mobileNumber',
+        companyType: '$employerregistrations.companyType',
+        name: '$employerregistrations.name',
+        regitserStatus: '$employerregistrations.adminStatus',
       },
     },
     {
       $match: {
-        $and: [skillfilter,locationfilter, datefiletr, searchfilter, sortByfilter],
+        $and: [skillfilter, locationfilter, datefiletr, searchfilter, sortByfilter],
       },
     },
     { $skip: parseInt(range) * parseInt(page) },
-    { $limit: parseInt(range) },           
+    { $limit: parseInt(range) },
   ]);
 
   const count = await EmployerDetails.aggregate([
@@ -3763,7 +3762,7 @@ const get_admin_side_all_post_jobs_details = async (body) => {
         department: 1,
         roleCategory: 1,
         role: 1,
-        data:1,
+        data: 1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
@@ -3771,24 +3770,23 @@ const get_admin_side_all_post_jobs_details = async (body) => {
             else: '$adminStatus',
           },
         },
-         companyName:"$employerregistrations.companyName",
-         email:"$employerregistrations.email",
-         mobileNumber:"$employerregistrations.mobileNumber",
-         companyType:"$employerregistrations.companyType",
-         name:"$employerregistrations.name",
-         regitserStatus:"$employerregistrations.adminStatus",
+        companyName: '$employerregistrations.companyName',
+        email: '$employerregistrations.email',
+        mobileNumber: '$employerregistrations.mobileNumber',
+        companyType: '$employerregistrations.companyType',
+        name: '$employerregistrations.name',
+        regitserStatus: '$employerregistrations.adminStatus',
       },
     },
     {
       $match: {
-        $and: [skillfilter,locationfilter, datefiletr, searchfilter, sortByfilter],
+        $and: [skillfilter, locationfilter, datefiletr, searchfilter, sortByfilter],
       },
     },
   ]);
-  console.log({count:count})
-  return {data:data, count:count.length};
+  console.log({ count: count });
+  return { data: data, count: count.length };
 };
-
 
 // get_all_job_applied_candiadtes
 
@@ -4182,8 +4180,8 @@ const get_all_job_applied_candiadtes = async (userId, range, page) => {
         postjobId: '$candidatepostjobs._id',
         status: '$candidatepostjobs.approvedStatus',
         candidateData: '$candidatepostjobs.candidateregistrations',
-        companyname:'$employerregistrations.name',
-        location:'$employerregistrations.location'
+        companyname: '$employerregistrations.name',
+        location: '$employerregistrations.location',
       },
     },
     { $skip: parseInt(range) * parseInt(page) },
@@ -4566,94 +4564,104 @@ const get_all_job_applied_candiadtes = async (userId, range, page) => {
         candidateData: '$candidatepostjobs.candidateregistrations',
       },
     },
-
   ]);
-  return {data:data, count:count.length}
-}
+  return { data: data, count: count.length };
+};
 
-
-// manage Employer 
+// manage Employer
 
 const manage_employer = async (body) => {
-  let = { name, mobileNumber, location, industry, sortBy, range, page} = body
+  let = { name, mobileNumber, location, industry, sortBy, range, page } = body;
 
   let searchfilter = { data: true };
   let industryfiletr = { data: true };
   let locationfilter = { data: true };
   let sortByfilter = { data: true };
   let mobilenumberfilter = { data: true };
-  if(name != null){
-    searchfilter = { name: { $eq: name }}
+  if (name != null) {
+    searchfilter = { name: { $eq: name } };
   }
 
-  if(mobileNumber != null){
-    mobilenumberfilter = { mobileNumber: { $eq: mobileNumber }}
+  if (mobileNumber != null) {
+    mobilenumberfilter = { mobileNumber: { $eq: mobileNumber } };
   }
 
-  if(industry != null){
+  if (industry != null) {
     industryfiletr = { industryType: { $eq: industry } };
   }
   if (sortBy != null) {
-    if(sortBy == "debarred"){
+    if (sortBy == 'debarred') {
       sortByfilter = { adminStatus: { $eq: sortBy } };
     }
-    if(sortBy == "inactive"){
+    if (sortBy == 'inactive') {
       sortByfilter = { active: { $eq: false } };
     }
-    if(sortBy == "Active"){
+    if (sortBy == 'Active') {
       sortByfilter = { active: { $eq: true } };
     }
-    if(sortBy == "all"){
+    if (sortBy == 'all') {
       sortByfilter = { data: { $eq: true } };
     }
   }
-  if(location != null){
-    locationfilter = { location:{ $regex: location, $options: 'i' } }
+  if (location != null) {
+    locationfilter = { location: { $regex: location, $options: 'i' } };
   }
-// console.log(locationfilter)
-  const data = await EmployerRegistration.aggregate([ 
+  // console.log(locationfilter)
+  const data = await EmployerRegistration.aggregate([
     {
       $match: {
-        $and: [locationfilter,sortByfilter,industryfiletr,searchfilter, mobilenumberfilter],
+        $and: [locationfilter, sortByfilter, industryfiletr, searchfilter, mobilenumberfilter],
       },
     },
-    { $skip: parseInt(range) * parseInt(page) }, 
-    { $limit: parseInt(range) }
-  ])
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
+  ]);
   const count = await EmployerRegistration.aggregate([
     {
       $match: {
-        $and: [locationfilter,sortByfilter,industryfiletr,searchfilter, mobilenumberfilter],
+        $and: [locationfilter, sortByfilter, industryfiletr, searchfilter, mobilenumberfilter],
       },
     },
-  ])
-  return {data:data, count:count.length}
-}
+  ]);
+  return { data: data, count: count.length };
+};
 
 const update_manage_employer = async (id, body) => {
-  const data = await EmployerRegistration.findById(id)
-  if(!data){
+  const data = await EmployerRegistration.findById(id);
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  const value = await EmployerRegistration.findByIdAndUpdate({_id:id}, body, {new:true})
-  return value
-}
+  const value = await EmployerRegistration.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return value;
+};
 
 const employer_name = async (key) => {
-  const data = await EmployerRegistration.find({ name:{ $regex: key, $options: 'i' } }).select("name").limit(7)
-  if(!data){
+  const data = await EmployerRegistration.find({ name: { $regex: key, $options: 'i' } })
+    .select('name')
+    .limit(7);
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  return data
-}
+  return data;
+};
 
 const employer_contactnumber = async (key) => {
-  const data = await EmployerRegistration.find({ mobileNumber:{ $regex: key, $options: 'i' } }).select("mobileNumber").limit(7)
-  if(!data){
+  const data = await EmployerRegistration.find({ mobileNumber: { $regex: key, $options: 'i' } })
+    .select('mobileNumber')
+    .limit(7);
+  if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  return data
-}
+  return data;
+};
+
+const getEmployerRegister = async (id) => {
+  let values = await EmployerRegistration.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
+  }
+  return values;
+};
 
 module.exports = {
   createEmpDetails,
@@ -4702,4 +4710,5 @@ module.exports = {
   update_manage_employer,
   employer_name,
   employer_contactnumber,
+  getEmployerRegister,
 };
