@@ -19,7 +19,7 @@ const createSaveSeprate = catchAsync(async (req, res) => {
 
 const getSaveSeprate = catchAsync(async (req, res) => {
     let userId = req.userId
-  const user = await employerCandidateSearch.getSaveSeprate(userId);
+  const user = await employerCandidateSearch.getSaveSeprate(userId, req.params.range, req.params.page);
   res.status(httpStatus.CREATED).send(user);
 });
 

@@ -17,16 +17,23 @@ router.route('/getByIdEmpDetails/:id').get(employerDetailsController.getById_Get
 router.route('/data_Id/:id').get(employerDetailsController.data_Id);
 router.route('/countPostjobError').get(authorization, employerDetailsController.countPostjobError);
 router.route('/update_active_deactive/:id').put(employerDetailsController.update_active_deactive);
+router.route('/get_admin_side_all_post_jobs_details').post(employerDetailsController.get_admin_side_all_post_jobs_details);
+router.route('/get_all_job_applied_candiadtes/:id/:range/:page').get(employerDetailsController.get_all_job_applied_candiadtes);
+router.route('/manage_employer').post(employerDetailsController.manage_employer);
+router.route('/update_manage_employer/:id').put(employerDetailsController.update_manage_employer);
+router.route('/employer_name/:key').get(employerDetailsController.employer_name);
+router.route('/employer_contactnumber/:key').get(employerDetailsController.employer_contactnumber);
 //sdfd
 router.route('/EmployerspostDraft').post(authorization, employerDetailsController.EmployerspostDraft);
 router.route('/draftData').get(authorization, employerDetailsController.draftData_employerside);
 router.route('/draftData_getId/:id').get(employerDetailsController.draftData_employerside_ById);
 router.route('/draftData_delete/:id').delete(employerDetailsController.draftData_delete);
-router.route('/getAllApplied_postjobs_Candidates/:id').get(employerDetailsController.getAllApplied_postjobs_Candidates);
+router.route('/getAllApplied_postjobs_Candidates/:id/:range/:page').get(employerDetailsController.getAllApplied_postjobs_Candidates);
 router.route('/statusChange_employer/:id').put(employerDetailsController.statusChange_employer);
 router.route('/getByIdAll_CandidateDetails/:id').get(employerDetailsController.getByIdAll_CandidateDetails);
 router.route('/employer_comment').post(authorization, employerDetailsController.employer_comment);
 router.route('/comment_edit/:id').put(employerDetailsController.comment_edit);
+router.route('/employer_comment_id/:id').get(employerDetailsController.employer_comment_id);
 
 // mail
 router.route('/mail_template_create').post(authorization, employerDetailsController.mail_template_create);
@@ -37,7 +44,7 @@ router.route('/mail_template_data_delete/:id').delete(employerDetailsController.
 
 // send notification mail
 router.route('/send_mail_and_notification').post(authorization, employerDetailsController.send_mail_and_notification);
-router.route('/getAll_Mail_notification_employerside').get(authorization, employerDetailsController.getAll_Mail_notification_employerside);
+router.route('/getAll_Mail_notification_employerside/:range/:page').get(authorization, employerDetailsController.getAll_Mail_notification_employerside);
 router.route('/getAll_Mail_notification_candidateside').get(auth, employerDetailsController.getAll_Mail_notification_candidateside);
 router.route('/candidate_mailnotification_Change/:id').put(employerDetailsController.candidate_mailnotification_Change);
 

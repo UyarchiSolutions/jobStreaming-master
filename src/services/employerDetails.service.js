@@ -5,6 +5,7 @@ const {
   Employercomment,
   EmployerMailTemplate,
   EmployerMailNotification,
+  Recruiters,
 } = require('../models/employerDetails.model');
 const { PlanPayment } = require('../models/planPaymentDetails.model');
 const { CandidatePostjob } = require('../models/candidateDetails.model');
@@ -16,7 +17,7 @@ const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
 const { format } = require('morgan');
-const { create } = require('../models/candidateRegistration.model');
+const { create, count } = require('../models/candidateRegistration.model');
 const Axios = require('axios');
 const { emailService } = require('../services');
 
@@ -188,7 +189,6 @@ const getByIdUser = async (id) => {
         preserveNullAndEmptyArrays: true,
       },
     },
-    
     {
       $project: {
         appliedcount: '$candidatepostjobs.count',
@@ -227,15 +227,15 @@ const getByIdUser = async (id) => {
         expiredDate: 1,
         createdAt: 1,
         adminStatus: 1,
-        recruiterName:1,
-        recruiterEmail:1,
-        recruiterNumber:1, 
-        roleName:'$jobroles.Job_role',
-        categoryName:'$rolecategories.Role_Category',
-        departmentName:'$departments.Department',
-        department:1,
-        roleCategory:1,
-        role:1,
+        recruiterName: 1,
+        recruiterEmail: 1,
+        recruiterNumber: 1,
+        roleName: '$jobroles.Job_role',
+        categoryName: '$rolecategories.Role_Category',
+        departmentName: '$departments.Department',
+        department: 1,
+        roleCategory: 1,
+        role: 1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
@@ -293,8 +293,127 @@ const getById_Get = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'departments',
+        localField: 'department',
+        foreignField: '_id',
+        as: 'departments',
+      },
+    },
+    {
+      $unwind: {
+        path: '$departments',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'rolecategories',
+        localField: 'roleCategory',
+        foreignField: '_id',
+        as: 'rolecategories',
+      },
+    },
+    {
+      $unwind: {
+        path: '$rolecategories',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'qualifications',
+        let: { userId: '$qualification' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group: { _id: { qualification: '$qualification' } },
+          },
+          {
+            $project: {
+              _id: null,
+              qualification: '$_id.qualification',
+            },
+          },
+        ],
+        as: 'qualifications',
+      },
+    },
+    {
+      $lookup: {
+        from: 'allcourses',
+        let: { userId: '$course' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group: { _id: { Course: '$Course' } },
+          },
+          {
+            $project: {
+              _id: null,
+              Course: '$_id.Course',
+            },
+          },
+        ],
+        as: 'allcourses',
+      },
+    },
+    {
+      $lookup: {
+        from: 'allspecializations',
+        let: { userId: '$specialization' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group: { _id: { Specialization: '$Specialization' } },
+          },
+          {
+            $project: {
+              _id: null,
+              Specialization: '$_id.Specialization',
+            },
+          },
+        ],
+        as: 'allspecializations',
+      },
+    },
+
+    {
       $project: {
         keySkill: 1,
+        preferedIndustry:1,
         date: 1,
         dates: dates,
         active: 1,
@@ -329,6 +448,27 @@ const getById_Get = async (id) => {
         expiredDate: 1,
         createdAt: 1,
         adminStatus: 1,
+        salaryDescription: 1,
+        urltoApply: 1,
+        recruiterName: 1,
+        recruiterEmail: 1,
+        recruiterNumber: 1,
+        interviewstartDate: 1,
+        interviewendDate: 1,
+        startTime: 1,
+        endTime: 1,
+        roleName: '$jobroles.Job_role',
+        categoryName: '$rolecategories.Role_Category',
+        departmentName: '$departments.Department',
+        department: 1,
+        roleCategory: 1,
+        role: 1,
+        apply_method:1,
+        recruiterList:1,
+        recruiterList1:1,
+        qualifications: '$qualifications',
+        allcourses: '$allcourses',
+        allspecializations: '$allspecializations',
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
@@ -463,7 +603,7 @@ const draftData_delete = async (id) => {
 };
 
 // postjob_candidate_Applied_datas
-const getAllApplied_postjobs_Candidates = async (userId) => {
+const getAllApplied_postjobs_Candidates = async (userId, range, page) => {
   const data = await EmployerDetails.aggregate([
     {
       $match: {
@@ -698,6 +838,27 @@ const getAllApplied_postjobs_Candidates = async (userId) => {
                           preserveNullAndEmptyArrays: true,
                         },
                       },
+                      {
+                        $lookup: {
+                          from: 'employercomments',
+                          localField: 'userId',
+                          foreignField: 'candidateId',
+                          pipeline: [
+                            {
+                              $match: {
+                                $and: [{ userId: { $eq: userId } }],
+                              },
+                            },
+                          ],
+                          as: 'employercomments',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$employercomments',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
                     ],
                     as: 'candidatedetails',
                   },
@@ -720,6 +881,391 @@ const getAllApplied_postjobs_Candidates = async (userId) => {
                     resume: 1,
                     createdAt: 1,
                     updatedAt: 1,
+                    comment: '$employercomments.comment',
+                    commentId: '$employercomments._id',
+                    // candidateDetails: '$candidatedetails',
+                    keyskill: '$candidatedetails.keyskill',
+                    currentSkill: '$candidatedetails.currentSkill',
+                    preferredSkill: '$candidatedetails.preferredSkill',
+                    active: '$candidatedetails.active',
+                    image: '$candidatedetails.image',
+                    dob: '$candidatedetails.dob',
+                    experienceYear: '$candidatedetails.experienceYear',
+                    experienceMonth: '$candidatedetails.experienceMonth',
+                    expectedctc: '$candidatedetails.expectedctc',
+                    currentctc: '$candidatedetails.currentctc',
+                    locationCurrent: '$candidatedetails.locationCurrent',
+                    locationNative: '$candidatedetails.locationNative',
+                    noticeperiod: '$candidatedetails.noticeperiod',
+                    gender: '$candidatedetails.gender',
+                    maritalStatus: '$candidatedetails.maritalStatus',
+                    ugMarks: '$candidatedetails.ugMarks',
+                    ugGradingSystem: '$candidatedetails.ugGradingSystem',
+                    ugCourseType: '$candidatedetails.ugCourseType',
+                    ugCourseDurationTo: '$candidatedetails.ugCourseDurationTo',
+                    ugCourseDurationFrom: '$candidatedetails.ugCourseDurationFrom',
+                    relocate: '$candidatedetails.relocate',
+                    languages: '$candidatedetails.languages',
+                    ugUniversity: '$candidatedetails.ugUniversity',
+                    drQualification: '$candidatedetails.qualifications.qualification',
+                    drcourses: '$candidatedetails.drcourses.Course',
+                    drSpecialization: '$candidatedetails.drspecializations.Specialization',
+                    pgQualification: '$candidatedetails.pgqualifications.qualification',
+                    pgCourse: '$candidatedetails.pgcourses.Course',
+                    pgSpecialization: '$candidatedetails.pgspecializations.Specialization',
+                    ugQualification: '$candidatedetails.ugqualifications.qualification',
+                    ugCourse: '$candidatedetails.ugcourses.Course',
+                    ugSpecialization: '$candidatedetails.specializations.Specialization',
+                    role: '$candidatedetails.jobroles.Job_role',
+                    roleCategory: '$candidatedetails.rolecategories.Role_Category',
+                    department: '$candidatedetails.departments.Department',
+                    industry: '$candidatedetails.industries.Industry',
+                    sslctotalmarks: '$candidatedetails.sslctotalmarks',
+                    sslcPassedYear: '$candidatedetails.sslcPassedYear',
+                    sslcMedium: '$candidatedetails.sslcMedium',
+                    sslcBoard: '$candidatedetails.sslcBoard',
+                    sslcQualification: '$candidatedetails.sslcqualifications.qualification',
+                    pgUniversity: '$candidatedetails.pgUniversity',
+                    pgMarks: '$candidatedetails.pgUniversity',
+                    pgGradingSystem: '$candidatedetails.pgUniversity',
+                    pgCourseType: '$candidatedetails.pgUniversity',
+                    pgCourseDurationTo: '$candidatedetails.pgUniversity',
+                    pgCourseDurationFrom: '$candidatedetails.pgUniversity',
+                    hstotalmarks: '$candidatedetails.hstotalmarks',
+                    hsPassedYear: '$candidatedetails.hsPassedYear',
+                    hsMedium: '$candidatedetails.hsMedium',
+                    hsBoard: '$candidatedetails.hsBoard',
+                    drMarks: '$candidatedetails.drMarks',
+                    drGradingSystem: '$candidatedetails.drGradingSystem',
+                    drCourseType: '$candidatedetails.drCourseType',
+                    drCourseDurationTo: '$candidatedetails.drCourseDurationTo',
+                    drCourseDurationFrom: '$candidatedetails.drCourseDurationFrom',
+                    hsQualification: '$candidatedetails.hscqualifications.qualification',
+                    keyskillSet: '$candidatedetails.keyskillSet',
+                    drUniversity: '$candidatedetails.drUniversity',
+                    experienceMonthSet: '$candidatedetails.experienceMonthSet',
+                    locationSet: '$candidatedetails.locationSet',
+                    experienceYearSet: '$candidatedetails.experienceYearSet',
+                    designationSet: '$candidatedetails.designationSet',
+                    currentIndustry: '$candidatedetails.currentIndustry',
+                    currentDepartment: '$candidatedetails.currentDepartment',
+                    role_Category: '$candidatedetails.role_Category',
+                    salaryFrom: '$candidatedetails.salaryFrom',
+                    SalaryTo: '$candidatedetails.SalaryTo',
+                  },
+                },
+              ],
+              as: 'candidateregistrations',
+            },
+          },
+          {
+            $unwind: {
+              path: '$candidateregistrations',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        candidateId: '$candidatepostjobs.candidateregistrations._id',
+        employerCommand: '$candidateregistrations.candidatedetails.employercomments.comment',
+        commandIdId: '$candidateregistrations.candidatedetails.employercomments._id',
+        postjobId: '$candidatepostjobs._id',
+        status: '$candidatepostjobs.approvedStatus',
+        candidateData: '$candidatepostjobs.candidateregistrations',
+      },
+    },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
+  ]);
+  const count = await EmployerDetails.aggregate([
+    {
+      $match: {
+        $and: [{ _id: { $eq: userId } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: '_id',
+        foreignField: 'jobId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'candidateregistrations',
+              localField: 'userId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'candidatedetails',
+                    localField: '_id',
+                    foreignField: 'userId',
+                    pipeline: [
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'sslcQualification',
+                          foreignField: '_id',
+                          as: 'sslcqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$sslcqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'hsQualification',
+                          foreignField: '_id',
+                          as: 'hscqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$hscqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'drQualification',
+                          foreignField: '_id',
+                          as: 'qualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$qualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'drcourses',
+                          localField: 'drCourse',
+                          foreignField: '_id',
+                          as: 'drcourses',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$drcourses',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'drspecializations',
+                          localField: 'drSpecialization',
+                          foreignField: '_id',
+                          as: 'drspecializations',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$drspecializations',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'pgQualification',
+                          foreignField: '_id',
+                          as: 'pgqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$pgqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'pgcourses',
+                          localField: 'pgCourse',
+                          foreignField: '_id',
+                          as: 'pgcourses',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$pgcourses',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'pgspecializations',
+                          localField: 'pgSpecialization',
+                          foreignField: '_id',
+                          as: 'pgspecializations',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$pgspecializations',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'ugQualification',
+                          foreignField: '_id',
+                          as: 'ugqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$ugqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'ugcourses',
+                          localField: 'ugCourse',
+                          foreignField: '_id',
+                          as: 'ugcourses',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$ugcourses',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'specializations',
+                          localField: 'ugSpecialization',
+                          foreignField: '_id',
+                          as: 'specializations',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$specializations',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'industries',
+                          localField: 'industry',
+                          foreignField: '_id',
+                          as: 'industries',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$industries',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'departments',
+                          localField: 'department',
+                          foreignField: '_id',
+                          as: 'departments',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$departments',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'rolecategories',
+                          localField: 'roleCategory',
+                          foreignField: '_id',
+                          as: 'rolecategories',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$rolecategories',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'jobroles',
+                          localField: 'role',
+                          foreignField: '_id',
+                          as: 'jobroles',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$jobroles',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'employercomments',
+                          localField: 'userId',
+                          foreignField: 'candidateId',
+                          pipeline: [
+                            {
+                              $match: {
+                                $and: [{ userId: { $eq: userId } }],
+                              },
+                            },
+                          ],
+                          as: 'employercomments',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$employercomments',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                    ],
+                    as: 'candidatedetails',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$candidatedetails',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $project: {
+                    resume: 1,
+                    email: 1,
+                    workStatus: 1,
+                    mobileNumber: 1,
+                    name: 1,
+                    lat: 1,
+                    long: 1,
+                    resume: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    comment: '$employercomments.comment',
+                    commentId: '$employercomments._id',
                     // candidateDetails: '$candidatedetails',
                     keyskill: '$candidatedetails.keyskill',
                     currentSkill: '$candidatedetails.currentSkill',
@@ -821,7 +1367,7 @@ const getAllApplied_postjobs_Candidates = async (userId) => {
       },
     },
   ]);
-  return data;
+  return { data: data, count: count.length };
 };
 
 const statusChange_employer = async (id, updateBody) => {
@@ -884,6 +1430,11 @@ const getByIdAll_CandidateDetails = async (id) => {
 const employer_comment = async (userId, Body) => {
   let values = { ...Body, ...{ userId: userId } };
   return await Employercomment.create(values);
+};
+
+const employer_comment_id = async (id) => {
+  const data = await Employercomment.findById(id);
+  return data;
 };
 
 //edit comment
@@ -956,11 +1507,45 @@ const transporter = nodemailer.createTransport({
   },
 });
 const send_mail_and_notification = async (userId, body) => {
+  const { candidates, subject, signature,message, email } = body;
   const data = await EmployerRegistration.findById(userId);
   // console.log(userId)
+  var data1 ; 
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
+  if(body.mail == "mail"){
+    candidates.forEach(async (e) => {
+       await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
+      const candidate = await CandidateRegistration.findById(e);
+          // console.log(candidate.email)
+         data1 = await ejs.renderFile(__dirname + '/mailtemplate.ejs', {
+          name: candidate.name,
+          subject: subject,
+          signature: signature,
+          message:message,
+          contactName:data.contactName,
+          email:candidate.email
+        })
+
+      const mainOptions = {
+        from: body.email,
+        to: candidate.email,
+        // to:"vignesh1041996@gmail.com",
+        subject: 'templates',
+        html: data1,
+      };
+  
+      transporter.sendMail(mainOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Message sent: ' + info.response);
+        }
+      });
+    })
+  }else{
+
   const employer = await EmployerDetails.aggregate([
     {
       $match: {
@@ -1064,12 +1649,14 @@ const send_mail_and_notification = async (userId, body) => {
         role: '$jobroles.Job_role',
         roleCategory: '$rolecategories.Role_Category',
         department: '$departments.Department',
-        industry: '$industries.Industry',
+        industry1: '$industries.Industry',
         interviewstartDate: 1,
         interviewendDate: 1,
         startTime: 1,
         endTime: 1,
         recruiterName: 1,
+        recruiterEmail: 1,
+        recruiterNumber: 1,
         date: 1,
         time: 1,
         companyType: '$employerregistrations.companyType',
@@ -1077,25 +1664,27 @@ const send_mail_and_notification = async (userId, body) => {
         contactName: '$employerregistrations.contactName',
         email: '$employerregistrations.email',
         name: '$employerregistrations.name',
+        logo: '$employerregistrations.logo',
         aboutCompany: '$employerregistrations.aboutCompany',
         location: '$employerregistrations.location',
         choosefile: '$employerregistrations.choosefile',
       },
     },
   ]);
-  console.log(employer[0].keySkill);
-  const { candidates, subject, signature, email } = body;
+  let ago = moment(employer[0].date, 'YYYY.MM.DD').fromNow();
+  let lakhsFrom = parseInt(employer[0].salaryRangeFrom / 100000);
+  let lakhsTo = parseInt(employer[0].salaryRangeTo / 100000);
+
   candidates.forEach(async (e) => {
-    await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
+    const da = await EmployerMailNotification.create({ ...body, ...{ userId: userId, candidateId: e } });
     const candidate = await CandidateRegistration.findById(e);
-    // console.log(candidate)
-    if (body.mail == 'mail') {
-      const data1 = await ejs.renderFile(__dirname + '/template.ejs', {
+    // if (body.mail == 'job') {
+       data1 = await ejs.renderFile(__dirname + '/template.ejs', {
         name: candidate.name,
         subject: subject,
         signature: signature,
-        keySkill: employer[0].keySkill,
-        preferedIndustry: employer[0].preferedIndustry,
+        keySkill: employer[0].keySkill.toString(),
+        preferedIndustry: employer[0].preferedIndustry.toString(),
         preferredSkill: employer[0].preferredSkill,
         adminStatus: employer[0].adminStatus,
         active: employer[0].active,
@@ -1103,8 +1692,8 @@ const send_mail_and_notification = async (userId, body) => {
         contactNumber: employer[0].contactNumber,
         jobDescription: employer[0].jobDescription,
         educationalQualification: employer[0].educationalQualification,
-        salaryRangeFrom: employer[0].salaryRangeFrom,
-        salaryRangeTo: employer[0].salaryRangeTo,
+        salaryRangeFrom: lakhsFrom,
+        salaryRangeTo: lakhsTo,
         experienceFrom: employer[0].experienceFrom,
         experienceTo: employer[0].experienceTo,
         interviewType: employer[0].interviewType,
@@ -1112,14 +1701,13 @@ const send_mail_and_notification = async (userId, body) => {
         salaryDescription: employer[0].salaryDescription,
         urltoApply: employer[0].urltoApply,
         workplaceType: employer[0].workplaceType,
-        industry: employer[0].industry,
         jobLocation: employer[0].jobLocation,
         employmentType: employer[0].employmentType,
         openings: employer[0].openings,
         role: employer[0].role,
         roleCategory: employer[0].roleCategory,
         department: employer[0].department,
-        industry: employer[0].industry,
+        industry: employer[0].industry1,
         interviewstartDate: employer[0].interviewstartDate,
         interviewendDate: employer[0].interviewendDate,
         startTime: employer[0].startTime,
@@ -1131,14 +1719,20 @@ const send_mail_and_notification = async (userId, body) => {
         mobileNumber: employer[0].mobileNumber,
         contactName: employer[0].contactName,
         email: employer[0].email,
+        recruiterEmail: employer[0].recruiterEmail,
+        recruiterNumber: employer[0].recruiterNumber,
         companyname: employer[0].name,
         aboutCompany: employer[0].aboutCompany,
         location: employer[0].location,
         choosefile: employer[0].choosefile,
+        mailId: da._id,
+        logo: employer[0].logo,
+        daysAgo: ago,
       });
       const mainOptions = {
         from: body.email,
         to: candidate.email,
+        // to:"vignesh1041996@gmail.com",
         subject: 'templates',
         html: data1,
       };
@@ -1150,13 +1744,14 @@ const send_mail_and_notification = async (userId, body) => {
           console.log('Message sent: ' + info.response);
         }
       });
-    }
+    // }
   });
+}
 
   return { messages: 'Send Notification Mail Successfully...' };
 };
 
-const getAll_Mail_notification_employerside = async (userId) => {
+const getAll_Mail_notification_employerside = async (userId, range, page) => {
   const data = await EmployerMailNotification.aggregate([
     {
       $match: {
@@ -1476,6 +2071,7 @@ const getAll_Mail_notification_employerside = async (userId) => {
               role_Category: '$candidatedetails.role_Category',
               salaryFrom: '$candidatedetails.salaryFrom',
               SalaryTo: '$candidatedetails.SalaryTo',
+              // candidatepostjobs:'$candidatedetails.candidatepostjobs'
               // candidateDetails:'$candidatedetails'
             },
           },
@@ -1485,25 +2081,50 @@ const getAll_Mail_notification_employerside = async (userId) => {
     },
     {
       $lookup: {
+        from: 'candidatepostjobs',
+        let: { mailId: '$mailId' },
+        localField: 'candidateregistrations._id',
+        foreignField: 'userId',
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ['$jobId', '$$mailId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
-        // pipeline:[
-        //   {
-        //     $lookup: {
-        //       from: 'employercomments',
-        //       localField: 'userId',
-        //       foreignField: 'userId',
-        //       as:'employercomments'
-        //       }
-        //     },
-        //     {
-        //       $unwind: {
-        //         path: '$employercomments',
-        //         preserveNullAndEmptyArrays: true,
-        //       },
-        //     },
-        // ],
+        pipeline: [
+          {
+            $lookup: {
+              from: 'employercomments',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'employercomments',
+            },
+          },
+          {
+            $unwind: {
+              path: '$employercomments',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
         as: 'employerdetails',
       },
     },
@@ -1516,8 +2137,789 @@ const getAll_Mail_notification_employerside = async (userId) => {
     {
       $project: {
         jobTittle: '$employerdetails.jobTittle',
-        // comment:'$employermailtemplates.employercomments.comment',
-        // commentId:'$employermailtemplates.employercomments._id',
+        comment: '$employerdetails.employercomments.comment',
+        commentId: '$employerdetails.employercomments._id',
+        status:  '$candidatepostjobs.approvedStatus',
+        candidateDetail: '$candidateregistrations',
+        subject: 1,
+        signature: 1,
+        email: 1,
+        candidateId: 1,
+        mailId: 1,
+        date: 1,
+      },
+    },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
+  ]);
+  const count = await EmployerMailNotification.aggregate([
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'candidateregistrations',
+        localField: 'candidateId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'candidatedetails',
+              localField: '_id',
+              foreignField: 'userId',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'qualifications',
+                    localField: 'sslcQualification',
+                    foreignField: '_id',
+                    as: 'sslcqualifications',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$sslcqualifications',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'qualifications',
+                    localField: 'hsQualification',
+                    foreignField: '_id',
+                    as: 'hscqualifications',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$hscqualifications',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'qualifications',
+                    localField: 'drQualification',
+                    foreignField: '_id',
+                    as: 'qualifications',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$qualifications',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'drcourses',
+                    localField: 'drCourse',
+                    foreignField: '_id',
+                    as: 'drcourses',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$drcourses',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'drspecializations',
+                    localField: 'drSpecialization',
+                    foreignField: '_id',
+                    as: 'drspecializations',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$drspecializations',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'qualifications',
+                    localField: 'pgQualification',
+                    foreignField: '_id',
+                    as: 'pgqualifications',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$pgqualifications',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'pgcourses',
+                    localField: 'pgCourse',
+                    foreignField: '_id',
+                    as: 'pgcourses',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$pgcourses',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'pgspecializations',
+                    localField: 'pgSpecialization',
+                    foreignField: '_id',
+                    as: 'pgspecializations',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$pgspecializations',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'qualifications',
+                    localField: 'ugQualification',
+                    foreignField: '_id',
+                    as: 'ugqualifications',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$ugqualifications',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'ugcourses',
+                    localField: 'ugCourse',
+                    foreignField: '_id',
+                    as: 'ugcourses',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$ugcourses',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'specializations',
+                    localField: 'ugSpecialization',
+                    foreignField: '_id',
+                    as: 'specializations',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$specializations',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'industries',
+                    localField: 'industry',
+                    foreignField: '_id',
+                    as: 'industries',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$industries',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'departments',
+                    localField: 'department',
+                    foreignField: '_id',
+                    as: 'departments',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$departments',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'rolecategories',
+                    localField: 'roleCategory',
+                    foreignField: '_id',
+                    as: 'rolecategories',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$rolecategories',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'jobroles',
+                    localField: 'role',
+                    foreignField: '_id',
+                    as: 'jobroles',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$jobroles',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'candidatepostjobs',
+                    localField: '_id',
+                    foreignField: 'jobId',
+                    as: 'candidatepostjobs',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$candidatepostjobs',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+              ],
+              as: 'candidatedetails',
+            },
+          },
+          {
+            $unwind: {
+              path: '$candidatedetails',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $project: {
+              resume: 1,
+              email: 1,
+              workStatus: 1,
+              mobileNumber: 1,
+              name: 1,
+              lat: 1,
+              long: 1,
+              resume: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              // candidateDetails: '$candidatedetails',
+              keyskill: '$candidatedetails.keyskill',
+              currentSkill: '$candidatedetails.currentSkill',
+              preferredSkill: '$candidatedetails.preferredSkill',
+              active: '$candidatedetails.active',
+              image: '$candidatedetails.image',
+              dob: '$candidatedetails.dob',
+              experienceYear: '$candidatedetails.experienceYear',
+              experienceMonth: '$candidatedetails.experienceMonth',
+              expectedctc: '$candidatedetails.expectedctc',
+              currentctc: '$candidatedetails.currentctc',
+              locationCurrent: '$candidatedetails.locationCurrent',
+              locationNative: '$candidatedetails.locationNative',
+              noticeperiod: '$candidatedetails.noticeperiod',
+              gender: '$candidatedetails.gender',
+              maritalStatus: '$candidatedetails.maritalStatus',
+              ugMarks: '$candidatedetails.ugMarks',
+              ugGradingSystem: '$candidatedetails.ugGradingSystem',
+              ugCourseType: '$candidatedetails.ugCourseType',
+              ugCourseDurationTo: '$candidatedetails.ugCourseDurationTo',
+              ugCourseDurationFrom: '$candidatedetails.ugCourseDurationFrom',
+              relocate: '$candidatedetails.relocate',
+              languages: '$candidatedetails.languages',
+              ugUniversity: '$candidatedetails.ugUniversity',
+              drQualification: '$candidatedetails.qualifications.qualification',
+              drcourses: '$candidatedetails.drcourses.Course',
+              drSpecialization: '$candidatedetails.drspecializations.Specialization',
+              pgQualification: '$candidatedetails.pgqualifications.qualification',
+              pgCourse: '$candidatedetails.pgcourses.Course',
+              pgSpecialization: '$candidatedetails.pgspecializations.Specialization',
+              ugQualification: '$candidatedetails.ugqualifications.qualification',
+              ugCourse: '$candidatedetails.ugcourses.Course',
+              ugSpecialization: '$candidatedetails.specializations.Specialization',
+              role: '$candidatedetails.jobroles.Job_role',
+              roleCategory: '$candidatedetails.rolecategories.Role_Category',
+              department: '$candidatedetails.departments.Department',
+              industry: '$candidatedetails.industries.Industry',
+              sslctotalmarks: '$candidatedetails.sslctotalmarks',
+              sslcPassedYear: '$candidatedetails.sslcPassedYear',
+              sslcMedium: '$candidatedetails.sslcMedium',
+              sslcBoard: '$candidatedetails.sslcBoard',
+              sslcQualification: '$candidatedetails.sslcqualifications.qualification',
+              pgUniversity: '$candidatedetails.pgUniversity',
+              pgMarks: '$candidatedetails.pgUniversity',
+              pgGradingSystem: '$candidatedetails.pgUniversity',
+              pgCourseType: '$candidatedetails.pgUniversity',
+              pgCourseDurationTo: '$candidatedetails.pgUniversity',
+              pgCourseDurationFrom: '$candidatedetails.pgUniversity',
+              hstotalmarks: '$candidatedetails.hstotalmarks',
+              hsPassedYear: '$candidatedetails.hsPassedYear',
+              hsMedium: '$candidatedetails.hsMedium',
+              hsBoard: '$candidatedetails.hsBoard',
+              drMarks: '$candidatedetails.drMarks',
+              drGradingSystem: '$candidatedetails.drGradingSystem',
+              drCourseType: '$candidatedetails.drCourseType',
+              drCourseDurationTo: '$candidatedetails.drCourseDurationTo',
+              drCourseDurationFrom: '$candidatedetails.drCourseDurationFrom',
+              hsQualification: '$candidatedetails.hscqualifications.qualification',
+              keyskillSet: '$candidatedetails.keyskillSet',
+              drUniversity: '$candidatedetails.drUniversity',
+              experienceMonthSet: '$candidatedetails.experienceMonthSet',
+              locationSet: '$candidatedetails.locationSet',
+              experienceYearSet: '$candidatedetails.experienceYearSet',
+              designationSet: '$candidatedetails.designationSet',
+              currentIndustry: '$candidatedetails.currentIndustry',
+              currentDepartment: '$candidatedetails.currentDepartment',
+              role_Category: '$candidatedetails.role_Category',
+              salaryFrom: '$candidatedetails.salaryFrom',
+              SalaryTo: '$candidatedetails.SalaryTo',
+              candidatepostjobs: '$candidatedetails.candidatepostjobs',
+              // candidateDetails:'$candidatedetails'
+            },
+          },
+        ],
+        as: 'candidateregistrations',
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'mailId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'employercomments',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'employercomments',
+            },
+          },
+          {
+            $unwind: {
+              path: '$employercomments',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
+        as: 'employerdetails',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employerdetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        jobTittle: '$employerdetails.jobTittle',
+        comment: '$employerdetails.employercomments.comment',
+        commentId: '$employerdetails.employercomments._id',
+        status: 1,
+        candidateDetail: '$candidateregistrations',
+        subject: 1,
+        signature: 1,
+        email: 1,
+        candidateId: 1,
+        mailId: 1,
+        date: 1,
+      },
+    },
+  ]);
+  return { data: data, count: count.length };
+};
+
+// getbyId notification
+const getbyId_notification = async (id) => {
+  const data = await EmployerMailNotification.aggregate([
+    {
+      $match: {
+        $and: [{ _id: { $eq: id } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'candidateregistrations',
+        localField: 'candidateId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'candidatedetails',
+              localField: '_id',
+              foreignField: 'userId',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'qualifications',
+                    localField: 'sslcQualification',
+                    foreignField: '_id',
+                    as: 'sslcqualifications',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$sslcqualifications',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'qualifications',
+                    localField: 'hsQualification',
+                    foreignField: '_id',
+                    as: 'hscqualifications',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$hscqualifications',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'qualifications',
+                    localField: 'drQualification',
+                    foreignField: '_id',
+                    as: 'qualifications',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$qualifications',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'drcourses',
+                    localField: 'drCourse',
+                    foreignField: '_id',
+                    as: 'drcourses',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$drcourses',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'drspecializations',
+                    localField: 'drSpecialization',
+                    foreignField: '_id',
+                    as: 'drspecializations',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$drspecializations',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'qualifications',
+                    localField: 'pgQualification',
+                    foreignField: '_id',
+                    as: 'pgqualifications',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$pgqualifications',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'pgcourses',
+                    localField: 'pgCourse',
+                    foreignField: '_id',
+                    as: 'pgcourses',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$pgcourses',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'pgspecializations',
+                    localField: 'pgSpecialization',
+                    foreignField: '_id',
+                    as: 'pgspecializations',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$pgspecializations',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'qualifications',
+                    localField: 'ugQualification',
+                    foreignField: '_id',
+                    as: 'ugqualifications',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$ugqualifications',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'ugcourses',
+                    localField: 'ugCourse',
+                    foreignField: '_id',
+                    as: 'ugcourses',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$ugcourses',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'specializations',
+                    localField: 'ugSpecialization',
+                    foreignField: '_id',
+                    as: 'specializations',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$specializations',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'industries',
+                    localField: 'industry',
+                    foreignField: '_id',
+                    as: 'industries',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$industries',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'departments',
+                    localField: 'department',
+                    foreignField: '_id',
+                    as: 'departments',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$departments',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'rolecategories',
+                    localField: 'roleCategory',
+                    foreignField: '_id',
+                    as: 'rolecategories',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$rolecategories',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'jobroles',
+                    localField: 'role',
+                    foreignField: '_id',
+                    as: 'jobroles',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$jobroles',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'candidatepostjobs',
+                    localField: '_id',
+                    foreignField: 'jobId',
+                    as: 'candidatepostjobs',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$candidatepostjobs',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+              ],
+              as: 'candidatedetails',
+            },
+          },
+          {
+            $unwind: {
+              path: '$candidatedetails',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $project: {
+              resume: 1,
+              email: 1,
+              workStatus: 1,
+              mobileNumber: 1,
+              name: 1,
+              lat: 1,
+              long: 1,
+              resume: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              // candidateDetails: '$candidatedetails',
+              keyskill: '$candidatedetails.keyskill',
+              currentSkill: '$candidatedetails.currentSkill',
+              preferredSkill: '$candidatedetails.preferredSkill',
+              active: '$candidatedetails.active',
+              image: '$candidatedetails.image',
+              dob: '$candidatedetails.dob',
+              experienceYear: '$candidatedetails.experienceYear',
+              experienceMonth: '$candidatedetails.experienceMonth',
+              expectedctc: '$candidatedetails.expectedctc',
+              currentctc: '$candidatedetails.currentctc',
+              locationCurrent: '$candidatedetails.locationCurrent',
+              locationNative: '$candidatedetails.locationNative',
+              noticeperiod: '$candidatedetails.noticeperiod',
+              gender: '$candidatedetails.gender',
+              maritalStatus: '$candidatedetails.maritalStatus',
+              ugMarks: '$candidatedetails.ugMarks',
+              ugGradingSystem: '$candidatedetails.ugGradingSystem',
+              ugCourseType: '$candidatedetails.ugCourseType',
+              ugCourseDurationTo: '$candidatedetails.ugCourseDurationTo',
+              ugCourseDurationFrom: '$candidatedetails.ugCourseDurationFrom',
+              relocate: '$candidatedetails.relocate',
+              languages: '$candidatedetails.languages',
+              ugUniversity: '$candidatedetails.ugUniversity',
+              drQualification: '$candidatedetails.qualifications.qualification',
+              drcourses: '$candidatedetails.drcourses.Course',
+              drSpecialization: '$candidatedetails.drspecializations.Specialization',
+              pgQualification: '$candidatedetails.pgqualifications.qualification',
+              pgCourse: '$candidatedetails.pgcourses.Course',
+              pgSpecialization: '$candidatedetails.pgspecializations.Specialization',
+              ugQualification: '$candidatedetails.ugqualifications.qualification',
+              ugCourse: '$candidatedetails.ugcourses.Course',
+              ugSpecialization: '$candidatedetails.specializations.Specialization',
+              role: '$candidatedetails.jobroles.Job_role',
+              roleCategory: '$candidatedetails.rolecategories.Role_Category',
+              department: '$candidatedetails.departments.Department',
+              industry: '$candidatedetails.industries.Industry',
+              sslctotalmarks: '$candidatedetails.sslctotalmarks',
+              sslcPassedYear: '$candidatedetails.sslcPassedYear',
+              sslcMedium: '$candidatedetails.sslcMedium',
+              sslcBoard: '$candidatedetails.sslcBoard',
+              sslcQualification: '$candidatedetails.sslcqualifications.qualification',
+              pgUniversity: '$candidatedetails.pgUniversity',
+              pgMarks: '$candidatedetails.pgUniversity',
+              pgGradingSystem: '$candidatedetails.pgUniversity',
+              pgCourseType: '$candidatedetails.pgUniversity',
+              pgCourseDurationTo: '$candidatedetails.pgUniversity',
+              pgCourseDurationFrom: '$candidatedetails.pgUniversity',
+              hstotalmarks: '$candidatedetails.hstotalmarks',
+              hsPassedYear: '$candidatedetails.hsPassedYear',
+              hsMedium: '$candidatedetails.hsMedium',
+              hsBoard: '$candidatedetails.hsBoard',
+              drMarks: '$candidatedetails.drMarks',
+              drGradingSystem: '$candidatedetails.drGradingSystem',
+              drCourseType: '$candidatedetails.drCourseType',
+              drCourseDurationTo: '$candidatedetails.drCourseDurationTo',
+              drCourseDurationFrom: '$candidatedetails.drCourseDurationFrom',
+              hsQualification: '$candidatedetails.hscqualifications.qualification',
+              keyskillSet: '$candidatedetails.keyskillSet',
+              drUniversity: '$candidatedetails.drUniversity',
+              experienceMonthSet: '$candidatedetails.experienceMonthSet',
+              locationSet: '$candidatedetails.locationSet',
+              experienceYearSet: '$candidatedetails.experienceYearSet',
+              designationSet: '$candidatedetails.designationSet',
+              currentIndustry: '$candidatedetails.currentIndustry',
+              currentDepartment: '$candidatedetails.currentDepartment',
+              role_Category: '$candidatedetails.role_Category',
+              salaryFrom: '$candidatedetails.salaryFrom',
+              SalaryTo: '$candidatedetails.SalaryTo',
+              candidatepostjobs: '$candidatedetails.candidatepostjobs',
+              // candidateDetails:'$candidatedetails'
+            },
+          },
+        ],
+        as: 'candidateregistrations',
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'mailId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'employercomments',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'employercomments',
+            },
+          },
+          {
+            $unwind: {
+              path: '$employercomments',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
+        as: 'employerdetails',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employerdetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        jobTittle: '$employerdetails.jobTittle',
+        comment: '$employerdetails.employercomments.comment',
+        commentId: '$employerdetails.employercomments._id',
         status: 1,
         candidateDetail: '$candidateregistrations',
         subject: 1,
@@ -1581,6 +2983,22 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         from: 'employerdetails',
         localField: 'mailId',
         foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'jobroles',
+              localField: 'role',
+              foreignField: '_id',
+              as: 'jobroles',
+            },
+          },
+          {
+            $unwind: {
+              path: '$jobroles',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
         as: 'employerdetails',
       },
     },
@@ -1621,6 +3039,7 @@ const getAll_Mail_notification_candidateside = async (userId) => {
         employerregistrations: '$employerregistrations',
         date: 1,
         appliedStatus: '$candidatepostjobs.approvedStatus',
+        role: '$employerdetails.jobroles.Job_role',
       },
     },
   ]);
@@ -1930,42 +3349,44 @@ const keySkillData = async (key) => {
   // let fn = re.exec.bind(re);
   // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   // let filtered = data.filter(fn);
-  var query = new RegExp("\^" + key, "i");
-  const data = await Skill.find({ Skill_Title: { $regex: query } }).sort({ Skill_Title: 1 }).limit(7);
+  var query = new RegExp('^' + key, 'i');
+  const data = await Skill.find({ Skill_Title: { $regex: query } })
+    .sort({ Skill_Title: 1 })
+    .limit(7);
   // .sort({ Skill_Title: 1 })
   // .select('Skill_Title')
   return data;
 };
 
-const location = async (key) => {
-  const re = new RegExp(key.toLowerCase());
-  // console.log(re)
-  let fn = re.exec.bind(re);
-  let data = [
-    'nagapattinam',
-    'mayiladuthurai',
-    'madurai',
-    'krishnagiri',
-    'karur',
-    'kanniyakumari',
-    'erode',
-    'dindigul',
-    'dharmapuri',
-    'ariyalur',
-    'chennai',
-    'kanchipuram',
-    'villupuram',
-    'pondicherry',
-    'cuddalore',
-    'kallakuruchi',
-    'nagapattinam',
-    'salem',
-    'bangalore',
-    'coimbatore',
-  ];
-  let filtered = data.filter(fn);
-  return filtered;
-};
+// const location = async (key) => {
+//   const re = new RegExp(key.toLowerCase());
+//   // console.log(re)
+//   let fn = re.exec.bind(re);
+//   let data = [
+//     'nagapattinam',
+//     'mayiladuthurai',
+//     'madurai',
+//     'krishnagiri',
+//     'karur',
+//     'kanniyakumari',
+//     'erode',
+//     'dindigul',
+//     'dharmapuri',
+//     'ariyalur',
+//     'chennai',
+//     'kanchipuram',
+//     'villupuram',
+//     'pondicherry',
+//     'cuddalore',
+//     'kallakuruchi',
+//     'nagapattinam',
+//     'salem',
+//     'bangalore',
+//     'coimbatore',
+//   ];
+//   let filtered = data.filter(fn);
+//   return filtered;
+// };
 
 const create_Recruiter = async (userId, body) => {
   const data = await Recruiters.create({ ...body, ...{ userId: userId } });
@@ -1993,6 +3414,1246 @@ const Recruiter_delete = async (id) => {
   const data = await Recruiters.deleteOne({ _id: id });
   return data;
 };
+
+// get admin side all post jobs details
+
+const get_admin_side_all_post_jobs_details = async (body) => {
+  let dates = moment().format('YYYY-MM-DD');
+  let = {date1, date2, name, skill, location, sortBy, range, page} = body
+
+  let searchfilter = { data: true };
+  let datefiletr = { data: true };
+  let locationfilter = { data: true };
+  // let salaryfilter = { active: true };
+  let sortByfilter = { data: true };
+  let skillfilter = { data: true };
+  if(name != null){
+    searchfilter = { companyName: { $eq: name } }
+  }
+
+  if (date1 != null && date2 != null) {
+      datefiletr =  {$and:[{ date: { $gte: date1 } }, { date: { $lte: date2 } }]}
+  }
+
+
+  if (sortBy != null) {
+    if(sortBy == "Expired"){
+      sortByfilter = { adminStatuss: { $eq: sortBy } };
+    }
+    if(sortBy == "inactive"){
+      sortByfilter = { active: { $eq: false } };
+    }
+    if(sortBy == "Active"){
+      sortByfilter = { active: { $eq: true } };
+    }
+    if(sortBy == "all"){
+      sortByfilter = { data: { $eq: true } };
+    }
+  }
+
+  if(location != null){
+    locationfilter = { jobLocation:{ $regex: location, $options: 'i' } }
+  }
+
+  if(skill.length != 0){
+    skillfilter = { keySkill: { $elemMatch: { $in: skill } } };
+  }
+  // console.log(skillfilter, searchfilter, datefiletr, locationfilter, sortByfilter)
+  // if(salary != null){
+  //   // let salary_macth = [];
+  //   // Salary.forEach((a) => {
+  //     let value = salary.split('-');
+  //     let start = value[0] * 100000;
+
+  //     let end = 0;
+  //     if (value[1] != 'more') {
+  //       end = value[1] * 100000;
+  //     }
+  //     if (end != 0) {
+  //       salaryfilter = { $and: [{ salaryRangeFrom: { $gte: start } }, { salaryRangeTo: { $lte: end } }] };
+  //     } else {
+  //       salaryfilter = { $and: [{ salaryRangeFrom: { $gte: start } }] };
+  //     }
+    // });
+    // console.log(salaryfilter);
+    // salarySearch = { $or: salary_macth };
+    // salaryfilter = { jobLocation:{ $regex: key, $options: 'i' } },
+  // }
+  const data = await EmployerDetails.aggregate([
+    {
+      $sort: { date: -1, time: -1 },
+    },
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: '_id',
+        foreignField: 'jobId',
+        pipeline: [
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+            },
+          },
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'departments',
+        localField: 'department',
+        foreignField: '_id',
+        as: 'departments',
+      },
+    },
+    {
+      $unwind: {
+        path: '$departments',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'rolecategories',
+        localField: 'roleCategory',
+        foreignField: '_id',
+        as: 'rolecategories',
+      },
+    },
+    {
+      $unwind: {
+        path: '$rolecategories',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'employerregistrations',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        appliedcount: '$candidatepostjobs.count',
+        keySkill: 1,
+        dates: dates,
+        date: 1,
+        active: 1,
+        jobTittle: 1,
+        designation: 1,
+        recruiterName: 1,
+        contactNumber: 1,
+        jobDescription: 1,
+        salaryRangeFrom: 1,
+        salaryRangeTo: 1,
+        experienceFrom: 1,
+        experienceTo: 1,
+        interviewType: 1,
+        candidateDescription: 1,
+        workplaceType: 1,
+        industry: 1,
+        interviewerName: 1,
+        preferredindustry: 1,
+        functionalArea: 1,
+        role: 1,
+        jobLocation: 1,
+        employmentType: 1,
+        openings: 1,
+        interviewDate: 1,
+        interviewTime: 1,
+        location: 1,
+        interviewerName: 1,
+        interviewerContactNumber: 1,
+        validity: 1,
+        educationalQualification: 1,
+        userId: 1,
+        expiredDate: 1,
+        createdAt: 1,
+        adminStatus: 1,
+        recruiterName: 1,
+        recruiterEmail: 1,
+        recruiterNumber: 1,
+        roleName: '$jobroles.Job_role',
+        categoryName: '$rolecategories.Role_Category',
+        departmentName: '$departments.Department',
+        department: 1,
+        roleCategory: 1,
+        role: 1,
+        data:1,
+        adminStatuss: {
+          $cond: {
+            if: { $gt: [dates, '$expiredDate'] },
+            then: 'Expired',
+            else: '$active',
+          },
+        },
+         companyName:"$employerregistrations.name",
+         email:"$employerregistrations.email",
+         mobileNumber:"$employerregistrations.mobileNumber",
+         companyType:"$employerregistrations.companyType",
+         name:"$employerregistrations.name",
+         regitserStatus:"$employerregistrations.adminStatus",
+      },
+    },
+    {
+      $match: {
+        $and: [skillfilter,locationfilter, datefiletr, searchfilter, sortByfilter],
+      },
+    },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },           
+  ]);
+
+  const count = await EmployerDetails.aggregate([
+    {
+      $sort: { date: -1, time: -1 },
+    },
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: '_id',
+        foreignField: 'jobId',
+        pipeline: [
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+            },
+          },
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'departments',
+        localField: 'department',
+        foreignField: '_id',
+        as: 'departments',
+      },
+    },
+    {
+      $unwind: {
+        path: '$departments',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'rolecategories',
+        localField: 'roleCategory',
+        foreignField: '_id',
+        as: 'rolecategories',
+      },
+    },
+    {
+      $unwind: {
+        path: '$rolecategories',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'employerregistrations',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        appliedcount: '$candidatepostjobs.count',
+        keySkill: 1,
+        dates: dates,
+        date: 1,
+        active: 1,
+        jobTittle: 1,
+        designation: 1,
+        recruiterName: 1,
+        contactNumber: 1,
+        jobDescription: 1,
+        salaryRangeFrom: 1,
+        salaryRangeTo: 1,
+        experienceFrom: 1,
+        experienceTo: 1,
+        interviewType: 1,
+        candidateDescription: 1,
+        workplaceType: 1,
+        industry: 1,
+        interviewerName: 1,
+        preferredindustry: 1,
+        functionalArea: 1,
+        role: 1,
+        jobLocation: 1,
+        employmentType: 1,
+        openings: 1,
+        interviewDate: 1,
+        interviewTime: 1,
+        location: 1,
+        interviewerName: 1,
+        interviewerContactNumber: 1,
+        validity: 1,
+        educationalQualification: 1,
+        userId: 1,
+        expiredDate: 1,
+        createdAt: 1,
+        adminStatus: 1,
+        recruiterName: 1,
+        recruiterEmail: 1,
+        recruiterNumber: 1,
+        roleName: '$jobroles.Job_role',
+        categoryName: '$rolecategories.Role_Category',
+        departmentName: '$departments.Department',
+        department: 1,
+        roleCategory: 1,
+        role: 1,
+        data:1,
+        adminStatuss: {
+          $cond: {
+            if: { $gt: [dates, '$expiredDate'] },
+            then: 'Expired',
+            else: '$adminStatus',
+          },
+        },
+         companyName:"$employerregistrations.companyName",
+         email:"$employerregistrations.email",
+         mobileNumber:"$employerregistrations.mobileNumber",
+         companyType:"$employerregistrations.companyType",
+         name:"$employerregistrations.name",
+         regitserStatus:"$employerregistrations.adminStatus",
+      },
+    },
+    {
+      $match: {
+        $and: [skillfilter,locationfilter, datefiletr, searchfilter, sortByfilter],
+      },
+    },
+  ]);
+  return {data:data, count:count.length};
+};
+
+
+// get_all_job_applied_candiadtes
+
+const get_all_job_applied_candiadtes = async (userId, range, page) => {
+  const data = await EmployerDetails.aggregate([
+    {
+      $match: {
+        $and: [{ _id: { $eq: userId } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: '_id',
+        foreignField: 'jobId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'candidateregistrations',
+              localField: 'userId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'candidatedetails',
+                    localField: '_id',
+                    foreignField: 'userId',
+                    pipeline: [
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'sslcQualification',
+                          foreignField: '_id',
+                          as: 'sslcqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$sslcqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'hsQualification',
+                          foreignField: '_id',
+                          as: 'hscqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$hscqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'drQualification',
+                          foreignField: '_id',
+                          as: 'qualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$qualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'drcourses',
+                          localField: 'drCourse',
+                          foreignField: '_id',
+                          as: 'drcourses',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$drcourses',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'drspecializations',
+                          localField: 'drSpecialization',
+                          foreignField: '_id',
+                          as: 'drspecializations',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$drspecializations',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'pgQualification',
+                          foreignField: '_id',
+                          as: 'pgqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$pgqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'pgcourses',
+                          localField: 'pgCourse',
+                          foreignField: '_id',
+                          as: 'pgcourses',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$pgcourses',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'pgspecializations',
+                          localField: 'pgSpecialization',
+                          foreignField: '_id',
+                          as: 'pgspecializations',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$pgspecializations',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'ugQualification',
+                          foreignField: '_id',
+                          as: 'ugqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$ugqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'ugcourses',
+                          localField: 'ugCourse',
+                          foreignField: '_id',
+                          as: 'ugcourses',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$ugcourses',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'specializations',
+                          localField: 'ugSpecialization',
+                          foreignField: '_id',
+                          as: 'specializations',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$specializations',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'industries',
+                          localField: 'industry',
+                          foreignField: '_id',
+                          as: 'industries',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$industries',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'departments',
+                          localField: 'department',
+                          foreignField: '_id',
+                          as: 'departments',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$departments',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'rolecategories',
+                          localField: 'roleCategory',
+                          foreignField: '_id',
+                          as: 'rolecategories',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$rolecategories',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'jobroles',
+                          localField: 'role',
+                          foreignField: '_id',
+                          as: 'jobroles',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$jobroles',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'employercomments',
+                          localField: 'userId',
+                          foreignField: 'candidateId',
+                          pipeline: [
+                            {
+                              $match: {
+                                $and: [{ userId: { $eq: userId } }],
+                              },
+                            },
+                          ],
+                          as: 'employercomments',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$employercomments',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                    ],
+                    as: 'candidatedetails',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$candidatedetails',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $project: {
+                    resume: 1,
+                    email: 1,
+                    workStatus: 1,
+                    mobileNumber: 1,
+                    name: 1,
+                    lat: 1,
+                    long: 1,
+                    resume: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    comment: '$employercomments.comment',
+                    commentId: '$employercomments._id',
+                    // candidateDetails: '$candidatedetails',
+                    keyskill: '$candidatedetails.keyskill',
+                    currentSkill: '$candidatedetails.currentSkill',
+                    preferredSkill: '$candidatedetails.preferredSkill',
+                    active: '$candidatedetails.active',
+                    image: '$candidatedetails.image',
+                    dob: '$candidatedetails.dob',
+                    experienceYear: '$candidatedetails.experienceYear',
+                    experienceMonth: '$candidatedetails.experienceMonth',
+                    expectedctc: '$candidatedetails.expectedctc',
+                    currentctc: '$candidatedetails.currentctc',
+                    locationCurrent: '$candidatedetails.locationCurrent',
+                    locationNative: '$candidatedetails.locationNative',
+                    noticeperiod: '$candidatedetails.noticeperiod',
+                    gender: '$candidatedetails.gender',
+                    maritalStatus: '$candidatedetails.maritalStatus',
+                    ugMarks: '$candidatedetails.ugMarks',
+                    ugGradingSystem: '$candidatedetails.ugGradingSystem',
+                    ugCourseType: '$candidatedetails.ugCourseType',
+                    ugCourseDurationTo: '$candidatedetails.ugCourseDurationTo',
+                    ugCourseDurationFrom: '$candidatedetails.ugCourseDurationFrom',
+                    relocate: '$candidatedetails.relocate',
+                    languages: '$candidatedetails.languages',
+                    ugUniversity: '$candidatedetails.ugUniversity',
+                    drQualification: '$candidatedetails.qualifications.qualification',
+                    drcourses: '$candidatedetails.drcourses.Course',
+                    drSpecialization: '$candidatedetails.drspecializations.Specialization',
+                    pgQualification: '$candidatedetails.pgqualifications.qualification',
+                    pgCourse: '$candidatedetails.pgcourses.Course',
+                    pgSpecialization: '$candidatedetails.pgspecializations.Specialization',
+                    ugQualification: '$candidatedetails.ugqualifications.qualification',
+                    ugCourse: '$candidatedetails.ugcourses.Course',
+                    ugSpecialization: '$candidatedetails.specializations.Specialization',
+                    role: '$candidatedetails.jobroles.Job_role',
+                    roleCategory: '$candidatedetails.rolecategories.Role_Category',
+                    department: '$candidatedetails.departments.Department',
+                    industry: '$candidatedetails.industries.Industry',
+                    sslctotalmarks: '$candidatedetails.sslctotalmarks',
+                    sslcPassedYear: '$candidatedetails.sslcPassedYear',
+                    sslcMedium: '$candidatedetails.sslcMedium',
+                    sslcBoard: '$candidatedetails.sslcBoard',
+                    sslcQualification: '$candidatedetails.sslcqualifications.qualification',
+                    pgUniversity: '$candidatedetails.pgUniversity',
+                    pgMarks: '$candidatedetails.pgUniversity',
+                    pgGradingSystem: '$candidatedetails.pgUniversity',
+                    pgCourseType: '$candidatedetails.pgUniversity',
+                    pgCourseDurationTo: '$candidatedetails.pgUniversity',
+                    pgCourseDurationFrom: '$candidatedetails.pgUniversity',
+                    hstotalmarks: '$candidatedetails.hstotalmarks',
+                    hsPassedYear: '$candidatedetails.hsPassedYear',
+                    hsMedium: '$candidatedetails.hsMedium',
+                    hsBoard: '$candidatedetails.hsBoard',
+                    drMarks: '$candidatedetails.drMarks',
+                    drGradingSystem: '$candidatedetails.drGradingSystem',
+                    drCourseType: '$candidatedetails.drCourseType',
+                    drCourseDurationTo: '$candidatedetails.drCourseDurationTo',
+                    drCourseDurationFrom: '$candidatedetails.drCourseDurationFrom',
+                    hsQualification: '$candidatedetails.hscqualifications.qualification',
+                    keyskillSet: '$candidatedetails.keyskillSet',
+                    drUniversity: '$candidatedetails.drUniversity',
+                    experienceMonthSet: '$candidatedetails.experienceMonthSet',
+                    locationSet: '$candidatedetails.locationSet',
+                    experienceYearSet: '$candidatedetails.experienceYearSet',
+                    designationSet: '$candidatedetails.designationSet',
+                    currentIndustry: '$candidatedetails.currentIndustry',
+                    currentDepartment: '$candidatedetails.currentDepartment',
+                    role_Category: '$candidatedetails.role_Category',
+                    salaryFrom: '$candidatedetails.salaryFrom',
+                    SalaryTo: '$candidatedetails.SalaryTo',
+                  },
+                },
+              ],
+              as: 'candidateregistrations',
+            },
+          },
+          {
+            $unwind: {
+              path: '$candidateregistrations',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: '$candidatepostjobs',
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'employerregistrations',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        candidateId: '$candidatepostjobs.candidateregistrations._id',
+        employerCommand: '$candidateregistrations.candidatedetails.employercomments.comment',
+        commandIdId: '$candidateregistrations.candidatedetails.employercomments._id',
+        postjobId: '$candidatepostjobs._id',
+        status: '$candidatepostjobs.approvedStatus',
+        candidateData: '$candidatepostjobs.candidateregistrations',
+        companyname:'$employerregistrations.name',
+        location:'$employerregistrations.location'
+      },
+    },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
+  ]);
+  const count = await EmployerDetails.aggregate([
+    {
+      $match: {
+        $and: [{ _id: { $eq: userId } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: '_id',
+        foreignField: 'jobId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'candidateregistrations',
+              localField: 'userId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'candidatedetails',
+                    localField: '_id',
+                    foreignField: 'userId',
+                    pipeline: [
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'sslcQualification',
+                          foreignField: '_id',
+                          as: 'sslcqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$sslcqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'hsQualification',
+                          foreignField: '_id',
+                          as: 'hscqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$hscqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'drQualification',
+                          foreignField: '_id',
+                          as: 'qualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$qualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'drcourses',
+                          localField: 'drCourse',
+                          foreignField: '_id',
+                          as: 'drcourses',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$drcourses',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'drspecializations',
+                          localField: 'drSpecialization',
+                          foreignField: '_id',
+                          as: 'drspecializations',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$drspecializations',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'pgQualification',
+                          foreignField: '_id',
+                          as: 'pgqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$pgqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'pgcourses',
+                          localField: 'pgCourse',
+                          foreignField: '_id',
+                          as: 'pgcourses',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$pgcourses',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'pgspecializations',
+                          localField: 'pgSpecialization',
+                          foreignField: '_id',
+                          as: 'pgspecializations',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$pgspecializations',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'qualifications',
+                          localField: 'ugQualification',
+                          foreignField: '_id',
+                          as: 'ugqualifications',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$ugqualifications',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'ugcourses',
+                          localField: 'ugCourse',
+                          foreignField: '_id',
+                          as: 'ugcourses',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$ugcourses',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'specializations',
+                          localField: 'ugSpecialization',
+                          foreignField: '_id',
+                          as: 'specializations',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$specializations',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'industries',
+                          localField: 'industry',
+                          foreignField: '_id',
+                          as: 'industries',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$industries',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'departments',
+                          localField: 'department',
+                          foreignField: '_id',
+                          as: 'departments',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$departments',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'rolecategories',
+                          localField: 'roleCategory',
+                          foreignField: '_id',
+                          as: 'rolecategories',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$rolecategories',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'jobroles',
+                          localField: 'role',
+                          foreignField: '_id',
+                          as: 'jobroles',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$jobroles',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                      {
+                        $lookup: {
+                          from: 'employercomments',
+                          localField: 'userId',
+                          foreignField: 'candidateId',
+                          pipeline: [
+                            {
+                              $match: {
+                                $and: [{ userId: { $eq: userId } }],
+                              },
+                            },
+                          ],
+                          as: 'employercomments',
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$employercomments',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                    ],
+                    as: 'candidatedetails',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$candidatedetails',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+                {
+                  $project: {
+                    resume: 1,
+                    email: 1,
+                    workStatus: 1,
+                    mobileNumber: 1,
+                    name: 1,
+                    lat: 1,
+                    long: 1,
+                    resume: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    comment: '$employercomments.comment',
+                    commentId: '$employercomments._id',
+                    // candidateDetails: '$candidatedetails',
+                    keyskill: '$candidatedetails.keyskill',
+                    currentSkill: '$candidatedetails.currentSkill',
+                    preferredSkill: '$candidatedetails.preferredSkill',
+                    active: '$candidatedetails.active',
+                    image: '$candidatedetails.image',
+                    dob: '$candidatedetails.dob',
+                    experienceYear: '$candidatedetails.experienceYear',
+                    experienceMonth: '$candidatedetails.experienceMonth',
+                    expectedctc: '$candidatedetails.expectedctc',
+                    currentctc: '$candidatedetails.currentctc',
+                    locationCurrent: '$candidatedetails.locationCurrent',
+                    locationNative: '$candidatedetails.locationNative',
+                    noticeperiod: '$candidatedetails.noticeperiod',
+                    gender: '$candidatedetails.gender',
+                    maritalStatus: '$candidatedetails.maritalStatus',
+                    ugMarks: '$candidatedetails.ugMarks',
+                    ugGradingSystem: '$candidatedetails.ugGradingSystem',
+                    ugCourseType: '$candidatedetails.ugCourseType',
+                    ugCourseDurationTo: '$candidatedetails.ugCourseDurationTo',
+                    ugCourseDurationFrom: '$candidatedetails.ugCourseDurationFrom',
+                    relocate: '$candidatedetails.relocate',
+                    languages: '$candidatedetails.languages',
+                    ugUniversity: '$candidatedetails.ugUniversity',
+                    drQualification: '$candidatedetails.qualifications.qualification',
+                    drcourses: '$candidatedetails.drcourses.Course',
+                    drSpecialization: '$candidatedetails.drspecializations.Specialization',
+                    pgQualification: '$candidatedetails.pgqualifications.qualification',
+                    pgCourse: '$candidatedetails.pgcourses.Course',
+                    pgSpecialization: '$candidatedetails.pgspecializations.Specialization',
+                    ugQualification: '$candidatedetails.ugqualifications.qualification',
+                    ugCourse: '$candidatedetails.ugcourses.Course',
+                    ugSpecialization: '$candidatedetails.specializations.Specialization',
+                    role: '$candidatedetails.jobroles.Job_role',
+                    roleCategory: '$candidatedetails.rolecategories.Role_Category',
+                    department: '$candidatedetails.departments.Department',
+                    industry: '$candidatedetails.industries.Industry',
+                    sslctotalmarks: '$candidatedetails.sslctotalmarks',
+                    sslcPassedYear: '$candidatedetails.sslcPassedYear',
+                    sslcMedium: '$candidatedetails.sslcMedium',
+                    sslcBoard: '$candidatedetails.sslcBoard',
+                    sslcQualification: '$candidatedetails.sslcqualifications.qualification',
+                    pgUniversity: '$candidatedetails.pgUniversity',
+                    pgMarks: '$candidatedetails.pgUniversity',
+                    pgGradingSystem: '$candidatedetails.pgUniversity',
+                    pgCourseType: '$candidatedetails.pgUniversity',
+                    pgCourseDurationTo: '$candidatedetails.pgUniversity',
+                    pgCourseDurationFrom: '$candidatedetails.pgUniversity',
+                    hstotalmarks: '$candidatedetails.hstotalmarks',
+                    hsPassedYear: '$candidatedetails.hsPassedYear',
+                    hsMedium: '$candidatedetails.hsMedium',
+                    hsBoard: '$candidatedetails.hsBoard',
+                    drMarks: '$candidatedetails.drMarks',
+                    drGradingSystem: '$candidatedetails.drGradingSystem',
+                    drCourseType: '$candidatedetails.drCourseType',
+                    drCourseDurationTo: '$candidatedetails.drCourseDurationTo',
+                    drCourseDurationFrom: '$candidatedetails.drCourseDurationFrom',
+                    hsQualification: '$candidatedetails.hscqualifications.qualification',
+                    keyskillSet: '$candidatedetails.keyskillSet',
+                    drUniversity: '$candidatedetails.drUniversity',
+                    experienceMonthSet: '$candidatedetails.experienceMonthSet',
+                    locationSet: '$candidatedetails.locationSet',
+                    experienceYearSet: '$candidatedetails.experienceYearSet',
+                    designationSet: '$candidatedetails.designationSet',
+                    currentIndustry: '$candidatedetails.currentIndustry',
+                    currentDepartment: '$candidatedetails.currentDepartment',
+                    role_Category: '$candidatedetails.role_Category',
+                    salaryFrom: '$candidatedetails.salaryFrom',
+                    SalaryTo: '$candidatedetails.SalaryTo',
+                  },
+                },
+              ],
+              as: 'candidateregistrations',
+            },
+          },
+          {
+            $unwind: {
+              path: '$candidateregistrations',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: '$candidatepostjobs',
+    },
+    {
+      $project: {
+        candidateId: '$candidatepostjobs.candidateregistrations._id',
+        employerCommand: '$candidateregistrations.candidatedetails.employercomments.comment',
+        commandIdId: '$candidateregistrations.candidatedetails.employercomments._id',
+        postjobId: '$candidatepostjobs._id',
+        status: '$candidatepostjobs.approvedStatus',
+        candidateData: '$candidatepostjobs.candidateregistrations',
+      },
+    },
+
+  ]);
+  return {data:data, count:count.length}
+}
+
+
+// manage Employer 
+
+const manage_employer = async (body) => {
+  let = { name, mobileNumber, location, industry, sortBy, range, page} = body
+
+  let searchfilter = { data: true };
+  let industryfiletr = { data: true };
+  let locationfilter = { data: true };
+  let sortByfilter = { data: true };
+  let mobilenumberfilter = { data: true };
+  if(name != null){
+    searchfilter = { name: { $eq: name }}
+  }
+
+  if(mobileNumber != null){
+    mobilenumberfilter = { mobileNumber: { $eq: mobileNumber }}
+  }
+
+  if(industry != null){
+    industryfiletr = { industryType: { $eq: industry } };
+  }
+  if (sortBy != null) {
+    if(sortBy == "debarred"){
+      sortByfilter = { adminStatus: { $eq: sortBy } };
+    }
+    if(sortBy == "inactive"){
+      sortByfilter = { active: { $eq: false } };
+    }
+    if(sortBy == "Active"){
+      sortByfilter = { active: { $eq: true } };
+    }
+    if(sortBy == "all"){
+      sortByfilter = { data: { $eq: true } };
+    }
+  }
+  if(location != null){
+    locationfilter = { location:{ $regex: location, $options: 'i' } }
+  }
+// console.log(locationfilter)
+  const data = await EmployerRegistration.aggregate([ 
+    {
+      $match: {
+        $and: [locationfilter,sortByfilter,industryfiletr,searchfilter, mobilenumberfilter],
+      },
+    },
+    { $skip: parseInt(range) * parseInt(page) }, 
+    { $limit: parseInt(range) }
+  ])
+  const count = await EmployerRegistration.aggregate([
+    {
+      $match: {
+        $and: [locationfilter,sortByfilter,industryfiletr,searchfilter, mobilenumberfilter],
+      },
+    },
+  ])
+  return {data:data, count:count.length}
+}
+
+const update_manage_employer = async (id, body) => {
+  const data = await EmployerRegistration.findById(id)
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  const value = await EmployerRegistration.findByIdAndUpdate({_id:id}, body, {new:true})
+  return value
+}
+
+const employer_name = async (key) => {
+  const data = await EmployerRegistration.find({ name:{ $regex: key, $options: 'i' } }).select("name").limit(7)
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  return data
+}
+
+const employer_contactnumber = async (key) => {
+  const data = await EmployerRegistration.find({ mobileNumber:{ $regex: key, $options: 'i' } }).select("mobileNumber").limit(7)
+  if(!data){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+  return data
+}
+
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -2024,7 +4685,7 @@ module.exports = {
   All_Plans,
   all_plans_users_details,
   keySkillData,
-  location,
+  // location,
   update_active_deactive,
   get_job_post,
   get_job_post_candidate,
@@ -2033,4 +4694,11 @@ module.exports = {
   get_Recruiter_id,
   Recruiter_edit,
   Recruiter_delete,
+  employer_comment_id,
+  get_admin_side_all_post_jobs_details,
+  get_all_job_applied_candiadtes,
+  manage_employer,
+  update_manage_employer,
+  employer_name,
+  employer_contactnumber,
 };

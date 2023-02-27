@@ -5,3 +5,4 @@ module.exports.EmployerRegistration = require('./employerRegistration.model');
 module.exports.OTPModel = require('./otp.model');
 module.exports.EmployeOtp = require('./employeOtp.model');
 module.exports.EmployeOtp = require('./employeOtp.model');
+module.exports.District = require('./district.model');

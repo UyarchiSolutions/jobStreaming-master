@@ -16,6 +16,23 @@ const employerDetailsSchema = mongoose.Schema(
     jobTittle: {
       type: String,
     },
+    adminActive:{
+      type:Boolean,
+      default:false,
+    },
+    data:{
+      type:Boolean,
+      default:true,
+    },
+    apply_method:{
+      type:String,
+    },
+    recruiterList:{
+      type:String,
+    },
+    recruiterList1:{
+      type:String,
+    },
     userId: {
       type: String,
     },
@@ -423,6 +440,9 @@ const EmployerMailNotificationSchema = mongoose.Schema(
     },
     subject: {
       type: String,
+    },
+    message:{
+      type:String,
     },
     date: {
       type: String,

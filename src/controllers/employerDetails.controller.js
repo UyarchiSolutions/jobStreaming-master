@@ -78,7 +78,7 @@ const draftData_delete = catchAsync(async(req,res) => {
 })
 
 const getAllApplied_postjobs_Candidates = catchAsync(async(req,res) => {
-  const user = await employerDetailsService.getAllApplied_postjobs_Candidates(req.params.id)
+  const user = await employerDetailsService.getAllApplied_postjobs_Candidates(req.params.id, req.params.range, req.params.page)
   res.send(user)
 })
 
@@ -100,6 +100,11 @@ const employer_comment = catchAsync(async(req,res) => {
 
 const comment_edit = catchAsync(async(req,res) => {
   const user = await employerDetailsService.comment_edit(req.params.id, req.body)
+  res.send(user)
+})
+
+const employer_comment_id = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.employer_comment_id(req.params.id)
   res.send(user)
 })
 
@@ -138,7 +143,7 @@ const send_mail_and_notification = catchAsync(async(req,res) => {
 
 const getAll_Mail_notification_employerside = catchAsync(async(req,res) => {
   const userId = req.userId
- const user = await employerDetailsService.getAll_Mail_notification_employerside(userId)
+ const user = await employerDetailsService.getAll_Mail_notification_employerside(userId, req.params.range, req.params.page)
  res.send(user)
 })
 
@@ -218,6 +223,36 @@ const All_Plans = catchAsync(async(req,res) => {
   const user = await employerDetailsService.Recruiter_delete(req.params.id)
   res.send(user)
  })
+
+ const get_admin_side_all_post_jobs_details = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.get_admin_side_all_post_jobs_details(req.body)
+  res.send(user)
+ })
+
+ const get_all_job_applied_candiadtes = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.get_all_job_applied_candiadtes(req.params.id, req.params.range, req.params.page)
+  res.send(user)
+ })
+
+ const manage_employer = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.manage_employer(req.body)
+  res.send(user)
+ })
+
+ const update_manage_employer = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.update_manage_employer(req.params.id, req.body)
+  res.send(user)
+ })
+
+ const employer_name = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.employer_name(req.params.key)
+  res.send(user)
+ })
+
+ const employer_contactnumber = catchAsync(async(req,res) => {
+  const user = await employerDetailsService.employer_contactnumber(req.params.key)
+  res.send(user)
+ })
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -258,4 +293,11 @@ module.exports = {
   get_Recruiter_id,
   Recruiter_edit,
   Recruiter_delete,
+  employer_comment_id,
+  get_admin_side_all_post_jobs_details,
+  get_all_job_applied_candiadtes,
+  manage_employer,
+  update_manage_employer,
+  employer_name,
+  employer_contactnumber,
 };

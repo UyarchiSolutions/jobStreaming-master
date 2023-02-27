@@ -13,285 +13,297 @@ const keySkillSchema = mongoose.Schema(
       type: String,
       default: v4,
     },
-    image:{
-        type:String,
+    image: {
+      type: String,
     },
     keyskill: {
-        type:Array,
+      type: Array,
     },
-    languages:{
-      type:Object,
+    languages: {
+      type: Object,
     },
-    userId:{
-        type:String,
+    userId: {
+      type: String,
     },
-    recruiterName:{
-      type:String,
+    recruiterName: {
+      type: String,
     },
-    recruiterEmail:{
-      type:String,
+    recruiterEmail: {
+      type: String,
     },
-    recruiterNumber:{
-      type:String,
+    recruiterNumber: {
+      type: String,
     },
-    experienceMonth:{
-        type:Number
+    experienceMonth: {
+      type: Number,
     },
-    experienceYear:{
-        type:Number
+    experienceYear: {
+      type: Number,
     },
-    expectedctc:{
-      type:Number,
+    expectedctc: {
+      type: String,
     },
-    currentctc:{
-      type:String,
+    currentctc: {
+      type: Number,
     },
-    dob:{
-      type:String,
+    currentctc_th: {
+      type: Number,
     },
-    noticeperiod:{
-      type:String,
+    totalCTC: {
+      type: Number,
     },
-    salaryRangeFrom:{
-        type:Number,
+    expCTC_strat: {
+      type: Number,
     },
-    salaryRangeTo:{
-        type:Number,
+    expCTC_end: {
+      type: Number,
     },
-    locationNative:{
-        type:String,
+    dob: {
+      type: String,
     },
-    locationCurrent:{
-        type:String,
+    noticeperiod: {
+      type: String,
     },
-    education:{
-        type:String,
+    salaryRangeFrom: {
+      type: Number,
     },
-    course:{
-        type:String,
+    salaryRangeTo: {
+      type: Number,
     },
-    specification:{
-        type:String,
+    locationNative: {
+      type: String,
     },
-    university:{
-        type:String,
+    locationCurrent: {
+      type: String,
     },
-    courseType:{
-        type:String,
+    education: {
+      type: String,
     },
-    passingYear:{
-        type:Number,
+    course: {
+      type: String,
     },
-    gradingSystem:{
-        type:String,
+    specification: {
+      type: String,
     },
-    availability:{
-        type:String,
+    university: {
+      type: String,
     },
-    currentSkill:{
-        type:Array,
+    courseType: {
+      type: String,
     },
-    preferredSkill:{
-        type:Array,
+    passingYear: {
+      type: Number,
     },
-    secondarySkill:{
-        type:Array,
+    gradingSystem: {
+      type: String,
     },
-    pasrSkill:{
-        type:Array,
+    availability: {
+      type: String,
     },
-    gender:{
-        type:String,
+    currentSkill: {
+      type: Array,
     },
-    maritalStatus:{
-        type:String,
+    preferredSkill: {
+      type: Array,
     },
-    mark:{
-        type:String,
+    secondarySkill: {
+      type: Array,
     },
-    Jobtype:{
-        type:String,
+    pasrSkill: {
+      type: Array,
     },
-    relocate:{
-      type:String,
+    gender: {
+      type: String,
     },
-    keyskillSet:{
-      type:Array,
+    maritalStatus: {
+      type: String,
     },
-    experienceMonthSet:{
-      type:Number,
+    mark: {
+      type: String,
     },
-    experienceYearSet:{
-      type:Number,
+    Jobtype: {
+      type: String,
     },
-    designationSet:{
-      type:String,
+    relocate: {
+      type: String,
     },
-    locationSet:{
-      type:String,
+    keyskillSet: {
+      type: Array,
     },
-    date:{
-      type:String,
+    experienceMonthSet: {
+      type: Number,
+    },
+    experienceYearSet: {
+      type: Number,
+    },
+    designationSet: {
+      type: String,
+    },
+    locationSet: {
+      type: String,
+    },
+    date: {
+      type: String,
       // default:moment().format('YYYY-MM-DD')
     },
     time: {
       type: String,
       // default:moment().format('HHmmss')
     },
-    active:{
-        type:Boolean,
-        default:true,
+    active: {
+      type: Boolean,
+      default: true,
     },
-    industry:{
-      type:String,
+    industry: {
+      type: String,
     },
-    department:{
-      type:String,
+    department: {
+      type: String,
     },
-    roleCategory:{
-      type:String,
+    roleCategory: {
+      type: String,
     },
-    role:{
-      type:String,
+    role: {
+      type: String,
     },
     // 10th
-    sslcQualification:{
-      type:String,
+    sslcQualification: {
+      type: String,
       // default:'SSLC'
     },
-    sslcBoard:{
-      type:String,
+    sslcBoard: {
+      type: String,
     },
-    sslcPassedYear:{
-      type:Number,
+    sslcPassedYear: {
+      type: Number,
     },
-    sslcMedium:{
-      type:String
+    sslcMedium: {
+      type: String,
     },
-    sslctotalmarks:{
-      type:String,
+    sslctotalmarks: {
+      type: String,
     },
     // 12th
-    hsQualification:{
-      type:String,
+    hsQualification: {
+      type: String,
       // default:'HSC'
     },
-    hsBoard:{
-      type:String,
+    hsBoard: {
+      type: String,
     },
-    hsPassedYear:{
-      type:Number,
+    hsPassedYear: {
+      type: Number,
     },
-    hsMedium:{
-      type:String
+    hsMedium: {
+      type: String,
     },
-    hstotalmarks:{
-      type:String,
+    hstotalmarks: {
+      type: String,
     },
-    
+
     // graduation/diploma
-    ugQualification:{
-      type:String,
+    ugQualification: {
+      type: String,
       // default:'Graduation/Diploma'
     },
-    ugCourse:{
-      type:String,
+    ugCourse: {
+      type: String,
     },
-    ugSpecialization:{
-      type:String,
+    ugSpecialization: {
+      type: String,
     },
-    ugCourseType:{
-      type:String,
+    ugCourseType: {
+      type: String,
     },
-    ugCourseDurationFrom:{
-      type:String,
+    ugCourseDurationFrom: {
+      type: String,
     },
-    ugCourseDurationTo:{
-      type:String,
+    ugCourseDurationTo: {
+      type: String,
     },
-    ugGradingSystem:{
-      type:String,
+    ugGradingSystem: {
+      type: String,
     },
-    ugUniversity:{
-      type:String,
+    ugUniversity: {
+      type: String,
     },
-    ugMarks:{
-      type:String,
+    ugMarks: {
+      type: String,
     },
 
     // pg
-    pgQualification:{
-      type:String,
+    pgQualification: {
+      type: String,
       // default:'Masters/Post-Graduation'
     },
-    pgCourse:{
-      type:String,
+    pgCourse: {
+      type: String,
     },
-    pgSpecialization:{
-      type:String,
+    pgSpecialization: {
+      type: String,
     },
-    pgCourseType:{
-      type:String,
+    pgCourseType: {
+      type: String,
     },
-    pgCourseDurationFrom:{
-      type:String,
+    pgCourseDurationFrom: {
+      type: String,
     },
-    pgCourseDurationTo:{
-      type:String,
+    pgCourseDurationTo: {
+      type: String,
     },
-    pgGradingSystem:{
-      type:String,
+    pgGradingSystem: {
+      type: String,
     },
-    pgUniversity:{
-      type:String,
+    pgUniversity: {
+      type: String,
     },
-    pgMarks:{
-      type:String,
+    pgMarks: {
+      type: String,
     },
 
-     // docterate
-     drQualification:{
-      type:String,
+    // docterate
+    drQualification: {
+      type: String,
       // default:'Doctorate/PhD'
     },
-    drCourse:{
-      type:String,
+    drCourse: {
+      type: String,
     },
-    drSpecialization:{
-      type:String,
+    drSpecialization: {
+      type: String,
     },
-    drCourseType:{
-      type:String,
+    drCourseType: {
+      type: String,
     },
-    drCourseDurationFrom:{
-      type:String,
+    drCourseDurationFrom: {
+      type: String,
     },
-    drCourseDurationTo:{
-      type:String,
+    drCourseDurationTo: {
+      type: String,
     },
-    drGradingSystem:{
-      type:String,
+    drGradingSystem: {
+      type: String,
     },
-    drUniversity:{
-      type:String,
+    drUniversity: {
+      type: String,
     },
-    drMarks:{
-      type:String,
+    drMarks: {
+      type: String,
     },
-    currentIndustry:{
-      type:String,
+    currentIndustry: {
+      type: String,
     },
-    currentDepartment:{
-      type:String,
+    currentDepartment: {
+      type: String,
     },
-    role_Category:{
-      type:String,
+    role_Category: {
+      type: String,
     },
-    salaryFrom:{
-      type:String
+    salaryFrom: {
+      type: String,
     },
-    SalaryTo:{
-      type:String,
+    SalaryTo: {
+      type: String,
     },
   },
   {
@@ -306,59 +318,59 @@ const educationDeatilsSchema = mongoose.Schema(
       default: v4,
     },
     keyskill: {
-        type:Array,
+      type: Array,
     },
-    userId:{
-        type:String,
+    userId: {
+      type: String,
     },
 
-    Qualification:{
-        type:String,
+    Qualification: {
+      type: String,
     },
-    course:{
-        type:String,
+    course: {
+      type: String,
     },
-    specification:{
-        type:String,
+    specification: {
+      type: String,
     },
-    university:{
-        type:String,
+    university: {
+      type: String,
     },
-    courseType:{
-        type:String,
+    courseType: {
+      type: String,
     },
-    passingYear:{
-        type:Number,
+    passingYear: {
+      type: Number,
     },
-    gradingSystem:{
-        type:String,
+    gradingSystem: {
+      type: String,
     },
-    mark:{
-        type:String,
+    mark: {
+      type: String,
     },
-    Board:{
-      type:String,
+    Board: {
+      type: String,
     },
-    medium:{
-      type:String,
+    medium: {
+      type: String,
     },
-    courseDurationFrom:{
-      type:String,
+    courseDurationFrom: {
+      type: String,
     },
-    courseDurationTo:{
-      type:String,
+    courseDurationTo: {
+      type: String,
     },
-    date:{
-      type:String,
+    date: {
+      type: String,
       // default:moment().format('YYYY-MM-DD')
     },
     time: {
       type: String,
       // default:moment().format('HHmmss')
     },
-    active:{
-        type:Boolean,
-        default:true,
+    active: {
+      type: Boolean,
+      default: true,
     },
   },
   {
@@ -367,174 +379,188 @@ const educationDeatilsSchema = mongoose.Schema(
 );
 const EducationDeatils = mongoose.model('educationDeatil', educationDeatilsSchema);
 const candidatePostjobSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      userId:{
-        type:String
-      },
-      jobId:{
-        type:String,
-      },
-      status:{
-        type:Boolean,
-        default:true,
-      },
-      approvedStatus:{
-        type:String,
-        default:"Applied"
-      },
-      employerCommand:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+  {
+    _id: {
+      type: String,
+      default: v4,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const CandidatePostjob = mongoose.model('candidatepostjob', candidatePostjobSchema);
-  const candidateSaveJobSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      userId:{
-        type:String
-      },
-      savejobId:{
-        type:String,
-      },
-      status:{
-        type:Boolean,
-        default:true,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    userId: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const CandidateSaveJob = mongoose.model('candidateSaveJob', candidateSaveJobSchema);
-  const candidateSearchjobCandidateSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      userId:{
-        type:String,
-      },
-      search:{
-        type:Array,
-      },
-      experience:{
-        type:Number,
-      },
-      location:{
-        type:String,
-      },
-      preferredindustry:{
-        type:String,
-      },
-      salary:{
-        type:Number,
-      },
-      date:{
-        type:String,
-      },
-      time:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    jobId: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const CandidateSearchjobCandidate = mongoose.model('candidateSearchjobsave', candidateSearchjobCandidateSchema);
+    status: {
+      type: Boolean,
+      default: true,
+    },
+    approvedStatus: {
+      type: String,
+      default: 'Applied',
+    },
+    employerCommand: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const CandidatePostjob = mongoose.model('candidatepostjob', candidatePostjobSchema);
+const candidateSaveJobSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    userId: {
+      type: String,
+    },
+    savejobId: {
+      type: String,
+    },
+    applied_side:{
+      type:String,
+    },
+    status: {
+      type: Boolean,
+      default: true,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const CandidateSaveJob = mongoose.model('candidateSaveJob', candidateSaveJobSchema);
+const candidateSearchjobCandidateSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    userId: {
+      type: String,
+    },
+    search: {
+      type: Array,
+    },
+    experience: {
+      type: Number,
+    },
+    location: {
+      type: String,
+    },
+    preferredindustry: {
+      type: String,
+    },
+    salary: {
+      type: Number,
+    },
+    date: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const CandidateSearchjobCandidate = mongoose.model('candidateSearchjobsave', candidateSearchjobCandidateSchema);
 
-  const candidataSearchEmployerSetSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      userId:{
-        type:String,
-      },
-      keyskill:{
-        type:Array,
-      },
-      experienceMonth:{
-        type:Number,
-      },
-      experienceYear:{
-        type:Number,
-      },
-      location:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+const candidataSearchEmployerSetSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const candidataSearchEmployerSet = mongoose.model('candidatesetSearch', candidataSearchEmployerSetSchema);
-  const candidateRecentSearchjobCandidateSchema = mongoose.Schema(
-    {
-      _id: {
-        type: String,
-        default: v4,
-      },
-      userId:{
-        type:String,
-      },
-      search:{
-        type:Array,
-      },
-      experience:{
-        type:Number,
-      },
-      location:{
-        type:String,
-      },
-      preferredindustry:{
-        type:String,
-      },
-      salary:{
-        type:Number,
-      },
-      date:{
-        type:String,
-      },
-      time:{
-        type:String,
-      },
-      active:{
-          type:Boolean,
-          default:true,
-      }
+    userId: {
+      type: String,
     },
-    {
-      timestamps: true,
-    }
-  );
-  const CandidateRecentSearchjobCandidate = mongoose.model('candidateRecentSearchjob', candidateRecentSearchjobCandidateSchema);
-module.exports = {KeySkill, CandidatePostjob, CandidateSaveJob, CandidateSearchjobCandidate, candidataSearchEmployerSet, CandidateRecentSearchjobCandidate, EducationDeatils} ;
+    keyskill: {
+      type: Array,
+    },
+    experienceMonth: {
+      type: Number,
+    },
+    experienceYear: {
+      type: Number,
+    },
+    location: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const candidataSearchEmployerSet = mongoose.model('candidatesetSearch', candidataSearchEmployerSetSchema);
+const candidateRecentSearchjobCandidateSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    userId: {
+      type: String,
+    },
+    search: {
+      type: Array,
+    },
+    experience: {
+      type: Number,
+    },
+    location: {
+      type: String,
+    },
+    preferredindustry: {
+      type: String,
+    },
+    salary: {
+      type: Number,
+    },
+    date: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const CandidateRecentSearchjobCandidate = mongoose.model(
+  'candidateRecentSearchjob',
+  candidateRecentSearchjobCandidateSchema
+);
+module.exports = {
+  KeySkill,
+  CandidatePostjob,
+  CandidateSaveJob,
+  CandidateSearchjobCandidate,
+  candidataSearchEmployerSet,
+  CandidateRecentSearchjobCandidate,
+  EducationDeatils,
+};

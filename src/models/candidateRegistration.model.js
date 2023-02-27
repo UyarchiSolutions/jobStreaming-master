@@ -62,7 +62,7 @@ const userSchema = mongoose.Schema(
       required: true,
     },
     mobileNumber: {
-      type: Number,
+      type: String,
       required: true,
       unique: true,
     },
@@ -82,6 +82,13 @@ const userSchema = mongoose.Schema(
     },
     latestdate:{
       type:String,
+    },
+    date:{
+      type:String,
+    },
+    data:{
+      type:Boolean,
+      default:true,
     },
     active:{
       type:Boolean,

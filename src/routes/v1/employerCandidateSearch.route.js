@@ -19,7 +19,7 @@ router.route('/employerRemovePostJobs/:id').delete(employerCandidateSearch.emplo
 router.route('/allFolderData').get(employerCandidateSearch.allFolderData);
 router.route('/candidatdeSaveJobRemove/:id').delete(employerCandidateSearch.candidatdeSaveJobRemove);
 router.route('/saveFolderData_view').get(authorization, employerCandidateSearch.saveFolderData_view);
-router.route('/getSaveSeprate').get(authorization, employerCandidateSearch.getSaveSeprate);
+router.route('/getSaveSeprate/:range/:page').get(authorization, employerCandidateSearch.getSaveSeprate);
 router.route('/delete_Seprate_saveCandidate/:id').delete(employerCandidateSearch.delete_Seprate_saveCandidate);
 router.route('/outSearch_employer').post(authorization, employerCandidateSearch.outSearch_employer);
 router.route('/outSearchSave').post(authorization, employerCandidateSearch.outSearchSave);

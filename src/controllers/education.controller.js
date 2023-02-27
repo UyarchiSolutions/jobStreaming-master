@@ -101,6 +101,16 @@ const get_specialization = catchAsync(async (req, res) => {
     const user = await educationService.get_Department_all(req.params.limit);
     res.send(user);
   });
+
+  const get_Industries_all = catchAsync(async (req, res) => {
+    const user = await educationService.get_Industries_all(req.params.limit);
+    res.send(user);
+  });
+
+  const get_alleducation_all = catchAsync(async (req, res) => {
+    const user = await educationService.get_alleducation_all(req.params.limit);
+    res.send(user);
+  });
 module.exports = {
   createQualification,
   get_sslc_course,
@@ -122,4 +132,6 @@ module.exports = {
   get_Qualification,
   get_Role_all,
   get_Department_all,
+  get_alleducation_all,
+  get_Industries_all,
 };

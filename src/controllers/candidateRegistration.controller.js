@@ -17,6 +17,7 @@ const register = catchAsync(async (req, res) => {
   //  await OTPModel.create({token:tokens.access.token});
   res.status(httpStatus.CREATED).send({ user, tokens });
   await user.save();
+  // console.log(user.email)
   await emailService.sendVerificationEmail(user.email, tokens.access.token, user.mobileNumber);
   // await emailService.maskmail(user.email)
   //   console.log(user._id)
@@ -105,6 +106,12 @@ const getAllLatLong = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.getAllLatLong( req.body);
   res.send(user);
 });
+
+const deactivate = catchAsync(async (req, res) => {
+  const userId = req.userId;
+  const user = await candidateRegistrationService.deactivate(userId);
+  res.send(user);
+});
 // const logout = catchAsync(async (req, res) => {
 //   await authService.logout(req.body.refreshToken);
 //   res.status(httpStatus.NO_CONTENT).send();
@@ -153,6 +160,7 @@ module.exports = {
   forget_password_set,
   change_pass,
   getAllLatLong,
+  deactivate,
   //   logout,
   //   refreshTokens,
   //   forgotPassword,

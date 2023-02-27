@@ -63,6 +63,12 @@ const updateEducation = catchAsync(async(req,res) => {
     res.send(user)
 })
 
+const edit_details = catchAsync(async(req,res) => {
+  let userId = req.userId 
+    const user = await candidateDetailsService.edit_details(userId, req.body)
+    res.send(user)
+})
+
 const deleteById = catchAsync(async(req,res) => {
     const user = await candidateDetailsService.deleteById(req.params.id)
     res.send({user})
@@ -96,7 +102,7 @@ const createCandidateSavejob = catchAsync(async (req, res) => {
 
 const getByIdAppliedJobs = catchAsync(async (req, res) => {
     let userId = req.userId
-    const user = await candidateDetailsService.getByIdAppliedJobs(userId);
+    const user = await candidateDetailsService.getByIdAppliedJobs(userId, req.params.search);
     res.send(user)
     });
 
@@ -219,6 +225,26 @@ const createdSearchhistoryData_byId = catchAsync(async(req,res) => {
   const user = await candidateDetailsService.createdSearchhistoryData_byId(req.params.id)
   res.send(user)
 })
+
+const candidate_detials_id = catchAsync(async(req,res) => {
+  const user = await candidateDetailsService.candidate_detials_id(req.params.id)
+  res.send(user)
+})
+
+const get_all_candidates = catchAsync(async(req,res) => {
+  const user = await candidateDetailsService.get_all_candidates(req.body)
+  res.send(user)
+})
+
+const CandidateRegistration_names = catchAsync(async(req,res) => {
+  const user = await candidateDetailsService.CandidateRegistration_names(req.params.key)
+  res.send(user)
+})
+
+const CandidateRegistration_number = catchAsync(async(req,res) => {
+  const user = await candidateDetailsService.CandidateRegistration_number(req.params.key)
+  res.send(user)
+})
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -251,5 +277,10 @@ module.exports = {
   candidate_detials,
   updateEducation,
   createdSearchhistoryData_byId,
+  edit_details,
+  candidate_detials_id,
+  get_all_candidates,
+  CandidateRegistration_names,
+  CandidateRegistration_number,
   // createSearchCandidate,
 };

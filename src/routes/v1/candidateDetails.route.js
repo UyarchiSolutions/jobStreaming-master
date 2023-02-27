@@ -19,7 +19,7 @@ router.route('/candidateSearch').post(candidateDetailsController.candidateSearch
 router.route('/getByIdEmployerDetailsShownCandidate/:id').get(authorization, candidateDetailsController.getByIdEmployerDetailsShownCandidate);
 router.route('/createCandidatePostjob').post(authorization, candidateDetailsController.createCandidatePostjob);
 router.route('/createCandidateSavejob').post(authorization, candidateDetailsController.createCandidateSavejob);
-router.route('/getByIdAppliedJobs').get(authorization, candidateDetailsController.getByIdAppliedJobs);
+router.route('/getByIdAppliedJobs/:search').get(authorization, candidateDetailsController.getByIdAppliedJobs);
 router.route('/deleteByIdSavejOb/:id').delete(candidateDetailsController.deleteByIdSavejOb);
 router.route('/getByIdSavedJobs').get(authorization, candidateDetailsController.getByIdSavedJobs);
 router.route('/applyJobsView/:userId').get(candidateDetailsController.applyJobsView);
@@ -41,5 +41,10 @@ router.route('/recentSearch_byId/:id').get(candidateDetailsController.recentSear
 router.route('/candidate_detials/:id/:jobid').get(candidateDetailsController.candidate_detials);
 router.route('/updateEducation').post(authorization,candidateDetailsController.updateEducation);
 router.route('/createdSearchhistoryData_byId/:id').get(candidateDetailsController.createdSearchhistoryData_byId);
+router.route('/edit_details').put(authorization, candidateDetailsController.edit_details);
+router.route('/candidate_detials_id/:id').get(candidateDetailsController.candidate_detials_id);
+router.route('/get_all_candidates').post(candidateDetailsController.get_all_candidates);
+router.route('/CandidateRegistration_names/:key').get(candidateDetailsController.CandidateRegistration_names);
+router.route('/CandidateRegistration_number/:key').get(candidateDetailsController.CandidateRegistration_number);
 // router.route('/createSearchCandidate').post(authorization, candidateDetailsController.createSearchCandidate);
 module.exports = router;

@@ -41,9 +41,9 @@ const userEmpSchema = mongoose.Schema(
       },
       private: true, // used by the toJSON plugin
     },
-    adminStatus:{
-      type:String,
-      default:"Pending",
+    adminStatus: {
+      type: String,
+      default: 'Pending',
     },
     // role: {
     //   type: String,
@@ -52,53 +52,75 @@ const userEmpSchema = mongoose.Schema(
     // },
     companyType: {
       type: String,
-      required:true,
+      required: true,
     },
-    contactName:{
-      type:String,
-      required:true,
+    contactName: {
+      type: String,
+      required: true,
     },
     pincode: {
-        type: Number,
-      },
-    mobileNumber: {
       type: Number,
-      required:true,
     },
-    lat:{
-      type:String,
+    mobileNumber: {
+      type: String,
+      required: true,
     },
-    long:{
-      type:String,
+    lat: {
+      type: String,
     },
-    logo:{
-      type:String,
+    long: {
+      type: String,
     },
-    aboutCompany:{
-      type:String,
+    logo: {
+      type: String,
     },
-    choosefile:{
-      type:String,
+    aboutCompany: {
+      type: String,
     },
-    location:{
-      type:String,
+    choosefile: {
+      type: String,
     },
-    freePlanCount:{
-      type:Number,
-      default:1
+    location: {
+      type: String,
     },
-     active: {
-        type: Boolean,
-        default:true,
-      },
-      isEmailVerified: {
-        type: Boolean,
-        default: false,
-      },
-      isMobileVerified:{
-        type: Boolean,
-        default: false,
-      },
+    freePlanCount: {
+      type: Number,
+      default: 1,
+    },
+    registrationType: {
+      type: String,
+    },
+    industryType: {
+      type: String,
+    },
+    companyWebsite: {
+      type: String,
+    },
+    postedBy: {
+      type: String,
+    },
+    data:{
+      type:Boolean,
+      default:true
+    },
+    companyDescription: {
+      type: String,
+    },
+    companyAddress: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isMobileVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -140,4 +162,4 @@ userEmpSchema.pre('save', async function (next) {
  * @typedef User
  */
 const EmployerRegistration = mongoose.model('employerRegistration', userEmpSchema);
-module.exports = EmployerRegistration
+module.exports = EmployerRegistration;

@@ -167,11 +167,26 @@ const createoutSearchHistorySchema = mongoose.Schema(
     experienceto: {
       type: Number,
     },
-    location: {
-      type: String,
+    Location: {
+      type: Array,
     },
     qualification: {
       type: Array,
+    },
+    date: {
+      type: String,
+    },
+    salary: {
+      type: Array,
+    },
+    displayDetails: {
+      type: String,
+    },
+    course: {
+      type: Array,
+    },
+    gender: {
+      type: String,
     },
     date: {
       type: String,
@@ -213,8 +228,8 @@ const createoutSearchHistorySaveShema = mongoose.Schema(
     experienceto: {
       type: Number,
     },
-    location: {
-      type: String,
+    Location: {
+      type: Array,
     },
     qualification: {
       type: Array,
@@ -223,7 +238,7 @@ const createoutSearchHistorySaveShema = mongoose.Schema(
       type: String,
     },
     salary: {
-      type: String,
+      type: Array,
     },
     displayDetails: {
       type: String,

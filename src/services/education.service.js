@@ -134,12 +134,34 @@ const get_Qualification = async (body) => {
 };
 
 const get_Department_all = async (limit) => {
+  if(limit == 'null'){
+    limit = 37
+  }
   let data = await Department.find().limit(parseInt(limit));
   return data;
 };
 
 const get_Role_all = async (limit) => {
+  if(limit == 'null'){
+    limit = 1326
+  }
   let data = await Role.find().limit(parseInt(limit));
+  return data;
+};
+
+const get_alleducation_all = async (limit) => {
+  if(limit == 'null'){
+    limit = 51
+  }
+  let data = await AllCourse.find().limit(parseInt(limit));
+  return data;
+};
+
+const get_Industries_all = async (limit) => {
+  if(limit == 'null'){
+    limit = 172
+  }
+  let data = await Industries.find().limit(parseInt(limit));
   return data;
 };
 module.exports = {
@@ -163,4 +185,6 @@ module.exports = {
   get_Qualification,
   get_Role_all,
   get_Department_all,
+  get_Industries_all,
+  get_alleducation_all,
 };
