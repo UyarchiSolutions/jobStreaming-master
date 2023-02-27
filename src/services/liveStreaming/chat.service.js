@@ -3,7 +3,7 @@ const ApiError = require('../../utils/ApiError');
 const { RtcTokenBuilder, RtcRole } = require('agora-access-token');
 const Agora = require('agora-access-token');
 const moment = require('moment');
-const { Groupchat } = require('../../models/liveStreaming/chat.model');
+const { Groupchat, Ricehands } = require('../../models/liveStreaming/chat.model');
 const fs = require('fs');
 
 const multer = require('multer');
@@ -38,7 +38,38 @@ const getoldchats = async (req) => {
   return data;
 }
 
+const rice_hands = async (req, io) => {
+  console.log(req)
+  let stream = req.chennel;
+  let userId = req._id;
+
+  let raice = await Ricehands.findOne({ streamId: stream, tokenId: userId })
+  if (!raice) {
+    await Ricehands.create({
+      streamId: stream,
+      tokenId: userId,
+      riceuserId: req.Uid,
+      date: moment(),
+    })
+  }
+  let value = await Ricehands.find({ streamId: stream })
+  io.sockets.emit(stream, value)
+  return req;
+}
+
+const admin_approve = async (req, io) => {
+  let user = await Ricehands.findById(req._id);
+  user.status = req.type;
+  user.save();
+  io.sockets.emit(req.tokenId, user)
+  console.log(req)
+  return req;
+}
+
+
 module.exports = {
   chat_room_create,
-  getoldchats
+  getoldchats,
+  rice_hands,
+  admin_approve
 };

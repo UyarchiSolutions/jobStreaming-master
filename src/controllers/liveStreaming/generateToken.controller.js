@@ -68,13 +68,23 @@ const recording_updateLayout = catchAsync(async (req, res) => {
   const tokens = await generateTokenService.recording_updateLayout(req.query);
   res.status(httpStatus.CREATED).send(tokens);
 });
-const chat_rooms= catchAsync(async (req, res) => {
+const chat_rooms = catchAsync(async (req, res) => {
   const tokens = await generateTokenService.chat_rooms(req.query);
   res.status(httpStatus.CREATED).send(tokens);
 });
 
-const get_sub_token= catchAsync(async (req, res) => {
+const get_sub_token = catchAsync(async (req, res) => {
   const tokens = await generateTokenService.get_sub_token(req.query);
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
+const get_raice_hands = catchAsync(async (req, res) => {
+  const tokens = await generateTokenService.get_raice_hands(req.query.id);
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
+const get_raice_hands_token = catchAsync(async (req, res) => {
+  const tokens = await generateTokenService.get_raice_hands_token(req.query.id);
   res.status(httpStatus.CREATED).send(tokens);
 });
 
@@ -93,5 +103,7 @@ module.exports = {
   recording_updateLayout,
   gettokenById_host,
   chat_rooms,
-  get_sub_token
+  get_sub_token,
+  get_raice_hands,
+  get_raice_hands_token
 };
