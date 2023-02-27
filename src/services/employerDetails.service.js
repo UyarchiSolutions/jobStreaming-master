@@ -3785,6 +3785,7 @@ const get_admin_side_all_post_jobs_details = async (body) => {
       },
     },
   ]);
+  console.log({count:count})
   return {data:data, count:count.length};
 };
 

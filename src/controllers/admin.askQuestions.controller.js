@@ -14,7 +14,6 @@ const getAll_faqe = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-
 const get_Faqe_id = catchAsync(async (req, res) => {
   const data = await faqeService.get_Faqe_id(req.params.id);
   res.send(data);
@@ -46,7 +45,6 @@ const create_enquiry_dummy = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-
 const get_all_enquiry = catchAsync(async (req, res) => {
   const data = await faqeService.get_all_enquiry(req.params.range, req.params.page);
   res.send(data);
@@ -73,7 +71,6 @@ const create_report = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-
 const all_report = catchAsync(async (req, res) => {
   const data = await faqeService.all_report(req.params.range, req.params.page);
   res.send(data);
@@ -88,6 +85,12 @@ const deactive_admin = catchAsync(async (req, res) => {
   const data = await faqeService.deactive_admin(req.params.id);
   res.send(data);
 });
+
+const getReportById = catchAsync(async (req, res) => {
+  const data = await faqeService.getReportById(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   createfaqe,
   getAll_faqe,
@@ -105,4 +108,5 @@ module.exports = {
   all_report,
   deactive_admin,
   get_report,
+  getReportById,
 };
