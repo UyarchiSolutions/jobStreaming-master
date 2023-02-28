@@ -409,11 +409,37 @@ const getById_Get = async (id) => {
         as: 'allspecializations',
       },
     },
+    {
+      $lookup: {
+        from: 'industries',
+        let: { userId: '$preferedIndustry' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group: { _id: { Industry: '$Industry' } },
+          },
+          {
+            $project: {
+              _id: null,
+              Industry: '$_id.Industry',
+            },
+          },
+        ],
+        as: 'industries',
+      },
+    },
 
     {
       $project: {
         keySkill: 1,
         preferedIndustry: 1,
+        preferedIndustries:"$industries",
         date: 1,
         dates: dates,
         active: 1,
