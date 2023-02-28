@@ -48,7 +48,9 @@ app.use(function (req, res, next) {
   req.io = io;
   next();
 });
+
 app.use(express.static('public'));
+
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
@@ -71,9 +73,6 @@ app.use(mongoSanitize());
 app.use(compression());
 
 // enable cors
-app.use(cors());
-app.options('*', cors());
-
 const corsconfig = {
   credentials: true,
   origin: '*',
@@ -82,20 +81,10 @@ const corsconfig = {
 app.use(cors());
 app.options('*', cors());
 app.use(cookieparser());
-var allowCrossDomain = function (req, res, next) {
-  res.header('Content-Security-Policy', "frame-ancestors 'self'");
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization');
-  if (req.method === 'OPTIONS') res.send(200);
-  else next();
-};
-app.use(allowCrossDomain);
-app.use(function (req, res, next) {
-  /* Clickjacking prevention */
-  res.header('Content-Security-Policy', "frame-ancestors 'none'");
-  next();
-});
+
+// jwt authentication
+app.use(passport.initialize());
+passport.use('jwt', jwtStrategy);
 app.use(
   bodyParser.urlencoded({
     extended: true,
@@ -103,9 +92,6 @@ app.use(
 );
 
 app.use(bodyParser.json());
-// jwt authentication
-app.use(passport.initialize());
-passport.use('jwt', jwtStrategy);
 
 // limit repeated failed requests to auth endpoints
 if (config.env === 'production') {

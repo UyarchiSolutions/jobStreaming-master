@@ -41,6 +41,7 @@ const create_enquiry_candidate = catchAsync(async (req, res) => {
 });
 
 const create_enquiry_dummy = catchAsync(async (req, res) => {
+  console.log(req.body,23423423)
   const data = await faqeService.create_enquiry_dummy(req.body);
   res.send(data);
 });
