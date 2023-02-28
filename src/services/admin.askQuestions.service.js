@@ -99,7 +99,7 @@ const create_enquiry_dummy = async (body) => {
   let totalcount = Buy.length + 1;
 
   iddd = 'EQ' + center + totalcount;
-  let re = Enquiry.create(body);
+  let re = await Enquiry.create(body);
   re.eq_id = iddd;
   re.date = currentDate;
   re.save();
