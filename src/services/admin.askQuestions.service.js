@@ -7,7 +7,8 @@ const moment = require('moment');
 var ejs = require('ejs');
 
 const createFaqe = async (body) => {
-  return Faqe.create(body);
+  const data = await Faqe.create(body);
+  return data
 };
 
 const getAllFaqe = async (range, page) => {
