@@ -934,6 +934,31 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
     },
     {
       $lookup: {
+        from: 'industries',
+        let: { userId: '$preferedIndustry' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
+              },
+            },
+          },
+          {
+            $group: { _id: { Industry: '$Industry' } },
+          },
+          {
+            $project: {
+              _id: null,
+              Industry: '$_id.Industry',
+            },
+          },
+        ],
+        as: 'industries',
+      },
+    },
+    {
+      $lookup: {
         from: 'departments',
         localField: 'department',
         foreignField: '_id',
@@ -1073,6 +1098,7 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         endTime: 1,
         qualifications: '$qualifications',
         allcourses: '$allcourses',
+        preferredIndustrys: '$industries',
         allspecializations: '$allspecializations',
         appliedCount: '$employerpostjobs.count',
         appliedStatus: '$candidatepostjobs.approvedStatus',
