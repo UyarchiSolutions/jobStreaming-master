@@ -99,8 +99,11 @@ const create_enquiry_dummy = async (body) => {
   let totalcount = Buy.length + 1;
 
   iddd = 'EQ' + center + totalcount;
-  let values = { ...body, ...{ eq_id: iddd, date: currentDate } };
-  return Enquiry.create(values);
+  let re = Enquiry.create(body);
+  re.eq_id = iddd;
+  re.date = currentDate;
+  re.save();
+  return re;
 };
 
 const get_all_enquiry = async (range, page) => {
@@ -132,6 +135,7 @@ const get_Enquiry_update = async (id, body) => {
 };
 
 const nodemailer = require('nodemailer');
+// const parser = new DOMParser();
 const transporter = nodemailer.createTransport({
   host: 'mail.uyarchi.com',
   port: 465,
@@ -151,7 +155,8 @@ const reply_enquiry = async (body) => {
   const data1 = await ejs.renderFile(__dirname + '/enquirytemplate.ejs', {
     subject: subject,
     question: data.enquiry,
-    answer: answer,
+    // answer: parser.parseFromString(answer, 'text/html'),
+    answer:answer,
     email: data.emailId,
   });
 
