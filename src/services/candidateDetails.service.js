@@ -2717,7 +2717,8 @@ const candidate_detials_id = async (id) => {
         keyskill: '$candidatedetails.keyskill',
         currentSkill: '$candidatedetails.currentSkill',
         preferredSkill: '$candidatedetails.preferredSkill',
-        active: '$candidatedetails.active',
+        // active: '$candidatedetails.active',
+        active: 1,
         image: '$candidatedetails.image',
         dob: '$candidatedetails.dob',
         experienceYear: '$candidatedetails.experienceYear',
@@ -2792,12 +2793,16 @@ const createdSearchhistoryData_byId = async (id) => {
 };
 
 const CandidateRegistration_names = async (key) => {
-  let data = await CandidateRegistration.find( { name: { $regex: key, $options: 'i' } }).select("name").limit(7)
+  let data = await CandidateRegistration.find({ name: { $regex: key, $options: 'i' } })
+    .select('name')
+    .limit(7);
   return data;
 };
 
 const CandidateRegistration_number = async (key) => {
-  let data = await CandidateRegistration.find( { mobileNumber: { $regex: key, $options: 'i' } }).select("mobileNumber").limit(7)
+  let data = await CandidateRegistration.find({ mobileNumber: { $regex: key, $options: 'i' } })
+    .select('mobileNumber')
+    .limit(7);
   return data;
 };
 
@@ -2816,27 +2821,27 @@ const get_all_candidates = async (body) => {
     searchfilter = { name: { $eq: name } };
   }
   if (date1 != null && date2 != null) {
-    datefiletr =  {$and:[{ date: { $gte: date1 } }, { date: { $lte: date2 } }]}
+    datefiletr = { $and: [{ date: { $gte: date1 } }, { date: { $lte: date2 } }] };
   }
   if (sortBy != null) {
-    if(sortBy == "debarred"){
+    if (sortBy == 'debarred') {
       sortByfilter = { adminStatus: { $eq: sortBy } };
     }
-    if(sortBy == "inactive"){
+    if (sortBy == 'inactive') {
       sortByfilter = { active: { $eq: false } };
     }
-    if(sortBy == "Active"){
+    if (sortBy == 'Active') {
       sortByfilter = { active: { $eq: true } };
     }
-    if(sortBy == "all"){
+    if (sortBy == 'all') {
       sortByfilter = { data: { $eq: true } };
     }
   }
-  if(mobilenumber != null){
-    mobileNumberfilter = { mobileNumber:{ $eq: mobilenumber } };
+  if (mobilenumber != null) {
+    mobileNumberfilter = { mobileNumber: { $eq: mobilenumber } };
   }
 
-  if(skill.length != 0){
+  if (skill.length != 0) {
     skillfilter = { keyskill: { $elemMatch: { $in: skill } } };
   }
 
@@ -2851,13 +2856,13 @@ const get_all_candidates = async (body) => {
   // if (salary != null) {
   //       let value = salary.split('-');
   //       let start = value[0] * 100000;
-  
+
   //       let end = 0;
   //       if (value[1] != 'more') {
   //         end = value[1] * 100000;
   //       }
   //       if (end != 0) {
-   
+
   //         salaryfilter = {$or: [
   //             {
   //               $and: [
@@ -2895,24 +2900,24 @@ const get_all_candidates = async (body) => {
       },
     },
     {
-      $project:{
-        adminStatus:1,
-        active:1,
-        name:1,
-        email:1,
-        workStatus:1,
-        mobileNumber:1,
-        location:1,
-        date:1,
-        data:1,
-        resume:1,
-        latestdate:1,
-        expCTC_strat:'$candidatedetails.expCTC_strat',
-        expCTC_end:'$candidatedetails.expCTC_end',
-        totalCTC:'$candidatedetails.totalCTC',
-        keyskill:'$candidatedetails.keyskill',
-        experienceYear:'$candidatedetails.experienceYear',
-      }
+      $project: {
+        adminStatus: 1,
+        active: 1,
+        name: 1,
+        email: 1,
+        workStatus: 1,
+        mobileNumber: 1,
+        location: 1,
+        date: 1,
+        data: 1,
+        resume: 1,
+        latestdate: 1,
+        expCTC_strat: '$candidatedetails.expCTC_strat',
+        expCTC_end: '$candidatedetails.expCTC_end',
+        totalCTC: '$candidatedetails.totalCTC',
+        keyskill: '$candidatedetails.keyskill',
+        experienceYear: '$candidatedetails.experienceYear',
+      },
     },
 
     {
@@ -2923,53 +2928,53 @@ const get_all_candidates = async (body) => {
     { $skip: parseInt(range) * parseInt(page) },
     { $limit: parseInt(range) },
   ]);
-  let count = await CandidateRegistration.aggregate([    
+  let count = await CandidateRegistration.aggregate([
     // {
-  //   $match: {
-  //     $and: [salaryfilter, locationfilter, datefiletr, searchfilter,experienceFilter,sortByfilter],
-  //   },
-  // },
-  {
-    $lookup: {
-      from: 'candidatedetails',
-      localField: '_id',
-      foreignField: 'userId',
-      as: 'candidatedetails',
+    //   $match: {
+    //     $and: [salaryfilter, locationfilter, datefiletr, searchfilter,experienceFilter,sortByfilter],
+    //   },
+    // },
+    {
+      $lookup: {
+        from: 'candidatedetails',
+        localField: '_id',
+        foreignField: 'userId',
+        as: 'candidatedetails',
+      },
     },
-  },
-  {
-    $unwind: {
-      path: '$candidatedetails',
-      preserveNullAndEmptyArrays: true,
+    {
+      $unwind: {
+        path: '$candidatedetails',
+        preserveNullAndEmptyArrays: true,
+      },
     },
-  },
-  {
-    $project:{
-      adminStatus:1,
-      active:1,
-      name:1,
-      email:1,
-      workStatus:1,
-      mobileNumber:1,
-      location:1,
-      date:1,
-      data:1,
-      resume:1,
-      latestdate:1,
-      expCTC_strat:'$candidatedetails.expCTC_strat',
-      expCTC_end:'$candidatedetails.expCTC_end',
-      totalCTC:'$candidatedetails.totalCTC',
-      keyskill:'$candidatedetails.keyskill',
-      experienceYear:'$candidatedetails.experienceYear',
-    }
-  },
+    {
+      $project: {
+        adminStatus: 1,
+        active: 1,
+        name: 1,
+        email: 1,
+        workStatus: 1,
+        mobileNumber: 1,
+        location: 1,
+        date: 1,
+        data: 1,
+        resume: 1,
+        latestdate: 1,
+        expCTC_strat: '$candidatedetails.expCTC_strat',
+        expCTC_end: '$candidatedetails.expCTC_end',
+        totalCTC: '$candidatedetails.totalCTC',
+        keyskill: '$candidatedetails.keyskill',
+        experienceYear: '$candidatedetails.experienceYear',
+      },
+    },
 
-  {
-    $match: {
-      $and: [locationfilter, datefiletr, searchfilter, mobileNumberfilter, skillfilter, sortByfilter],
+    {
+      $match: {
+        $and: [locationfilter, datefiletr, searchfilter, mobileNumberfilter, skillfilter, sortByfilter],
+      },
     },
-  },
-]);
+  ]);
   return { data: data, count: count.length };
 };
 
