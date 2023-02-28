@@ -7,6 +7,7 @@ const { Token } = require('../models');
 const sendmail = require('../config/textlocal');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
+const moment = require('moment');
 
 const createEmployer = async (userBody) => {
   const { password, confirmpassword } = userBody;
@@ -101,12 +102,20 @@ const forget_password_set = async (id, body) => {
 
 const UsersLogin = async (userBody) => {
   const { email, password } = userBody;
+  let date = moment().format('YYYY-MM-DD');
   let userName = await EmployerRegistration.findOne({ email: email });
   if (!userName) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
   } else {
+    if(userName.adminStatus == "debarred"){
+      throw new ApiError(httpStatus.UNAUTHORIZED, "Your account is debarred");
+    }
+    if(userName.active == false){
+      throw new ApiError(httpStatus.UNAUTHORIZED, "Your account is de_active");
+    }
     if (await userName.isPasswordMatch(password)) {
       console.log('Password Macthed');
+      await EmployerRegistration.findByIdAndUpdate({ _id: userName._id }, { latestdate: date }, { new: true });
     } else {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
     }

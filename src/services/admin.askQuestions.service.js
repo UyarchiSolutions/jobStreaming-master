@@ -181,6 +181,7 @@ const create_report = async (userId, body) => {
 
 const all_report = async (range, page) => {
   const data = await Report.aggregate([
+    { $sort: { createdAt: -1 } },
     {
       $lookup: {
         from: 'employerdetails',
