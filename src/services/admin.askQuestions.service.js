@@ -100,7 +100,11 @@ const create_enquiry_dummy = async (body) => {
 };
 
 const get_all_enquiry = async (range, page) => {
-  const data = await Enquiry.aggregate([{ $skip: parseInt(range) * parseInt(page) }, { $limit: parseInt(range) }]);
+  const data = await Enquiry.aggregate([
+    { $sort: { createdAt: -1 } },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
+  ]);
   const count = await Enquiry.aggregate([
     {
       $match: { active: true },
