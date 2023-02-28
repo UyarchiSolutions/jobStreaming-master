@@ -15,13 +15,13 @@ const routes_v2 = require('./routes/v1/liveStreaming');
 const logger = require('./config/logger');
 const cookieparser = require('cookie-parser');
 
-const chetModule = require("./services/liveStreaming/chat.service")
+const chetModule = require('./services/liveStreaming/chat.service');
 
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
 
 const app = express();
-
+const bodyParser = require('body-parser');
 let http = require('http');
 let server = http.Server(app);
 let socketIO = require('socket.io');
@@ -32,13 +32,13 @@ server.listen(config.port, () => {
 });
 io.sockets.on('connection', async (socket) => {
   socket.on('groupchat', async (data) => {
-    await chetModule.chat_room_create(data, io)
+    await chetModule.chat_room_create(data, io);
   });
   socket.on('admin_approve', async (data) => {
-    await chetModule.admin_approve(data, io)
+    await chetModule.admin_approve(data, io);
   });
   socket.on('rice_hands', async (data) => {
-    await chetModule.rice_hands(data, io)
+    await chetModule.rice_hands(data, io);
   });
   socket.on('', (msg) => {
     console.log('message: ' + msg);
@@ -83,19 +83,26 @@ app.use(cors());
 app.options('*', cors());
 app.use(cookieparser());
 var allowCrossDomain = function (req, res, next) {
-  res.header('Content-Security-Policy', "frame-ancestors 'self'")
+  res.header('Content-Security-Policy', "frame-ancestors 'self'");
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization');
-  if (req.method === "OPTIONS") res.send(200);
+  if (req.method === 'OPTIONS') res.send(200);
   else next();
-}
+};
 app.use(allowCrossDomain);
 app.use(function (req, res, next) {
   /* Clickjacking prevention */
-  res.header('Content-Security-Policy', "frame-ancestors 'none'")
-  next()
-})
+  res.header('Content-Security-Policy', "frame-ancestors 'none'");
+  next();
+});
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+
+app.use(bodyParser.json());
 // jwt authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
