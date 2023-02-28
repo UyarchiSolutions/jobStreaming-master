@@ -2708,6 +2708,7 @@ const candidate_detials_id = async (id) => {
         workStatus: 1,
         mobileNumber: 1,
         name: 1,
+        adminStatus: 1,
         lat: 1,
         long: 1,
         resume: 1,
@@ -2808,7 +2809,7 @@ const CandidateRegistration_number = async (key) => {
 
 const get_all_candidates = async (body) => {
   let = { date1, date2, mobilenumber, skill, name, location, sortBy, range, page } = body;
-
+  console.log(page);
   let searchfilter = { data: true };
   let datefiletr = { data: true };
   let locationfilter = { data: true };
