@@ -11,7 +11,11 @@ const createFaqe = async (body) => {
 };
 
 const getAllFaqe = async (range, page) => {
-  const data = await Faqe.aggregate([{ $skip: parseInt(range) * parseInt(page) }, { $limit: parseInt(range) }]);
+  const data = await Faqe.aggregate([
+    { $sort: { createdAt: -1 } },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
+  ]);
   const count = await Faqe.aggregate([
     {
       $match: { active: true },
