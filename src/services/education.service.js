@@ -166,7 +166,7 @@ const get_Industries_all = async (limit) => {
 };
 
 const get_Industries_all_search = async (key) => {
-  let data = await Industries.find({ Industry: { $regex: key, $options: 'i' } });
+  let data = await Industries.find({ Industry: { $regex: key, $options: 'i' } }).limit(7);
   return data;
 };
 
