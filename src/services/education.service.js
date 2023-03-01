@@ -164,6 +164,12 @@ const get_Industries_all = async (limit) => {
   let data = await Industries.find().limit(parseInt(limit));
   return data;
 };
+
+const get_Industries_all_search = async (key) => {
+  let data = await Industries.find({ Industry: { $regex: key, $options: 'i' } });
+  return data;
+};
+
 module.exports = {
   createQualification,
   get_sslc_course,
@@ -187,4 +193,5 @@ module.exports = {
   get_Department_all,
   get_Industries_all,
   get_alleducation_all,
+  get_Industries_all_search,
 };

@@ -28,4 +28,5 @@ router.route('/get_Role_all/:limit').get(educationController.get_Role_all);
 router.route('/get_alleducation_all/:limit').get(educationController.get_alleducation_all);
 router.route('/get_Department_all/:limit').get(educationController.get_Department_all);
 router.route('/get_Industries_all/:limit').get(educationController.get_Industries_all);
+router.route('/get_Industries_all_search/:key').get(educationController.get_Industries_all_search);
 module.exports = router;
