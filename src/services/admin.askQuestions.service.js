@@ -832,11 +832,13 @@ const getAllDuplicate_candidate = async () => {
 
   ]);
   var first = [];
+  if(values.length != 0){
    for(let i = 0 ; i < values.length ; i++){
     for(let j = 0 ; j < values[i].documents.length ; j++){
       first.push(values[i].documents[j]);
     }
    }
+  }
   //  console.log(first)
   return first;
 };
