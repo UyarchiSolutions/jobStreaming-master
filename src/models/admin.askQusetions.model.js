@@ -57,6 +57,9 @@ const enquirySchema = mongoose.Schema({
   eq_id:{
     type:String,
   },
+  reason:{
+    type:String,
+  },
   status:{
     type:String,
     default:'Pending',

@@ -92,6 +92,11 @@ const getReportById = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getAllDuplicate_candidate = catchAsync(async (req, res) => {
+  const data = await faqeService.getAllDuplicate_candidate();
+  res.send(data);
+});
+
 module.exports = {
   createfaqe,
   getAll_faqe,
@@ -110,4 +115,5 @@ module.exports = {
   deactive_admin,
   get_report,
   getReportById,
+  getAllDuplicate_candidate,
 };

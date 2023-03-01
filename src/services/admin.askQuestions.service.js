@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { Faqe, Enquiry, Report } = require('../models/admin.askQusetions.model');
 const { EmployerDetails } = require('../models/employerDetails.model');
+const  CandidateRegistration  = require('../models/candidateRegistration.model');
 const { findByIdAndUpdate } = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
@@ -786,6 +787,86 @@ const getReportById = async (id) => {
   return values;
 };
 
+
+const getAllDuplicate_candidate = async () => {
+  let values = await CandidateRegistration.aggregate([
+    {
+      $lookup: {
+        from: 'candidatedetails',
+        localField: '_id',
+        foreignField: 'userId',
+        as: 'candidatedetails',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatedetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    // {
+    //   $project:{
+    //       name:1,
+    //       dob:'$candidatedetails.dob',
+    //   }
+    // },
+    // {
+    //   $group: {
+    //     _id: { name: '$name', dob:'$dob' },
+    //     count: {$sum: 1},
+    //   },
+    // },
+    // {
+    //   $group: {
+    //     _id: { name: '$name', dob:'$dob' },
+    //     count: {$sum: 1},
+    //   },
+    //     documents: {
+    //       $push: "$$ROOT"
+    //     }
+    //   },
+    // {
+    //   $match:{count:{$gt:1}}
+    // },
+    // {
+    //   $project:{
+    //      name:'$_id.name',
+    //      dob:'$_id.dob',
+    //      documents:'$documents'
+    //   }
+    // }
+    {
+      $group: {
+        _id: {
+          name: '$name',
+           dob:'$candidatedetails.dob',
+        },
+        count: {$sum: 1},
+        documents: {
+          $push: "$$ROOT"
+        }
+      }
+    },
+    {
+      $match:{count:{$gt:1}}
+    },
+    {
+        $project:{
+          //  name:'$_id.name',
+          //  dob:'$_id.dob',
+          //  count:1,
+           documents:'$documents'
+        }
+    },
+      {
+        $project: {
+          _id: 0,
+          all_items: { $concatArrays: ["$documents"] }
+        }
+      },
+  ]);
+  return values;
+};
 module.exports = {
   createFaqe,
   getAllFaqe,
@@ -804,4 +885,5 @@ module.exports = {
   deactive_admin,
   get_report,
   getReportById,
+  getAllDuplicate_candidate,
 };
