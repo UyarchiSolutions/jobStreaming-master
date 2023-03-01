@@ -40,7 +40,7 @@ const sendVerificationEmail = async (to, token, mobilenumber) => {
 };
 
 const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
-  data1 = await ejs.renderFile(__dirname + '/verifytemplate.ejs', {
+  data1 = await ejs.renderFile(__dirname + '/employVerify.ejs', {
     mobilenumber:mobilenumber,
     email:to,
   })
