@@ -112,6 +112,12 @@ const userEmpSchema = mongoose.Schema(
     companyAddress: {
       type: String,
     },
+    lat:{
+      type:String,
+    },
+    long:{
+      type:String,
+    },
     active: {
       type: Boolean,
       default: true,

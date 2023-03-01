@@ -804,37 +804,6 @@ const getAllDuplicate_candidate = async () => {
         preserveNullAndEmptyArrays: true,
       },
     },
-    // {
-    //   $project:{
-    //       name:1,
-    //       dob:'$candidatedetails.dob',
-    //   }
-    // },
-    // {
-    //   $group: {
-    //     _id: { name: '$name', dob:'$dob' },
-    //     count: {$sum: 1},
-    //   },
-    // },
-    // {
-    //   $group: {
-    //     _id: { name: '$name', dob:'$dob' },
-    //     count: {$sum: 1},
-    //   },
-    //     documents: {
-    //       $push: "$$ROOT"
-    //     }
-    //   },
-    // {
-    //   $match:{count:{$gt:1}}
-    // },
-    // {
-    //   $project:{
-    //      name:'$_id.name',
-    //      dob:'$_id.dob',
-    //      documents:'$documents'
-    //   }
-    // }
     {
       $group: {
         _id: {
@@ -852,20 +821,24 @@ const getAllDuplicate_candidate = async () => {
     },
     {
         $project:{
+          _id:0,
           //  name:'$_id.name',
           //  dob:'$_id.dob',
           //  count:1,
-           documents:'$documents'
+           documents: { $concatArrays: "$documents" }
+          //  documents:'$documents'
         }
     },
-      {
-        $project: {
-          _id: 0,
-          all_items: { $concatArrays: ["$documents"] }
-        }
-      },
+
   ]);
-  return values;
+  var first = [];
+   for(let i = 0 ; i < values.length ; i++){
+    for(let j = 0 ; j < values[i].documents.length ; j++){
+      first.push(values[i].documents[j]);
+    }
+   }
+  //  console.log(first)
+  return first;
 };
 module.exports = {
   createFaqe,
