@@ -9,41 +9,9 @@ const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const Axios = require('axios');
 const moment = require('moment');
-const AWS = require('aws-sdk');
 const { authService, userService, tokenService, emailService, candidateRegistrationService } = require('../services');
 
-const createCandidate = async (userBody, files) => {
-  let d;
-  const s3 = new AWS.S3({
-    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
-    secretAccessKey: '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',
-    region: 'ap-south-1',
-  });
-  let params = {
-    Bucket: 'jobresumeupload',
-    Key: files.originalname,
-    Body: files.buffer,
-  };
-  s3.upload(params, async (err, data) => {
-    const { password, confirmpassword } = userBody;
-    console.log(userBody);
-    let date = moment().format('YYYY-MM-DD');
-    if (await CandidateRegistration.isEmailTaken(userBody.email)) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-    }
-    if (password != confirmpassword) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Confirm Password Incorrect');
-    }
-    // console.log(resume, 'resumes');
-    let values = { ...userBody, ...{ date: date, resume: data.Location } };
-    d = await CandidateRegistration.create(values);
-    // const tokens = await tokenService.generateAuthTokens(d);
-    // await emailService.sendVerificationEmail(userBody.email, tokens.access.token, userBody.mobileNumber);
-  });
-  setTimeout(() => {
-    return d;
-  }, 1000);
-};
+const createCandidate = async (userBody, files) => {};
 
 const getUserById = async (id) => {
   const data = await CandidateRegistration.findById(id);
@@ -223,15 +191,13 @@ const deactivate = async (id) => {
 };
 
 const getUser_update = async (id, body) => {
-  const data  = await CandidateRegistration.findById(id)
-  if (!data){
-   throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
-  }    
-  const value = await CandidateRegistration.findByIdAndUpdate({_id:id}, body, {new:true})
-  return value
+  const data = await CandidateRegistration.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }
+  const value = await CandidateRegistration.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return value;
 };
-
-
 
 // const updateUserById = async (userId, updateBody) => {
 //   const user = await getUserById(userId);
@@ -256,25 +222,25 @@ const getUser_update = async (id, body) => {
 // };
 
 module.exports = {
-    createCandidate,
-    verify_email,
-    UsersLogin,
-    forgot,
-    forgot_verify_email,
-    change_password,
-    getUserById,
-    getMapLocation,
-    mobile_verify,
-    mobile_verify_Otp,
-    forget_password,
-    forget_password_Otp,
-    forget_password_set,
-    change_pass,
-    getAllLatLong,
-    deactivate,
-    getUser_update,
-//   getUserById,
-//   getUserByEmail,
-//   updateUserById,
-//   deleteUserById,
+  createCandidate,
+  verify_email,
+  UsersLogin,
+  forgot,
+  forgot_verify_email,
+  change_password,
+  getUserById,
+  getMapLocation,
+  mobile_verify,
+  mobile_verify_Otp,
+  forget_password,
+  forget_password_Otp,
+  forget_password_set,
+  change_pass,
+  getAllLatLong,
+  deactivate,
+  getUser_update,
+  //   getUserById,
+  //   getUserByEmail,
+  //   updateUserById,
+  //   deleteUserById,
 };

@@ -55,7 +55,8 @@ if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
 }
-
+const { S3 } = require('aws-sdk');
+require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 // set security HTTP headers
 app.use(helmet());
 
