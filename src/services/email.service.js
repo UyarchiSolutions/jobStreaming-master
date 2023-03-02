@@ -173,7 +173,7 @@ const send_email_update = async (id,to) => {
   otp = otp * 1000000;
   otp = parseInt(otp);
   //  console.log(otp);
-  const text = `Dear user, To Forget Password, OTP:${otp}. Do not share your otp`;
+  const text = `Dear user, To Change the email, OTP:${otp}. Do not share your otp`;
   const msg = { from: config.email.from, to, subject, text };
 
   await Otpupdate.create({email:to, otp:otp, userId:id})
