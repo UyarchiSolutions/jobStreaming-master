@@ -296,6 +296,7 @@ const getByIdUser = async (id) => {
         resume: 1,
         createdAt: 1,
         updatedAt: 1,
+        location:1,
         // candidateDetails: '$candidatedetails',
         keyskill: '$candidatedetails.keyskill',
         currentSkill: '$candidatedetails.currentSkill',
