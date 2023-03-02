@@ -14,8 +14,8 @@ const Otp = async (bodydata) => {
   let OTPCODE = Math.floor(100000 + Math.random() * 900000);
   message = urlencodeed(
     'Dear ' +
-      "Candidate" +
-      ', thank you for using with treatjobs. Your OTP for logging into the account is ' +
+    bodydata.mobileNumber +
+      ', thank you for registering with Kapture(An Uyarchi Solutions company). Your OTP for logging into the account is ' +
       OTPCODE +
       ' .'
   );
