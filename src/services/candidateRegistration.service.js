@@ -222,6 +222,17 @@ const deactivate = async (id) => {
   return data;
 };
 
+const getUser_update = async (id, body) => {
+  const data  = await CandidateRegistration.findById(id)
+  if (!data){
+   throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }    
+  const value = await CandidateRegistration.findByIdAndUpdate({_id:id}, body, {new:true})
+  return value
+};
+
+
+
 // const updateUserById = async (userId, updateBody) => {
 //   const user = await getUserById(userId);
 //   if (!user) {
@@ -245,24 +256,25 @@ const deactivate = async (id) => {
 // };
 
 module.exports = {
-  createCandidate,
-  verify_email,
-  UsersLogin,
-  forgot,
-  forgot_verify_email,
-  change_password,
-  getUserById,
-  getMapLocation,
-  mobile_verify,
-  mobile_verify_Otp,
-  forget_password,
-  forget_password_Otp,
-  forget_password_set,
-  change_pass,
-  getAllLatLong,
-  deactivate,
-  //   getUserById,
-  //   getUserByEmail,
-  //   updateUserById,
-  //   deleteUserById,
+    createCandidate,
+    verify_email,
+    UsersLogin,
+    forgot,
+    forgot_verify_email,
+    change_password,
+    getUserById,
+    getMapLocation,
+    mobile_verify,
+    mobile_verify_Otp,
+    forget_password,
+    forget_password_Otp,
+    forget_password_set,
+    change_pass,
+    getAllLatLong,
+    deactivate,
+    getUser_update,
+//   getUserById,
+//   getUserByEmail,
+//   updateUserById,
+//   deleteUserById,
 };
