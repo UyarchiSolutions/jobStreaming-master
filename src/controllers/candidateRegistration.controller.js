@@ -112,6 +112,12 @@ const deactivate = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.deactivate(userId);
   res.send(user);
 });
+
+const getUser_update = catchAsync(async (req, res) => {
+  const userId = req.userId;
+  const user = await candidateRegistrationService.getUser_update(userId, req.body);
+  res.send(user);
+});
 // const logout = catchAsync(async (req, res) => {
 //   await authService.logout(req.body.refreshToken);
 //   res.status(httpStatus.NO_CONTENT).send();
@@ -161,6 +167,7 @@ module.exports = {
   change_pass,
   getAllLatLong,
   deactivate,
+  getUser_update,
   //   logout,
   //   refreshTokens,
   //   forgotPassword,

@@ -194,6 +194,15 @@ const deactivate = async (id) => {
   return data;
 }
 
+const getUser_update = async (id, body) => {
+  const data  = await CandidateRegistration.findById(id)
+  if (!data){
+   throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }    
+  const value = await CandidateRegistration.findByIdAndUpdate({_id:id}, body, {new:true})
+  return value
+};
+
 // const updateUserById = async (userId, updateBody) => {
 //   const user = await getUserById(userId);
 //   if (!user) {
@@ -233,6 +242,7 @@ module.exports = {
     change_pass,
     getAllLatLong,
     deactivate,
+    getUser_update,
 //   getUserById,
 //   getUserByEmail,
 //   updateUserById,

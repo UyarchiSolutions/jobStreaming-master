@@ -61,6 +61,7 @@ router.route('/get_job_post/:id').get(employerDetailsController.get_job_post);
 router.route('/get_job_post_candidate/:id').get(auth, employerDetailsController.get_job_post_candidate);
 //map
 router.route('/neighbour_api').get(employerDetailsController.neighbour_api);
+router.route('/location_api').get(employerDetailsController.location_api);
 
 // plans details admin
 router.route('/All_Plans').get(authadmin, employerDetailsController.All_Plans);

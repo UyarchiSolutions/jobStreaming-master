@@ -257,6 +257,11 @@ const getEmployerRegister = catchAsync(async (req, res) => {
   res.send(user);
 });
 
+const location_api = catchAsync(async (req, res) => {
+  console.log(req.query)
+  const user = await employerDetailsService.location_api(req.query.input);
+  res.send(user);
+});
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -305,4 +310,5 @@ module.exports = {
   employer_name,
   employer_contactnumber,
   getEmployerRegister,
+  location_api,
 };

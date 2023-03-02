@@ -26,7 +26,7 @@ router.route('/forget_password_Otp').post(candidateRegistration.forget_password_
 router.route('/forget_password_set/:id').post(candidateRegistration.forget_password_set);
 router.route('/change_pass').post(authorization, candidateRegistration.change_pass);
 router.route('/deactivate').post(authorization, candidateRegistration.deactivate);
-
+router.route('/getUser_update').put(authorization, candidateRegistration.getUser_update);
 // map
 router.route('/getAllLatLong').post(candidateRegistration.getAllLatLong);
 // router.post('/logout', validate(authValidation.logout), authController.logout);
