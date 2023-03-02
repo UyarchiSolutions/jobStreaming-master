@@ -9,7 +9,7 @@ const authorization = require('../../controllers/tokenVerify.controller');
 const author = require('../../controllers/empVEridy.controller');
 const router = express.Router();
 
-router.route('/register').post(uploadImage.array('resume'),candidateRegistration.register);
+router.route('/register').post(uploadImage,candidateRegistration.register);
 
 router.route('/userDetails').get(authorization, candidateRegistration.getUserById);
 

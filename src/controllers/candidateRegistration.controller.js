@@ -3,24 +3,38 @@ const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService, candidateRegistrationService } = require('../services');
 const { OTPModel } = require('../models');
 const { KeySkill } = require('../models/candidateDetails.model');
+const { CandidateRegistration, User } = require('../models');
+const ApiError = require('../utils/ApiError');
+const AWS = require('aws-sdk');
+const moment = require('moment');
 
 const register = catchAsync(async (req, res) => {
-  const user = await candidateRegistrationService.createCandidate(req.body);
-  if (req.files) {
-    let path = '';
-    req.files.forEach(function (files, index, arr) {
-      path = 'resumes/' + files.filename;
-    });
-    user.resume = path;
+  // const user = await candidateRegistrationService.createCandidate(req.body, req.file);
+  const { password, confirmpassword } = req.body;
+  let date = moment().format('YYYY-MM-DD');
+  if (await CandidateRegistration.isEmailTaken(req.body.email)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  const tokens = await tokenService.generateAuthTokens(user);
-  //  await OTPModel.create({token:tokens.access.token});
-  res.status(httpStatus.CREATED).send({ user, tokens });
-  await user.save();
-  // console.log(user.email)
-  await emailService.sendVerificationEmail(user.email, tokens.access.token, user.mobileNumber);
-  // await emailService.maskmail(user.email)
-  //   console.log(user._id)
+  if (password != confirmpassword) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Confirm Password Incorrect');
+  }
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  let params = {
+    Bucket: 'jobresumeupload',
+    Key: req.file.originalname,
+    Body: req.file.buffer,
+  };
+  s3.upload(params, async (err, data) => {
+    let values = { ...req.body, ...{ date: date, resume: data.Location } };
+    let d = await CandidateRegistration.create(values);
+    const tokens = await tokenService.generateAuthTokens(d);
+    res.status(httpStatus.CREATED).send({ user: d, tokens });
+    await emailService.sendVerificationEmail(req.body.email, tokens.access.token, req.body.mobileNumber);
+  });
 });
 
 const verify_email = catchAsync(async (req, res) => {
@@ -58,13 +72,13 @@ const forget_password_set = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
-  let Boolean = false
+  let Boolean = false;
   const user = await candidateRegistrationService.UsersLogin(req.body);
   // console.log(user)
-  let details = await KeySkill.find({userId:user._id})
+  let details = await KeySkill.find({ userId: user._id });
   // console.log(details)
-  if(details.length != 0){
-    Boolean = true
+  if (details.length != 0) {
+    Boolean = true;
   }
   // console.log(Boolean)
   const tokens = await tokenService.generateAuthTokens(user);
@@ -103,7 +117,7 @@ const change_pass = catchAsync(async (req, res) => {
 });
 
 const getAllLatLong = catchAsync(async (req, res) => {
-  const user = await candidateRegistrationService.getAllLatLong( req.body);
+  const user = await candidateRegistrationService.getAllLatLong(req.body);
   res.send(user);
 });
 

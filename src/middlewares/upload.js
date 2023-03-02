@@ -1,33 +1,10 @@
 const multer = require('multer');
-const path = require('path');
 
-const storage = multer.diskStorage({
-  destination: function(req,res, cb){
-      cb(null, path.join(__dirname, '../../public/resumes'));
-  },
-  filename: function (req, file, cb) {
-    let ext = path.extname(file.originalname);
-    cb(null, Date.now() + ext);
+const storage = multer.memoryStorage({
+  destination: function (req, res, callback) {
+    callback(null, '');
   },
 });
-
-
-const upload = multer({
-  storage: storage,
-  fileFilter: function (req, file, callback) {
-    if (file.mimetype === 'application/pdf' || file.mimetype ==='application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-      callback(null, true);
-    } else {
-      console.log('Only pdf, docx file supported!');
-      callback(null, false);
-    }
-  },
-  limits: {
-    fileSize: 6024 * 6024 * 6,
-  },
-});
-
-
-
+const upload = multer({ storage }).single('resume')
 
 module.exports = upload;
