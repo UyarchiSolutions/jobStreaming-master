@@ -24,6 +24,9 @@ const employerDetailsSchema = mongoose.Schema(
       type:Boolean,
       default:true,
     },
+    venue:{
+      type:String,
+    },
     apply_method:{
       type:String,
     },
