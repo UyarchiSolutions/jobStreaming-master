@@ -27,6 +27,10 @@ router.route('/forget_password_set/:id').post(candidateRegistration.forget_passw
 router.route('/change_pass').post(authorization, candidateRegistration.change_pass);
 router.route('/deactivate').post(authorization, candidateRegistration.deactivate);
 router.route('/getUser_update/:id').put(candidateRegistration.getUser_update);
+router.route('/update_email_send_otp/:id').put(candidateRegistration.update_email_send_otp);
+router.route('/update_email_send_otp_verify').post(candidateRegistration.update_email_send_otp_verify);
+router.route('/update_mobilenumber_send_otp/:id').put(candidateRegistration.update_mobilenumber_send_otp);
+router.route('/update_mobilenumber_otp_verify').post(candidateRegistration.update_mobilenumber_otp_verify);
 // map
 router.route('/getAllLatLong').post(candidateRegistration.getAllLatLong);
 // router.post('/logout', validate(authValidation.logout), authController.logout);

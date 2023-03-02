@@ -1,12 +1,14 @@
 const httpStatus = require('http-status');
 const { CandidateRegistration, User } = require('../models');
+const { Otpupdate } = require('../models/createPlan.model');
+const mobileOtp = require('../config/mobilenumberVerify');
 const { OTPModel } = require('../models');
 const { Token } = require('../models');
 const  sendmail  = require('../config/textlocal');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 const {emailService} = require('../services');
-const ApiError = require('../utils/ApiError');
+const ApiError = require('../utils/ApiError'); 
 const bcrypt = require('bcryptjs');
 const Axios = require('axios');
 const moment = require('moment');
@@ -42,7 +44,7 @@ const verify_email = async (token) => {
       }
      const data = await CandidateRegistration.findByIdAndUpdate({_id:tokenDoc.user}, {isEmailVerified:true}, {new:true})
       return data;
-    };
+};
 
 const mobile_verify = async (mobilenumber) => {
   const data = await CandidateRegistration.findOne({mobileNumber:mobilenumber})
@@ -203,7 +205,48 @@ const getUser_update = async (id, body) => {
   return value
 };
 
+const update_email_send_otp = async (id, body) => {
+  const data  = await CandidateRegistration.findById(id)
+  if (!data){
+   throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }    
+  const data1  = await CandidateRegistration.findOne({email:body.email})
+  if (data1){
+   throw new ApiError(httpStatus.BAD_REQUEST, 'already used this email');
+  }
+  await emailService.send_email_update(id, body.email)
+  return {message:"Send Otp Succesfully"}
+};
 
+const update_email_send_otp_verify = async (body) => {
+  const data  = await Otpupdate.findOne({email:body.email, otp:body.otp})
+  if (!data){
+   throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect email otp');
+  }    
+  // const value = await CandidateRegistration.findByIdAndUpdate({_id:data.userId}, {email:body.email}, {new:true})
+  return data
+};
+
+const update_mobilenumber_send_otp = async (id, body) => {
+  const data  = await CandidateRegistration.findById(id)
+  if (!data){
+   throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }   
+  const data1  = await CandidateRegistration.findOne({mobileNumber:body.mobileNumber})
+   if(data1){
+    throw new ApiError(httpStatus.BAD_REQUEST, 'already used this number');
+   }
+  await mobileOtp.Otp(body)
+  return {message:"Send Otp Succesfully"}
+};
+
+const update_mobilenumber_otp_verify = async (body) => {  
+  const data  = await Otpupdate.findOne({mobilenumber:body.mobileNumber, otp:body.otp})
+  if (!data){
+   throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect mobilenumber otp');
+  }    
+    return data
+};
 
 // const updateUserById = async (userId, updateBody) => {
 //   const user = await getUserById(userId);
@@ -245,6 +288,10 @@ module.exports = {
     getAllLatLong,
     deactivate,
     getUser_update,
+    update_email_send_otp,
+    update_email_send_otp_verify,
+    update_mobilenumber_send_otp,
+    update_mobilenumber_otp_verify,
 //   getUserById,
 //   getUserByEmail,
 //   updateUserById,

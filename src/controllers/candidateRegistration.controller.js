@@ -117,6 +117,26 @@ const getUser_update = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.getUser_update(req.params.id, req.body);
   res.send(user);
 });
+
+const update_email_send_otp = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.update_email_send_otp(req.params.id, req.body);
+  res.send(user);
+});
+
+const update_email_send_otp_verify = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.update_email_send_otp_verify(req.body);
+  res.send(user);
+});
+
+const update_mobilenumber_send_otp = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.update_mobilenumber_send_otp(req.params.id, req.body);
+  res.send(user);
+});
+
+const update_mobilenumber_otp_verify = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.update_mobilenumber_otp_verify(req.body);
+  res.send(user);
+});
 // const logout = catchAsync(async (req, res) => {
 //   await authService.logout(req.body.refreshToken);
 //   res.status(httpStatus.NO_CONTENT).send();
@@ -167,6 +187,10 @@ module.exports = {
   getAllLatLong,
   deactivate,
   getUser_update,
+  update_email_send_otp,
+  update_email_send_otp_verify,
+  update_mobilenumber_send_otp,
+  update_mobilenumber_otp_verify,
   //   logout,
   //   refreshTokens,
   //   forgotPassword,

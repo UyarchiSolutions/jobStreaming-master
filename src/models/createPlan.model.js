@@ -64,4 +64,40 @@ const  createPlanSchema = mongoose.Schema(
   }
 );
 const CreatePlan = mongoose.model('createPlan', createPlanSchema);
-module.exports = {CreatePlan} ;
+const  otpSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    email:{
+        type:String,
+    },
+    otp:{
+      type:String,
+    },
+    mobilenumber:{
+      type:String,
+    },
+    userId:{
+      type:String,
+    },
+    date:{
+      type:String,
+      // default:moment().format('YYYY-MM-DD')
+    },
+    time: {
+      type: String,
+      // default:moment().format('HHmmss')
+    },
+    active:{
+        type:Boolean,
+        default:true,
+    }
+  },
+  {
+    timestamps: true,
+  }
+);
+const Otpupdate = mongoose.model('otpupdate', otpSchema);
+module.exports = {CreatePlan, Otpupdate} ;

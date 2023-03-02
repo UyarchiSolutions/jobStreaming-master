@@ -3,6 +3,7 @@ const config = require('../config/config');
 const logger = require('../config/logger');
 const { OTPModel } = require('../models');
 const { EmployeOtp } = require('../models');
+const { Otpupdate } = require('../models/createPlan.model');
 var ejs = require('ejs');
 
 const transport = nodemailer.createTransport(config.email.smtp);
@@ -163,6 +164,22 @@ const notification_mail = async (candidate, body) => {
 };
 
 
+const send_email_update = async (id,to) => {
+  const subject = 'Email Changing';
+  // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
+  // console.log(to, token)
+  // replace this url with the link to the email verification page of your front-end app
+  var otp = Math.random();
+  otp = otp * 1000000;
+  otp = parseInt(otp);
+  //  console.log(otp);
+  const text = `Dear user, To Forget Password, OTP:${otp}. Do not share your otp`;
+  const msg = { from: config.email.from, to, subject, text };
+
+  await Otpupdate.create({email:to, otp:otp, userId:id})
+  await transport.sendMail(msg);
+};
+
 module.exports = {
   transport,
   // sendEmail,
@@ -175,5 +192,6 @@ module.exports = {
   sendforgotEmailEmp,
   maskmail,
   notification_mail,
-  sendEmailTemplate
+  sendEmailTemplate,
+  send_email_update
 };
