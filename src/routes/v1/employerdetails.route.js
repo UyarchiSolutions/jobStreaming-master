@@ -6,9 +6,10 @@ const authorization = require('../../controllers/empVEridy.controller');
 const auth = require('../../controllers/tokenVerify.controller');
 const authadmin = require('../../controllers/adminVerify.controller');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer();
 
-router.route('/createEmpDetails').post(authorization, employerDetailsController.createEmpDetails);
-
+router.route('/createEmpDetails').post(upload.none(), authorization, employerDetailsController.createEmpDetails);
 router.route('/getEmpDetails').get(authorization, employerDetailsController.getByIdUser);
 router.route('/updateEmpDetails/:id').put(employerDetailsController.updateById);
 router.route('/deleteEmpDetails/:id').delete(employerDetailsController.deleteById);
