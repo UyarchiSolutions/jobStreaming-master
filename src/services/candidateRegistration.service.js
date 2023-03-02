@@ -4,35 +4,23 @@ const { Otpupdate } = require('../models/createPlan.model');
 const mobileOtp = require('../config/mobilenumberVerify');
 const { OTPModel } = require('../models');
 const { Token } = require('../models');
-const  sendmail  = require('../config/textlocal');
+const sendmail = require('../config/textlocal');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
-const {emailService} = require('../services');
+// const {emailService} = require('../services');
 const ApiError = require('../utils/ApiError'); 
 const bcrypt = require('bcryptjs');
 const Axios = require('axios');
 const moment = require('moment');
+const { authService, userService, tokenService, emailService, candidateRegistrationService } = require('../services');
 
-const createCandidate = async (userBody) => {
-    const {password,confirmpassword} = userBody
-    let date = moment().format('YYYY-MM-DD');
-  if (await CandidateRegistration.isEmailTaken(userBody.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-  }
-  if(password != confirmpassword){
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Confirm Password Incorrect');
-  }
-  let values = { ...userBody, ...{date: date} };
- let data = await CandidateRegistration.create(values);
- return data
-};
-
+const createCandidate = async (userBody, files) => {};
 
 const getUserById = async (id) => {
-     const data  = await CandidateRegistration.findById(id)
-     if (!data){
-      throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
-     }    
+  const data = await CandidateRegistration.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }
 };
 
 const verify_email = async (token) => {
@@ -47,48 +35,50 @@ const verify_email = async (token) => {
 };
 
 const mobile_verify = async (mobilenumber) => {
-  const data = await CandidateRegistration.findOne({mobileNumber:mobilenumber})
-  if(!data) {
+  const data = await CandidateRegistration.findOne({ mobileNumber: mobilenumber });
+  if (!data) {
     throw new Error('mobileNumber not found');
   }
-  if(data.isMobileVerified == true &&  data.isEmailVerified == true){
+  if (data.isMobileVerified == true && data.isEmailVerified == true) {
     throw new Error('mobileNumber already verified...');
   }
-  await sendmail.Otp(data)
-  return {message:"Send Otp Succesfully"}
-}
+  await sendmail.Otp(data);
+  return { message: 'Send Otp Succesfully' };
+};
 
-
-const mobile_verify_Otp = async (mobilenumber,otp) => {
-  const data = await OTPModel.findOne({mobileNumber:mobilenumber, otp:otp})
-  if(!data) {
+const mobile_verify_Otp = async (mobilenumber, otp) => {
+  const data = await OTPModel.findOne({ mobileNumber: mobilenumber, otp: otp });
+  if (!data) {
     throw new Error('wrong otp');
   }
-  const verify = await CandidateRegistration.findByIdAndUpdate({_id:data.userId}, {isMobileVerified:true, isEmailVerified:true}, {new:true})
-  return verify
-}
-
+  const verify = await CandidateRegistration.findByIdAndUpdate(
+    { _id: data.userId },
+    { isMobileVerified: true, isEmailVerified: true },
+    { new: true }
+  );
+  return verify;
+};
 
 const forget_password = async (mobilenumber) => {
-  const data = await CandidateRegistration.findOne({mobileNumber:mobilenumber, active:true})
-  if(!data){
+  const data = await CandidateRegistration.findOne({ mobileNumber: mobilenumber, active: true });
+  if (!data) {
     throw new Error('mobileNumber not found');
   }
-  await sendmail.forgetOtp(data)
-  return {message:'otp send successfully'}
-}
+  await sendmail.forgetOtp(data);
+  return { message: 'otp send successfully' };
+};
 
-const forget_password_Otp = async (body) => { 
-   const {mobilenumber, otp} = body
-   const data = await OTPModel.findOne({otp:otp, mobileNumber:mobilenumber})
-  if(!data){
+const forget_password_Otp = async (body) => {
+  const { mobilenumber, otp } = body;
+  const data = await OTPModel.findOne({ otp: otp, mobileNumber: mobilenumber });
+  if (!data) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'otp inValid');
   }
-  const verify = await CandidateRegistration.findOne({_id:data.userId}).select("email")
-  return verify
-}
+  const verify = await CandidateRegistration.findOne({ _id: data.userId }).select('email');
+  return verify;
+};
 
-const forget_password_set = async (id, body) => { 
+const forget_password_set = async (id, body) => {
   const { password, confirmpassword } = body;
   if (password != confirmpassword) {
     throw new ApiError(httpStatus.NOT_FOUND, 'confirmpassword wrong');
@@ -97,80 +87,85 @@ const forget_password_set = async (id, body) => {
   let password1 = await bcrypt.hash(password, salt);
   const data = await CandidateRegistration.findByIdAndUpdate({ _id: id }, { password: password1 }, { new: true });
   return data;
-}
- 
+};
+
 const UsersLogin = async (userBody) => {
-    const { email, password } = userBody;
-    let userName = await CandidateRegistration.findOne({ email: email });
-    if (!userName) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
+  const { email, password } = userBody;
+  let userName = await CandidateRegistration.findOne({ email: email });
+  if (!userName) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
+  } else {
+    if (await userName.isPasswordMatch(password)) {
+      console.log('Password Macthed');
+      await CandidateRegistration.findOneAndUpdate(
+        { email: email },
+        { latestdate: moment().format('YYYY-MM-DD') },
+        { new: true }
+      );
     } else {
-      if (await userName.isPasswordMatch(password)) {
-        console.log('Password Macthed');
-        await CandidateRegistration.findOneAndUpdate({ email: email }, {latestdate:moment().format('YYYY-MM-DD')}, {new:true});
-      } else {
-        throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
-      }
+      throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
     }
-    return userName;
-  };
+  }
+  return userName;
+};
 
-const forgot_verify_email = async (body) =>{
-    const {id, otp} = body
-    console.log(id,otp)
-    const data = await OTPModel.findOne({userId:id, otp:otp})
-    if(data == null){
-        throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect otp');
-    }
-    const data1 = await CandidateRegistration.findByIdAndUpdate({_id:data.userId}, {isEmailVerified:true}, {new:true})
-    return data1
-}
-
+const forgot_verify_email = async (body) => {
+  const { id, otp } = body;
+  console.log(id, otp);
+  const data = await OTPModel.findOne({ userId: id, otp: otp });
+  if (data == null) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect otp');
+  }
+  const data1 = await CandidateRegistration.findByIdAndUpdate(
+    { _id: data.userId },
+    { isEmailVerified: true },
+    { new: true }
+  );
+  return data1;
+};
 
 const forgot = async (body) => {
-    const data = await CandidateRegistration.findOne({email:body.email})
-    if(!data){
-        throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
-    }
-    await emailService.sendforgotEmail(data.email, data._id)
-    return data
-}
-
+  const data = await CandidateRegistration.findOne({ email: body.email });
+  if (!data) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
+  }
+  await emailService.sendforgotEmail(data.email, data._id);
+  return data;
+};
 
 const change_password = async (id, body) => {
-
-    const { password, confirmpassword } = body;
-    if (password != confirmpassword) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'confirmpassword wrong');
-    }
-    const salt = await bcrypt.genSalt(10);
-    let password1 = await bcrypt.hash(password, salt);
-    const data = await CandidateRegistration.findByIdAndUpdate({ _id: id }, { password: password1 }, { new: true });
-    return data;
-}
+  const { password, confirmpassword } = body;
+  if (password != confirmpassword) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'confirmpassword wrong');
+  }
+  const salt = await bcrypt.genSalt(10);
+  let password1 = await bcrypt.hash(password, salt);
+  const data = await CandidateRegistration.findByIdAndUpdate({ _id: id }, { password: password1 }, { new: true });
+  return data;
+};
 
 const change_pass = async (userId, body) => {
-  console.log(userId)
-  const {oldpassword, newpassword, confirmpassword} = body
+  console.log(userId);
+  const { oldpassword, newpassword, confirmpassword } = body;
   let userName = await CandidateRegistration.findById(userId);
   if (!userName) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'User Not Found');
-  }else {
+  } else {
     if (await userName.isPasswordMatch(oldpassword)) {
       console.log('Password Macthed');
-      if(newpassword != confirmpassword){
-        throw new ApiError(httpStatus.UNAUTHORIZED, "Re-Enter Password Doesn't Match");  
-      }else{
+      if (newpassword != confirmpassword) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, "Re-Enter Password Doesn't Match");
+      } else {
         const salt = await bcrypt.genSalt(10);
         let password = await bcrypt.hash(newpassword, salt);
-       await CandidateRegistration.findByIdAndUpdate({ _id: userId }, { password: password }, { new: true });
+        await CandidateRegistration.findByIdAndUpdate({ _id: userId }, { password: password }, { new: true });
       }
     } else {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Oldpassword Doesn't Match");
     }
   }
-  return userName
-}
+  return userName;
+};
 
 const getMapLocation = async (query) => {
   let response = await Axios.get(
@@ -179,30 +174,19 @@ const getMapLocation = async (query) => {
   return response.data;
 };
 
-
 const getAllLatLong = async (body) => {
-  const {address} = body
-   const data = await CandidateRegistration.find({currentAddress:address})
-    return {data:data, count:data.length} 
+  const { address } = body;
+  const data = await CandidateRegistration.find({ currentAddress: address });
+  return { data: data, count: data.length };
 };
 
-
 const deactivate = async (id) => {
-  const value = CandidateRegistration.findById(id)
-  if(!value){
-    throw new ApiError(httpStatus.UNAUTHORIZED, "not found"); 
+  const value = CandidateRegistration.findById(id);
+  if (!value) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'not found');
   }
   const data = await CandidateRegistration.findByIdAndUpdate({ _id: id }, { active: false }, { new: true });
   return data;
-}
-
-const getUser_update = async (id, body) => {
-  const data  = await CandidateRegistration.findById(id)
-  if (!data){
-   throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
-  }    
-  const value = await CandidateRegistration.findByIdAndUpdate({_id:id}, body, {new:true})
-  return value
 };
 
 const update_email_send_otp = async (id, body) => {
@@ -246,6 +230,15 @@ const update_mobilenumber_otp_verify = async (body) => {
    throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect mobilenumber otp');
   }    
     return data
+};
+
+const getUser_update = async (id, body) => {
+  const data = await CandidateRegistration.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }
+  const value = await CandidateRegistration.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return value;
 };
 
 // const updateUserById = async (userId, updateBody) => {
