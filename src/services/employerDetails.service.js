@@ -3274,7 +3274,7 @@ const neighbour_api = async (lat, long, type, radius) => {
 };
 
 const location_api = async (location) => {
-   console.log(location)
+  //  console.log(location)
   let response = await Axios.get(
     `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${location}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
   );
