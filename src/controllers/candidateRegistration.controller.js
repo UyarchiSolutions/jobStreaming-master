@@ -114,8 +114,7 @@ const deactivate = catchAsync(async (req, res) => {
 });
 
 const getUser_update = catchAsync(async (req, res) => {
-  const userId = req.userId;
-  const user = await candidateRegistrationService.getUser_update(userId, req.body);
+  const user = await candidateRegistrationService.getUser_update(req.params.id, req.body);
   res.send(user);
 });
 // const logout = catchAsync(async (req, res) => {
