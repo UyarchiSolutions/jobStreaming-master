@@ -302,6 +302,9 @@ const keySkillSchema = mongoose.Schema(
     salaryFrom: {
       type: String,
     },
+    preferredLocation:{
+      type:String,
+    },
     SalaryTo: {
       type: String,
     },
