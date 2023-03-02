@@ -311,6 +311,7 @@ const getByIdUser = async (id) => {
         locationCurrent: '$candidatedetails.locationCurrent',
         locationNative: '$candidatedetails.locationNative',
         noticeperiod: '$candidatedetails.noticeperiod',
+        preferredLocation:'$candidatedetails.preferredLocation',
         gender: '$candidatedetails.gender',
         maritalStatus: '$candidatedetails.maritalStatus',
         ugMarks: '$candidatedetails.ugMarks',
