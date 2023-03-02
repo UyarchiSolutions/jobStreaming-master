@@ -106,7 +106,7 @@ const employerDetailsSchema = mongoose.Schema(
       type: String,
     },
     jobLocation: {
-      type: String,
+      type: Array,
     },
     templateName: {
       type: String,
