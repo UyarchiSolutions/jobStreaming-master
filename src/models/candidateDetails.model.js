@@ -305,6 +305,9 @@ const keySkillSchema = mongoose.Schema(
     preferredLocation:{
       type:Array,
     },
+    locationdummy:{
+      type:Array,
+    },
     SalaryTo: {
       type: String,
     },
