@@ -30,6 +30,9 @@ const employerDetailsSchema = mongoose.Schema(
     apply_method:{
       type:String,
     },
+    recruiterId:{
+      type:String,
+    },
     recruiterList:{
       type:String,
     },
