@@ -208,7 +208,7 @@ const update_email_send_otp_verify = async (body) => {
   if (!data){
    throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect email otp');
   }    
-  await Otpupdate.findByIdAndUpdate({ _id: data.id }, {active:false},{ new: true });
+  await Otpupdate.findByIdAndUpdate({ _id: data._id }, {active:false},{ new: true });
   // const value = await CandidateRegistration.findByIdAndUpdate({_id:data.userId}, {email:body.email}, {new:true})
   return data
 };
@@ -231,7 +231,7 @@ const update_mobilenumber_otp_verify = async (body) => {
   if (!data){
    throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect mobilenumber otp');
   }    
-   await Otpupdate.findByIdAndUpdate({ _id: data.id }, {active:false},{ new: true });
+   await Otpupdate.findByIdAndUpdate({ _id: data._id }, {active:false},{ new: true });
     return data
 };
 
