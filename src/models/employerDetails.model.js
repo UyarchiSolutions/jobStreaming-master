@@ -159,6 +159,9 @@ const employerDetailsSchema = mongoose.Schema(
     validity: {
       type: Number,
     },
+    location:{
+      type:Array,
+    },
     department: {
       type: String,
     },

@@ -13,6 +13,7 @@ const bcrypt = require('bcryptjs');
 const Axios = require('axios');
 const moment = require('moment');
 const { authService, userService, tokenService, emailService, candidateRegistrationService } = require('../services');
+const e = require('express');
 
 const createCandidate = async (userBody, files) => {};
 
@@ -207,6 +208,7 @@ const update_email_send_otp_verify = async (body) => {
   if (!data){
    throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect email otp');
   }    
+  await Otpupdate.findByIdAndUpdate({ _id: data.id }, {active:false},{ new: true });
   // const value = await CandidateRegistration.findByIdAndUpdate({_id:data.userId}, {email:body.email}, {new:true})
   return data
 };
@@ -229,6 +231,7 @@ const update_mobilenumber_otp_verify = async (body) => {
   if (!data){
    throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect mobilenumber otp');
   }    
+   await Otpupdate.findByIdAndUpdate({ _id: data.id }, {active:false},{ new: true });
     return data
 };
 
@@ -236,6 +239,17 @@ const getUser_update = async (id, body) => {
   const data = await CandidateRegistration.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }
+  const check = await Otpupdate.findOne({email:body.email, active:false});
+  if((data.email == body.email) || (check.email == body.email && check.active == false)){
+    console.log("email verified")
+    if((data.mobileNumber == body.mobileNumber) || (check.mobilenumber == body.mobileNumber && check.active == false)){
+       console.log("mobile verified")
+    }else{
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Mobilenumber not verified');
+    }
+  }else{
+    throw new ApiError(httpStatus.BAD_REQUEST, 'email not verified');
   }
   const value = await CandidateRegistration.findByIdAndUpdate({ _id: id }, body, { new: true });
   return value;
