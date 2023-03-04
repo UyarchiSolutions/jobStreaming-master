@@ -368,6 +368,7 @@ const getByIdUser = async (id) => {
         salaryFrom: '$candidatedetails.salaryFrom',
         SalaryTo: '$candidatedetails.SalaryTo',
         candidateDetails: '$candidatedetails',
+        currentctc_th:'$candidatedetails.currentctc_th',
       },
     },
   ]);
