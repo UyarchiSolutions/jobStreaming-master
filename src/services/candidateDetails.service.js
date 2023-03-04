@@ -673,6 +673,20 @@ const candidateSearch = async (body) => {
     {
       $unwind: '$employerregistrations',
     },
+    {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     // {
     //   $lookup: {
     //     from: 'candidatepostjobs',
@@ -718,6 +732,7 @@ const candidateSearch = async (body) => {
         expiredDate: 1,
         date: 1,
         time: 1,
+        role:'$jobroles.Job_role',
         companyType: '$employerregistrations.companyType',
         mobileNumber: '$employerregistrations.mobileNumber',
         contactName: '$employerregistrationscontactName',
