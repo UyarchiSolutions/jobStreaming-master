@@ -24,8 +24,8 @@ const register = catchAsync(async (req, res) => {
 
   const tokens = await tokenService.generateAuthTokens(user);
   //  await EmployeOtp.create({token:tokens.access.token});
-  res.status(httpStatus.CREATED).send({ user, tokens });
   await user.save();
+  res.status(httpStatus.CREATED).send({ user, tokens });
   //   console.log(user._id)
   await emailService.sendVerificationEmailEmp(user.email, tokens.access.token, user.mobileNumber);
 });
