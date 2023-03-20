@@ -16,28 +16,28 @@ const employerDetailsSchema = mongoose.Schema(
     jobTittle: {
       type: String,
     },
-    adminActive:{
-      type:Boolean,
-      default:false,
+    adminActive: {
+      type: Boolean,
+      default: false,
     },
-    data:{
-      type:Boolean,
-      default:true,
+    data: {
+      type: Boolean,
+      default: true,
     },
-    venue:{
-      type:String,
+    venue: {
+      type: String,
     },
-    apply_method:{
-      type:String,
+    apply_method: {
+      type: String,
     },
-    recruiterId:{
-      type:String,
+    recruiterId: {
+      type: String,
     },
-    recruiterList:{
-      type:String,
+    recruiterList: {
+      type: String,
     },
-    recruiterList1:{
-      type:String,
+    recruiterList1: {
+      type: String,
     },
     userId: {
       type: String,
@@ -51,11 +51,11 @@ const employerDetailsSchema = mongoose.Schema(
     recruiterNumber: {
       type: Number,
     },
-    recruiterNumber: {
-      type: Number,
-    },
-    recruiterEmail:{
-      type:String,
+    // recruiterNumber: {
+    //   type: Number,
+    // },
+    recruiterEmail: {
+      type: String,
     },
     jobDescription: {
       type: String,
@@ -73,6 +73,12 @@ const employerDetailsSchema = mongoose.Schema(
       type: String,
     },
     educationalQualification: {
+      type: String,
+    },
+    experienceYear: {
+      type: String,
+    },
+    experiencemonth: {
       type: String,
     },
     experienceFrom: {
@@ -120,11 +126,17 @@ const employerDetailsSchema = mongoose.Schema(
     employmentType: {
       type: String,
     },
+    openings: {
+      type: String,
+    },
     signature: {
       type: String,
     },
     qualification: {
       type: Array,
+    },
+    qualificationDummy: {
+      type: String,
     },
     course: {
       type: Array,
@@ -162,8 +174,8 @@ const employerDetailsSchema = mongoose.Schema(
     validity: {
       type: Number,
     },
-    location:{
-      type:Array,
+    location: {
+      type: Array,
     },
     department: {
       type: String,
@@ -438,8 +450,8 @@ const EmployerMailNotificationSchema = mongoose.Schema(
     mailId: {
       type: String,
     },
-    mail:{
-      type:String,
+    mail: {
+      type: String,
     },
     email: {
       type: String,
@@ -450,8 +462,8 @@ const EmployerMailNotificationSchema = mongoose.Schema(
     subject: {
       type: String,
     },
-    message:{
-      type:String,
+    message: {
+      type: String,
     },
     date: {
       type: String,
