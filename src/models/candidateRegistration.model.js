@@ -32,14 +32,7 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       required: true,
-      trim: true,
-      minlength: 8,
-      validate(value) {
-        if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
-          throw new Error('Password must contain at least one letter and one number');
-        }
-      },
-      private: true, // used by the toJSON plugin
+      // used by the toJSON plugin
     },
     // role: {
     //   type: String,
@@ -64,35 +57,34 @@ const userSchema = mongoose.Schema(
     mobileNumber: {
       type: String,
       required: true,
-      unique: true,
     },
-    adminStatus:{
-      type:String,
-      default:"Pending",
+    adminStatus: {
+      type: String,
+      default: 'Pending',
       required: true,
     },
-    lat:{
-      type:String,
+    lat: {
+      type: String,
     },
-    long:{
-      type:String,
+    long: {
+      type: String,
     },
-    location:{
-      type:String,
+    location: {
+      type: String,
     },
-    latestdate:{
-      type:String,
+    latestdate: {
+      type: String,
     },
-    date:{
-      type:String,
+    date: {
+      type: String,
     },
-    data:{
-      type:Boolean,
-      default:true,
+    data: {
+      type: Boolean,
+      default: true,
     },
-    active:{
-      type:Boolean,
-      default:true,
+    active: {
+      type: Boolean,
+      default: true,
     },
   },
   {
@@ -137,4 +129,4 @@ userSchema.pre('save', async function (next) {
  * @typedef User
  */
 const CandidateRegistration = mongoose.model('candidateRegistration', userSchema);
-module.exports = CandidateRegistration ;
+module.exports = CandidateRegistration;
