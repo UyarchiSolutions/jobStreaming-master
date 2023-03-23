@@ -7,14 +7,17 @@ const { CandidateRegistration, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk');
 const moment = require('moment');
+const { http } = require('../config/logger');
 
 const register = catchAsync(async (req, res) => {
   // const user = await candidateRegistrationService.createCandidate(req.body, req.file);
   const { password, confirmpassword } = req.body;
   let date = moment().format('YYYY-MM-DD');
-  if (await CandidateRegistration.isEmailTaken(req.body.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  let findByEmail = await CandidateRegistration.findOne({ email: req.body.email });
+  if (findByEmail) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email Already Registered in Candidate');
   }
+
   if (password != confirmpassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Confirm Password Incorrect');
   }
