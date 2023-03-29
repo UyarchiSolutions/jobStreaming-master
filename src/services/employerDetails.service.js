@@ -439,7 +439,7 @@ const getById_Get = async (id) => {
       $project: {
         keySkill: 1,
         preferedIndustry: 1,
-        preferedIndustries:"$industries",
+        preferedIndustries: '$industries',
         date: 1,
         dates: dates,
         active: 1,
