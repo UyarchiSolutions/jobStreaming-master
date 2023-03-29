@@ -296,7 +296,7 @@ const getByIdUser = async (id) => {
         resume: 1,
         createdAt: 1,
         updatedAt: 1,
-        location:1,
+        location: 1,
         // candidateDetails: '$candidatedetails',
         keyskill: '$candidatedetails.keyskill',
         currentSkill: '$candidatedetails.currentSkill',
@@ -311,7 +311,7 @@ const getByIdUser = async (id) => {
         locationCurrent: '$candidatedetails.locationCurrent',
         locationNative: '$candidatedetails.locationNative',
         noticeperiod: '$candidatedetails.noticeperiod',
-        preferredLocation:'$candidatedetails.preferredLocation',
+        preferredLocation: '$candidatedetails.preferredLocation',
         gender: '$candidatedetails.gender',
         maritalStatus: '$candidatedetails.maritalStatus',
         ugMarks: '$candidatedetails.ugMarks',
@@ -368,7 +368,7 @@ const getByIdUser = async (id) => {
         salaryFrom: '$candidatedetails.salaryFrom',
         SalaryTo: '$candidatedetails.SalaryTo',
         candidateDetails: '$candidatedetails',
-        currentctc_th:'$candidatedetails.currentctc_th',
+        currentctc_th: '$candidatedetails.currentctc_th',
       },
     },
   ]);
@@ -525,8 +525,10 @@ const candidateSearch = async (body) => {
   let companytypeSearch = { active: true };
   // let postedbySearch = { active: true };
 
-  if (companytype.length != 0) {
-    companytypeSearch = { companyType: { $in: companytype } };
+  if (companytype) {
+    if (companytype.length != 0) {
+      companytypeSearch = { companyType: { $in: companytype } };
+    }
   }
 
   if (experienceAnotherfrom != null && experienceAnotherto != null) {
@@ -567,7 +569,9 @@ const candidateSearch = async (body) => {
   }
 
   if (Location.length != 0) {
-    locationSearch = { jobLocation: { $in: Location } };
+    // locationSearch = { jobLocation: { $in: Location } };
+    let stringloc = Location.toString();
+    locationSearch = { jobLocation: { $regex: stringloc, $options: 'i' } };
   }
 
   if (freshness.length != 0) {
@@ -733,7 +737,7 @@ const candidateSearch = async (body) => {
         expiredDate: 1,
         date: 1,
         time: 1,
-        role:'$jobroles.Job_role',
+        role: '$jobroles.Job_role',
         companyType: '$employerregistrations.companyType',
         mobileNumber: '$employerregistrations.mobileNumber',
         contactName: '$employerregistrationscontactName',
