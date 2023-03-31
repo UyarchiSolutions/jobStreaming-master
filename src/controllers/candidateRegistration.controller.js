@@ -34,7 +34,8 @@ const register = catchAsync(async (req, res) => {
     Bucket: 'jobresume',
     Key: req.file.originalname,
     Body: req.file.buffer,
-    ACL: 'public-read'
+    ACL: 'public-read',
+    ContentType: req.file.mimetype,
   };
   s3.upload(params, async (err, data) => {
     let values = { ...req.body, ...{ date: date, resume: data.Location } };
@@ -60,7 +61,8 @@ const updateResume = catchAsync(async (req, res) => {
     Bucket: 'jobresume',
     Key: req.file.originalname,
     Body: req.file.buffer,
-    ACL: 'public-read'
+    ACL: 'public-read',
+    ContentType: req.file.mimetype,
   };
   s3.upload(params, async (err, data) => {
     if (err) {
@@ -68,8 +70,8 @@ const updateResume = catchAsync(async (req, res) => {
     } else {
       values = await CandidateRegistration.findByIdAndUpdate({ _id: id }, { resume: data.Location }, { new: true });
     }
-  }).promise();
-  res.send(values)
+    res.send(values);
+  });
 });
 
 const verify_email = catchAsync(async (req, res) => {
