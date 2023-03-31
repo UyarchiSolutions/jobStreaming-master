@@ -9,7 +9,7 @@ const authorization = require('../../controllers/tokenVerify.controller');
 const author = require('../../controllers/empVEridy.controller');
 const router = express.Router();
 
-router.route('/register').post(uploadImage,candidateRegistration.register);
+router.route('/register').post(uploadImage, candidateRegistration.register);
 
 router.route('/userDetails').get(authorization, candidateRegistration.getUserById);
 
@@ -33,6 +33,7 @@ router.route('/update_mobilenumber_send_otp/:id').put(candidateRegistration.upda
 router.route('/update_mobilenumber_otp_verify').post(candidateRegistration.update_mobilenumber_otp_verify);
 // map
 router.route('/getAllLatLong').post(candidateRegistration.getAllLatLong);
+router.route('/updateResume/:id').put(uploadImage, candidateRegistration.updateResume);
 // router.post('/logout', validate(authValidation.logout), authController.logout);
 // router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
 // router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);

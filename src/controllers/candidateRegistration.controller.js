@@ -31,9 +31,10 @@ const register = catchAsync(async (req, res) => {
     region: 'ap-south-1',
   });
   let params = {
-    Bucket: 'realestatevideoupload',
+    Bucket: 'jobresume',
     Key: req.file.originalname,
     Body: req.file.buffer,
+    ACL: 'public-read'
   };
   s3.upload(params, async (err, data) => {
     let values = { ...req.body, ...{ date: date, resume: data.Location } };
@@ -42,6 +43,33 @@ const register = catchAsync(async (req, res) => {
     res.status(httpStatus.CREATED).send({ user: d, tokens });
     await emailService.sendVerificationEmail(req.body.email, tokens.access.token, req.body.mobileNumber);
   });
+});
+
+const updateResume = catchAsync(async (req, res) => {
+  let id = req.params.id;
+  let values = await CandidateRegistration.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate not Register');
+  }
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  let params = {
+    Bucket: 'jobresume',
+    Key: req.file.originalname,
+    Body: req.file.buffer,
+    ACL: 'public-read'
+  };
+  s3.upload(params, async (err, data) => {
+    if (err) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'video upload Not Working..');
+    } else {
+      values = await CandidateRegistration.findByIdAndUpdate({ _id: id }, { resume: data.Location }, { new: true });
+    }
+  }).promise();
+  res.send(values)
 });
 
 const verify_email = catchAsync(async (req, res) => {
@@ -218,4 +246,5 @@ module.exports = {
   //   resetPassword,
   //   sendVerificationEmail,
   //   verifyEmail,
+  updateResume,
 };
