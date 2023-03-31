@@ -31,7 +31,7 @@ const register = catchAsync(async (req, res) => {
     region: 'ap-south-1',
   });
   let params = {
-    Bucket: 'jobresumeupload',
+    Bucket: 'streamingupload',
     Key: req.file.originalname,
     Body: req.file.buffer,
   };
