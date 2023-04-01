@@ -8,7 +8,7 @@ const sendmail = require('../config/textlocal');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 // const {emailService} = require('../services');
-const ApiError = require('../utils/ApiError'); 
+const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const Axios = require('axios');
 const moment = require('moment');
@@ -25,14 +25,18 @@ const getUserById = async (id) => {
 };
 
 const verify_email = async (token) => {
-      const payload = jwt.verify(token, config.jwt.secret);
-      const tokenDoc = await Token.findOne({user: payload.sub, blacklisted: false });
-      console.log(tokenDoc,payload)
-      if (!tokenDoc) {
-        throw new Error('Token not found');
-      }
-     const data = await CandidateRegistration.findByIdAndUpdate({_id:tokenDoc.user}, {isEmailVerified:true}, {new:true})
-      return data;
+  const payload = jwt.verify(token, config.jwt.secret);
+  const tokenDoc = await Token.findOne({ user: payload.sub, blacklisted: false });
+  console.log(tokenDoc, payload);
+  if (!tokenDoc) {
+    throw new Error('Token not found');
+  }
+  const data = await CandidateRegistration.findByIdAndUpdate(
+    { _id: tokenDoc.user },
+    { isEmailVerified: true },
+    { new: true }
+  );
+  return data;
 };
 
 const mobile_verify = async (mobilenumber) => {
@@ -93,6 +97,9 @@ const forget_password_set = async (id, body) => {
 const UsersLogin = async (userBody) => {
   const { email, password } = userBody;
   let userName = await CandidateRegistration.findOne({ email: email });
+  if (userName.isEmailVerified != true) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email Not Verified');
+  }
   if (!userName) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
   } else {
@@ -191,48 +198,48 @@ const deactivate = async (id) => {
 };
 
 const update_email_send_otp = async (id, body) => {
-  const data  = await CandidateRegistration.findById(id)
-  if (!data){
-   throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
-  }    
-  const data1  = await CandidateRegistration.findOne({email:body.email})
-  if (data1){
-   throw new ApiError(httpStatus.BAD_REQUEST, 'already used this email');
+  const data = await CandidateRegistration.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
   }
-  await emailService.send_email_update(id, body.email)
-  return {message:"Send Otp Succesfully"}
+  const data1 = await CandidateRegistration.findOne({ email: body.email });
+  if (data1) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'already used this email');
+  }
+  await emailService.send_email_update(id, body.email);
+  return { message: 'Send Otp Succesfully' };
 };
 
 const update_email_send_otp_verify = async (body) => {
-  const data  = await Otpupdate.findOne({email:body.email, otp:body.otp})
-  if (!data){
-   throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect email otp');
-  }    
-  await Otpupdate.findByIdAndUpdate({ _id: data._id }, {active:false},{ new: true });
+  const data = await Otpupdate.findOne({ email: body.email, otp: body.otp });
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect email otp');
+  }
+  await Otpupdate.findByIdAndUpdate({ _id: data._id }, { active: false }, { new: true });
   // const value = await CandidateRegistration.findByIdAndUpdate({_id:data.userId}, {email:body.email}, {new:true})
-  return data
+  return data;
 };
 
 const update_mobilenumber_send_otp = async (id, body) => {
-  const data  = await CandidateRegistration.findById(id)
-  if (!data){
-   throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
-  }   
-  const data1  = await CandidateRegistration.findOne({mobileNumber:body.mobileNumber})
-   if(data1){
+  const data = await CandidateRegistration.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }
+  const data1 = await CandidateRegistration.findOne({ mobileNumber: body.mobileNumber });
+  if (data1) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'already used this number');
-   }
-  await mobileOtp.Otp(body)
-  return {message:"Send Otp Succesfully"}
+  }
+  await mobileOtp.Otp(body);
+  return { message: 'Send Otp Succesfully' };
 };
 
-const update_mobilenumber_otp_verify = async (body) => {  
-  const data  = await Otpupdate.findOne({mobilenumber:body.mobileNumber, otp:body.otp})
-  if (!data){
-   throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect mobilenumber otp');
-  }    
-   await Otpupdate.findByIdAndUpdate({ _id: data._id }, {active:false},{ new: true });
-    return data
+const update_mobilenumber_otp_verify = async (body) => {
+  const data = await Otpupdate.findOne({ mobilenumber: body.mobileNumber, otp: body.otp });
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'incorrect mobilenumber otp');
+  }
+  await Otpupdate.findByIdAndUpdate({ _id: data._id }, { active: false }, { new: true });
+  return data;
 };
 
 const getUser_update = async (id, body) => {
@@ -240,15 +247,15 @@ const getUser_update = async (id, body) => {
   if (!data) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
   }
-  const check = await Otpupdate.findOne({email:body.email, active:false});
-  if((data.email == body.email) || (check.email == body.email && check.active == false)){
-    console.log("email verified")
-    if((data.mobileNumber == body.mobileNumber) || (check.mobilenumber == body.mobileNumber && check.active == false)){
-       console.log("mobile verified")
-    }else{
+  const check = await Otpupdate.findOne({ email: body.email, active: false });
+  if (data.email == body.email || (check.email == body.email && check.active == false)) {
+    console.log('email verified');
+    if (data.mobileNumber == body.mobileNumber || (check.mobilenumber == body.mobileNumber && check.active == false)) {
+      console.log('mobile verified');
+    } else {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Mobilenumber not verified');
     }
-  }else{
+  } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'email not verified');
   }
   const value = await CandidateRegistration.findByIdAndUpdate({ _id: id }, body, { new: true });
@@ -278,29 +285,29 @@ const getUser_update = async (id, body) => {
 // };
 
 module.exports = {
-    createCandidate,
-    verify_email,
-    UsersLogin,
-    forgot,
-    forgot_verify_email,
-    change_password,
-    getUserById,
-    getMapLocation,
-    mobile_verify,
-    mobile_verify_Otp,
-    forget_password,
-    forget_password_Otp,
-    forget_password_set,
-    change_pass,
-    getAllLatLong,
-    deactivate,
-    getUser_update,
-    update_email_send_otp,
-    update_email_send_otp_verify,
-    update_mobilenumber_send_otp,
-    update_mobilenumber_otp_verify,
-//   getUserById,
-//   getUserByEmail,
-//   updateUserById,
-//   deleteUserById,
+  createCandidate,
+  verify_email,
+  UsersLogin,
+  forgot,
+  forgot_verify_email,
+  change_password,
+  getUserById,
+  getMapLocation,
+  mobile_verify,
+  mobile_verify_Otp,
+  forget_password,
+  forget_password_Otp,
+  forget_password_set,
+  change_pass,
+  getAllLatLong,
+  deactivate,
+  getUser_update,
+  update_email_send_otp,
+  update_email_send_otp_verify,
+  update_mobilenumber_send_otp,
+  update_mobilenumber_otp_verify,
+  //   getUserById,
+  //   getUserByEmail,
+  //   updateUserById,
+  //   deleteUserById,
 };
