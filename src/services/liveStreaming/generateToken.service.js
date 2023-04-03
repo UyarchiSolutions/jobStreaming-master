@@ -395,6 +395,15 @@ const get_sub_token = async (req) => {
     },
     { $unwind: "$active_users" },
     {
+      $lookup: {
+        from: 'temptokens',
+        localField: 'hostId',
+        foreignField: '_id',
+        as: 'active_users',
+      },
+    },
+    { $unwind: "$active_users" },
+    {
       $project: {
         _id: 1,
         active: 1,
@@ -413,7 +422,8 @@ const get_sub_token = async (req) => {
         hostUid: "$active_users.Uid",
         expDate_host: "$active_users.expDate",
       }
-    }
+    },
+
   ])
   if (value.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'plan_not_found');

@@ -36,7 +36,7 @@ const createEmpDetailsRepost = catchAsync(async (req, res) => {
 
 const getById_Get = catchAsync(async (req, res) => {
   const user = await employerDetailsService.getById_Get(req.params.id);
-  res.send({ user });
+  res.send(user);
 });
 
 const data_Id = catchAsync(async (req, res) => {
