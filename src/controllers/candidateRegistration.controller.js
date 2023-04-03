@@ -14,7 +14,7 @@ const register = catchAsync(async (req, res) => {
   const { password, confirmpassword } = req.body;
   let date = moment().format('YYYY-MM-DD');
   let findByEmail = await CandidateRegistration.findOne({ email: req.body.email });
-  let findByMobile = await CandidateRegistration.findOne({ mobileNumber: req.mobileNumber });
+  let findByMobile = await CandidateRegistration.findOne({ mobileNumber: req.body.mobileNumber });
   if (findByMobile) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Registered In Candidate');
   }
