@@ -512,7 +512,10 @@ const getById_Get = async (id) => {
       },
     },
   ]);
-  return data;
+  if (data.length == 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'employerDetails not found');
+  }
+  return data[0];
 };
 
 const updateById = async (id, updateBody) => {
