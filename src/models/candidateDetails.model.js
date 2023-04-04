@@ -302,11 +302,11 @@ const keySkillSchema = mongoose.Schema(
     salaryFrom: {
       type: String,
     },
-    preferredLocation:{
-      type:Array,
+    preferredLocation: {
+      type: Array,
     },
-    locationdummy:{
-      type:Array,
+    locationdummy: {
+      type: Array,
     },
     SalaryTo: {
       type: String,
@@ -429,8 +429,8 @@ const candidateSaveJobSchema = mongoose.Schema(
     savejobId: {
       type: String,
     },
-    applied_side:{
-      type:String,
+    applied_side: {
+      type: String,
     },
     status: {
       type: Boolean,
@@ -461,7 +461,7 @@ const candidateSearchjobCandidateSchema = mongoose.Schema(
     experience: {
       type: Number,
     },
-    location: {
+    Location: {
       type: String,
     },
     preferredindustry: {
