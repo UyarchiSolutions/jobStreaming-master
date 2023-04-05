@@ -533,7 +533,7 @@ const candidateRecentSearchjobCandidateSchema = mongoose.Schema(
     experience: {
       type: Number,
     },
-    location: {
+    Location: {
       type: String,
     },
     preferredindustry: {
