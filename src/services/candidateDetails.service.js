@@ -24,15 +24,13 @@ const createkeySkill = async (userId, userBody) => {
     let currentctc = userBody.currentctc * 100000;
     totalCTC = parseInt(currentctc_th) + parseInt(currentctc);
   }
-  let expCTC = userBody.expectedctc.split('-');
+  // let expCTC = userBody.expectedctc.split('-');
   let expCTC_strat = 0;
   let expCTC_end = 0;
-  if (expCTC.length != 0) {
-    expCTC_strat = expCTC[0] * 100000;
-    if (expCTC[1] != 'more') {
-      expCTC_end = expCTC[1] * 100000;
-    }
-  }
+    expCTC_strat = userBody.expectedctc * 100000;
+    // if (expCTC[1] != 'more') {
+    //   expCTC_end = expCTC[1] * 100000;
+    // }
 
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HHmmss');
@@ -44,7 +42,7 @@ const createkeySkill = async (userId, userBody) => {
       time: creat1,
       totalCTC: totalCTC,
       expCTC_strat: expCTC_strat,
-      expCTC_end: expCTC_end,
+      // expCTC_end: expCTC_end,
     },
   };
   let data = await KeySkill.create(values);
