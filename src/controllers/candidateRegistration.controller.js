@@ -47,7 +47,7 @@ const register = catchAsync(async (req, res) => {
 });
 
 const updateResume = catchAsync(async (req, res) => {
-  let id = req.params.id;
+  let id = req.userId
   let values = await CandidateRegistration.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate not Register');

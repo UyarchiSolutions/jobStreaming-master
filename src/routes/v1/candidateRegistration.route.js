@@ -33,7 +33,7 @@ router.route('/update_mobilenumber_send_otp/:id').put(candidateRegistration.upda
 router.route('/update_mobilenumber_otp_verify').post(candidateRegistration.update_mobilenumber_otp_verify);
 // map
 router.route('/getAllLatLong').post(candidateRegistration.getAllLatLong);
-router.route('/updateResume/:id').put(uploadImage, candidateRegistration.updateResume);
+router.route('/updateResume').put(authorization, uploadImage, candidateRegistration.updateResume);
 // router.post('/logout', validate(authValidation.logout), authController.logout);
 // router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
 // router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);
