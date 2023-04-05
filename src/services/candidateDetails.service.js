@@ -420,7 +420,7 @@ const updateEducation = async (userId, updateBody) => {
   console.log(totalCTC);
   data = await KeySkill.findOneAndUpdate(
     { userId: userId },
-    { ...updateBody, ...{ expCTC_strat: expCTC_strat, expCTC_end: expCTC_end, totalCTC: totalCTC } },
+    { ...updateBody, ...{ expCTC_strat: expCTC_strat, totalCTC: totalCTC } },
     { new: true }
   );
   await data.save();
