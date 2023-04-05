@@ -4,19 +4,21 @@ const authController = require('../../controllers/auth.controller');
 const candidateDetailsController = require('../../controllers/candidateDetails.controller');
 const uploadImage = require('../../middlewares/uploadImage');
 const authorization = require('../../controllers/tokenVerify.controller');
-const authorization1= require('../../controllers/empVEridy.controller');
+const authorization1 = require('../../controllers/empVEridy.controller');
 
 const router = express.Router();
 
-router.route('/createKeyskill').post(authorization,uploadImage.array('image'), candidateDetailsController.createkeySkill);
-//create only image put method 
+router.route('/createKeyskill').post(authorization, uploadImage.array('image'), candidateDetailsController.createkeySkill);
+//create only image put method
 router.route('/updateByIdImage/:id').put(uploadImage.array('image'), candidateDetailsController.updateByIdImage);
 router.route('/educationDetails').post(authorization, candidateDetailsController.educationDetails);
-router.route('/getKeyskill').get(authorization,candidateDetailsController.getByIdUser);
+router.route('/getKeyskill').get(authorization, candidateDetailsController.getByIdUser);
 router.route('/updateKeyskill').post(authorization, uploadImage.array('image'), candidateDetailsController.updateById);
 router.route('/deleteKeyskill/:id').delete(candidateDetailsController.deleteById);
 router.route('/candidateSearch').post(candidateDetailsController.candidateSearch);
-router.route('/getByIdEmployerDetailsShownCandidate/:id').get(authorization, candidateDetailsController.getByIdEmployerDetailsShownCandidate);
+router
+  .route('/getByIdEmployerDetailsShownCandidate/:id')
+  .get(authorization, candidateDetailsController.getByIdEmployerDetailsShownCandidate);
 router.route('/createCandidatePostjob').post(authorization, candidateDetailsController.createCandidatePostjob);
 router.route('/createCandidateSavejob').post(authorization, candidateDetailsController.createCandidateSavejob);
 router.route('/getByIdAppliedJobs/:search').get(authorization, candidateDetailsController.getByIdAppliedJobs);
@@ -30,8 +32,12 @@ router.route('/createdSearchhistoryData').get(authorization, candidateDetailsCon
 router.route('/CandidateRegistrations/:page').get(candidateDetailsController.CandidateRegistrations);
 router.route('/updateByIdCandidateRegistration/:id').put(candidateDetailsController.updateByIdCandidateRegistration);
 router.route('/createSetSearchEmployerData').post(authorization, candidateDetailsController.createSetSearchEmployerData);
-router.route('/updateByIdcandidataSearchEmployerSet/:id').put(candidateDetailsController.updateByIdcandidataSearchEmployerSet);
-router.route('/SearchByIdcandidataSearchEmployerSet').get(authorization,candidateDetailsController.SearchByIdcandidataSearchEmployerSet);
+router
+  .route('/updateByIdcandidataSearchEmployerSet/:id')
+  .put(candidateDetailsController.updateByIdcandidataSearchEmployerSet);
+router
+  .route('/SearchByIdcandidataSearchEmployerSet')
+  .get(authorization, candidateDetailsController.SearchByIdcandidataSearchEmployerSet);
 router.route('/getByIdEmployerDetails/:id').get(candidateDetailsController.getByIdEmployerDetails);
 router.route('/candidateSearch_front_page').post(authorization, candidateDetailsController.candidateSearch_front_page);
 router.route('/recentSearch').get(authorization, candidateDetailsController.recentSearch);
@@ -39,7 +45,7 @@ router.route('/languages').get(candidateDetailsController.languages);
 router.route('/educationDetails').post(authorization, candidateDetailsController.educationDetails);
 router.route('/recentSearch_byId/:id').get(candidateDetailsController.recentSearch_byId);
 router.route('/candidate_detials/:id/:jobid').get(candidateDetailsController.candidate_detials);
-router.route('/updateEducation').post(authorization,candidateDetailsController.updateEducation);
+router.route('/updateEducation').post(authorization, candidateDetailsController.updateEducation);
 router.route('/createdSearchhistoryData_byId/:id').get(candidateDetailsController.createdSearchhistoryData_byId);
 router.route('/edit_details').put(authorization, candidateDetailsController.edit_details);
 router.route('/candidate_detials_id/:id').get(candidateDetailsController.candidate_detials_id);
@@ -47,4 +53,5 @@ router.route('/get_all_candidates').post(candidateDetailsController.get_all_cand
 router.route('/CandidateRegistration_names/:key').get(candidateDetailsController.CandidateRegistration_names);
 router.route('/CandidateRegistration_number/:key').get(candidateDetailsController.CandidateRegistration_number);
 // router.route('/createSearchCandidate').post(authorization, candidateDetailsController.createSearchCandidate);
+router.route('/DeleteResume').get(authorization, candidateDetailsController.DeleteResume);
 module.exports = router;

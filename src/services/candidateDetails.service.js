@@ -27,10 +27,10 @@ const createkeySkill = async (userId, userBody) => {
   // let expCTC = userBody.expectedctc.split('-');
   let expCTC_strat = 0;
   let expCTC_end = 0;
-    expCTC_strat = userBody.expectedctc * 100000;
-    // if (expCTC[1] != 'more') {
-    //   expCTC_end = expCTC[1] * 100000;
-    // }
+  expCTC_strat = userBody.expectedctc * 100000;
+  // if (expCTC[1] != 'more') {
+  //   expCTC_end = expCTC[1] * 100000;
+  // }
 
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HHmmss');
@@ -412,7 +412,7 @@ const updateEducation = async (userId, updateBody) => {
   expCTC_strat = 0;
   // expCTC_end = 0;
   if (updateBody.expectedctc) {
-    expCTC_strat =  updateBody.expectedctc * 100000;
+    expCTC_strat = updateBody.expectedctc * 100000;
     // if (expCTC[1] != 'more') {
     //   expCTC_end = expCTC[1] * 100000;
     // }
@@ -3025,6 +3025,17 @@ const get_all_candidates = async (body) => {
   return { data: data, count: count.length };
 };
 
+//  remove Resume For Candidate
+
+const DeleteResume = async (userId) => {
+  let values = await CandidateRegistration.findById(userId);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Available');
+  }
+  values = await CandidateRegistration.findByIdAndUpdate({ _id: userId }, { resume: '' }, { new: true });
+  return values;
+};
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -3063,4 +3074,5 @@ module.exports = {
   CandidateRegistration_names,
   CandidateRegistration_number,
   // createSearchCandidate,
+  DeleteResume,
 };
