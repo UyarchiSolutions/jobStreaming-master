@@ -408,14 +408,14 @@ const updateEducation = async (userId, updateBody) => {
     let currentctc = updateBody.currentctc * 100000;
     totalCTC = parseInt(currentctc_th) + parseInt(currentctc);
   }
-  expCTC = updateBody.expectedctc.split('-');
+  // expCTC = updateBody.expectedctc.split('-');
   expCTC_strat = 0;
-  expCTC_end = 0;
-  if (expCTC.length != 0) {
-    expCTC_strat = expCTC[0] * 100000;
-    if (expCTC[1] != 'more') {
-      expCTC_end = expCTC[1] * 100000;
-    }
+  // expCTC_end = 0;
+  if (updateBody.expectedctc) {
+    expCTC_strat =  updateBody.expectedctc * 100000;
+    // if (expCTC[1] != 'more') {
+    //   expCTC_end = expCTC[1] * 100000;
+    // }
   }
   console.log(totalCTC);
   data = await KeySkill.findOneAndUpdate(
