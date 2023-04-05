@@ -1873,7 +1873,7 @@ const candidateSearch_front_page = async (id, body) => {
     experience != null ||
     experienceAnotherfrom != null ||
     experienceAnotherto != null ||
-    Location.length != 0 ||
+    Location != null ||
     preferredIndustry.length != 0 ||
     Salary.length != 0 ||
     workmode.length != 0 ||
@@ -1949,8 +1949,8 @@ const candidateSearch_front_page = async (id, body) => {
     experienceSearch = { experienceFrom: { $eq: parseInt(experience) } };
   }
 
-  if (Location.length != 0) {
-    locationSearch = { jobLocation: { $in: Location } };
+  if (Location != null) {
+    locationSearch = { jobLocation: { $eq: Location } };
   }
 
   if (freshness.length != 0) {
