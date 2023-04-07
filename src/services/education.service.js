@@ -130,7 +130,7 @@ const get_Qualification = async (body) => {
       },
     },
   ])
-  return data;
+  return data[0];
 };
 
 const get_Department_all = async (limit) => {
