@@ -494,7 +494,7 @@ const getById_Get = async (id) => {
         recruiterList1: 1,
         qualifications: '$qualifications',
         allcourses: '$allcourses',
-        allspecializations: '$allspecializations',
+        specialization: '$allspecializations',
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
