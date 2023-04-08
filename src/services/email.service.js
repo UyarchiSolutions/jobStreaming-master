@@ -23,13 +23,12 @@ if (config.env !== 'test') {
  * @returns {Promise}
  */
 const sendVerificationEmail = async (to, token, mobilenumber) => {
-  // console.log(to, token, mobilenumber)
   data1 = await ejs.renderFile(__dirname + '/verifytemplate.ejs', {
-    mobilenumber:mobilenumber,
-    email:to,
-  })
+    mobilenumber: mobilenumber,
+    email: to,
+  });
 
-  const msg = {   
+  const msg = {
     from: config.email.from,
     to: to,
     // to:"vignesh1041996@gmail.com",
@@ -42,11 +41,11 @@ const sendVerificationEmail = async (to, token, mobilenumber) => {
 
 const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
   data1 = await ejs.renderFile(__dirname + '/employVerify.ejs', {
-    mobilenumber:mobilenumber,
-    email:to,
-  })
+    mobilenumber: mobilenumber,
+    email: to,
+  });
 
-  const msg = {   
+  const msg = {
     from: config.email.from,
     to: to,
     // to:"vignesh1041996@gmail.com",
@@ -56,8 +55,6 @@ const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
   // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   await transport.sendMail(msg);
 };
-
-
 
 const sendEmailTemplate = async (to, subject, text) => {
   const msg = { from: config.email.from, to, subject, text };
@@ -155,7 +152,6 @@ const maskmail_email = async (to) => {
   await transport.sendMail(msg);
 };
 
-
 const notification_mail = async (candidate, body) => {
   console.log(candidate);
   const msg = { from: '"Uyarchi solutions" <noreply-tj@uyarchi.com>', to, subject: 'maskmailer checked' };
@@ -163,8 +159,7 @@ const notification_mail = async (candidate, body) => {
   await transport.sendMail(msg);
 };
 
-
-const send_email_update = async (id,to) => {
+const send_email_update = async (id, to) => {
   const subject = 'Email Changing';
   // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   // console.log(to, token)
@@ -176,7 +171,7 @@ const send_email_update = async (id,to) => {
   const text = `Dear user, To Change the email, OTP:${otp}. Do not share your otp`;
   const msg = { from: config.email.from, to, subject, text };
 
-  await Otpupdate.create({email:to, otp:otp, userId:id})
+  await Otpupdate.create({ email: to, otp: otp, userId: id });
   await transport.sendMail(msg);
 };
 
@@ -193,5 +188,5 @@ module.exports = {
   maskmail,
   notification_mail,
   sendEmailTemplate,
-  send_email_update
+  send_email_update,
 };
