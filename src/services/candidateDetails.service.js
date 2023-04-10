@@ -2001,16 +2001,10 @@ const candidateSearch_front_page = async (id, body) => {
   if (postedby.length != 0) {
     postedbySearch = { postedBy: { $in: postedby } };
   }
-  //  console.log(experienceSearch,
-  //   locationSearch,
-  //   salarySearch,
-  //   preferredindustrySearch,
-  //   workmodeSearch,
-  //   educationSearch,
-  //   roleSearch,
-  //   experienceAnotherSearch,
-  //   companytypeSearch,);
   const data = await EmployerDetails.aggregate([
+    {
+      $sort:{createdAt:-1}
+    },
     {
       $match: {
         $or: allSearch,
