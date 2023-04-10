@@ -1138,7 +1138,16 @@ const createCandidatePostjob = async (userId, userBody) => {
 };
 
 const createCandidateSavejob = async (userId, userBody) => {
-  const data = await CandidateSaveJob.create({ ...userBody, ...{ userId: userId } });
+  const { savejobId } = userBody;
+  let getSavedJob = await CandidateSaveJob.find({ savejobId: savejobId });
+  let len = getSavedJob.length;
+  let data;
+  if (len > 0) {
+    await CandidateSaveJob.deleteMany({ savejobId: savejobId });
+    data = { message: 'Deleted' };
+  } else {
+    data = await CandidateSaveJob.create({ ...userBody, ...{ userId: userId } });
+  }
   return data;
 };
 
@@ -2003,7 +2012,7 @@ const candidateSearch_front_page = async (id, body) => {
   }
   const data = await EmployerDetails.aggregate([
     {
-      $sort:{createdAt:-1}
+      $sort: { createdAt: -1 },
     },
     {
       $match: {
