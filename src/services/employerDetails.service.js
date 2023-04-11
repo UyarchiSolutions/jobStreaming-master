@@ -535,7 +535,7 @@ const deleteById = async (id) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'employerDetails not found');
   }
   await user.remove();
-  return user;
+  return { Message: 'Deleted...' };
 };
 
 const countPostjobError = async (userId) => {
