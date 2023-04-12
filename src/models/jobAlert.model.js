@@ -16,10 +16,10 @@ const jobAlertSchema = new mongoose.Schema(
       type: Array,
     },
     salaryFrom: {
-      type: String,
+      type: Number,
     },
     salaryTo: {
-      type: String,
+      type: Number,
     },
     currentIndestry: {
       type: String,
@@ -30,11 +30,11 @@ const jobAlertSchema = new mongoose.Schema(
     jobRole: {
       type: String,
     },
-    experienceYearSet:{
-        type:String,
+    experienceYearSet: {
+      type: Number,
     },
-    experienceMonthSet:{
-        type:String
+    experienceMonthSet: {
+      type: Number,
     },
     active: {
       type: Boolean,
