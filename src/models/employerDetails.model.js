@@ -36,6 +36,9 @@ const employerDetailsSchema = mongoose.Schema(
     recruiterList: {
       type: String,
     },
+    cities: {
+      type: Array,
+    },
     recruiterList1: {
       type: String,
     },
