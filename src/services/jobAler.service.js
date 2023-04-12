@@ -11,6 +11,7 @@ const createjobAlert = async (body, userId) => {
   }
   let values = { ...body, ...{ userId: userId } };
   const data = await jobAlert.create(values);
+  return data;
 };
 
 module.exports = {
