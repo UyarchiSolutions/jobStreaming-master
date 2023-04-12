@@ -30,6 +30,12 @@ const jobAlertSchema = new mongoose.Schema(
     jobRole: {
       type: String,
     },
+    experienceYearSet:{
+        type:String,
+    },
+    experienceMonthSet:{
+        type:String
+    },
     active: {
       type: Boolean,
       default: true,
