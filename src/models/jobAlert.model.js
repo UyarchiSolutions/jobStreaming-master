@@ -15,7 +15,10 @@ const jobAlertSchema = new mongoose.Schema(
     cities: {
       type: Array,
     },
-    salary: {
+    salaryFrom: {
+      type: String,
+    },
+    salaryTo: {
       type: String,
     },
     currentIndestry: {
