@@ -14,6 +14,25 @@ const createjobAlert = async (body, userId) => {
   return data;
 };
 
+const getjobAlertbyUser = async (userId) => {
+  const data = await jobAlert.findOne({ userId: userId }).sort({ createdAt: -1 });
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Job ALert Not Available for this user');
+  }
+  return data;
+};
+
+const updateJobAlert = async (id, body) => {
+  let data = await jobAlert.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Job ALert Not Available for this user');
+  }
+  data = await jobAlert.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return data;
+};
+
 module.exports = {
   createjobAlert,
+  getjobAlertbyUser,
+  updateJobAlert,
 };

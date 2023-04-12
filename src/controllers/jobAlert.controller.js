@@ -10,6 +10,12 @@ const createjobAlert = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
+const updateJobAlert = catchAsync(async (req, res) => {
+  const data = await JobAlertervice.updateJobAlert(req.params.id, req.body);
+  res.send(data);
+});
+
 module.exports = {
   createjobAlert,
+  updateJobAlert,
 };
