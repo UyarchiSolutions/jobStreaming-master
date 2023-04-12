@@ -14,13 +14,17 @@ const educationDetailsRoute = require('./education.route');
 const districtRoute = require('./district.route');
 const faqeRoute = require('./admin.askQuestions.route');
 const Dummy = require('./DummyDetails.route');
-
+const JobAlert = require('./jobAlert.route');
 const router = express.Router();
 
 const defaultRoutes = [
   {
     path: '/auth',
     route: authRoute,
+  },
+  {
+    path: '/JobAlert',
+    route: JobAlert,
   },
   {
     path: '/users',
