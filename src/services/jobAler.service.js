@@ -95,6 +95,21 @@ const getJobAlert_Response = async (userId) => {
           path: '$employer',
         },
       },
+      {
+        $lookup: {
+          from: 'candidatepostjobs',
+          localField: '_id',
+          foreignField: 'jobId',
+          pipeline: [{ $match: { userId: userId } }],
+          as: 'job',
+        },
+      },
+      {
+        $unwind: {
+          preserveNullAndEmptyArrays: true,
+          path: '$job',
+        },
+      },
     ]);
   }
 
