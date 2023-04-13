@@ -1924,7 +1924,7 @@ const candidateSearch_front_page = async (id, body) => {
     companytypeSearch = { companyType: { $in: companytype } };
   }
 
-  if (experienceAnotherfrom != null && experienceAnotherto != null) {
+  if (experienceAnotherfrom && experienceAnotherto) {
     experienceAnotherSearch = [
       { experienceFrom: { $eq: parseInt(experienceAnotherfrom) } },
       { experienceTo: { $lte: parseInt(experienceAnotherto) } },
