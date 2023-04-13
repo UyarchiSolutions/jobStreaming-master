@@ -461,6 +461,9 @@ const candidateSearchjobCandidateSchema = mongoose.Schema(
     experience: {
       type: Number,
     },
+    exp: {
+      type: String,
+    },
     Location: {
       type: String,
     },
