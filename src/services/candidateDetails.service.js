@@ -1874,6 +1874,9 @@ const candidateSearch_front_page = async (id, body) => {
     postedby,
     range,
     page,
+    keySkillArr,
+    salaryFrom,
+    salaryTo,
   } = body;
   if (
     search.length != 0 ||
@@ -1910,6 +1913,8 @@ const candidateSearch_front_page = async (id, body) => {
   let departmentSearch = { active: true };
   // let salaryfilterSearch = { active: true };
   let roleSearch = { active: true };
+  let keySkillSearch = { active: true };
+  let salary = { active: true };
   let freshnessSearch = { active: true };
   // let locationfilterSearch = { active: true };
   let companytypeSearch = { active: true };
@@ -1952,7 +1957,6 @@ const candidateSearch_front_page = async (id, body) => {
   }
 
   if (experience != null) {
-    // experienceSearch = { experienceFrom: { $lte: parseInt(experience) },experienceTo: { $gte: parseInt(experience) } }
     experienceSearch = { experienceFrom: { $eq: parseInt(experience) } };
   }
 
@@ -2010,6 +2014,24 @@ const candidateSearch_front_page = async (id, body) => {
   if (postedby.length != 0) {
     postedbySearch = { postedBy: { $in: postedby } };
   }
+
+  if (keySkillArr.length > 0) {
+    let arr = [];
+    keySkillArr.forEach((e) => {
+      arr.push({ keySkill: { $elemMatch: { $regex: e, $options: 'i' } } });
+    });
+    keySkillSearch = { $or: arr };
+  } else {
+    keySkillSearch;
+  }
+
+  // salary
+  if (salaryFrom && salaryTo) {
+    salary = { salaryRangeFrom: { $eq: salaryFrom }, salaryRangeTo: { $eq: salaryTo } };
+  } else {
+    salary;
+  }
+
   const data = await EmployerDetails.aggregate([
     {
       $sort: { createdAt: -1 },
@@ -2036,6 +2058,7 @@ const candidateSearch_front_page = async (id, body) => {
           experienceSearch,
           locationSearch,
           salarySearch,
+          salary,
           workmodeSearch,
           educationSearch,
           roleSearch,
@@ -2120,7 +2143,7 @@ const candidateSearch_front_page = async (id, body) => {
         date: 1,
         expiredDate: 1,
         date: 1,
-        roleCategory:1,
+        roleCategory: 1,
         time: 1,
         companyType: '$employerregistrations.companyType',
         mobileNumber: '$employerregistrations.mobileNumber',
