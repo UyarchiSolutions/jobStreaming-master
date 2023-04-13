@@ -31,8 +31,14 @@ const updateJobAlert = async (id, body) => {
   return data;
 };
 
+const getJobAlert_Response = async (userId) => {
+  let userAlert = await jobAlert.findOne({ userId: userId });
+  return userAlert;
+};
+
 module.exports = {
   createjobAlert,
   getjobAlertbyUser,
   updateJobAlert,
+  getJobAlert_Response,
 };

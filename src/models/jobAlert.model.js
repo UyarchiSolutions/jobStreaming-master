@@ -12,6 +12,9 @@ const jobAlertSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    userId: {
+      type: String,
+    },
     cities: {
       type: Array,
     },

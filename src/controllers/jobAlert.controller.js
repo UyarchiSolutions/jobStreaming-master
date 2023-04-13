@@ -15,7 +15,14 @@ const updateJobAlert = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getJobAlert_Response = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const data = await JobAlertervice.getJobAlert_Response(userId);
+  res.send(data);
+});
+
 module.exports = {
   createjobAlert,
   updateJobAlert,
+  getJobAlert_Response,
 };
