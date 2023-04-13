@@ -1254,7 +1254,7 @@ const getByIdAppliedJobs = async (userId, status) => {
         date: '$employerdetails.date',
         time: '$employerdetails.time',
         jodId: '$employerdetails._id',
-        role: '$employerdetails.jobroles.Job_role',
+        role: '$employerdetails.roleCategory',
         candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
       },
     },
