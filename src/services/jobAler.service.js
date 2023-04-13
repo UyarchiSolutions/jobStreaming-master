@@ -81,6 +81,20 @@ const getJobAlert_Response = async (userId) => {
           ],
         },
       },
+      {
+        $lookup: {
+          from: 'employerregistrations',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'employer',
+        },
+      },
+      {
+        $unwind: {
+          preserveNullAndEmptyArrays: true,
+          path: '$employer',
+        },
+      },
     ]);
   }
 
