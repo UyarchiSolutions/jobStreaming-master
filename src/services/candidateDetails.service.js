@@ -2041,15 +2041,7 @@ const candidateSearch_front_page = async (id, body) => {
     experienceMatch;
   }
 
-  if (preferredIndustry.length > 0) {
-    let arr = [];
-    preferredIndustry.forEach((e) => {
-      arr.push({ industry: { $elemMatch: { $regex: e, $options: 'i' } } });
-    });
-    industryMatch = { $or: arr };
-  } else {
-    industryMatch;
-  }
+
 
   const data = await EmployerDetails.aggregate([
     {
@@ -2065,11 +2057,11 @@ const candidateSearch_front_page = async (id, body) => {
         $and: experienceAnotherSearch,
       },
     },
-    // {
-    //   $match: {
-    //     $and: preferredindustrySearch,
-    //   },
-    // },
+    {
+      $match: {
+        $and: preferredindustrySearch,
+      },
+    },
     {
       $match: {
         $and: [
@@ -2084,7 +2076,6 @@ const candidateSearch_front_page = async (id, body) => {
           departmentSearch,
           freshnessSearch,
           experienceMatch,
-          industryMatch,
         ],
       },
     },
