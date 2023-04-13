@@ -1877,7 +1877,6 @@ const candidateSearch_front_page = async (id, body) => {
     keySkillArr,
     salaryFrom,
     salaryTo,
-    preferedIndustry,
   } = body;
   if (
     search.length != 0 ||
@@ -2042,9 +2041,9 @@ const candidateSearch_front_page = async (id, body) => {
     experienceMatch;
   }
 
-  if (preferedIndustry && preferedIndustry.length > 0) {
+  if (preferredIndustry.length > 0) {
     let arr = [];
-    preferedIndustry.forEach((e) => {
+    preferredIndustry.forEach((e) => {
       arr.push({ industry: { $elemMatch: { $regex: e, $options: 'i' } } });
     });
     industryMatch = { $or: arr };
