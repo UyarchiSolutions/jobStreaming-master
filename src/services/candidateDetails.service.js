@@ -2120,6 +2120,7 @@ const candidateSearch_front_page = async (id, body) => {
         date: 1,
         expiredDate: 1,
         date: 1,
+        roleCategory:1,
         time: 1,
         companyType: '$employerregistrations.companyType',
         mobileNumber: '$employerregistrations.mobileNumber',
