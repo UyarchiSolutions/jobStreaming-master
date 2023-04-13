@@ -1432,7 +1432,7 @@ const getByIdSavedJobs = async (userId) => {
         industry: '$employerdetails.industry',
         preferredindustry: '$employerdetails.preferredindustry',
         functionalArea: '$employerdetails.functionalArea',
-        role: '$employerdetails.role',
+        role: '$employerdetails.roleCategory',
         jobLocation: '$employerdetails.jobLocation',
         employmentType: '$employerdetails.employmentType',
         openings: '$employerdetails.openings',
