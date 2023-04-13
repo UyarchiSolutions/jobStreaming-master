@@ -1911,6 +1911,7 @@ const candidateSearch_front_page = async (id, body) => {
   let workmodeSearch = { active: true };
   let educationSearch = { active: true };
   let departmentSearch = { active: true };
+  let experienceMatch = { active: true };
   // let salaryfilterSearch = { active: true };
   let roleSearch = { active: true };
   let keySkillSearch = { active: true };
@@ -1924,7 +1925,7 @@ const candidateSearch_front_page = async (id, body) => {
     companytypeSearch = { companyType: { $in: companytype } };
   }
 
-  if (experienceAnotherfrom && experienceAnotherto) {
+  if (experienceAnotherfrom != null && experienceAnotherto != null) {
     experienceAnotherSearch = [
       { experienceFrom: { $eq: parseInt(experienceAnotherfrom) } },
       { experienceTo: { $lte: parseInt(experienceAnotherto) } },
@@ -2032,6 +2033,14 @@ const candidateSearch_front_page = async (id, body) => {
     salary;
   }
 
+  // experienceMatch
+
+  if (experienceAnotherfrom && experienceAnotherto) {
+    experienceMatch = { experienceFrom: { $eq: experienceAnotherfrom }, experienceTo: { $eq: experienceAnotherto } };
+  } else {
+    experienceMatch;
+  }
+
   const data = await EmployerDetails.aggregate([
     {
       $sort: { createdAt: -1 },
@@ -2064,6 +2073,7 @@ const candidateSearch_front_page = async (id, body) => {
           roleSearch,
           departmentSearch,
           freshnessSearch,
+          experienceMatch,
         ],
       },
     },
