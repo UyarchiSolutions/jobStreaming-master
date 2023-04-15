@@ -1877,6 +1877,7 @@ const candidateSearch_front_page = async (id, body) => {
     keySkillArr,
     salaryFrom,
     salaryTo,
+    refWorkmode,
   } = body;
   if (
     search.length != 0 ||
@@ -2050,6 +2051,16 @@ const candidateSearch_front_page = async (id, body) => {
     expMatch;
   }
 
+  // version 2.0 Refined Search
+  // refWorkmode
+  let workModeMatch = { active: true };
+  if (refWorkmode) {
+    workModeMatch = { workplaceType: { $regex: refWorkmode, $options: 'i' } };
+  } else {
+    workModeMatch;
+  }
+
+  //
   const data = await EmployerDetails.aggregate([
     {
       $sort: { createdAt: -1 },

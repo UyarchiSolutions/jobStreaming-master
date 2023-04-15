@@ -533,6 +533,9 @@ const candidateRecentSearchjobCandidateSchema = mongoose.Schema(
     search: {
       type: Array,
     },
+    advsearch: {
+      type: Array,
+    },
     experience: {
       type: Number,
     },
