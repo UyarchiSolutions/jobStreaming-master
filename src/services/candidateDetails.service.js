@@ -1884,6 +1884,9 @@ const candidateSearch_front_page = async (id, body) => {
   if (body.advsearch) {
     assvalue = { ...assvalue, search: body.advsearch };
   }
+  if (body.keySkillArr) {
+    assvalue = { ...assvalue, search: body.keySkillArr };
+  }
   if (body.search) {
     assvalue = { ...assvalue, search: body.search };
   }
