@@ -1925,6 +1925,7 @@ const candidateSearch_front_page = async (id, body) => {
   let companytypeSearch = { active: true };
   let postedbySearch = { active: true };
   let industryMatch = { active: true };
+  let advsearchMatch = { active: true };
   if (companytype.length != 0) {
     companytypeSearch = { companyType: { $in: companytype } };
   }
@@ -2061,8 +2062,16 @@ const candidateSearch_front_page = async (id, body) => {
   } else {
     workModeMatch;
   }
-
   //
+
+  // advsearchMatch
+  if (advsearch && advsearch.length > 0) {
+    let arr = [];
+    advsearch.forEach((e) => {
+      arr.push({ keySkill: { $regex: e, $options: 'i' } });
+    });
+    advsearchMatch = { $or: arr };
+  }
   const data = await EmployerDetails.aggregate([
     {
       $sort: { createdAt: -1 },
@@ -2096,6 +2105,7 @@ const candidateSearch_front_page = async (id, body) => {
           freshnessSearch,
           experienceMatch,
           expMatch,
+          advsearchMatch,
         ],
       },
     },
