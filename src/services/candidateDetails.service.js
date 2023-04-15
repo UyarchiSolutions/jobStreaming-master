@@ -1562,7 +1562,7 @@ const createdSearchhistory = async (userId, body) => {
   if (body.exp) {
     assvalue = { ...assvalue, ...{ exp: body.exp } };
   }
-  if (body.search) {
+  if (body.search && body.search.length > 0) {
     assvalue = { ...assvalue, ...{ search: body.search } };
   }
   if (body.experience) {
@@ -1574,10 +1574,10 @@ const createdSearchhistory = async (userId, body) => {
   if (body.Location) {
     assvalue = { ...assvalue, ...{ Location: body.Location } };
   }
-  if (body.advsearch) {
+  if (body.advsearch && body.advsearch.length > 0) {
     assvalue = { ...assvalue, ...{ search: body.advsearch } };
   }
-  if (body.keySkillArr) {
+  if (body.keySkillArr && body.keySkillArr.length > 0) {
     assvalue = { ...assvalue, ...{ search: body.keySkillArr } };
   }
   if (body.preferredindustry) {
