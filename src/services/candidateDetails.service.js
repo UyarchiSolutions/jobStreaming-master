@@ -1878,6 +1878,7 @@ const candidateSearch_front_page = async (id, body) => {
     salaryFrom,
     salaryTo,
     refWorkmode,
+    advsearch,
   } = body;
   if (
     search.length != 0 ||
@@ -1895,7 +1896,8 @@ const candidateSearch_front_page = async (id, body) => {
     freshness.length != 0 ||
     // locationfilter != null ||
     companytype.length != 0 ||
-    postedby.length != 0
+    postedby.length != 0 ||
+    advsearch.length != 0
   ) {
     await CandidateRecentSearchjobCandidate.create(values);
   }
