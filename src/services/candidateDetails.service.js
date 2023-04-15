@@ -1950,7 +1950,7 @@ const candidateSearch_front_page = async (id, body) => {
     postedby.length != 0 ||
     advsearch.length != 0
   ) {
-    await CandidateRecentSearchjobCandidate.create(values);
+    // await CandidateRecentSearchjobCandidate.create(values);
   }
   //  await CandidateSearchjobCandidate.create(values);
 
