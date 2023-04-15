@@ -1884,8 +1884,14 @@ const candidateSearch_front_page = async (id, body) => {
   if (body.advsearch) {
     assvalue = { ...assvalue, search: body.advsearch };
   }
+  if (body.search) {
+    assvalue = { ...assvalue, search: body.search };
+  }
+  if (body.experienceAnotherfrom) {
+    assvalue = { ...assvalue, experience: body.experienceAnotherfrom };
+  }
   if (body.experience) {
-    assvalue = { ...assvalue, assvalue: body.assvalue };
+    assvalue = { ...assvalue, experience: body.experience };
   }
   if (body.Location) {
     assvalue = { ...assvalue, ...{ Location: body.Location } };
