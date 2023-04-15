@@ -1851,7 +1851,6 @@ const candidateSearch_front_page = async (id, body) => {
   }
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HH:mm:ss');
-  let values = { ...body, ...{ userId: id, date: date, time: creat1 } };
   // let values = {...body, ...{userId:userId}}
   let salary1;
   let salary2;
@@ -1880,6 +1879,21 @@ const candidateSearch_front_page = async (id, body) => {
     refWorkmode,
     advsearch,
   } = body;
+  let assvalue = {};
+
+  if (body.advsearch) {
+    assvalue = { ...assvalue, search: body.advsearch };
+  }
+  if (body.experience) {
+    assvalue = { ...assvalue, assvalue: body.assvalue };
+  }
+  if (body.Location) {
+    assvalue = { ...assvalue, ...{ Location: body.Location } };
+  }
+  if (body.salary) {
+    assvalue = { ...assvalue, ...{ salary: body.salary } };
+  }
+  let values = { ...assvalue, ...{ userId: id, date: date, time: creat1 } };
   if (
     search.length != 0 ||
     experience != null ||
