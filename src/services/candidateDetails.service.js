@@ -2287,7 +2287,6 @@ const candidateSearch_front_page = async (id, body) => {
           expMatch,
           advsearchMatch,
           keySkillSearch,
-          keySkillSearch,
         ],
       },
     },
@@ -2378,16 +2377,11 @@ const candidateSearch_front_page = async (id, body) => {
         role: '$jobroles.Job_role',
       },
     },
+    { $skip: range * (page + 1) },
+    { $limit: range },
   ]);
-  let val = data.length;
-  let len = total.length;
-  let next;
-  if (len > val) {
-    next = true;
-  }else{
-    next = false
-  }
-  return { data: data, next: next, datalength: data.length, total: total.length };
+
+  return { data: data, next: total.length !=0 };
 };
 
 const recentSearch = async (userId) => {
