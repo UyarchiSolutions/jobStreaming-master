@@ -1374,7 +1374,7 @@ const getByIdAppliedJobs = async (userId, status, query) => {
       $limit: range,
     },
   ]);
-  return { data: data, next: total.length !== 0 };
+  return { data: data, next: total.length !== 0, total: total.length };
 };
 
 const applyJobsView = async (userId) => {
@@ -1666,7 +1666,7 @@ const getByIdSavedJobs = async (userId, query) => {
     },
   ]);
 
-  return { data: data, next: total.length !== 0 };
+  return { data: data, next: total.length !== 0, total: total.length };
 };
 const getByIdSavedJobsView = async (userId) => {
   // console.log(userId)
