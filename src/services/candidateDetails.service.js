@@ -2251,7 +2251,135 @@ const candidateSearch_front_page = async (id, body) => {
     { $skip: range * page },
     { $limit: range },
   ]);
-  return { data: data, count: data.length };
+
+let total  = await EmployerDetails.aggregate([
+  {
+    $sort: { createdAt: -1 },
+  },
+  {
+    $match: {
+      $or: allSearch,
+    },
+  },
+  {
+    $match: {
+      $and: experienceAnotherSearch,
+    },
+  },
+  {
+    $match: {
+      $and: preferredindustrySearch,
+    },
+  },
+  {
+    $match: {
+      $and: [
+        //  { jobortemplate: { $eq: 'job' } },
+        locationSearch,
+        salarySearch,
+        salary,
+        workmodeSearch,
+        educationSearch,
+        roleSearch,
+        departmentSearch,
+        freshnessSearch,
+        experienceMatch,
+        expMatch,
+        advsearchMatch,
+        keySkillSearch
+      ],
+    },
+  },
+  {
+    $lookup: {
+      from: 'employerregistrations',
+      localField: 'userId',
+      foreignField: '_id',
+      pipeline: [
+        {
+          $match: {
+            $and: [companytypeSearch, postedbySearch],
+          },
+        },
+      ],
+      as: 'employerregistrations',
+    },
+  },
+  {
+    $unwind: '$employerregistrations',
+  },
+  {
+    $lookup: {
+      from: 'candidatepostjobs',
+      localField: '_id',
+      foreignField: 'jobId',
+      pipeline: [
+        {
+          $match: { userId: { $eq: id } },
+        },
+      ],
+      as: 'candidatepostjobs',
+    },
+  },
+  {
+    $unwind: {
+      path: '$candidatepostjobs',
+      preserveNullAndEmptyArrays: true,
+    },
+  },
+  {
+    $lookup: {
+      from: 'jobroles',
+      localField: 'role',
+      foreignField: '_id',
+      as: 'jobroles',
+    },
+  },
+  {
+    $unwind: {
+      path: '$jobroles',
+      preserveNullAndEmptyArrays: true,
+    },
+  },
+  {
+    $project: {
+      keySkill: 1,
+      jobTittle: 1,
+      recruiterName: 1,
+      contactNumber: 1,
+      jobDescription: 1,
+      educationalQualification: 1,
+      salaryRangeFrom: 1,
+      salaryRangeTo: 1,
+      experienceFrom: 1,
+      experienceTo: 1,
+      interviewType: 1,
+      candidateDescription: 1,
+      salaryDescription: 1,
+      urltoApply: 1,
+      workplaceType: 1,
+      industry: 1,
+      preferedIndustry: 1,
+      jobLocation: 1,
+      employmentType: 1,
+      openings: 1,
+      date: 1,
+      expiredDate: 1,
+      date: 1,
+      roleCategory: 1,
+      time: 1,
+      companyType: '$employerregistrations.companyType',
+      mobileNumber: '$employerregistrations.mobileNumber',
+      contactName: '$employerregistrationscontactName',
+      email: '$employerregistrations.email',
+      name: '$employerregistrations.name',
+      appliedStatus: '$candidatepostjobs.approvedStatus',
+      role: '$jobroles.Job_role',
+    },
+  },
+]);
+
+  return { data: data, count: total.length };
 };
 
 const recentSearch = async (userId) => {
