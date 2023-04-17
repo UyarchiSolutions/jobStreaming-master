@@ -2287,6 +2287,7 @@ const candidateSearch_front_page = async (id, body) => {
           expMatch,
           advsearchMatch,
           keySkillSearch,
+          keySkillSearch,
         ],
       },
     },
@@ -2381,9 +2382,7 @@ const candidateSearch_front_page = async (id, body) => {
     { $limit: range },
   ]);
 
-  let len = total.length;
-
-  return { data: data, next: len != 0,len };
+  return { data: data, next: total.length != 0 };
 };
 
 const recentSearch = async (userId) => {
