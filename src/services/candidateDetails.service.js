@@ -1374,7 +1374,107 @@ const getByIdAppliedJobs = async (userId, status, query) => {
       $limit: range,
     },
   ]);
-  return { data: data, next: total.length !== 0, total: total.length };
+  const tot = await CandidatePostjob.aggregate([
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId } }, search],
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'jobId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'jobroles',
+              localField: 'role',
+              foreignField: '_id',
+              as: 'jobroles',
+            },
+          },
+          {
+            $unwind: {
+              path: '$jobroles',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'candidatesavejobs',
+              localField: '_id',
+              foreignField: 'savejobId',
+              pipeline: [
+                {
+                  $match: {
+                    $and: [{ userId: { $eq: userId } }],
+                  },
+                },
+              ],
+              as: 'candidatesavejobs',
+            },
+          },
+          {
+            $unwind: {
+              path: '$candidatesavejobs',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'employerregistrations',
+              localField: 'userId',
+              foreignField: '_id',
+              as: 'employerregistrations',
+            },
+          },
+          {
+            $unwind: '$employerregistrations',
+          },
+        ],
+        as: 'employerdetails',
+      },
+    },
+    {
+      $unwind: '$employerdetails',
+    },
+    {
+      $project: {
+        userId: 1,
+        approvedStatus: 1,
+        appliedDate: '$employerdetails.createdAt',
+        companyType: '$employerdetails.employerregistrations.companyType',
+        companyName: '$employerdetails.employerregistrations.name',
+        designation: '$employerdetails.jobTittle',
+        recruiterName: '$employerdetails.recruiterName',
+        contactNumber: '$employerdetails.contactNumber',
+        jobDescription: '$employerdetails.jobDescription',
+        salaryRangeFrom: '$employerdetails.salaryRangeFrom',
+        salaryRangeTo: '$employerdetails.salaryRangeTo',
+        experienceFrom: '$employerdetails.experienceFrom',
+        experienceTo: '$employerdetails.experienceTo',
+        interviewType: '$employerdetails.interviewType',
+        candidateDescription: '$employerdetails.candidateDescription',
+        workplaceType: '$employerdetails.workplaceType',
+        industry: '$employerdetails.industry',
+        preferredindustry: '$employerdetails.preferredindustry',
+        functionalArea: '$employerdetails.functionalArea',
+        // role: '$employerdetails.role',
+        jobLocation: '$employerdetails.jobLocation',
+        employmentType: '$employerdetails.employmentType',
+        openings: '$employerdetails.openings',
+        createdAt: '$employerdetails.createdAt',
+        updatedAt: '$employerdetails.updatedAt',
+        date: '$employerdetails.date',
+        time: '$employerdetails.time',
+        jodId: '$employerdetails._id',
+        role: '$employerdetails.roleCategory',
+        candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
+      },
+    },
+  ]);
+  return { data: data, next: total.length !== 0, total: tot.length };
 };
 
 const applyJobsView = async (userId) => {
@@ -1749,12 +1849,6 @@ const getByIdSavedJobs = async (userId, query) => {
         candidatepostjobs: { $ifNull: ['$employerdetails.candidatepostjobs', false] },
         approvedStatus: '$employerdetails.candidatepostjobs.approvedStatus',
       },
-    },
-    {
-      $skip: range * (page + 1),
-    },
-    {
-      $limit: range,
     },
   ]);
 
@@ -2816,8 +2910,6 @@ const candidateSearch_front_page = async (id, body) => {
         role: '$jobroles.Job_role',
       },
     },
-    { $skip: range * (page + 1) },
-    { $limit: range },
   ]);
 
   return { data: data, next: total.length != 0, total:tot.length };
