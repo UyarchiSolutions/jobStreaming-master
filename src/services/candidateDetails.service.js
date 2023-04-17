@@ -2382,12 +2382,12 @@ const candidateSearch_front_page = async (id, body) => {
   let len = total.length;
   let val = data.length;
   let status;
-  if (val > len) {
+  if (len>val) {
     status = true;
   } else {
     status = false;
   }
-  return { data: data, count: total.length, next: status };
+  return { data: data, next: status };
 };
 
 const recentSearch = async (userId) => {
