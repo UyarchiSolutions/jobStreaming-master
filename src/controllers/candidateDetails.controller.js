@@ -97,7 +97,7 @@ const createCandidateSavejob = catchAsync(async (req, res) => {
 
 const getByIdAppliedJobs = catchAsync(async (req, res) => {
   let userId = req.userId;
-  const user = await candidateDetailsService.getByIdAppliedJobs(userId, req.params.search);
+  const user = await candidateDetailsService.getByIdAppliedJobs(userId, req.params.search, req.query);
   res.send(user);
 });
 

@@ -1151,14 +1151,17 @@ const createCandidateSavejob = async (userId, userBody) => {
   return data;
 };
 
-const getByIdAppliedJobs = async (userId, status) => {
-  console.log(userId);
+const getByIdAppliedJobs = async (userId, status, query) => {
   let search;
   if (status == 'null') {
     search = { active: { $eq: true } };
   } else {
     search = { approvedStatus: { $eq: status } };
   }
+
+  let { page, range } = query;
+  page = parseInt(page);
+  range = parseInt(range);
   const data = await CandidatePostjob.aggregate([
     {
       $match: {
@@ -1258,8 +1261,120 @@ const getByIdAppliedJobs = async (userId, status) => {
         candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
       },
     },
+    {
+      $skip: range * page,
+    },
+    {
+      $limit: range,
+    },
   ]);
-  return data;
+  const total = await CandidatePostjob.aggregate([
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId } }, search],
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'jobId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'jobroles',
+              localField: 'role',
+              foreignField: '_id',
+              as: 'jobroles',
+            },
+          },
+          {
+            $unwind: {
+              path: '$jobroles',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'candidatesavejobs',
+              localField: '_id',
+              foreignField: 'savejobId',
+              pipeline: [
+                {
+                  $match: {
+                    $and: [{ userId: { $eq: userId } }],
+                  },
+                },
+              ],
+              as: 'candidatesavejobs',
+            },
+          },
+          {
+            $unwind: {
+              path: '$candidatesavejobs',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'employerregistrations',
+              localField: 'userId',
+              foreignField: '_id',
+              as: 'employerregistrations',
+            },
+          },
+          {
+            $unwind: '$employerregistrations',
+          },
+        ],
+        as: 'employerdetails',
+      },
+    },
+    {
+      $unwind: '$employerdetails',
+    },
+    {
+      $project: {
+        userId: 1,
+        approvedStatus: 1,
+        appliedDate: '$employerdetails.createdAt',
+        companyType: '$employerdetails.employerregistrations.companyType',
+        companyName: '$employerdetails.employerregistrations.name',
+        designation: '$employerdetails.jobTittle',
+        recruiterName: '$employerdetails.recruiterName',
+        contactNumber: '$employerdetails.contactNumber',
+        jobDescription: '$employerdetails.jobDescription',
+        salaryRangeFrom: '$employerdetails.salaryRangeFrom',
+        salaryRangeTo: '$employerdetails.salaryRangeTo',
+        experienceFrom: '$employerdetails.experienceFrom',
+        experienceTo: '$employerdetails.experienceTo',
+        interviewType: '$employerdetails.interviewType',
+        candidateDescription: '$employerdetails.candidateDescription',
+        workplaceType: '$employerdetails.workplaceType',
+        industry: '$employerdetails.industry',
+        preferredindustry: '$employerdetails.preferredindustry',
+        functionalArea: '$employerdetails.functionalArea',
+        // role: '$employerdetails.role',
+        jobLocation: '$employerdetails.jobLocation',
+        employmentType: '$employerdetails.employmentType',
+        openings: '$employerdetails.openings',
+        createdAt: '$employerdetails.createdAt',
+        updatedAt: '$employerdetails.updatedAt',
+        date: '$employerdetails.date',
+        time: '$employerdetails.time',
+        jodId: '$employerdetails._id',
+        role: '$employerdetails.roleCategory',
+        candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
+      },
+    },
+    {
+      $skip: range * (page + 1),
+    },
+    {
+      $limit: range,
+    },
+  ]);
+  return { data: data, new: total.length !== 0 };
 };
 
 const applyJobsView = async (userId) => {
@@ -2381,7 +2496,7 @@ const candidateSearch_front_page = async (id, body) => {
     { $limit: range },
   ]);
 
-  return { data: data, next: total.length !=0 };
+  return { data: data, next: total.length != 0 };
 };
 
 const recentSearch = async (userId) => {
