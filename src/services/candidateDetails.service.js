@@ -1665,8 +1665,100 @@ const getByIdSavedJobs = async (userId, query) => {
       $limit: range,
     },
   ]);
+  const tot = await CandidateSaveJob.aggregate([
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'savejobId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'candidatepostjobs',
+              localField: '_id',
+              foreignField: 'jobId',
+              pipeline: [
+                {
+                  $match: {
+                    $and: [{ userId: { $eq: userId } }],
+                  },
+                },
+              ],
+              as: 'candidatepostjobs',
+            },
+          },
+          {
+            $unwind: {
+              path: '$candidatepostjobs',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'employerregistrations',
+              localField: 'userId',
+              foreignField: '_id',
+              as: 'employerregistrations',
+            },
+          },
+          {
+            $unwind: '$employerregistrations',
+          },
+        ],
+        as: 'employerdetails',
+      },
+    },
+    {
+      $unwind: '$employerdetails',
+    },
+    {
+      $project: {
+        userId: 1,
+        companyType: '$employerdetails.employerregistrations.companyType',
+        companyName: '$employerdetails.employerregistrations.name',
+        designation: '$employerdetails.designation',
+        recruiterName: '$employerdetails.recruiterName',
+        contactNumber: '$employerdetails.contactNumber',
+        jobDescription: '$employerdetails.jobDescription',
+        salaryRangeFrom: '$employerdetails.salaryRangeFrom',
+        salaryRangeTo: '$employerdetails.salaryRangeTo',
+        experienceFrom: '$employerdetails.experienceFrom',
+        experienceTo: '$employerdetails.experienceTo',
+        interviewType: '$employerdetails.interviewType',
+        candidateDescription: '$employerdetails.candidateDescription',
+        workplaceType: '$employerdetails.workplaceType',
+        industry: '$employerdetails.industry',
+        preferredindustry: '$employerdetails.preferredindustry',
+        functionalArea: '$employerdetails.functionalArea',
+        role: '$employerdetails.roleCategory',
+        jobLocation: '$employerdetails.jobLocation',
+        employmentType: '$employerdetails.employmentType',
+        openings: '$employerdetails.openings',
+        createdAt: '$employerdetails.createdAt',
+        updatedAt: '$employerdetails.updatedAt',
+        jobTittle: '$employerdetails.jobTittle',
+        date: '$employerdetails.date',
+        time: '$employerdetails.time',
+        jobId: '$employerdetails._id',
+        candidatepostjobsStatus: { $ifNull: ['$employerdetails.candidatepostjobs.status', false] },
+        candidatepostjobs: { $ifNull: ['$employerdetails.candidatepostjobs', false] },
+        approvedStatus: '$employerdetails.candidatepostjobs.approvedStatus',
+      },
+    },
+    {
+      $skip: range * (page + 1),
+    },
+    {
+      $limit: range,
+    },
+  ]);
 
-  return { data: data, next: total.length !== 0, total: total.length };
+  return { data: data, next: total.length !== 0, total: tot.length };
 };
 const getByIdSavedJobsView = async (userId) => {
   // console.log(userId)
@@ -2599,7 +2691,136 @@ const candidateSearch_front_page = async (id, body) => {
     { $limit: range },
   ]);
 
-  return { data: data, next: total.length != 0, total:total.length };
+  let tot = await EmployerDetails.aggregate([
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $match: {
+        $or: allSearch,
+      },
+    },
+    {
+      $match: {
+        $and: experienceAnotherSearch,
+      },
+    },
+    {
+      $match: {
+        $and: preferredindustrySearch,
+      },
+    },
+    {
+      $match: {
+        $and: [
+          //  { jobortemplate: { $eq: 'job' } },
+          locationSearch,
+          salarySearch,
+          salary,
+          workmodeSearch,
+          educationSearch,
+          roleSearch,
+          departmentSearch,
+          freshnessSearch,
+          experienceMatch,
+          expMatch,
+          advsearchMatch,
+          keySkillSearch,
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $match: {
+              $and: [companytypeSearch, postedbySearch],
+            },
+          },
+        ],
+        as: 'employerregistrations',
+      },
+    },
+    {
+      $unwind: '$employerregistrations',
+    },
+    {
+      $lookup: {
+        from: 'candidatepostjobs',
+        localField: '_id',
+        foreignField: 'jobId',
+        pipeline: [
+          {
+            $match: { userId: { $eq: id } },
+          },
+        ],
+        as: 'candidatepostjobs',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidatepostjobs',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'jobroles',
+        localField: 'role',
+        foreignField: '_id',
+        as: 'jobroles',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobroles',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        keySkill: 1,
+        jobTittle: 1,
+        recruiterName: 1,
+        contactNumber: 1,
+        jobDescription: 1,
+        educationalQualification: 1,
+        salaryRangeFrom: 1,
+        salaryRangeTo: 1,
+        experienceFrom: 1,
+        experienceTo: 1,
+        interviewType: 1,
+        candidateDescription: 1,
+        salaryDescription: 1,
+        urltoApply: 1,
+        workplaceType: 1,
+        industry: 1,
+        preferedIndustry: 1,
+        jobLocation: 1,
+        employmentType: 1,
+        openings: 1,
+        date: 1,
+        expiredDate: 1,
+        date: 1,
+        roleCategory: 1,
+        time: 1,
+        companyType: '$employerregistrations.companyType',
+        mobileNumber: '$employerregistrations.mobileNumber',
+        contactName: '$employerregistrationscontactName',
+        email: '$employerregistrations.email',
+        name: '$employerregistrations.name',
+        appliedStatus: '$candidatepostjobs.approvedStatus',
+        role: '$jobroles.Job_role',
+      },
+    },
+    { $skip: range * (page + 1) },
+    { $limit: range },
+  ]);
+
+  return { data: data, next: total.length != 0, total:tot.length };
 };
 
 const recentSearch = async (userId) => {
