@@ -113,7 +113,7 @@ const deleteByIdSavejOb = catchAsync(async (req, res) => {
 
 const getByIdSavedJobs = catchAsync(async (req, res) => {
   let userId = req.userId;
-  const user = await candidateDetailsService.getByIdSavedJobs(userId);
+  const user = await candidateDetailsService.getByIdSavedJobs(userId, req.query);
   res.send(user);
 });
 

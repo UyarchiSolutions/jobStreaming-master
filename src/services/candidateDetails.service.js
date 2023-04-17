@@ -1475,8 +1475,11 @@ const deleteByIdSavejOb = async (id) => {
   return data;
 };
 
-const getByIdSavedJobs = async (userId) => {
+const getByIdSavedJobs = async (userId, query) => {
   // console.log(userId)
+  let { page, range } = query;
+  page = parseInt(page);
+  range = parseInt(range);
   const data = await CandidateSaveJob.aggregate([
     {
       $match: {
@@ -1562,8 +1565,108 @@ const getByIdSavedJobs = async (userId) => {
         approvedStatus: '$employerdetails.candidatepostjobs.approvedStatus',
       },
     },
+    {
+      $skip: range * page,
+    },
+    {
+      $limit: range,
+    },
   ]);
-  return data;
+
+  const total = await CandidateSaveJob.aggregate([
+    {
+      $match: {
+        $and: [{ userId: { $eq: userId } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'savejobId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'candidatepostjobs',
+              localField: '_id',
+              foreignField: 'jobId',
+              pipeline: [
+                {
+                  $match: {
+                    $and: [{ userId: { $eq: userId } }],
+                  },
+                },
+              ],
+              as: 'candidatepostjobs',
+            },
+          },
+          {
+            $unwind: {
+              path: '$candidatepostjobs',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'employerregistrations',
+              localField: 'userId',
+              foreignField: '_id',
+              as: 'employerregistrations',
+            },
+          },
+          {
+            $unwind: '$employerregistrations',
+          },
+        ],
+        as: 'employerdetails',
+      },
+    },
+    {
+      $unwind: '$employerdetails',
+    },
+    {
+      $project: {
+        userId: 1,
+        companyType: '$employerdetails.employerregistrations.companyType',
+        companyName: '$employerdetails.employerregistrations.name',
+        designation: '$employerdetails.designation',
+        recruiterName: '$employerdetails.recruiterName',
+        contactNumber: '$employerdetails.contactNumber',
+        jobDescription: '$employerdetails.jobDescription',
+        salaryRangeFrom: '$employerdetails.salaryRangeFrom',
+        salaryRangeTo: '$employerdetails.salaryRangeTo',
+        experienceFrom: '$employerdetails.experienceFrom',
+        experienceTo: '$employerdetails.experienceTo',
+        interviewType: '$employerdetails.interviewType',
+        candidateDescription: '$employerdetails.candidateDescription',
+        workplaceType: '$employerdetails.workplaceType',
+        industry: '$employerdetails.industry',
+        preferredindustry: '$employerdetails.preferredindustry',
+        functionalArea: '$employerdetails.functionalArea',
+        role: '$employerdetails.roleCategory',
+        jobLocation: '$employerdetails.jobLocation',
+        employmentType: '$employerdetails.employmentType',
+        openings: '$employerdetails.openings',
+        createdAt: '$employerdetails.createdAt',
+        updatedAt: '$employerdetails.updatedAt',
+        jobTittle: '$employerdetails.jobTittle',
+        date: '$employerdetails.date',
+        time: '$employerdetails.time',
+        jobId: '$employerdetails._id',
+        candidatepostjobsStatus: { $ifNull: ['$employerdetails.candidatepostjobs.status', false] },
+        candidatepostjobs: { $ifNull: ['$employerdetails.candidatepostjobs', false] },
+        approvedStatus: '$employerdetails.candidatepostjobs.approvedStatus',
+      },
+    },
+    {
+      $skip: range * (page + 1),
+    },
+    {
+      $limit: range,
+    },
+  ]);
+
+  return { data: data, next: total.length !== 0 };
 };
 const getByIdSavedJobsView = async (userId) => {
   // console.log(userId)
