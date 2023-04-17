@@ -2377,17 +2377,13 @@ const candidateSearch_front_page = async (id, body) => {
         role: '$jobroles.Job_role',
       },
     },
+    { $skip: range * page + 1 },
+    { $limit: range },
   ]);
 
   let len = total.length;
-  let val = data.length;
-  let status;
-  if (len>val) {
-    status = true;
-  } else {
-    status = false;
-  }
-  return { data: data, next: status };
+
+  return { data: data, next: len != 0 };
 };
 
 const recentSearch = async (userId) => {
