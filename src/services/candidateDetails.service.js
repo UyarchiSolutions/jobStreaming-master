@@ -2383,7 +2383,7 @@ const candidateSearch_front_page = async (id, body) => {
 
   let len = total.length;
 
-  return { data: data, next: len != 0 };
+  return { data: data, next: len != 0,len };
 };
 
 const recentSearch = async (userId) => {
