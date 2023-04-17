@@ -2157,6 +2157,7 @@ const candidateSearch_front_page = async (id, body) => {
           experienceMatch,
           expMatch,
           advsearchMatch,
+          keySkillSearch
         ],
       },
     },
