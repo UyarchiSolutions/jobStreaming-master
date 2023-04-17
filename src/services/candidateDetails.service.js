@@ -2382,7 +2382,7 @@ const candidateSearch_front_page = async (id, body) => {
     { $limit: range },
   ]);
 
-  return { data: data, next: total.length != 0 };
+  return { data: data, next: total.length != 0, datalength: data.length, total: total.length };
 };
 
 const recentSearch = async (userId) => {
