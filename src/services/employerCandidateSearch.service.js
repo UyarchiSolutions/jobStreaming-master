@@ -27,7 +27,7 @@ const createSaveSeprate = async (userId, userBody) => {
   return { message: 'Save Sucessfully...' };
 };
 
-const getSaveSeprate = async (userId,range,page) => {
+const getSaveSeprate = async (userId, range, page) => {
   const data = await CreateSavetoFolderseprate.aggregate([
     {
       $match: {
@@ -346,15 +346,15 @@ const getSaveSeprate = async (userId,range,page) => {
               currentDepartment: '$candidatedetails.currentDepartment',
               role_Category: '$candidatedetails.role_Category',
               salaryFrom: '$candidatedetails.salaryFrom',
-              SalaryTo: '$candidatedetails.SalaryTo',    
-            }
-          },   
+              SalaryTo: '$candidatedetails.SalaryTo',
+            },
+          },
           {
             $lookup: {
               from: 'employercomments',
               localField: '_id',
               foreignField: 'candidateId',
-              pipeline:[
+              pipeline: [
                 {
                   $match: {
                     $and: [{ userId: { $eq: userId } }],
@@ -369,7 +369,7 @@ const getSaveSeprate = async (userId,range,page) => {
               path: '$employercomments',
               preserveNullAndEmptyArrays: true,
             },
-          }, 
+          },
         ],
         as: 'candidateregistrations',
       },
@@ -380,12 +380,12 @@ const getSaveSeprate = async (userId,range,page) => {
         preserveNullAndEmptyArrays: true,
       },
     },
-    
+
     {
       $project: {
         candidateData: '$candidateregistrations',
-        comments:'$candidateregistrations.employercomments.comment',
-        commentId:'$candidateregistrations.employercomments._id'
+        comments: '$candidateregistrations.employercomments.comment',
+        commentId: '$candidateregistrations.employercomments._id',
       },
     },
     { $skip: parseInt(range) * parseInt(page) },
@@ -709,9 +709,9 @@ const getSaveSeprate = async (userId,range,page) => {
               currentDepartment: '$candidatedetails.currentDepartment',
               role_Category: '$candidatedetails.role_Category',
               salaryFrom: '$candidatedetails.salaryFrom',
-              SalaryTo: '$candidatedetails.SalaryTo',    
-            }
-          }    
+              SalaryTo: '$candidatedetails.SalaryTo',
+            },
+          },
         ],
         as: 'candidateregistrations',
       },
@@ -727,7 +727,7 @@ const getSaveSeprate = async (userId,range,page) => {
         from: 'employercomments',
         localField: 'candidateId',
         foreignField: 'candidateId',
-        pipeline:[
+        pipeline: [
           {
             $match: {
               $and: [{ userId: { $eq: userId } }],
@@ -746,12 +746,12 @@ const getSaveSeprate = async (userId,range,page) => {
     {
       $project: {
         candidateData: '$candidateregistrations',
-        comments:'$employercomments.comment',
-        commentId:'$employercomments._id'
+        comments: '$employercomments.comment',
+        commentId: '$employercomments._id',
       },
     },
   ]);
-  return {data:data, count:count.length};
+  return { data: data, count: count.length };
 };
 
 const delete_Seprate_saveCandidate = async (id) => {
@@ -939,6 +939,9 @@ const outSearch_employer = async (userId, body) => {
     gender,
     range,
     page,
+    advkeyskills,
+    salaryFrom,
+    salaryTo,
   } = body;
   if (
     keyskills.length != 0 ||
@@ -955,7 +958,8 @@ const outSearch_employer = async (userId, body) => {
     // department.length != 0 ||
     // industry.length != 0 ||
     // noticeperiod.length != 0 ||
-    displayDetails != null
+    displayDetails != null ||
+    advkeyskills.length != 0
   ) {
     await CreateoutSearchHistory.create({ ...body, ...{ userId: userId, date: date, time: creat1 } });
   }
@@ -974,11 +978,10 @@ const outSearch_employer = async (userId, body) => {
   let departmentSearch = { active: true };
   let industrySearch = { active: true };
   let noticeperiodSearch = { active: true };
+  let advSearchMatch = { active: true };
+  let expMatch = { active: true };
+  let salaryMatch = { active: true };
   // filter if condition
-
-  // if (keyskills.length != 0) {
-  //   keyskillSearch = { keyskill: { $elemMatch: { $in: keyskills } } };
-  // }
 
   if (role.length != 0) {
     roleSearch = { role: { $in: role } };
@@ -1005,10 +1008,6 @@ const outSearch_employer = async (userId, body) => {
     ];
   }
   if (experiencefrom != null && experienceto != null) {
-    // experienceSearch = [
-    //   { experienceYear: { $gte: parseInt(experiencefrom) } },
-    //   { experienceYear: { $lte: parseInt(experienceto) } },
-    // ];
     experienceSearch = [
       { experienceYear: { $eq: parseInt(experiencefrom) } },
       { experienceYear: { $lte: parseInt(experienceto) } },
@@ -1071,19 +1070,32 @@ const outSearch_employer = async (userId, body) => {
   if (displayDetails != null) {
     displayDetailsSearch = [{ date: { $gte: sc } }];
   }
-  // console.log(
-  // keyskillSearch,
-  // locationSearch,
-  // expSearch,
-  // displayDetailsSearch,
-  // genderSearch,
-  //  salarySearch,
-  // roleSearch,
-  // departmentSearch,
-  // industrySearch,
-  // noticeperiodSearch,
-  // anykeywordsSearch
-  // );
+
+  // Advance Search
+
+  if (advkeyskills && advkeyskills.length > 0) {
+    let arr = [];
+    advkeyskills.forEach((e) => {
+      arr.push({ keyskill: { $elemMatch: { $regex: e, $options: 'i' } } });
+    });
+    advSearchMatch = { $or: arr };
+  }
+  // Experience Match
+
+  if (experiencefrom && experienceto) {
+    expMatch = { experienceYear: { $gte: experiencefrom, $lte: experienceto } };
+  }
+  // expectedctc
+  // salaryFrom
+  // salaryTo
+  // salaryMatch
+
+  if (salaryFrom && salaryTo) {
+    salaryMatch = { expectedctc: { $gte: salaryFrom, $lte: salaryTo } };
+  } else {
+    salaryMatch;
+  }
+
   const data = await KeySkill.aggregate([
     {
       $match: {
@@ -1098,6 +1110,9 @@ const outSearch_employer = async (userId, body) => {
           departmentSearch,
           industrySearch,
           noticeperiodSearch,
+          advSearchMatch,
+          expMatch,
+          salaryMatch,
         ],
       },
     },
@@ -1445,12 +1460,12 @@ const outSearch_employer = async (userId, body) => {
         role_Category: 1,
         salaryFrom: 1,
         SalaryTo: 1,
-        currentctc_th:1,
-        expCTC_end:1,
-        expCTC_strat:1,
-        totalCTC:1,
-        comment:'$employercomments.comment',
-        commentId:'$employercomments._id'
+        currentctc_th: 1,
+        expCTC_end: 1,
+        expCTC_strat: 1,
+        totalCTC: 1,
+        comment: '$employercomments.comment',
+        commentId: '$employercomments._id',
       },
     },
     { $skip: range * page },
@@ -1817,16 +1832,16 @@ const outSearch_employer = async (userId, body) => {
         role_Category: 1,
         salaryFrom: 1,
         SalaryTo: 1,
-        currentctc_th:1,
-        expCTC_end:1,
-        expCTC_strat:1,
-        totalCTC:1,
-        comment:'$employercomments.comment',
-        commentId:'$employercomments._id'
+        currentctc_th: 1,
+        expCTC_end: 1,
+        expCTC_strat: 1,
+        totalCTC: 1,
+        comment: '$employercomments.comment',
+        commentId: '$employercomments._id',
       },
     },
   ]);
-  return {data:data, count:count.length};
+  return { data: data, count: count.length };
 };
 
 const outSearchSave = async (userId, userBody) => {
