@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const jobAlert = require('../models/jobAlert.model');
 const { EmployerDetails } = require('../models/employerDetails.model');
+const moment = require('moment');
 // create job Alert
 
 const createjobAlert = async (body, userId) => {
