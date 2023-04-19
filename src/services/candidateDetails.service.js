@@ -2912,7 +2912,7 @@ const candidateSearch_front_page = async (id, body) => {
     },
   ]);
 
-  return { data: data, next: total.length != 0, total:tot.length };
+  return { data: data, next: total.length != 0, total: tot.length };
 };
 
 const recentSearch = async (userId) => {

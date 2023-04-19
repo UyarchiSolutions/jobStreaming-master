@@ -47,6 +47,7 @@ const getJobAlert_Response = async (userId) => {
       experienceMonthSet,
       salaryFrom,
       salaryTo,
+      createdAt,
     } = userAlert;
 
     // keyWord Match
@@ -65,6 +66,8 @@ const getJobAlert_Response = async (userId) => {
     });
     cityMatch = { $or: cityArr };
 
+    let date = moment(createdAt).add(5, 'minutes').toDate();
+
     values = await EmployerDetails.aggregate([
       {
         $match: {
@@ -78,6 +81,7 @@ const getJobAlert_Response = async (userId) => {
             { department: { $eq: currentDepartment } },
             { industry: { $regex: currentIndestry, $options: 'i' } },
             { roleCategory: { $regex: jobRole, $options: 'i' } },
+            { createdAt: { $gte: date } },
           ],
         },
       },
