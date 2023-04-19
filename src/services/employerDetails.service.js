@@ -496,6 +496,7 @@ const getById_Get = async (id) => {
         allcourses: '$allcourses',
         specialization: '$allspecializations',
         venue: 1,
+        specialization: 1,
         adminStatuss: {
           $cond: {
             if: { $gt: [dates, '$expiredDate'] },
