@@ -148,6 +148,11 @@ const updateByIdEmployerRegistration = catchAsync(async (req, res) => {
   res.send({ data });
 });
 
+const getEmployerById = catchAsync(async (req, res) => {
+  const data = await EmployerRegistration.getEmployerById(req.params);
+  res.send(data);
+});
+
 module.exports = {
   register,
   verify_email,
@@ -166,6 +171,7 @@ module.exports = {
   forget_password_set,
   change_pass,
   getbyAll_lat_lang,
+  getEmployerById,
   //   logout,
   //   refreshTokens,
   //   forgotPassword,

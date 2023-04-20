@@ -291,6 +291,15 @@ const getbyAll_lat_lang = async (body) => {
   const data = await EmployerRegistration.find({ location: location });
   return { data: data, count: data.length };
 };
+
+const getEmployerById = async (id) => {
+  let values = await EmployerRegistration.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Employer Registration Not Found');
+  }
+  return values;
+};
+
 module.exports = {
   createEmployer,
   verify_email,
@@ -309,6 +318,7 @@ module.exports = {
   forget_password_set,
   change_pass,
   getbyAll_lat_lang,
+  getEmployerById,
   //   getUserById,
   //   getUserByEmail,
   //   updateUserById,
