@@ -149,7 +149,7 @@ const updateByIdEmployerRegistration = catchAsync(async (req, res) => {
 });
 
 const getEmployerById = catchAsync(async (req, res) => {
-  const data = await EmployerRegistration.getEmployerById(req.params);
+  const data = await EmployerRegistration.getEmployerById(req.params.id);
   res.send(data);
 });
 
