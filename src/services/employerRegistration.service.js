@@ -104,17 +104,17 @@ const UsersLogin = async (userBody) => {
   const { email, password } = userBody;
   let date = moment().format('YYYY-MM-DD');
   let userName = await EmployerRegistration.findOne({ email: email });
-  if(userName.adminStatus != 'Approved'){
-    throw new ApiError(httpStatus.BAD_REQUEST,"Admin Not Approved")
+  if (userName.adminStatus == 'Pending') {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Admin Not Approved');
   }
   if (!userName) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
   } else {
-    if(userName.adminStatus == "debarred"){
-      throw new ApiError(httpStatus.UNAUTHORIZED, "Your account is debarred");
+    if (userName.adminStatus == 'debarred') {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Your account is debarred');
     }
-    if(userName.active == false){
-      throw new ApiError(httpStatus.UNAUTHORIZED, "Your account is de_active");
+    if (userName.active == false) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Your account is de_active');
     }
     if (await userName.isPasswordMatch(password)) {
       await EmployerRegistration.findByIdAndUpdate({ _id: userName._id }, { latestdate: date }, { new: true });
