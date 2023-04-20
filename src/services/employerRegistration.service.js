@@ -104,7 +104,7 @@ const UsersLogin = async (userBody) => {
   const { email, password } = userBody;
   let date = moment().format('YYYY-MM-DD');
   let userName = await EmployerRegistration.findOne({ email: email });
-  if (userName.adminStatus == 'Pending') {
+  if (userName.adminStatus == 'Pending' || userName.adminStatus == 'false') {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Admin Not Approved');
   }
   if (!userName) {
