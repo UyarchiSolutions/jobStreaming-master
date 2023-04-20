@@ -104,6 +104,9 @@ const UsersLogin = async (userBody) => {
   const { email, password } = userBody;
   let date = moment().format('YYYY-MM-DD');
   let userName = await EmployerRegistration.findOne({ email: email });
+  if(userName.adminStatus != 'Approved'){
+    throw new ApiError(httpStatus.BAD_REQUEST,"Admin Not Approved")
+  }
   if (!userName) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
   } else {
@@ -114,7 +117,6 @@ const UsersLogin = async (userBody) => {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Your account is de_active");
     }
     if (await userName.isPasswordMatch(password)) {
-      console.log('Password Macthed');
       await EmployerRegistration.findByIdAndUpdate({ _id: userName._id }, { latestdate: date }, { new: true });
     } else {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
