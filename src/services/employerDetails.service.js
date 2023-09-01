@@ -3272,7 +3272,7 @@ const candidate_mailnotification_Change = async (id, body) => {
 const neighbour_api = async (lat, long, type, radius) => {
   // console.log(location,type,radius)
   let response = await Axios.get(
-    `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${long}&radius=${radius}&type=${type}&keyword=${type}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+    `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${long}&radius=${radius}&type=${type}&keyword=${type}&key=AIzaSyARM6-Qr_hsR53GExv9Gmu9EtFTV5ZuDX4`
   );
 
   return response.data;
@@ -3281,7 +3281,7 @@ const neighbour_api = async (lat, long, type, radius) => {
 const location_api = async (location) => {
   //  console.log(location)
   let response = await Axios.get(
-    `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${location}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+    `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${location}&key=AIzaSyARM6-Qr_hsR53GExv9Gmu9EtFTV5ZuDX4`
   );
 
   return response.data;

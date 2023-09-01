@@ -177,7 +177,7 @@ const change_pass = async (userId, body) => {
 
 const getMapLocation = async (query) => {
   let response = await Axios.get(
-    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${query.lat},${query.long}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${query.lat},${query.long}&key=AIzaSyARM6-Qr_hsR53GExv9Gmu9EtFTV5ZuDX4`
   );
   return response.data;
 };
