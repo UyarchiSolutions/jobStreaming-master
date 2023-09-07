@@ -75,10 +75,23 @@ const forget_password = async (mobilenumber) => {
 
 const forget_password_Otp = async (body) => {
   const { mobilenumber, otp } = body;
-  const data = await OTPModel.findOne({ otp: otp, mobileNumber: mobilenumber });
+  const data = await OTPModel.findOne({ otp: otp, mobileNumber: mobilenumber, active: true }).sort({ updatedAt: -1 });
+  console.log(data);
   if (!data) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'otp inValid');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid OTP');
   }
+
+  const findotp = {
+    create: moment(new Date()).subtract(1, 'minutes'),
+  };
+  const createTimestampString = data.updatedAt;
+  const createTimestamp = moment(createTimestampString);
+
+  if (createTimestamp.isBefore(findotp.create)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'OTP Expired');
+  }
+
+  await OTPModel.findByIdAndUpdate({ _id: data._id }, { active: false }, { new: true });
   const verify = await CandidateRegistration.findOne({ _id: data.userId }).select('email');
   return verify;
 };

@@ -50,7 +50,7 @@ const keySkillSchema = mongoose.Schema(
       type: Number,
     },
     totalCTC: {
-      type: Number,
+      type: String,
     },
     expCTC_strat: {
       type: Number,
