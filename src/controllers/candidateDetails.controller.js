@@ -242,6 +242,12 @@ const DeleteResume = catchAsync(async (req, res) => {
   res.send(users);
 });
 
+const getAllAppliedJobsByCandidate = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const jobs = await candidateDetailsService.getAllAppliedJobsByCandidate(userId);
+  res.send(jobs);
+});
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -281,4 +287,5 @@ module.exports = {
   CandidateRegistration_number,
   // createSearchCandidate,
   DeleteResume,
+  getAllAppliedJobsByCandidate,
 };

@@ -5,23 +5,6 @@ const { EmployeOtp } = require('../models');
 
 const register = catchAsync(async (req, res) => {
   const user = await EmployerRegistration.createEmployer(req.body);
-  if (req.files) {
-    if (req.files.logo) {
-      let path = '';
-      req.files.logo.forEach(function (files, index, arr) {
-        path = 'resumes/uploadlogo/' + files.filename;
-      });
-      user.logo = path;
-    }
-    if (req.files.choosefile) {
-      let path = '';
-      req.files.choosefile.forEach(function (files, index, arr) {
-        path = 'resumes/uploadlogo/' + files.filename;
-      });
-      user.choosefile = path;
-    }
-  }
-
   const tokens = await tokenService.generateAuthTokens(user);
   //  await EmployeOtp.create({token:tokens.access.token});
   await user.save();
@@ -153,6 +136,16 @@ const getEmployerById = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const uploadProfileImage = catchAsync(async (req, res) => {
+  const data = await EmployerRegistration.uploadProfileImage(req);
+  res.send(data);
+});
+
+const uploadEmployerFile = catchAsync(async (req, res) => {
+  const data = await EmployerRegistration.uploadEmployerFile(req);
+  res.send(data);
+});
+
 module.exports = {
   register,
   verify_email,
@@ -172,6 +165,8 @@ module.exports = {
   change_pass,
   getbyAll_lat_lang,
   getEmployerById,
+  uploadProfileImage,
+  uploadEmployerFile,
   //   logout,
   //   refreshTokens,
   //   forgotPassword,

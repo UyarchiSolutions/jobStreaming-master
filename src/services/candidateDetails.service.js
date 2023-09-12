@@ -1081,7 +1081,7 @@ const getByIdEmployerDetailsShownCandidate = async (id, userId) => {
         long: '$employerregistrations.long',
         location: '$employerregistrations.location',
         choosefile: '$employerregistrations.choosefile',
-        employerregistrations: "$employerregistrations",
+        employerregistrations: '$employerregistrations',
         keySkill: 1,
         jobTittle: 1,
         designation: 1,
@@ -1161,10 +1161,6 @@ const getByIdAppliedJobs = async (userId, status, query) => {
   } else {
     search = { approvedStatus: { $eq: status } };
   }
-
-  let { page, range } = query;
-  page = parseInt(page);
-  range = parseInt(range);
   const data = await CandidatePostjob.aggregate([
     {
       $match: {
@@ -1263,12 +1259,6 @@ const getByIdAppliedJobs = async (userId, status, query) => {
         role: '$employerdetails.roleCategory',
         candidatesavejobs: { $ifNull: ['$employerdetails.candidatesavejobs.status', false] },
       },
-    },
-    {
-      $skip: range * page,
-    },
-    {
-      $limit: range,
     },
   ]);
   const total = await CandidatePostjob.aggregate([
@@ -1477,7 +1467,7 @@ const getByIdAppliedJobs = async (userId, status, query) => {
       },
     },
   ]);
-  return { data: data, next: total.length !== 0, total: tot.length };
+  return { data: data };
 };
 
 const applyJobsView = async (userId) => {
@@ -2357,7 +2347,7 @@ const candidateSearch_front_page = async (id, body) => {
     postedby.length != 0 ||
     advsearch.length != 0
   ) {
-    // await CandidateRecentSearchjobCandidate.create(values);
+    await CandidateRecentSearchjobCandidate.create(values);
   }
   //  await CandidateSearchjobCandidate.create(values);
 
@@ -3821,6 +3811,47 @@ const DeleteResume = async (userId) => {
   return values;
 };
 
+const getAllAppliedJobsByCandidate = async (id) => {
+  let values = await CandidatePostjob.aggregate([
+    {
+      $match: {
+        userId: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'jobId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'employerregistrations',
+              localField: 'userId',
+              foreignField: '_id',
+              as: 'employer',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$employer',
+            },
+          },
+        ],
+        as: 'jobs',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$jobs',
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -3860,4 +3891,5 @@ module.exports = {
   CandidateRegistration_number,
   // createSearchCandidate,
   DeleteResume,
+  getAllAppliedJobsByCandidate,
 };

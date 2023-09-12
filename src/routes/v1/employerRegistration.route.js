@@ -8,10 +8,19 @@ const auth = require('../../middlewares/auth');
 const authorization = require('../../controllers/empVEridy.controller');
 // const employerfile = require('../../middlewares/uploadEmployerfile');
 const uploadlogo = require('../../middlewares/uploadlogo');
-
 const router = express.Router();
 
-router.route('/register').post(uploadlogo.fields([{ name: 'choosefile' }, { name: 'logo' }]), employerRegistration.register);
+const multer = require('multer');
+
+const storage = multer.memoryStorage({
+  destination: function (req, res, callback) {
+    callback(null, '');
+  },
+});
+const adUpload = multer({ storage }).single('logo');
+const UploadFile = multer({ storage }).single('choosefile');
+
+router.route('/register').post(employerRegistration.register);
 router.route('/userDetails').get(authorization, employerRegistration.getUserById);
 
 router.route('/verify_email').put(employerRegistration.verify_email);
@@ -36,5 +45,7 @@ router.route('/getEmployerById/:id').get(employerRegistration.getEmployerById);
 // router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
 // router.post('/send-verification-email', auth(), authController.sendVerificationEmail);
 // router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
+router.route('/uploadProfileImage/:id').post(adUpload, employerRegistration.uploadProfileImage);
+router.route('/upload/EmployerFile/:id').post(UploadFile, employerRegistration.uploadEmployerFile);
 
 module.exports = router;

@@ -73,8 +73,8 @@ const userEmpSchema = mongoose.Schema(
       type: Number,
       default: 1,
     },
-    latestdate:{
-      type:String,
+    latestdate: {
+      type: String,
     },
     registrationType: {
       type: String,
@@ -88,9 +88,9 @@ const userEmpSchema = mongoose.Schema(
     postedBy: {
       type: String,
     },
-    data:{
-      type:Boolean,
-      default:true
+    data: {
+      type: Boolean,
+      default: true,
     },
     companyDescription: {
       type: String,
@@ -98,11 +98,11 @@ const userEmpSchema = mongoose.Schema(
     companyAddress: {
       type: String,
     },
-    lat:{
-      type:String,
+    lat: {
+      type: String,
     },
-    long:{
-      type:String,
+    long: {
+      type: String,
     },
     active: {
       type: Boolean,

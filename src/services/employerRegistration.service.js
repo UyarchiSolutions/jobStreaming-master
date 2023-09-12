@@ -8,18 +8,15 @@ const sendmail = require('../config/textlocal');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
+const AWS = require('aws-sdk');
 
 const createEmployer = async (userBody) => {
-  const { password, confirmpassword } = userBody;
-  console.log(userBody);
-
   if (await EmployerRegistration.isEmailTaken(userBody.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
   if (!userBody.password == userBody.confirmpassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Confirm Password Incorrect');
   }
-
   let data = await EmployerRegistration.create(userBody);
   return data;
 };
@@ -300,6 +297,86 @@ const getEmployerById = async (id) => {
   return values;
 };
 
+// const s3 = new AWS.S3({
+//   accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+//   secretAccessKey: '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',
+//   region: 'ap-south-1',
+// });
+// let params = {
+//   Bucket: 'jobresume',
+//   Key: req.file.originalname,
+//   Body: req.file.buffer,
+//   ACL: 'public-read',
+//   ContentType: req.file.mimetype,
+// };
+// s3.upload(params, async (err, data) => {
+//   let values = { ...req.body, ...{ date: date, resume: data.Location } };
+//   let d = await CandidateRegistration.create(values);
+//   const tokens = await tokenService.generateAuthTokens(d);
+//   res.status(httpStatus.CREATED).send({ user: d, tokens });
+//   await emailService.sendVerificationEmail(req.body.email, tokens.access.token, req.body.mobileNumber);
+// });
+
+const uploadProfileImage = async (req) => {
+  let id = req.params.id;
+  let findEmployee = await EmployerRegistration.findById(id);
+  if (!findEmployee) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Naot Found');
+  }
+
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  let params = {
+    Bucket: 'jobresume',
+    Key: req.file.originalname,
+    Body: req.file.buffer,
+    ACL: 'public-read',
+    ContentType: req.file.mimetype,
+  };
+  return new Promise((resolve) => {
+    s3.upload(params, async (err, data) => {
+      if (err) {
+        console.error(err);
+      }
+      findEmployee = await EmployerRegistration.findByIdAndUpdate({ _id: id }, { logo: data.Location }, { new: true });
+      resolve(findEmployee);
+    });
+  });
+};
+
+const uploadEmployerFile = async (req) => {
+  let id = req.params.id;
+  let findEmployee = await EmployerRegistration.findById(id);
+  if (!findEmployee) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Naot Found');
+  }
+
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  let params = {
+    Bucket: 'jobresume',
+    Key: req.file.originalname,
+    Body: req.file.buffer,
+    ACL: 'public-read',
+    ContentType: req.file.mimetype,
+  };
+  return new Promise((resolve) => {
+    s3.upload(params, async (err, data) => {
+      if (err) {
+        console.error(err);
+      }
+      findEmployee = await EmployerRegistration.findByIdAndUpdate({ _id: id }, { choosefile: data.Location }, { new: true });
+      resolve(findEmployee);
+    });
+  });
+};
+
 module.exports = {
   createEmployer,
   verify_email,
@@ -319,6 +396,8 @@ module.exports = {
   change_pass,
   getbyAll_lat_lang,
   getEmployerById,
+  uploadProfileImage,
+  uploadEmployerFile,
   //   getUserById,
   //   getUserByEmail,
   //   updateUserById,

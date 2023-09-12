@@ -54,4 +54,5 @@ router.route('/CandidateRegistration_names/:key').get(candidateDetailsController
 router.route('/CandidateRegistration_number/:key').get(candidateDetailsController.CandidateRegistration_number);
 // router.route('/createSearchCandidate').post(authorization, candidateDetailsController.createSearchCandidate);
 router.route('/DeleteResume').get(authorization, candidateDetailsController.DeleteResume);
+router.route('/getAllApplied/JobsByCandidate').get(authorization, candidateDetailsController.getAllAppliedJobsByCandidate);
 module.exports = router;
