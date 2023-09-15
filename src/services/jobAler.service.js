@@ -10,7 +10,12 @@ const createjobAlert = async (body, userId) => {
   if (findData) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Already available alert in this user');
   }
-  let values = { ...body, ...{ userId: userId } };
+  let iv = body.salaryFrom;
+  let op = iv.split('-');
+  let values = {
+    ...body,
+    ...{ userId: userId, salaryFrom: parseInt(op[0]), salaryTo: parseInt([op[1]]), keyWords: body.keyskillSet },
+  };
   const data = await jobAlert.create(values);
   return data;
 };

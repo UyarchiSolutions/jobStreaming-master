@@ -248,6 +248,18 @@ const getAllAppliedJobsByCandidate = catchAsync(async (req, res) => {
   res.send(jobs);
 });
 
+const recentSearchByCandidate = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const jobs = await candidateDetailsService.recentSearchByCandidate(req.body, userId);
+  res.send(jobs);
+});
+
+const get_SavedJobs_Candidate = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const jobs = await candidateDetailsService.get_SavedJobs_Candidate(userId);
+  res.send(jobs);
+});
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -288,4 +300,6 @@ module.exports = {
   // createSearchCandidate,
   DeleteResume,
   getAllAppliedJobsByCandidate,
+  recentSearchByCandidate,
+  get_SavedJobs_Candidate,
 };

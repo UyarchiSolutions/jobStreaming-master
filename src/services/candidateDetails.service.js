@@ -1142,15 +1142,82 @@ const createCandidatePostjob = async (userId, userBody) => {
 
 const createCandidateSavejob = async (userId, userBody) => {
   const { savejobId } = userBody;
-  let getSavedJob = await CandidateSaveJob.find({ savejobId: savejobId });
-  let len = getSavedJob.length;
   let data;
-  if (len > 0) {
-    await CandidateSaveJob.deleteMany({ savejobId: savejobId });
-    data = { message: 'Deleted' };
-  } else {
+  let getSavedJob = await CandidateSaveJob.findOne({ savejobId: savejobId, userId: userId });
+  if (!getSavedJob) {
     data = await CandidateSaveJob.create({ ...userBody, ...{ userId: userId } });
+    return data;
+  } else {
+    await getSavedJob.remove();
+    return { message: 'Unsaved' };
   }
+};
+
+const get_SavedJobs_Candidate = async (userId) => {
+  let data = await CandidateSaveJob.aggregate([
+    {
+      $match: {
+        userId: userId,
+      },
+    },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'savejobId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'employerregistrations',
+              localField: 'userId',
+              foreignField: '_id',
+              as: 'employer',
+            },
+          },
+          {
+            $unwind: {
+              path: '$employer',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'candidatepostjobs',
+              localField: '_id',
+              foreignField: 'jobId',
+              pipeline: [{ $match: { userId: userId } }],
+              as: 'candjobDetails',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$candjobDetails',
+            },
+          },
+        ],
+        as: 'jobPost',
+      },
+    },
+    {
+      $unwind: '$jobPost',
+    },
+    {
+      $project: {
+        _id: 1,
+        companyName: '$jobPost.employer.name',
+        designation: '$jobPost.jobTittle',
+        city: '$jobPost.employer.location',
+        expFrom: '$jobPost.experienceFrom',
+        expTo: '$jobPost.experienceTo',
+        salFrom: '$jobPost.salaryRangeFrom',
+        salTo: '$jobPost.salaryRangeTo',
+        posted: '$jobPost.date',
+        status: { $ifNull: ['$jobPost.candjobDetails.approvedStatus', 'Apply Now'] },
+        jobId:"$jobPost._id"
+      },
+    },
+  ]);
   return data;
 };
 
@@ -2347,7 +2414,7 @@ const candidateSearch_front_page = async (id, body) => {
     postedby.length != 0 ||
     advsearch.length != 0
   ) {
-    await CandidateRecentSearchjobCandidate.create(values);
+    // await CandidateRecentSearchjobCandidate.create(values);
   }
   //  await CandidateSearchjobCandidate.create(values);
 
@@ -2379,6 +2446,7 @@ const candidateSearch_front_page = async (id, body) => {
   }
 
   if (experienceAnotherfrom != null && experienceAnotherto != null) {
+    (experienceAnotherfrom = parseInt(experienceAnotherfrom)), (experienceAnotherto = parseInt(experienceAnotherto));
     experienceAnotherSearch = [
       { experienceFrom: { $eq: parseInt(experienceAnotherfrom) } },
       { experienceTo: { $lte: parseInt(experienceAnotherto) } },
@@ -2403,19 +2471,30 @@ const candidateSearch_front_page = async (id, body) => {
 
   if (search.length != 0) {
     // search = search.split(',');
+    // const myString = search.join(',');
     allSearch = [
       { designation: { $in: search } },
-      { keySkill: { $elemMatch: { $in: search } } },
+      { keySkill: { $elemMatch: { $regex: search.join('|'), $options: 'i' } } },
       { jobTittle: { $in: search } },
     ];
   }
 
   if (experience != null) {
-    experienceSearch = { experienceFrom: { $eq: parseInt(experience) } };
+    experienceSearch = {
+      $or: [
+        { $and: [{ experienceFrom: { $lte: parseInt(experience) } }, { experienceTo: { $gte: parseInt(experience) } }] },
+        { experienceFrom: { $eq: parseInt(experience) } },
+        { experienceTo: { $eq: parseInt(experience) } },
+      ],
+    };
   }
 
   if (Location != null) {
-    locationSearch = { jobLocation: { $eq: Location } };
+    let type = typeof Location;
+    if (type == 'string') {
+      Location = [Location];
+    }
+    locationSearch = { jobLocation: { $elemMatch: { $regex: Location.join('|'), $options: 'i' } } };
   }
 
   if (freshness.length != 0) {
@@ -2444,12 +2523,13 @@ const candidateSearch_front_page = async (id, body) => {
     let salary_macth = [];
     Salary.forEach((a) => {
       let value = a.split('-');
-      let start = value[0] * 100000;
+      let start = parseInt(value[0]);
 
       let end = 0;
       if (value[1] != 'more') {
-        end = value[1] * 100000;
+        end = parseInt(value[1]);
       }
+      console.log(start, end);
       if (end != 0) {
         salary_macth.push({ $and: [{ salaryRangeFrom: { $gte: start } }, { salaryRangeTo: { $lte: end } }] });
       } else {
@@ -2466,7 +2546,7 @@ const candidateSearch_front_page = async (id, body) => {
   }
 
   if (postedby.length != 0) {
-    postedbySearch = { postedBy: { $in: postedby } };
+    postedbySearch = { postedBy: { $in: postedby } }; F
   }
 
   if (keySkillArr.length > 0) {
@@ -2494,13 +2574,13 @@ const candidateSearch_front_page = async (id, body) => {
     experienceMatch;
   }
 
-  // expMatch
-  if (experience) {
-    let exp = parseInt(experience);
-    expMatch = { experienceFrom: { $eq: exp } };
-  } else {
-    expMatch;
-  }
+  // // expMatch
+  // if (experience) {
+  //   let exp = parseInt(experience);
+  //   expMatch = { experienceFrom: { $eq: exp } };
+  // } else {
+  //   expMatch;
+  // }
 
   // version 2.0 Refined Search
   // refWorkmode
@@ -2524,25 +2604,25 @@ const candidateSearch_front_page = async (id, body) => {
     {
       $sort: { createdAt: -1 },
     },
-    {
-      $match: {
-        $or: allSearch,
-      },
-    },
-    {
-      $match: {
-        $and: experienceAnotherSearch,
-      },
-    },
-    {
-      $match: {
-        $and: preferredindustrySearch,
-      },
-    },
+    // { $match: experienceSearch },
+    // {
+    //   $match: {
+    //     $or: allSearch,
+    //   },
+    // },
+    // {
+    //   $match: {
+    //     $and: experienceAnotherSearch,
+    //   },
+    // },
+    // {
+    //   $match: {
+    //     $and: preferredindustrySearch,
+    //   },
+    // },
     {
       $match: {
         $and: [
-          //  { jobortemplate: { $eq: 'job' } },
           locationSearch,
           salarySearch,
           salary,
@@ -2552,9 +2632,12 @@ const candidateSearch_front_page = async (id, body) => {
           departmentSearch,
           freshnessSearch,
           experienceMatch,
-          expMatch,
           advsearchMatch,
           keySkillSearch,
+          experienceSearch,
+          { $and: preferredindustrySearch },
+          { $and: experienceAnotherSearch },
+          { $or: allSearch },
         ],
       },
     },
@@ -2909,7 +2992,9 @@ const candidateSearch_front_page = async (id, body) => {
 };
 
 const recentSearch = async (userId) => {
-  const data = await CandidateSearchjobCandidate.aggregate([
+  console.log(userId);
+
+  const data = await CandidateRecentSearchjobCandidate.aggregate([
     {
       $sort: { createdAt: -1 },
     },
@@ -3852,6 +3937,11 @@ const getAllAppliedJobsByCandidate = async (id) => {
   return values;
 };
 
+const recentSearchByCandidate = async (body, userId) => {
+  let creations = { ...body, userId: userId };
+  return await CandidateRecentSearchjobCandidate.create(creations);
+};
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -3892,4 +3982,6 @@ module.exports = {
   // createSearchCandidate,
   DeleteResume,
   getAllAppliedJobsByCandidate,
+  recentSearchByCandidate,
+  get_SavedJobs_Candidate,
 };
