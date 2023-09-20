@@ -2546,7 +2546,7 @@ const candidateSearch_front_page = async (id, body) => {
   }
 
   if (postedby.length != 0) {
-    postedbySearch = { postedBy: { $in: postedby } }; F
+    postedbySearch = { postedBy: { $in: postedby } };
   }
 
   if (keySkillArr.length > 0) {

@@ -1012,13 +1012,21 @@ const outSearch_employer = async (userId, body) => {
       { experienceYear: { $eq: parseInt(experiencefrom) } },
       { experienceYear: { $lte: parseInt(experienceto) } },
     ];
+  } else if (experiencefrom != null) {
+    experienceSearch = [{ experienceYear: { $eq: parseInt(experiencefrom) } }];
   }
+
   if (experience != null) {
-    expSearch = { experienceYear: { $eq: experience } };
+    expSearch = { experienceYear: { $eq: parseInt(experience) } };
   }
 
   if (Location.length != 0) {
-    locationSearch = [{ locationCurrent: { $in: Location } }, { locationNative: { $in: Location } }];
+    locationSearch = [];
+    Location.map((e) => {
+      locationSearch.push({
+        $or: [{ locationCurrent: { $regex: e, $options: 'i' } }, { locationNative: { $regex: e, $options: 'i' } }],
+      });
+    });
   }
 
   if (course.length != 0) {
@@ -1040,23 +1048,10 @@ const outSearch_employer = async (userId, body) => {
       if (value[1] != 'more') {
         end = value[1] * 100000;
       }
+      console.log(start, end);
       if (end != 0) {
         salary_macth.push({
-          $or: [
-            {
-              $and: [
-                { expCTC_strat: { $gte: start } },
-                { $or: [{ expCTC_end: { $lte: end } }, { expCTC_end: { $eq: 0 } }] },
-              ],
-            },
-            {
-              $and: [{ totalCTC: { $gte: start } }, { totalCTC: { $lte: end } }],
-            },
-          ],
-        });
-      } else {
-        salary_macth.push({
-          $or: [{ expCTC_strat: { $gte: start } }, { totalCTC: { $gte: start } }],
+          expCTC_strat: { $gte: start, $lte: end },
         });
       }
     });
@@ -1485,6 +1480,9 @@ const outSearch_employer = async (userId, body) => {
           departmentSearch,
           industrySearch,
           noticeperiodSearch,
+          advSearchMatch,
+          expMatch,
+          salaryMatch,
         ],
       },
     },
