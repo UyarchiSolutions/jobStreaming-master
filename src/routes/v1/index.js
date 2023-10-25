@@ -15,12 +15,17 @@ const districtRoute = require('./district.route');
 const faqeRoute = require('./admin.askQuestions.route');
 const Dummy = require('./DummyDetails.route');
 const JobAlert = require('./jobAlert.route');
+const plan = require('./plans.route');
 const router = express.Router();
 
 const defaultRoutes = [
   {
     path: '/auth',
     route: authRoute,
+  },
+  {
+    path: '/plan',
+    route: plan,
   },
   {
     path: '/JobAlert',

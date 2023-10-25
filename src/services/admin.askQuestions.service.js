@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { Faqe, Enquiry, Report } = require('../models/admin.askQusetions.model');
 const { EmployerDetails } = require('../models/employerDetails.model');
-const  CandidateRegistration  = require('../models/candidateRegistration.model');
+const CandidateRegistration = require('../models/candidateRegistration.model');
 const { findByIdAndUpdate } = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
@@ -9,7 +9,7 @@ var ejs = require('ejs');
 
 const createFaqe = async (body) => {
   const data = await Faqe.create(body);
-  return data
+  return data;
 };
 
 const getAllFaqe = async (range, page) => {
@@ -101,7 +101,7 @@ const create_enquiry_dummy = async (body) => {
   let totalcount = Buy.length + 1;
 
   iddd = 'EQ' + center + totalcount;
-  console.log(body)
+  console.log(body);
   let re = await Enquiry.create(body);
   re.eq_id = iddd;
   re.date = currentDate;
@@ -159,7 +159,7 @@ const reply_enquiry = async (body) => {
     subject: subject,
     question: data.enquiry,
     // answer: parser.parseFromString(answer, 'text/html'),
-    answer:answer,
+    answer: answer,
     email: data.emailId,
   });
 
@@ -787,7 +787,6 @@ const getReportById = async (id) => {
   return values;
 };
 
-
 const getAllDuplicate_candidate = async () => {
   let values = await CandidateRegistration.aggregate([
     {
@@ -808,36 +807,35 @@ const getAllDuplicate_candidate = async () => {
       $group: {
         _id: {
           name: '$name',
-           dob:'$candidatedetails.dob',
+          dob: '$candidatedetails.dob',
         },
-        count: {$sum: 1},
+        count: { $sum: 1 },
         documents: {
-          $push: "$$ROOT"
-        }
-      }
+          $push: '$$ROOT',
+        },
+      },
     },
     {
-      $match:{count:{$gt:1}}
+      $match: { count: { $gt: 1 } },
     },
     {
-        $project:{
-          _id:0,
-          //  name:'$_id.name',
-          //  dob:'$_id.dob',
-          //  count:1,
-           documents: { $concatArrays: "$documents" }
-          //  documents:'$documents'
-        }
+      $project: {
+        _id: 0,
+        //  name:'$_id.name',
+        //  dob:'$_id.dob',
+        //  count:1,
+        documents: { $concatArrays: '$documents' },
+        //  documents:'$documents'
+      },
     },
-
   ]);
   var first = [];
-  if(values.length != 0){
-   for(let i = 0 ; i < values.length ; i++){
-    for(let j = 0 ; j < values[i].documents.length ; j++){
-      first.push(values[i].documents[j]);
+  if (values.length != 0) {
+    for (let i = 0; i < values.length; i++) {
+      for (let j = 0; j < values[i].documents.length; j++) {
+        first.push(values[i].documents[j]);
+      }
     }
-   }
   }
   //  console.log(first)
   return first;
