@@ -8,7 +8,7 @@ const createEmployerPlan = catchAsync(async (req, res) => {
 });
 
 const getPlanes = catchAsync(async (req, res) => {
-  const data = await PlanService.getPlanes();
+  const data = await PlansService.getPlanes();
   res.send(data);
 });
 
