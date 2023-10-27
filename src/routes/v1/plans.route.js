@@ -7,5 +7,6 @@ const authorization = require('../../controllers/empVEridy.controller');
 const router = express.Router();
 
 router.route('/').post(PlanController.createEmployerPlan);
+router.route('/all').get(PlanController.getPlanes);
 
 module.exports = router;

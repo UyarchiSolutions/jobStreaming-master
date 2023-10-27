@@ -7,6 +7,12 @@ const createEmployerPlan = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getPlanes = catchAsync(async (req, res) => {
+  const data = await PlanService.getPlanes();
+  res.send(data);
+});
+
 module.exports = {
   createEmployerPlan,
+  getPlanes,
 };

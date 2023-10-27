@@ -12,6 +12,18 @@ const createEmployerPlan = async (body) => {
   return values;
 };
 
+const getPlanes = async () => {
+  let values = await EmployerPlan.aggregate([
+    {
+      $match: {
+        active: true,
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   createEmployerPlan,
+  getPlanes,
 };
