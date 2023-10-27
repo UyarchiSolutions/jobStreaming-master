@@ -35,9 +35,6 @@ const EmployerPlanSchema = new mongoose.Schema(
     numberofStream: {
       type: Number,
     },
-    Duration: {
-      type: Number,
-    },
     numberOfParticipants: {
       type: Number,
     },
@@ -112,10 +109,10 @@ const EmployerPlanSchema = new mongoose.Schema(
     DateIso: {
       type: Number,
     },
-    status:{
-        type: String,
-        default: 'Created'
-    }
+    status: {
+      type: String,
+      default: 'Created',
+    },
   },
   { timestamps: true }
 );
