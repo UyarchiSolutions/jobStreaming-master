@@ -367,6 +367,7 @@ const getByIdUser = async (id) => {
         SalaryTo: '$candidatedetails.SalaryTo',
         candidateDetails: '$candidatedetails',
         currentctc_th: '$candidatedetails.currentctc_th',
+        
       },
     },
   ]);
@@ -443,6 +444,8 @@ const edit_details = async (id, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
   const data = await KeySkill.findOneAndUpdate({ userId: id }, updateBody, { new: true });
+  data.eduDetails.push(updateBody);
+  data.save();
   return data;
 };
 
@@ -1214,7 +1217,7 @@ const get_SavedJobs_Candidate = async (userId) => {
         salTo: '$jobPost.salaryRangeTo',
         posted: '$jobPost.date',
         status: { $ifNull: ['$jobPost.candjobDetails.approvedStatus', 'Apply Now'] },
-        jobId:"$jobPost._id"
+        jobId: '$jobPost._id',
       },
     },
   ]);
@@ -2337,10 +2340,10 @@ const getByIdEmployerDetails = async (id) => {
 
 const candidateSearch_front_page = async (id, body) => {
   console.log(id);
-  const check = await CandidateRegistration.findById(id);
-  if (!check) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
-  }
+  // const check = await CandidateRegistration.findById(id);
+  // if (!check) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
+  // }
   let date = moment().format('YYYY-MM-DD');
   let creat1 = moment().format('HH:mm:ss');
   // let values = {...body, ...{userId:userId}}

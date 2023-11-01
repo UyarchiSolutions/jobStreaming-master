@@ -200,7 +200,10 @@ const keySkillSchema = mongoose.Schema(
     hstotalmarks: {
       type: String,
     },
-
+    eduDetails: {
+      type: Array,
+      default: [],
+    },
     // graduation/diploma
     ugQualification: {
       type: String,

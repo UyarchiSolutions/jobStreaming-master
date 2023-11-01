@@ -3,7 +3,6 @@ const validate = require('../../middlewares/validate');
 
 const educationController = require('../../controllers/education.controller');
 
-
 const router = express.Router();
 
 router.route('/').get(educationController.createQualification);
@@ -29,4 +28,6 @@ router.route('/get_alleducation_all/:limit').get(educationController.get_alleduc
 router.route('/get_Department_all/:limit').get(educationController.get_Department_all);
 router.route('/get_Industries_all/:limit').get(educationController.get_Industries_all);
 router.route('/get_Industries_all_search/:key').get(educationController.get_Industries_all_search);
+router.route('/Courses/:id').get(educationController.getAllCoursesByQualificationId);
+router.route('/specializations/:id').get(educationController.getAllSpecByCourse);
 module.exports = router;

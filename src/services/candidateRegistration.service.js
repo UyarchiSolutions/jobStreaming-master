@@ -75,25 +75,21 @@ const forget_password = async (mobilenumber) => {
 
 const forget_password_Otp = async (body) => {
   const { mobilenumber, otp } = body;
-  const data = await OTPModel.findOne({ otp: otp, mobileNumber: mobilenumber, active: true }).sort({ updatedAt: -1 });
+  const data = await OTPModel.findOne({ otp: otp, mobileNumber: mobilenumber, active: true }).sort({ createdAt: -1 });
   console.log(data);
   if (!data) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid OTP');
   }
-
   const findotp = {
     create: moment(new Date()).subtract(1, 'minutes'),
   };
-  const createTimestampString = data.updatedAt;
+  const createTimestampString = data.createdAt;
   const createTimestamp = moment(createTimestampString);
-
   if (createTimestamp.isBefore(findotp.create)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'OTP Expired');
   }
-
   await OTPModel.findByIdAndUpdate({ _id: data._id }, { active: false }, { new: true });
-  const verify = await CandidateRegistration.findOne({ _id: data.userId }).select('email');
-  return verify;
+  return {message:"Otp Verification Success"};
 };
 
 const forget_password_set = async (id, body) => {
@@ -110,12 +106,13 @@ const forget_password_set = async (id, body) => {
 const UsersLogin = async (userBody) => {
   const { email, password } = userBody;
   let userName = await CandidateRegistration.findOne({ email: email });
-  if (userName.isEmailVerified != true) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email Not Verified');
-  }
+
   if (!userName) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
   } else {
+    if (userName.isEmailVerified != true) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Email Not Verified');
+    }
     if (await userName.isPasswordMatch(password)) {
       console.log('Password Macthed');
       await CandidateRegistration.findOneAndUpdate(
@@ -124,7 +121,7 @@ const UsersLogin = async (userBody) => {
         { new: true }
       );
     } else {
-      throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
+      throw new ApiError(httpStatus.UNAUTHORIZED, "Password Doesn't Match");
     }
   }
   return userName;

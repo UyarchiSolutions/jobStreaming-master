@@ -29,6 +29,6 @@ const otpSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const OTPModel = new mongoose.model('OTP', otpSchema);
+const OTPModel = new mongoose.model('candOTP', otpSchema);
 
 module.exports = OTPModel;

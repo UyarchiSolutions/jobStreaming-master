@@ -179,7 +179,7 @@ const getByIdEmployerDetails = catchAsync(async (req, res) => {
 });
 
 const candidateSearch_front_page = catchAsync(async (req, res) => {
-  const userId = req.userId;
+  const userId = req.userId?req.userId:"";
   const user = await candidateDetailsService.candidateSearch_front_page(userId, req.body);
   res.send(user);
 });

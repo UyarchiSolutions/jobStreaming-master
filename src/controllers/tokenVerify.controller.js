@@ -14,18 +14,16 @@ const authorization = async (req, res, next) => {
   // console.log(req.headers.auth);
   // console.log(req.headers['auth']);
   if (!token) {
-    return res.send(httpStatus.UNAUTHORIZED, 'user must be LoggedIn....');
+    return next();
   }
   try {
     const payload = jwt.verify(token, config.jwt.secret);
-    console.log(payload);
     const userss = await CandidateRegistration.findOne({ _id: payload.sub, active: true });
     if (!userss) {
       return res.send(httpStatus.UNAUTHORIZED, 'User Not Available');
     }
     req.userId = payload.sub;
     // req.userRole = payload.userRole;
-
     return next();
   } catch {
     return res.send(httpStatus.UNAUTHORIZED, 'Invalid Access Token');

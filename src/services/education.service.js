@@ -111,14 +111,13 @@ const get_allcourse = async () => {
 };
 
 const get_all_specialization = async (body) => {
-  const { arr } = body
+  const { arr } = body;
   let data = await AllSpecialization.find({ courseId: { $in: arr } });
   return data;
 };
 
 const get_Qualification = async (body) => {
-
-  const { arr } = body
+  const { arr } = body;
   let data = await Qualification.aggregate([
     { $match: { $and: [{ _id: { $in: arr } }] } },
     {
@@ -129,37 +128,37 @@ const get_Qualification = async (body) => {
         as: 'allCourses',
       },
     },
-  ])
+  ]);
   return data[0];
 };
 
 const get_Department_all = async (limit) => {
-  if(limit == 'null'){
-    limit = 37
+  if (limit == 'null') {
+    limit = 37;
   }
   let data = await Department.find().limit(parseInt(limit));
   return data;
 };
 
 const get_Role_all = async (limit) => {
-  if(limit == 'null'){
-    limit = 1326
+  if (limit == 'null') {
+    limit = 1326;
   }
   let data = await Role.find().limit(parseInt(limit));
   return data;
 };
 
 const get_alleducation_all = async (limit) => {
-  if(limit == 'null'){
-    limit = 51
+  if (limit == 'null') {
+    limit = 51;
   }
   let data = await AllCourse.find().limit(parseInt(limit));
   return data;
 };
 
 const get_Industries_all = async (limit) => {
-  if(limit == 'null'){
-    limit = 172
+  if (limit == 'null') {
+    limit = 172;
   }
   let data = await Industries.find().limit(parseInt(limit));
   return data;
@@ -168,6 +167,16 @@ const get_Industries_all = async (limit) => {
 const get_Industries_all_search = async (key) => {
   let data = await Industries.find({ Industry: { $regex: key, $options: 'i' } }).limit(7);
   return data;
+};
+
+const getAllCoursesByQualificationId = async (id) => {
+  let values = await AllCourse.find({ QualificationId: id });
+  return values;
+};
+
+const getAllSpecByCourse = async (id) => {
+  let values = await AllSpecialization.find({ courseId: id });
+  return values;
 };
 
 module.exports = {
@@ -194,4 +203,6 @@ module.exports = {
   get_Industries_all,
   get_alleducation_all,
   get_Industries_all_search,
+  getAllCoursesByQualificationId,
+  getAllSpecByCourse,
 };
