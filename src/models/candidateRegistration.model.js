@@ -20,7 +20,6 @@ const userSchema = mongoose.Schema(
     email: {
       type: String,
       required: true,
-
     },
     password: {
       type: String,
@@ -74,6 +73,12 @@ const userSchema = mongoose.Schema(
     data: {
       type: Boolean,
       default: true,
+    },
+    prevCompany: {
+      type: String,
+    },
+    prevCompanyRole: {
+      type: String,
     },
     active: {
       type: Boolean,
