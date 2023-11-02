@@ -14,6 +14,7 @@ const { EmployerDetails, EmployerPostjob } = require('../models/employerDetails.
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
+const { update } = require('../models/token.model');
 //keySkill
 
 const createkeySkill = async (userId, userBody) => {
@@ -367,9 +368,8 @@ const getByIdUser = async (id) => {
         SalaryTo: '$candidatedetails.SalaryTo',
         candidateDetails: '$candidatedetails',
         currentctc_th: '$candidatedetails.currentctc_th',
-        prevCompany:1,
-        prevCompanyRole:1,
-        
+        prevCompany: 1,
+        prevCompanyRole: 1,
       },
     },
   ]);
@@ -445,10 +445,15 @@ const edit_details = async (id, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
+  console.log(updateBody,"askjdhfkjadsfhskjdhfskdjfh")
+  if (updateBody.edit) {
+    await KeySkill.findOneAndUpdate({ userId: id }, { $pull: { eduDetails: { Type:updateBody.Type } } });
+    console.log("Deleted")
+  }
   const data = await KeySkill.findOneAndUpdate({ userId: id }, updateBody, { new: true });
   data.eduDetails.push(updateBody);
   data.save();
-  return data;
+  return user;
 };
 
 const deleteById = async (id) => {
