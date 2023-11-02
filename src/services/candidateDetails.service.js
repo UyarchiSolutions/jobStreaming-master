@@ -367,6 +367,8 @@ const getByIdUser = async (id) => {
         SalaryTo: '$candidatedetails.SalaryTo',
         candidateDetails: '$candidatedetails',
         currentctc_th: '$candidatedetails.currentctc_th',
+        prevCompany:1,
+        prevCompanyRole:1,
         
       },
     },
