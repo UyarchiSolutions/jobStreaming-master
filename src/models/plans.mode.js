@@ -113,6 +113,9 @@ const EmployerPlanSchema = new mongoose.Schema(
       type: String,
       default: 'Created',
     },
+    limited: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
