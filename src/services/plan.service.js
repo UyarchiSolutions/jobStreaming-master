@@ -35,7 +35,6 @@ const getPlanes = async () => {
     {
       $match: {
         active: true,
-        userType: { $ne: 'Candidate' },
       },
     },
   ]);
