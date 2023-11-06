@@ -35,6 +35,19 @@ const getPlanes = async () => {
     {
       $match: {
         active: true,
+        userType: { $ne: 'Candidate' },
+      },
+    },
+  ]);
+  return values;
+};
+
+const getPlanesForCandidate = async () => {
+  let values = await EmployerPlan.aggregate([
+    {
+      $match: {
+        active: true,
+        userType: { $eq: 'Candidate' },
       },
     },
   ]);
@@ -44,4 +57,5 @@ const getPlanes = async () => {
 module.exports = {
   createEmployerPlan,
   getPlanes,
+  getPlanesForCandidate,
 };

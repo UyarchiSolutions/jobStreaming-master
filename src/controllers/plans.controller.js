@@ -12,7 +12,13 @@ const getPlanes = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getPlanesForCandidate = catchAsync(async (req, res) => {
+  const data = await PlansService.getPlanesForCandidate();
+  res.send(data);
+});
+
 module.exports = {
   createEmployerPlan,
   getPlanes,
+  getPlanesForCandidate,
 };
