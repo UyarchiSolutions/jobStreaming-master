@@ -8,6 +8,6 @@ const router = express.Router();
 
 router.route('/').post(PlanController.createEmployerPlan);
 router.route('/all').get(PlanController.getPlanes);
-router.route('/all/candidate').gett(PlanController.getPlanesForCandidate);
+router.route('/all/candidate').get(PlanController.getPlanesForCandidate);
 
 module.exports = router;
