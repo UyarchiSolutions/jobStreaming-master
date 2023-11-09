@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const jobAlert = require('../models/jobAlert.model');
-const { EmployerPlan } = require('../models/plans.mode');
+const { EmployerPlan, PurchasePlan } = require('../models/plans.mode');
 const moment = require('moment');
 
 const GstCalculation = (amount, gstRate) => {
@@ -53,8 +53,72 @@ const getPlanesForCandidate = async () => {
   return values;
 };
 
+const purchasedPlanes = async (body, userId) => {
+  console.log(userId, 'UserID');
+  const { planId, totalAmount, gst } = body;
+  let values = await EmployerPlan.findById(planId);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Plan not found');
+  }
+  let data = {
+    userType: values.userType,
+    planType: values.planType,
+    planName: values.planName,
+    planmode: values.planMode,
+    streamvalidity: values.streamvalidity,
+    no_of_host: values.no_of_host,
+    numberofStream: values.numberofStream,
+    numberOfParticipants: values.numberOfParticipants,
+    validityofplan: values.validityofplan,
+    regularPrice: values.regularPrice,
+    offer_price: values.offer_price,
+    chat_Option: values.chat_Option,
+    PostCount: values.PostCount,
+    RaiseHands: values.RaiseHands,
+    raisehandcontrol: values.raisehandcontrol,
+    completedStream: values.completedStream,
+    Duration: values.Duration,
+    DurationType: values.DurationType,
+    transaction: values.transaction,
+    Candidate_Contact_reveal: values.Candidate_Contact_reveal,
+    Pdf: values.Pdf,
+    image: values.image,
+    description: values.description,
+    Teaser: values.Teaser,
+    Special_Notification: values.Special_Notification,
+    Service_Charges: values.Service_Charges,
+    TimeType: values.TimeType,
+    DateIso: values.DateIso,
+    limited: values.limited,
+    planId: planId,
+    gst: gst,
+    userId: userId,
+    totalAmount: totalAmount,
+  };
+  let creations = await PurchasePlan.create(data);
+  return creations;
+};
+
+const getPurchasedPlanesByUser = async (userId) => {
+  let values = await PurchasePlan.aggregate([
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    {
+      $match: {
+        userId: userId,
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   createEmployerPlan,
   getPlanes,
   getPlanesForCandidate,
+  purchasedPlanes,
+  getPurchasedPlanesByUser,
 };

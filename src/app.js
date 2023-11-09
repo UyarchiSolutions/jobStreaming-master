@@ -119,6 +119,12 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
   res.sendStatus(200);
 });
+
+app.get('/login.html', (req, res) => {
+  res.sendStatus(200);
+});
+
+// /login.html 
 // convert error to ApiError, if needed
 app.use(errorConverter);
 

@@ -17,8 +17,22 @@ const getPlanesForCandidate = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const purchasedPlanes = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const data = await PlansService.purchasedPlanes(req.body, userId);
+  res.send(data);
+});
+
+const getPurchasedPlanesByUser = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const data = await PlansService.getPurchasedPlanesByUser(userId);
+  res.send(data);
+});
+
 module.exports = {
   createEmployerPlan,
   getPlanes,
   getPlanesForCandidate,
+  purchasedPlanes,
+  getPurchasedPlanesByUser,
 };
