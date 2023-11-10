@@ -1,6 +1,6 @@
 const express = require('express');
 const roleController = require('../../controllers/roles.controller');
-const authorization = require('../../controllers/tokenVerify.controller');
+const authorization = require('../../controllers/token.verify.controller');
 
 const router = express.Router();
 router.route('/usermenus').get(authorization, roleController.getusermenus);
