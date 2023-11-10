@@ -115,10 +115,50 @@ const getPurchasedPlanesByUser = async (userId) => {
   return values;
 };
 
+const getPurchasedPlan_Admin = async () => {
+  let values = await PurchasePlan.aggregate([
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
+  return values;
+};
+
+const updatePurchasedPlanes = async (id, body) => {
+  let values = await PurchasePlan.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid purchase plan');
+  }
+  values = await PurchasePlan.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return values;
+};
+
+const getPurchasedPlanesByUser_request_Stream = async (userId) => {
+  console.log(userId);
+  let values = await PurchasePlan.aggregate([
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    {
+      $match: {
+        userId: userId,
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   createEmployerPlan,
   getPlanes,
   getPlanesForCandidate,
   purchasedPlanes,
   getPurchasedPlanesByUser,
+  getPurchasedPlan_Admin,
+  updatePurchasedPlanes,
+  getPurchasedPlanesByUser_request_Stream,
 };

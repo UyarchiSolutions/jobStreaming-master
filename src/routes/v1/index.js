@@ -16,6 +16,10 @@ const faqeRoute = require('./admin.askQuestions.route');
 const Dummy = require('./DummyDetails.route');
 const JobAlert = require('./jobAlert.route');
 const plan = require('./plans.route');
+const RequestStream = require('./stream.request.route');
+const b2buser = require('./B2Busers.route');
+const menu = require('./menue.route');
+const role = require('./role.route');
 const router = express.Router();
 
 const defaultRoutes = [
@@ -26,6 +30,22 @@ const defaultRoutes = [
   {
     path: '/plan',
     route: plan,
+  },
+  {
+    path: '/b2bUsers',
+    route: b2buser,
+  },
+  {
+    path: '/role',
+    route: role,
+  },
+  {
+    path: '/menu',
+    route: menu,
+  },
+  {
+    path: '/requeststream',
+    route: RequestStream,
   },
   {
     path: '/JobAlert',
