@@ -8,6 +8,12 @@ const createRequestStream = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_CandidateRequestStream = catchAsync(async (req, res) => {
+  const data = await requestStreamService.get_CandidateRequestStream(req, res);
+  res.send(data);
+});
+
 module.exports = {
   createRequestStream,
+  get_CandidateRequestStream,
 };
