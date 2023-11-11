@@ -21,6 +21,8 @@ const b2buser = require('./B2Busers.route');
 const menu = require('./menue.route');
 const role = require('./role.route');
 const router = express.Router();
+const agoraRoute = require('./AgoraAppId.route');
+
 
 const defaultRoutes = [
   {
@@ -30,6 +32,10 @@ const defaultRoutes = [
   {
     path: '/plan',
     route: plan,
+  },
+  {
+    path: '/agora',
+    route: agoraRoute,
   },
   {
     path: '/b2bUsers',
