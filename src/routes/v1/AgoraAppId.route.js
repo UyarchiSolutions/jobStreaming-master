@@ -1,5 +1,5 @@
 const express = require('express');
-const authorization = require('../../controllers/tokenVerify.controller');
+const authorization = require('../../controllers/token.verify.controller');
 
 const router = express.Router();
 const AgoraAppId = require('../../controllers/AgoraAppId.controller');

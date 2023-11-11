@@ -23,7 +23,6 @@ const role = require('./role.route');
 const router = express.Router();
 const agoraRoute = require('./AgoraAppId.route');
 
-
 const defaultRoutes = [
   {
     path: '/auth',
