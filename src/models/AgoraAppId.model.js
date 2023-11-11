@@ -2,166 +2,165 @@ const mongoose = require('mongoose');
 const { v4 } = require('uuid');
 const { timeStamp } = require('console');
 
-
-const agoraAppIdschema = mongoose.Schema({
+const agoraAppIdschema = mongoose.Schema(
+  {
     _id: {
-        type: String,
-        default: v4,
+      type: String,
+      default: v4,
     },
     active: {
-        type: Boolean,
-        default: true
+      type: Boolean,
+      default: true,
     },
     dateISO: {
-        type: Number,
+      type: Number,
     },
     date: {
-        type: Number,
+      type: Number,
     },
     expired: {
-        type: Boolean,
-        default: false,
+      type: Boolean,
+      default: false,
     },
     appID: {
-        type: String,
+      type: String,
     },
     Authorization: {
-        type: String,
+      type: String,
     },
     cloud_KEY: {
-        type: String,
+      type: String,
     },
     cloud_secret: {
-        type: String,
+      type: String,
     },
     appCertificate: {
-        type: String,
+      type: String,
     },
     email: {
-        type: String,
+      type: String,
     },
     password: {
-        type: String,
+      type: String,
     },
     userId: {
-        type: String,
+      type: String,
     },
     agorapassword: {
-        type: String,
+      type: String,
     },
     userMinutes: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     type: {
-        type: String,
-        default: "demo"
+      type: String,
+      default: 'demo',
     },
     verifyStatus: {
-        type: String,
-        default: "pending"
+      type: String,
+      default: 'pending',
     },
     verifiedBy: {
-        type: String,
+      type: String,
     },
     verifiedTime: {
-        type: Number,
-    }
-}, { timeStamp: true });
+      type: Number,
+    },
+  },
+  { timeStamp: true }
+);
 
 const AgoraAppId = mongoose.model('AgoraAppId', agoraAppIdschema);
 
-
 const UsageAppIDschema = mongoose.Schema({
-    _id: {
-        type: String,
-        default: v4,
-    },
-    dateISO: {
-        type: Number,
-    },
-    date: {
-        type: String,
-    },
-    expired: {
-        type: Boolean,
-        default: false,
-    },
-    appID: {
-        type: String,
-    },
-    streamID: {
-        type: String,
-    },
-    minutes: {
-        type: Number,
-    },
-    streamType: {
-        type: String,
-    }
+  _id: {
+    type: String,
+    default: v4,
+  },
+  dateISO: {
+    type: Number,
+  },
+  date: {
+    type: String,
+  },
+  expired: {
+    type: Boolean,
+    default: false,
+  },
+  appID: {
+    type: String,
+  },
+  streamID: {
+    type: String,
+  },
+  minutes: {
+    type: Number,
+  },
+  streamType: {
+    type: String,
+  },
 });
 
 const UsageAppID = mongoose.model('appidusage', UsageAppIDschema);
 
-
-
-const TestAgoraschema = mongoose.Schema({
+const TestAgoraschema = mongoose.Schema(
+  {
     _id: {
-        type: String,
-        default: v4,
+      type: String,
+      default: v4,
     },
     dateISO: {
-        type: Number,
+      type: Number,
     },
     testToken: {
-        type: String,
+      type: String,
     },
     status: {
-        type: String,
-        default: "pending"
+      type: String,
+      default: 'pending',
     },
     testUD: {
-        type: Number,
+      type: Number,
     },
     cloud_testToken: {
-        type: String,
+      type: String,
     },
     cloud_testUD: {
-        type: Number,
+      type: Number,
     },
     endTime: {
-        type: Number,
+      type: Number,
     },
     completed: {
-        type: String,
+      type: String,
     },
     recordLink: {
-        type: String,
+      type: String,
     },
     recordLink_mp4: {
-        type: String,
+      type: String,
     },
     recordLinks: {
-        type: Array,
+      type: Array,
     },
     resourceId: {
-        type: String,
+      type: String,
     },
     sid: {
-        type: String,
+      type: String,
     },
     tokenId: {
-        type: String,
+      type: String,
     },
     test_by: {
-        type: String,
+      type: String,
     },
     store: {
-        type: String,
+      type: String,
     },
-
-},
-    { timestamps: true }
+  },
+  { timestamps: true }
 );
 
 const TestAgora = mongoose.model('testagoraappid', TestAgoraschema);
