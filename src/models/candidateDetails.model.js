@@ -314,6 +314,24 @@ const keySkillSchema = mongoose.Schema(
     SalaryTo: {
       type: String,
     },
+    faceBookId: {
+      type: String,
+    },
+    linkedInId: {
+      type: String,
+    },
+    institutionName: {
+      type: String,
+    },
+    institutionNamePg: {
+      type: String,
+    },
+    institutionNameUg: {
+      type: String,
+    },
+    institutionNameDr: {
+      type: String,
+    },
   },
   {
     timestamps: true,

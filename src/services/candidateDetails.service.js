@@ -298,6 +298,11 @@ const getByIdUser = async (id) => {
         location: 1,
         // candidateDetails: '$candidatedetails',
         keyskill: '$candidatedetails.keyskill',
+        faceBookId:'$candidatedetails.faceBookId',
+        linkedInId:'$candidatedetails.linkedInId',
+        institutionNamePg:'$candidatedetails.institutionNamePg',
+        institutionNameUg:'$candidatedetails.institutionNameUg',
+        institutionNameDr:'$candidatedetails.institutionNameDr',
         currentSkill: '$candidatedetails.currentSkill',
         preferredSkill: '$candidatedetails.preferredSkill',
         active: '$candidatedetails.active',
@@ -345,6 +350,7 @@ const getByIdUser = async (id) => {
         pgCourseType: '$candidatedetails.pgCourseType',
         pgCourseDurationTo: '$candidatedetails.pgCourseDurationTo',
         pgCourseDurationFrom: '$candidatedetails.pgCourseDurationFrom',
+        institutionName:'$candidatedetails.institutionName',
         hstotalmarks: '$candidatedetails.hstotalmarks',
         hsPassedYear: '$candidatedetails.hsPassedYear',
         hsMedium: '$candidatedetails.hsMedium',
@@ -453,7 +459,7 @@ const edit_details = async (id, updateBody) => {
   const data = await KeySkill.findOneAndUpdate({ userId: id }, updateBody, { new: true });
   data.eduDetails.push(updateBody);
   data.save();
-  return user;
+  return data;
 };
 
 const deleteById = async (id) => {
