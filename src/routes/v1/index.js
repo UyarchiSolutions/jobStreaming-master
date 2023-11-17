@@ -22,11 +22,16 @@ const menu = require('./menue.route');
 const role = require('./role.route');
 const router = express.Router();
 const agoraRoute = require('./AgoraAppId.route');
+const volunteerRoute = require('./volunteer.route');
 
 const defaultRoutes = [
   {
     path: '/auth',
     route: authRoute,
+  },
+  {
+    path: '/volunteer',
+    route: volunteerRoute,
   },
   {
     path: '/plan',

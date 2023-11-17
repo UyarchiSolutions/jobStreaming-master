@@ -284,6 +284,11 @@ const getByIdUser = async (id) => {
       },
     },
     {
+      $addFields: {
+        eduDetails: '$candidatedetails.eduDetails',
+      },
+    },
+    {
       $project: {
         resume: 1,
         email: 1,
@@ -297,12 +302,14 @@ const getByIdUser = async (id) => {
         updatedAt: 1,
         location: 1,
         // candidateDetails: '$candidatedetails',
+        // edu: { '$candidatedetails.eduDetails': { $sort: { sert: 1 } } },
+        eduDetails:1,
         keyskill: '$candidatedetails.keyskill',
-        faceBookId:'$candidatedetails.faceBookId',
-        linkedInId:'$candidatedetails.linkedInId',
-        institutionNamePg:'$candidatedetails.institutionNamePg',
-        institutionNameUg:'$candidatedetails.institutionNameUg',
-        institutionNameDr:'$candidatedetails.institutionNameDr',
+        faceBookId: '$candidatedetails.faceBookId',
+        linkedInId: '$candidatedetails.linkedInId',
+        institutionNamePg: '$candidatedetails.institutionNamePg',
+        institutionNameUg: '$candidatedetails.institutionNameUg',
+        institutionNameDr: '$candidatedetails.institutionNameDr',
         currentSkill: '$candidatedetails.currentSkill',
         preferredSkill: '$candidatedetails.preferredSkill',
         active: '$candidatedetails.active',
@@ -350,7 +357,7 @@ const getByIdUser = async (id) => {
         pgCourseType: '$candidatedetails.pgCourseType',
         pgCourseDurationTo: '$candidatedetails.pgCourseDurationTo',
         pgCourseDurationFrom: '$candidatedetails.pgCourseDurationFrom',
-        institutionName:'$candidatedetails.institutionName',
+        institutionName: '$candidatedetails.institutionName',
         hstotalmarks: '$candidatedetails.hstotalmarks',
         hsPassedYear: '$candidatedetails.hsPassedYear',
         hsMedium: '$candidatedetails.hsMedium',
@@ -451,10 +458,11 @@ const edit_details = async (id, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
-  console.log(updateBody,"askjdhfkjadsfhskjdhfskdjfh")
   if (updateBody.edit) {
-    await KeySkill.findOneAndUpdate({ userId: id }, { $pull: { eduDetails: { Type:updateBody.Type } } });
-    console.log("Deleted")
+    let datas = user.eduDetails;
+    datas.splice(updateBody.indexDel, 1);
+    user.eduDetails = datas;
+    user.save();
   }
   const data = await KeySkill.findOneAndUpdate({ userId: id }, updateBody, { new: true });
   data.eduDetails.push(updateBody);
