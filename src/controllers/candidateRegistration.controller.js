@@ -47,7 +47,7 @@ const register = catchAsync(async (req, res) => {
 });
 
 const updateResume = catchAsync(async (req, res) => {
-  let id = req.userId
+  let id = req.userId;
   let values = await CandidateRegistration.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate not Register');
@@ -138,7 +138,8 @@ const forgot_verify_email = catchAsync(async (req, res) => {
 });
 
 const getUserById = catchAsync(async (req, res) => {
-  const user = await candidateRegistrationService.getUserById(req.params.id);
+  let userId = req.userId;
+  const user = await candidateRegistrationService.getUserById(userId);
   res.send({ user });
 });
 

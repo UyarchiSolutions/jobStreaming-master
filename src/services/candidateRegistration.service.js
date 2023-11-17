@@ -22,6 +22,7 @@ const getUserById = async (id) => {
   if (!data) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
   }
+  return data;
 };
 
 const verify_email = async (token) => {
@@ -89,7 +90,7 @@ const forget_password_Otp = async (body) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'OTP Expired');
   }
   await OTPModel.findByIdAndUpdate({ _id: data._id }, { active: false }, { new: true });
-  return {message:"Otp Verification Success"};
+  return { message: 'Otp Verification Success' };
 };
 
 const forget_password_set = async (id, body) => {
