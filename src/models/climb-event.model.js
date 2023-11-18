@@ -53,4 +53,35 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
 
 const EventRegister = mongoose.model('climbeventregister', ClicmbEventRegisterSchema);
 
-module.exports = { EventRegister };
+
+
+
+
+const event_slot = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    date: {
+      type: String,
+    },
+    slot: {
+      type: String,
+    },
+    no_of_count: {
+      type: Number
+    },
+    booked_count: {
+      type: Number,
+      default: 0
+    }
+
+  },
+  { timestamps: true }
+);
+
+const Eventslot = mongoose.model('eventslot', event_slot);
+
+
+module.exports = { EventRegister, Eventslot };

@@ -13,7 +13,13 @@ const getSlots = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const insertSlots = catchAsync(async (req, res) => {
+  const data = await climbeventService.insertSlots(req.body);
+  res.send(data);
+});
+
 module.exports = {
   createEventClimb,
   getSlots,
+  insertSlots
 };

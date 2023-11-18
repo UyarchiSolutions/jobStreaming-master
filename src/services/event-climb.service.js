@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
-const { EventRegister } = require('../models/climb-event.model');
+const { EventRegister, Eventslot } = require('../models/climb-event.model');
 const AWS = require('aws-sdk');
 
 const createEventCLimb = async (req) => {
@@ -30,43 +30,70 @@ const createEventCLimb = async (req) => {
       ACL: 'public-read',
       ContentType: req.file.mimetype,
     };
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       s3.upload(params, async (err, data) => {
         if (err) {
           console.error(err);
         }
         let fileURL = data.Location;
         let datas = { ...body, ...{ uploadResume: fileURL } };
-        let creations = await EventRegister.create(datas);
-        resolve(creations);
+        let findEnvent = await Eventslot.findOne({ slot: datas.slot, date: datas.date });
+        if (findEnvent) {
+          if (findEnvent.no_of_count >= findEnvent.booked_count) {
+            findEnvent.booked_count = findEnvent.booked_count + 1;
+            findEnvent.save();
+            let creations = await EventRegister.create(datas);
+            resolve(creations);
+          }
+          else {
+
+            reject({ slot: "Slot Engached" });
+          }
+        }
       });
     });
   }
 };
 
 const slotDetails = async () => {
-  let datas = [
+  let slots = await Eventslot.aggregate([
     {
-      date: '20-11-2023',
-      time: ['10:00 AM', '11:30 AM', '2:30 PM', '4:30 PM'],
+      $match: {
+        $expr: {
+          $and: [
+            { $gte: ["$no_of_count", "$booked_count"] },
+          ]
+        }
+      }
     },
     {
-      date: '21-11-2023',
-      time: ['10:00 AM', '11:30 AM', '2:30 PM', '4:30 PM'],
+      $group: {
+        _id: { date: "$date" },
+        time: { $push: "$slot" }
+      }
     },
     {
-      date: '22-11-2023',
-      time: ['10:00 AM', '11:30 AM', '2:30 PM', '4:30 PM'],
-    },
-    {
-      date: '23-11-2023',
-      time: ['10:00 AM', '11:30 AM', '2:30 PM', '4:30 PM'],
-    },
-  ];
-  return datas;
+      $project: {
+        _id: "",
+        date: "$_id.date",
+        time: 1
+      }
+    }
+  ])
+  console.log(100 >= 100)
+
+  return slots;
 };
+
+
+const insertSlots = async (date) => {
+  let slot = await Eventslot.create(date)
+  return slot;
+}
+
 
 module.exports = {
   createEventCLimb,
   slotDetails,
+  insertSlots
 };
