@@ -31,6 +31,9 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
     resumeName: {
       type: String,
     },
+    uploadResume: {
+      type: String,
+    },
     date: {
       type: String,
     },
