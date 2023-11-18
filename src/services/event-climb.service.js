@@ -33,6 +33,29 @@ const createEventCLimb = async (req) => {
   }
 };
 
+const slotDetails = async () => {
+  let datas = [
+    {
+      date: '20-11-2023',
+      time: ['10:00 AM', '11:30 AM', '2:30 PM', '4:30 PM'],
+    },
+    {
+      date: '21-11-2023',
+      time: ['10:00 AM', '11:30 AM', '2:30 PM', '4:30 PM'],
+    },
+    {
+      date: '22-11-2023',
+      time: ['10:00 AM', '11:30 AM', '2:30 PM', '4:30 PM'],
+    },
+    {
+      date: '23-11-2023',
+      time: ['10:00 AM', '11:30 AM', '2:30 PM', '4:30 PM'],
+    },
+  ];
+  return datas;
+};
+
 module.exports = {
   createEventCLimb,
+  slotDetails,
 };

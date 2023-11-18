@@ -8,6 +8,12 @@ const createEventClimb = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getSlots = catchAsync(async (req, res) => {
+  const data = await climbeventService.slotDetails();
+  res.send(data);
+});
+
 module.exports = {
   createEventClimb,
+  getSlots,
 };
