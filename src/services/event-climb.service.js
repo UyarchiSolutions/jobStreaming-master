@@ -7,7 +7,7 @@ const AWS = require('aws-sdk');
 const createEventCLimb = async (req) => {
   let body = req.body;
 
-  let findByemail = await EventRegister.findOne({ email: body.mail });
+  let findByemail = await EventRegister.findOne({ mail: body.mail });
   if (findByemail) {
     throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mail ID Already Exist');
   }

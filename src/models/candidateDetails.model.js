@@ -7,6 +7,40 @@ const { StringDecoder } = require('string_decoder');
 const { v4 } = require('uuid');
 const moment = require('moment');
 
+const professionalSchema = mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  current_employment: {
+    type: String,
+  },
+  Employment_type: {
+    type: String,
+  },
+  ExperienceYear: {
+    type: String,
+  },
+  ExperienceMonth: {
+    type: String,
+  },
+  Company_Name: {
+    type: String,
+  },
+  Designation: {
+    type: String,
+  },
+  Current_Salary: {
+    type: String,
+  },
+  Skill_Used: {
+    type: Array,
+  },
+  Notice_Period: {
+    type: String,
+  },
+});
+
 const keySkillSchema = mongoose.Schema(
   {
     _id: {
@@ -18,6 +52,9 @@ const keySkillSchema = mongoose.Schema(
     },
     keyskill: {
       type: Array,
+    },
+    professionalDetails: {
+      type: [professionalSchema],
     },
     languages: {
       type: Object,
