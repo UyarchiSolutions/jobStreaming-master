@@ -41,6 +41,9 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    terms: {
+      type: Boolean,
+    },
   },
   { timestamps: true }
 );
