@@ -303,7 +303,7 @@ const getByIdUser = async (id) => {
         location: 1,
         // candidateDetails: '$candidatedetails',
         // edu: { '$candidatedetails.eduDetails': { $sort: { sert: 1 } } },
-        eduDetails:1,
+        eduDetails: 1,
         keyskill: '$candidatedetails.keyskill',
         faceBookId: '$candidatedetails.faceBookId',
         linkedInId: '$candidatedetails.linkedInId',
@@ -3966,6 +3966,28 @@ const recentSearchByCandidate = async (body, userId) => {
   return await CandidateRecentSearchjobCandidate.create(creations);
 };
 
+const updateProfesionalDetails = async (req) => {
+  let userId = req.userId;
+  let body = req.body;
+  console.log(userId);
+  let findById = await KeySkill.findOne({ userId: userId });
+  if (!findById) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate Details not found');
+  }
+  let exper;
+  if (body.current_employment == 'Yes') {
+    exper = true;
+  } else {
+    exper = findById.exper;
+  }
+  findById = await KeySkill.findOneAndUpdate(
+    { userId: userId },
+    { exper: exper, $push: { professionalDetails: body } },
+    { new: true }
+  );
+  return findById;
+};
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -4008,4 +4030,5 @@ module.exports = {
   getAllAppliedJobsByCandidate,
   recentSearchByCandidate,
   get_SavedJobs_Candidate,
+  updateProfesionalDetails,
 };

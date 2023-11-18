@@ -3392,7 +3392,7 @@ const keySkillData = async (key) => {
   var query = new RegExp('^' + key, 'i');
   const data = await Skill.find({ Skill_Title: { $regex: query } })
     .sort({ Skill_Title: 1 })
-    .limit(7);
+    .limit(10);
   // .sort({ Skill_Title: 1 })
   // .select('Skill_Title')
   return data;

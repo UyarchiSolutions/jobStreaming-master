@@ -57,4 +57,5 @@ router.route('/DeleteResume').get(authorization, candidateDetailsController.Dele
 router.route('/getAllApplied/JobsByCandidate').get(authorization, candidateDetailsController.getAllAppliedJobsByCandidate);
 router.route('/recent/search').post(authorization, candidateDetailsController.recentSearchByCandidate);
 router.route('/get/SavedJobs/Candidate').get(authorization, candidateDetailsController.get_SavedJobs_Candidate);
+router.route('/update/Profesional/Details').post(authorization, candidateDetailsController.updateProfesionalDetails);
 module.exports = router;

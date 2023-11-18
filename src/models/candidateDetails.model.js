@@ -53,8 +53,13 @@ const keySkillSchema = mongoose.Schema(
     keyskill: {
       type: Array,
     },
+    exper: {
+      type: Boolean,
+      default: false,
+    },
     professionalDetails: {
       type: [professionalSchema],
+      default: [],
     },
     languages: {
       type: Object,

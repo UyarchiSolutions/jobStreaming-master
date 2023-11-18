@@ -179,7 +179,7 @@ const getByIdEmployerDetails = catchAsync(async (req, res) => {
 });
 
 const candidateSearch_front_page = catchAsync(async (req, res) => {
-  const userId = req.userId?req.userId:"";
+  const userId = req.userId ? req.userId : '';
   const user = await candidateDetailsService.candidateSearch_front_page(userId, req.body);
   res.send(user);
 });
@@ -260,6 +260,11 @@ const get_SavedJobs_Candidate = catchAsync(async (req, res) => {
   res.send(jobs);
 });
 
+const updateProfesionalDetails = catchAsync(async (req, res) => {
+  const data = await candidateDetailsService.updateProfesionalDetails(req);
+  res.send(data);
+});
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -302,4 +307,5 @@ module.exports = {
   getAllAppliedJobsByCandidate,
   recentSearchByCandidate,
   get_SavedJobs_Candidate,
+  updateProfesionalDetails,
 };

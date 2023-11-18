@@ -44,10 +44,8 @@ const createEventCLimb = async (req) => {
             findEnvent.save();
             let creations = await EventRegister.create(datas);
             resolve(creations);
-          }
-          else {
-
-            reject({ slot: "Slot Engached" });
+          } else {
+            reject({ slot: 'Slot Engached' });
           }
         }
       });
@@ -60,40 +58,43 @@ const slotDetails = async () => {
     {
       $match: {
         $expr: {
-          $and: [
-            { $gte: ["$no_of_count", "$booked_count"] },
-          ]
-        }
-      }
+          $and: [{ $gt: ['$no_of_count', '$booked_count'] }],
+        },
+      },
     },
     {
       $group: {
-        _id: { date: "$date" },
-        time: { $push: "$slot" }
-      }
+        _id: { date: '$date' },
+        time: { $push: '$slot' },
+      },
     },
     {
       $project: {
-        _id: "",
-        date: "$_id.date",
-        time: 1
-      }
-    }
-  ])
-  console.log(100 >= 100)
+        _id: '',
+        date: '$_id.date',
+        time: 1,
+      },
+    },
+    { $sort: { date: 1 } },
+  ]);
+  console.log(100 >= 100);
 
   return slots;
 };
 
-
 const insertSlots = async (date) => {
-  let slot = await Eventslot.create(date)
+  let slot = await Eventslot.create(date);
   return slot;
-}
+};
 
+const getAllRegistered_Candidate = async () => {
+  let values = await EventRegister.find();
+  return values;
+};
 
 module.exports = {
   createEventCLimb,
   slotDetails,
-  insertSlots
+  insertSlots,
+  getAllRegistered_Candidate,
 };
