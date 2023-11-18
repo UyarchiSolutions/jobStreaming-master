@@ -6,6 +6,17 @@ const AWS = require('aws-sdk');
 
 const createEventCLimb = async (req) => {
   let body = req.body;
+
+  let findByemail = await EventRegister.findOne({ email: body.mail });
+  if (findByemail) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mail ID Already Exist');
+  }
+
+  let findBymobile = await EventRegister.findOne({ mobileNumber: body.mobileNumber });
+  if (findBymobile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mobile Number Already Exist');
+  }
+
   if (req.file) {
     const s3 = new AWS.S3({
       accessKeyId: 'AKIA3323XNN7Y2RU77UG',
