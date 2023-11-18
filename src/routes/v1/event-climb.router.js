@@ -14,5 +14,7 @@ router.route('/').post(UploadFile, ClimbController.createEventClimb);
 router.route('/slot').get(ClimbController.getSlots);
 router.route('/slot').post(ClimbController.insertSlots);
 router.route('/getAllRegistered/Candidate').get(ClimbController.getAllRegistered_Candidate);
+router.route('/getSlotDetails/WithCandidate').get(ClimbController.getSlotDetails_WithCandidate);
+router.route('/getCandidateBySlot/:date/:time').get(ClimbController.getCandidateBySlot);
 
 module.exports = router;

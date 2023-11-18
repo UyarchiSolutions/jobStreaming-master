@@ -92,9 +92,58 @@ const getAllRegistered_Candidate = async () => {
   return values;
 };
 
+const getSlotDetails_WithCandidate = async () => {
+  let values = await Eventslot.aggregate([
+    {
+      $lookup: {
+        from: 'climbeventregisters',
+        let: { eventDate: '$date', eventTime: '$slot' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ['$date', '$$eventDate'] }, { $eq: ['$slot', '$$eventTime'] }],
+              },
+            },
+          },
+        ],
+        as: 'candidates',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        booked_count: 1,
+        date: 1,
+        slot: 1,
+        no_of_count: 1,
+        createdAt: 1,
+        candidates: { $size: '$candidates' },
+      },
+    },
+  ]);
+  return values;
+};
+
+const getCandidateBySlot = async (req) => {
+  const { date, time } = req.params;
+
+  let values = await EventRegister.aggregate([
+    {
+      $match: {
+        date: date,
+        slot: time,
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   createEventCLimb,
   slotDetails,
   insertSlots,
   getAllRegistered_Candidate,
+  getSlotDetails_WithCandidate,
+  getCandidateBySlot,
 };

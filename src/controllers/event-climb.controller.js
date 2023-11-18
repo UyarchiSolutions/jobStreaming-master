@@ -23,9 +23,21 @@ const getAllRegistered_Candidate = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getSlotDetails_WithCandidate = catchAsync(async (req, res) => {
+  const data = await climbeventService.getSlotDetails_WithCandidate();
+  res.send(data);
+});
+
+const getCandidateBySlot = catchAsync(async (req, res) => {
+  const data = await climbeventService.getCandidateBySlot(req);
+  res.send(data);
+});
+
 module.exports = {
   createEventClimb,
   getSlots,
   insertSlots,
   getAllRegistered_Candidate,
+  getSlotDetails_WithCandidate,
+  getCandidateBySlot,
 };
