@@ -62,6 +62,7 @@ const slotDetails = async () => {
         },
       },
     },
+    { $sort: { sortcount: 1 } },
     {
       $group: {
         _id: { date: '$date' },
