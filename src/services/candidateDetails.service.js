@@ -3988,6 +3988,11 @@ const updateProfesionalDetails = async (req) => {
   return findById;
 };
 
+const getCandidateById = async (userId) => {
+  let values = await KeySkill.findOne({ userId: userId });
+  return values;
+};
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -4031,4 +4036,5 @@ module.exports = {
   recentSearchByCandidate,
   get_SavedJobs_Candidate,
   updateProfesionalDetails,
+  getCandidateById,
 };

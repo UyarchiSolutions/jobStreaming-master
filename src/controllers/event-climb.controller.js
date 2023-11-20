@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const climbeventService = require('../services/event-climb.service');
+const { authService, userService, tokenService, emailService, candidateRegistrationService } = require('../services');
 
 const createEventClimb = catchAsync(async (req, res) => {
   const data = await climbeventService.createEventCLimb(req);
@@ -33,6 +34,12 @@ const getCandidateBySlot = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const CandidateLogin = catchAsync(async (req, res) => {
+  const data = await climbeventService.CandidateLogin(req);
+  const tokens = await tokenService.generateAuthTokens(data);
+  res.send(tokens);
+});
+
 module.exports = {
   createEventClimb,
   getSlots,
@@ -40,4 +47,5 @@ module.exports = {
   getAllRegistered_Candidate,
   getSlotDetails_WithCandidate,
   getCandidateBySlot,
+  CandidateLogin,
 };

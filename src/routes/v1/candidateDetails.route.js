@@ -58,4 +58,5 @@ router.route('/getAllApplied/JobsByCandidate').get(authorization, candidateDetai
 router.route('/recent/search').post(authorization, candidateDetailsController.recentSearchByCandidate);
 router.route('/get/SavedJobs/Candidate').get(authorization, candidateDetailsController.get_SavedJobs_Candidate);
 router.route('/update/Profesional/Details').post(authorization, candidateDetailsController.updateProfesionalDetails);
+router.route('/getCandidateById').get(authorization, candidateDetailsController.getCandidateById);
 module.exports = router;

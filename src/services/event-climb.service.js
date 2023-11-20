@@ -120,6 +120,7 @@ const getSlotDetails_WithCandidate = async () => {
         no_of_count: 1,
         createdAt: 1,
         candidates: { $size: '$candidates' },
+        candList: '$candidates',
       },
     },
   ]);
@@ -140,6 +141,15 @@ const getCandidateBySlot = async (req) => {
   return values;
 };
 
+const CandidateLogin = async (req) => {
+  const { mobileNumber } = req.body;
+  let values = await EventRegister.findOne({ mobileNumber: mobileNumber });
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*This number is not registered');
+  }
+  return values;
+};
+
 module.exports = {
   createEventCLimb,
   slotDetails,
@@ -147,4 +157,5 @@ module.exports = {
   getAllRegistered_Candidate,
   getSlotDetails_WithCandidate,
   getCandidateBySlot,
+  CandidateLogin,
 };

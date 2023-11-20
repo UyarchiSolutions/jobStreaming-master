@@ -265,6 +265,11 @@ const updateProfesionalDetails = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getCandidateById = catchAsync(async (req, res) => {
+  const data = await candidateDetailsService.getCandidateById(req.userId);
+  res.send(data);
+});
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -308,4 +313,5 @@ module.exports = {
   recentSearchByCandidate,
   get_SavedJobs_Candidate,
   updateProfesionalDetails,
+  getCandidateById,
 };

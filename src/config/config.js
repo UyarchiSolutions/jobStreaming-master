@@ -41,6 +41,10 @@ module.exports = {
       useCreateIndex: true,
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      connectTimeoutMS: 1500000,
+      socketTimeoutMS: 1500000,
+      maxIdleTimeMS: 80000,
+      serverSelectionTimeoutMS: 80000,
     },
   },
   jwt: {
