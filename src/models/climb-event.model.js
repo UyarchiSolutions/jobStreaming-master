@@ -47,15 +47,22 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
     terms: {
       type: Boolean,
     },
+    profiles: {
+      type: Object,
+      default: {},
+    },
+    profileUpdated: {
+      type: Boolean,
+      default: false,
+    },
+    sortcount: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );
 
 const EventRegister = mongoose.model('climbeventregister', ClicmbEventRegisterSchema);
-
-
-
-
 
 const event_slot = new mongoose.Schema(
   {
@@ -70,18 +77,16 @@ const event_slot = new mongoose.Schema(
       type: String,
     },
     no_of_count: {
-      type: Number
+      type: Number,
     },
     booked_count: {
       type: Number,
-      default: 0
-    }
-
+      default: 0,
+    },
   },
   { timestamps: true }
 );
 
 const Eventslot = mongoose.model('eventslot', event_slot);
-
 
 module.exports = { EventRegister, Eventslot };

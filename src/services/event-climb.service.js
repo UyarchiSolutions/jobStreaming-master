@@ -88,8 +88,19 @@ const insertSlots = async (date) => {
   return slot;
 };
 
-const getAllRegistered_Candidate = async () => {
-  let values = await EventRegister.find();
+const getAllRegistered_Candidate = async (query) => {
+  let { key } = query;
+  let matchCand = { active: true };
+  if (key && key != null && key != 'null' && key != '') {
+    matchCand = {
+      $or: [{ mail: { $regex: key, $options: 'i' } }, { mobileNumber: { $regex: key, $options: 'i' } }],
+    };
+  }
+  let values = await EventRegister.aggregate([
+    {
+      $match: matchCand,
+    },
+  ]);
   return values;
 };
 
@@ -144,9 +155,40 @@ const getCandidateBySlot = async (req) => {
 const CandidateLogin = async (req) => {
   const { mobileNumber } = req.body;
   let values = await EventRegister.findOne({ mobileNumber: mobileNumber });
+
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, '*This number is not registered');
   }
+  if (values.profileUpdated == true) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Your profile is already updated');
+  }
+  return values;
+};
+
+const getDetailsByCandidate = async (req) => {
+  const userId = req.userId;
+  let values = await EventRegister.findById(userId);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate user not found');
+  }
+  return values;
+};
+
+const updateProfileCandidate = async (req) => {
+  const userId = req.userId;
+  let values = await EventRegister.findById(userId);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate Not Found');
+  }
+  if (values.profileUpdated == true) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Profile Already Updated');
+  }
+  let bodyVal = req.body;
+  values = await EventRegister.findByIdAndUpdate(
+    { _id: values._id },
+    { profiles: bodyVal, profileUpdated: true },
+    { new: true }
+  );
   return values;
 };
 
@@ -158,4 +200,6 @@ module.exports = {
   getSlotDetails_WithCandidate,
   getCandidateBySlot,
   CandidateLogin,
+  getDetailsByCandidate,
+  updateProfileCandidate,
 };

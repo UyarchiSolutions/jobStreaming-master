@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const ClimbController = require('../../controllers/event-climb.controller');
+const Auth = require('../../controllers/eventToken.verify');
 const storage = multer.memoryStorage({
   destination: function (req, res, callback) {
     callback(null, '');
@@ -17,5 +18,7 @@ router.route('/getAllRegistered/Candidate').get(ClimbController.getAllRegistered
 router.route('/getSlotDetails/WithCandidate').get(ClimbController.getSlotDetails_WithCandidate);
 router.route('/getCandidateBySlot/:date/:time').get(ClimbController.getCandidateBySlot);
 router.route('/Candidate/Login').post(ClimbController.CandidateLogin);
+router.route('/getDetails/ByCandidate').get(Auth, ClimbController.getDetailsByCandidate);
+router.route('/update/Profile/Candidate').post(Auth, ClimbController.updateProfileCandidate);
 
 module.exports = router;

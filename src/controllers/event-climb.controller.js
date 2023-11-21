@@ -20,7 +20,7 @@ const insertSlots = catchAsync(async (req, res) => {
 });
 
 const getAllRegistered_Candidate = catchAsync(async (req, res) => {
-  const data = await climbeventService.getAllRegistered_Candidate();
+  const data = await climbeventService.getAllRegistered_Candidate(req.query);
   res.send(data);
 });
 
@@ -40,6 +40,16 @@ const CandidateLogin = catchAsync(async (req, res) => {
   res.send(tokens);
 });
 
+const getDetailsByCandidate = catchAsync(async (req, res) => {
+  const data = await climbeventService.getDetailsByCandidate(req);
+  res.send(data);
+});
+
+const updateProfileCandidate = catchAsync(async (req, res) => {
+  const data = await climbeventService.updateProfileCandidate(req);
+  res.send(data);
+});
+
 module.exports = {
   createEventClimb,
   getSlots,
@@ -48,4 +58,6 @@ module.exports = {
   getSlotDetails_WithCandidate,
   getCandidateBySlot,
   CandidateLogin,
+  getDetailsByCandidate,
+  updateProfileCandidate,
 };
