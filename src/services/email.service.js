@@ -5,8 +5,20 @@ const { OTPModel } = require('../models');
 const { EmployeOtp } = require('../models');
 const { Otpupdate } = require('../models/createPlan.model');
 var ejs = require('ejs');
+const Imap = require('node-imap');
 
 const transport = nodemailer.createTransport(config.email.smtp);
+// const transport2 = nodemailer.createTransport(config.email2.smtp);
+const transporter2 = nodemailer.createTransport({
+  host: 'smtp.hostinger.com', // Replace with your SMTP server host
+  port: 465, // Replace with your SMTP server port (587 is a common secure TLS/STARTTLS port)
+  auth: {
+    user: 'test@warmy.co.in',
+    pass: 'Test@123',
+  },
+  from: 'test@warmy.co.in',
+});
+
 /* istanbul ignore next */
 if (config.env !== 'test') {
   transport
@@ -66,14 +78,14 @@ const sendsuccessTestMail = async (data) => {
   });
 
   const msg = {
-    from: config.email.from,
+    from: 'test@warmy.co.in',
     to: mail,
     // to:"vignesh1041996@gmail.com",
     subject: 'templates',
     html: data1,
   };
   // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
-  await transport.sendMail(msg);
+  await transporter2.sendMail(msg);
 };
 
 const sendEmailTemplate = async (to, subject, text) => {

@@ -65,4 +65,15 @@ module.exports = {
     },
     from: envVars.EMAIL_FROM,
   },
+  email2: {
+    smtp: {
+      host: 'smtp.hostinger.com',
+      port: 465,
+      auth: {
+        user: 'test@warmy.co.in',
+        pass: 'Test@123',
+      },
+    },
+    from: 'test@warmy.co.in',
+  },
 };
