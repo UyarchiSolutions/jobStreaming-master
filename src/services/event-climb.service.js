@@ -192,6 +192,44 @@ const updateProfileCandidate = async (req) => {
   return values;
 };
 
+const verify_cand = async (req) => {
+  const { mob_email } = req.body;
+  let findbyMobile = await EventRegister.findOne({ mobileNumber: mob_email });
+  let findbyemail = await EventRegister.findOne({ mail: mob_email });
+
+  if (findbyemail) {
+    if (findbyemail.testEntry) {
+      throw new ApiError(httpStatus.BAD_REQUEST, '*Your Profile Already Updated');
+    }else{
+      return findbyemail;
+
+    }
+  } else if (findbyMobile) {
+    if (findbyMobile.testEntry) {
+      throw new ApiError(httpStatus.BAD_REQUEST, '*Your Profile Already Updated');
+    }else{
+      return findbyMobile;
+
+    }
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Mobile Number Or E-mail Not Registered');
+  }
+};
+
+const updateTestWarmy = async (req) => {
+  let values = await EventRegister.findById(req.params.id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, ' Candidates not found');
+  }
+  const bodyData = req.body;
+  values = await EventRegister.findByIdAndUpdate(
+    { _id: values._id },
+    { testEntry: true, testProfile: bodyData },
+    { new: true }
+  );
+  return values;
+};
+
 module.exports = {
   createEventCLimb,
   slotDetails,
@@ -202,4 +240,6 @@ module.exports = {
   CandidateLogin,
   getDetailsByCandidate,
   updateProfileCandidate,
+  verify_cand,
+  updateTestWarmy,
 };

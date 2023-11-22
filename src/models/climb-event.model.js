@@ -58,6 +58,13 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
     sortcount: {
       type: Number,
     },
+    testEntry: {
+      type: Boolean,
+      default: false,
+    },
+    testProfile: {
+      type: Object,
+    },
   },
   { timestamps: true }
 );

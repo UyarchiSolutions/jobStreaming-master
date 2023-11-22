@@ -50,6 +50,16 @@ const updateProfileCandidate = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const verify_cand = catchAsync(async (req, res) => {
+  const data = await climbeventService.verify_cand(req);
+  res.send(data);
+});
+
+const updateTestWarmy = catchAsync(async (req, res) => {
+  const data = await climbeventService.updateTestWarmy(req);
+  res.send(data);
+});
+
 module.exports = {
   createEventClimb,
   getSlots,
@@ -60,4 +70,6 @@ module.exports = {
   CandidateLogin,
   getDetailsByCandidate,
   updateProfileCandidate,
+  verify_cand,
+  updateTestWarmy,
 };

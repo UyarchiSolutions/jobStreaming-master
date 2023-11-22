@@ -20,5 +20,7 @@ router.route('/getCandidateBySlot/:date/:time').get(ClimbController.getCandidate
 router.route('/Candidate/Login').post(ClimbController.CandidateLogin);
 router.route('/getDetails/ByCandidate').get(Auth, ClimbController.getDetailsByCandidate);
 router.route('/update/Profile/Candidate').post(Auth, ClimbController.updateProfileCandidate);
+router.route('/verify/cand').post(ClimbController.verify_cand);
+router.route('/update/TestWarmy/:id').put(ClimbController.updateTestWarmy);
 
 module.exports = router;
