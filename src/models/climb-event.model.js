@@ -7,6 +7,9 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
       type: String,
       default: v4,
     },
+    Type: {
+      type: String,
+    },
     name: {
       type: String,
     },

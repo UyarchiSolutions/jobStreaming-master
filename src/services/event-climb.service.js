@@ -81,7 +81,7 @@ const createTestCandidates = async (req) => {
           reject(err);
         }
         let fileURL = data.Location;
-        let datas = { ...body, ...{ uploadResume: fileURL } };
+        let datas = { ...body, ...{ uploadResume: fileURL,Type:"Assesment" } };
         let creations = await EventRegister.create(datas);
         resolve(creations);
       });
