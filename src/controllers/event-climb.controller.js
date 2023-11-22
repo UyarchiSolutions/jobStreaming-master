@@ -61,6 +61,21 @@ const updateTestWarmy = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const insertSlotsTest = catchAsync(async (req, res) => {
+  const data = await climbeventService.insertSlotsTest(req);
+  res.send(data);
+});
+
+const slotDetailsTest = catchAsync(async (req, res) => {
+  const data = await climbeventService.slotDetailsTest();
+  res.send(data);
+});
+
+const createTestCandidates = catchAsync(async (req, res) => {
+  const data = await climbeventService.createTestCandidates(req);
+  res.send(data);
+});
+
 module.exports = {
   createEventClimb,
   getSlots,
@@ -73,4 +88,7 @@ module.exports = {
   updateProfileCandidate,
   verify_cand,
   updateTestWarmy,
+  insertSlotsTest,
+  slotDetailsTest,
+  createTestCandidates,
 };

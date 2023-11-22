@@ -1,17 +1,15 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
-const { EventRegister, Eventslot } = require('../models/climb-event.model');
+const { EventRegister, Eventslot, EventslotTest } = require('../models/climb-event.model');
 const AWS = require('aws-sdk');
 
 const createEventCLimb = async (req) => {
   let body = req.body;
-
   let findByemail = await EventRegister.findOne({ mail: body.mail });
   if (findByemail) {
     throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mail ID Already Exist');
   }
-
   let findBymobile = await EventRegister.findOne({ mobileNumber: body.mobileNumber });
   if (findBymobile) {
     throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mobile Number Already Exist');
@@ -53,6 +51,44 @@ const createEventCLimb = async (req) => {
   }
 };
 
+const createTestCandidates = async (req) => {
+  let body = req.body;
+  let findByemail = await EventRegister.findOne({ mail: body.mail });
+  if (findByemail) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mail ID Already Exist');
+  }
+  let findBymobile = await EventRegister.findOne({ mobileNumber: body.mobileNumber });
+  if (findBymobile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mobile Number Already Exist');
+  }
+
+  if (req.file) {
+    const s3 = new AWS.S3({
+      accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+      secretAccessKey: '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',
+      region: 'ap-south-1',
+    });
+    let params = {
+      Bucket: 'jobresume',
+      Key: req.file.originalname,
+      Body: req.file.buffer,
+      ACL: 'public-read',
+      ContentType: req.file.mimetype,
+    };
+    return new Promise((resolve, reject) => {
+      s3.upload(params, async (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        let fileURL = data.Location;
+        let datas = { ...body, ...{ uploadResume: fileURL } };
+        let creations = await EventRegister.create(datas);
+        resolve(creations);
+      });
+    });
+  }
+};
+
 const slotDetails = async () => {
   let slots = await Eventslot.aggregate([
     {
@@ -78,14 +114,50 @@ const slotDetails = async () => {
     },
     { $sort: { date: 1 } },
   ]);
-  console.log(100 >= 100);
-
   return slots;
 };
 
 const insertSlots = async (date) => {
   let slot = await Eventslot.create(date);
   return slot;
+};
+
+const insertSlotsTest = async (body) => {
+  let date = body.body;
+  const dateTimeString = `${date.date} ${date.slot}`;
+  const momentObject = moment(dateTimeString, 'YYYY-MM-DD hh:mm A');
+  const isoDateTime = momentObject.toISOString();
+  let datas = { ...date, ...{ dateTime: isoDateTime } };
+  let slot = await EventslotTest.create(datas);
+  return slot;
+};
+
+const slotDetailsTest = async () => {
+  let slots = await EventslotTest.aggregate([
+    {
+      $match: {
+        $expr: {
+          $and: [{ $gt: ['$no_of_count', '$booked_count'] }],
+        },
+      },
+    },
+    { $sort: { sortcount: 1 } },
+    {
+      $group: {
+        _id: { date: '$date' },
+        time: { $push: '$slot' },
+      },
+    },
+    {
+      $project: {
+        _id: '',
+        date: '$_id.date',
+        time: 1,
+      },
+    },
+    { $sort: { date: 1 } },
+  ]);
+  return slots;
 };
 
 const getAllRegistered_Candidate = async (query) => {
@@ -200,16 +272,14 @@ const verify_cand = async (req) => {
   if (findbyemail) {
     if (findbyemail.testEntry) {
       throw new ApiError(httpStatus.BAD_REQUEST, '*Your Profile Already Updated');
-    }else{
+    } else {
       return findbyemail;
-
     }
   } else if (findbyMobile) {
     if (findbyMobile.testEntry) {
       throw new ApiError(httpStatus.BAD_REQUEST, '*Your Profile Already Updated');
-    }else{
+    } else {
       return findbyMobile;
-
     }
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, '*Mobile Number Or E-mail Not Registered');
@@ -219,14 +289,23 @@ const verify_cand = async (req) => {
 const updateTestWarmy = async (req) => {
   let values = await EventRegister.findById(req.params.id);
   if (!values) {
-    throw new ApiError(httpStatus.BAD_REQUEST, ' Candidates not found');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidates not found');
   }
   const bodyData = req.body;
-  values = await EventRegister.findByIdAndUpdate(
-    { _id: values._id },
-    { testEntry: true, testProfile: bodyData },
-    { new: true }
-  );
+  let findEnvent = await EventslotTest.findOne({ slot: bodyData.time, date: bodyData.date });
+  if (findEnvent) {
+    if (findEnvent.no_of_count >= findEnvent.booked_count) {
+      findEnvent.booked_count = findEnvent.booked_count + 1;
+      findEnvent.save();
+      values = await EventRegister.findByIdAndUpdate(
+        { _id: values._id },
+        { testEntry: true, testProfile: bodyData },
+        { new: true }
+      );
+    }
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Engached');
+  }
   return values;
 };
 
@@ -242,4 +321,7 @@ module.exports = {
   updateProfileCandidate,
   verify_cand,
   updateTestWarmy,
+  insertSlotsTest,
+  slotDetailsTest,
+  createTestCandidates,
 };

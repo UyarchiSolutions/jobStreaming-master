@@ -81,7 +81,7 @@ const sendsuccessTestMail = async (data) => {
     from: 'test@warmy.co.in',
     to: mail,
     // to:"vignesh1041996@gmail.com",
-    subject: 'templates',
+    subject: 'Assessment Registration Online-Associate Software Engineer-Acknowledgement',
     html: data1,
   };
   // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })

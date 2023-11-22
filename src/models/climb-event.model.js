@@ -96,4 +96,34 @@ const event_slot = new mongoose.Schema(
 
 const Eventslot = mongoose.model('eventslot', event_slot);
 
-module.exports = { EventRegister, Eventslot };
+const event_slot_Test = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    date: {
+      type: String,
+    },
+    slot: {
+      type: String,
+    },
+    no_of_count: {
+      type: Number,
+    },
+    booked_count: {
+      type: Number,
+      default: 0,
+    },
+    sortcount: {
+      type: Number,
+    },
+    dateTime: {
+      type: Date,
+    },
+  },
+  { timestamps: true }
+);
+const EventslotTest = mongoose.model('eventslottest', event_slot_Test);
+
+module.exports = { EventRegister, Eventslot, EventslotTest };
