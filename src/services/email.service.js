@@ -56,6 +56,26 @@ const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
   await transport.sendMail(msg);
 };
 
+const sendsuccessTestMail = async (data) => {
+  const { mail, name, testProfile } = data;
+  let data1 = await ejs.renderFile(__dirname + '/testwarmy.ejs', {
+    email: mail,
+    name: name,
+    date: testProfile.date,
+    time: testProfile.time,
+  });
+
+  const msg = {
+    from: config.email.from,
+    to: mail,
+    // to:"vignesh1041996@gmail.com",
+    subject: 'templates',
+    html: data1,
+  };
+  // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
+  await transport.sendMail(msg);
+};
+
 const sendEmailTemplate = async (to, subject, text) => {
   const msg = { from: config.email.from, to, subject, text };
   // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
@@ -189,4 +209,5 @@ module.exports = {
   notification_mail,
   sendEmailTemplate,
   send_email_update,
+  sendsuccessTestMail,
 };

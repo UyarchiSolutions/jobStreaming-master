@@ -57,6 +57,7 @@ const verify_cand = catchAsync(async (req, res) => {
 
 const updateTestWarmy = catchAsync(async (req, res) => {
   const data = await climbeventService.updateTestWarmy(req);
+  await emailService.sendsuccessTestMail(data);
   res.send(data);
 });
 
