@@ -10,6 +10,10 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
     Type: {
       type: String,
     },
+    status: {
+      type: String,
+      default: 'Pending',
+    },
     name: {
       type: String,
     },

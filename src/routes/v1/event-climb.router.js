@@ -25,5 +25,6 @@ router.route('/update/TestWarmy/:id').put(ClimbController.updateTestWarmy);
 router.route('/insertSlots/Test').post(ClimbController.insertSlotsTest);
 router.route('/slotDetails/Test').get(ClimbController.slotDetailsTest);
 router.route('/createTest/Candidates').post(UploadFile, ClimbController.createTestCandidates);
-
+router.route('/getTestUsers').get(ClimbController.getTestUsers);
+router.route('/update/Status/:id').put(ClimbController.updateStatus);
 module.exports = router;

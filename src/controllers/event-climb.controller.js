@@ -76,6 +76,16 @@ const createTestCandidates = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getTestUsers = catchAsync(async (req, res) => {
+  const data = await climbeventService.getTestUsers(req);
+  res.send(data);
+});
+
+const updateStatus = catchAsync(async (req, res) => {
+  const data = await climbeventService.updateStatus(req);
+  res.send(data);
+});
+
 module.exports = {
   createEventClimb,
   getSlots,
@@ -91,4 +101,6 @@ module.exports = {
   insertSlotsTest,
   slotDetailsTest,
   createTestCandidates,
+  getTestUsers,
+  updateStatus,
 };

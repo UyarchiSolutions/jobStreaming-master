@@ -81,7 +81,7 @@ const createTestCandidates = async (req) => {
           reject(err);
         }
         let fileURL = data.Location;
-        let datas = { ...body, ...{ uploadResume: fileURL,Type:"Assesment" } };
+        let datas = { ...body, ...{ uploadResume: fileURL, Type: 'Assesment' } };
         let creations = await EventRegister.create(datas);
         resolve(creations);
       });
@@ -309,6 +309,38 @@ const updateTestWarmy = async (req) => {
   return values;
 };
 
+const getTestUsers = async (req) => {
+  const { key, action } = req.query;
+  let matchCand = { active: true };
+
+  if (key && key != null && key != 'null' && key != '') {
+    matchCand = {
+      $or: [{ mail: { $regex: key, $options: 'i' } }, { mobileNumber: { $regex: key, $options: 'i' } }],
+    };
+  }
+
+  let values = await EventRegister.aggregate([
+    {
+      $match: {
+        testEntry: true,
+      },
+    },
+    { $match: matchCand },
+  ]);
+  return values;
+};
+
+const updateStatus = async (req) => {
+  const body = req.body;
+  const id = req.params.id;
+  let values = await EventRegister.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Not Found');
+  }
+  values = await EventRegister.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return values;
+};
+
 module.exports = {
   createEventCLimb,
   slotDetails,
@@ -324,4 +356,6 @@ module.exports = {
   insertSlotsTest,
   slotDetailsTest,
   createTestCandidates,
+  getTestUsers,
+  updateStatus,
 };
