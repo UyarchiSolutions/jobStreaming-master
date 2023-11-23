@@ -15,12 +15,14 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
     },
     mail: {
       type: String,
+      unique: true,
     },
     gender: {
       type: String,
     },
     mobileNumber: {
       type: String,
+      unique: true,
     },
     currentLocation: {
       type: String,
