@@ -14,7 +14,7 @@ const transporter2 = nodemailer.createTransport({
   port: 465, // Replace with your SMTP server port (587 is a common secure TLS/STARTTLS port)
   auth: {
     user: 'test@warmy.co.in',
-    pass: 'Test@123',
+    pass: 'Dhoni@001',
   },
   from: 'test@warmy.co.in',
 });
