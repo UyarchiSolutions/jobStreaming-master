@@ -291,6 +291,10 @@ const updateTestWarmy = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Candidates not found');
   }
+
+  if (values.testEntry == true) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Already You Profile Updated');
+  }
   const bodyData = req.body;
   let findEnvent = await EventslotTest.findOne({ slot: bodyData.time, date: bodyData.date });
   if (findEnvent) {
