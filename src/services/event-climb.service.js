@@ -303,7 +303,7 @@ const updateTestWarmy = async (req) => {
       findEnvent.save();
       values = await EventRegister.findByIdAndUpdate(
         { _id: values._id },
-        { testEntry: true, testProfile: bodyData },
+        { testEntry: true, testProfile: bodyData, testNewUser: 'Yes' },
         { new: true }
       );
     }

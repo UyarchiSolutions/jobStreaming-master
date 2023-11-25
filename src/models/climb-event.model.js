@@ -74,6 +74,9 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
     testProfile: {
       type: Object,
     },
+    testNewUser: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
