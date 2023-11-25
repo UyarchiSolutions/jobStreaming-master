@@ -34,7 +34,7 @@ const createEventCLimb = async (req) => {
           console.error(err);
         }
         let fileURL = data.Location;
-        let datas = { ...body, ...{ uploadResume: fileURL } };
+        let datas = { ...body, ...{ uploadResume: fileURL,testNewUser: 'Yes' } };
         let findEnvent = await Eventslot.findOne({ slot: datas.slot, date: datas.date });
         if (findEnvent) {
           if (findEnvent.no_of_count >= findEnvent.booked_count) {
@@ -303,7 +303,7 @@ const updateTestWarmy = async (req) => {
       findEnvent.save();
       values = await EventRegister.findByIdAndUpdate(
         { _id: values._id },
-        { testEntry: true, testProfile: bodyData, testNewUser: 'Yes' },
+        { testEntry: true, testProfile: bodyData, },
         { new: true }
       );
     }
