@@ -31,4 +31,13 @@ const Login = async (req) => {
   return findByemail;
 };
 
-module.exports = { createVolunteer, setPassword, Login };
+const getProfile = async (req) => {
+  let id = req.userId;
+  const findById = await Volunteer.findById(id);
+  if (!findById) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'UnAuthorized');
+  }
+  return findById;
+};
+
+module.exports = { createVolunteer, setPassword, Login, getProfile };

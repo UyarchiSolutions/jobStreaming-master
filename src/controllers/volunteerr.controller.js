@@ -23,8 +23,14 @@ const Login = catchAsync(async (req, res) => {
   res.send(token);
 });
 
+const getProfile = catchAsync(async (req, res) => {
+  const data = await VolunteerService.getProfile(req);
+  res.send(data);
+});
+
 module.exports = {
   createVolunteer,
   setPassword,
   Login,
+  getProfile,
 };
