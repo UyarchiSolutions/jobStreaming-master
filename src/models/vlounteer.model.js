@@ -88,6 +88,9 @@ const VolunteerSchema = new mongoose.Schema({
   name: {
     type: String,
   },
+  charges: {
+    type: String,
+  },
 });
 
 /**

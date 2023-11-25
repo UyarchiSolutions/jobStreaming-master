@@ -68,6 +68,21 @@ const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
   await transport.sendMail(msg);
 };
 
+const volunteerMailVerification = async (data) => {
+  const { email, name } = data;
+  let data1 = await ejs.renderFile(__dirname + '/volunteer-emailverify.ejs', {
+    email: email,
+    name: name,
+  });
+  const msg = {
+    from: config.email.from,
+    to: email,
+    subject: 'Email verification',
+    html: data1,
+  };
+  await transport.sendMail(msg);
+};
+
 const sendsuccessTestMail = async (data) => {
   const { mail, name, testProfile } = data;
   let data1 = await ejs.renderFile(__dirname + '/testwarmy.ejs', {
@@ -222,4 +237,5 @@ module.exports = {
   sendEmailTemplate,
   send_email_update,
   sendsuccessTestMail,
+  volunteerMailVerification,
 };
