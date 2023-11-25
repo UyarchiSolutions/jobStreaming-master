@@ -22,11 +22,23 @@ const VolunteerSchema = new mongoose.Schema({
   email: {
     type: String,
   },
-  experience: {
-    type: Object,
+  experiencefrom: {
+    type: Number,
   },
-  hrExperience: {
-    type: Object,
+  experiencefrom_month: {
+    type: Number,
+  },
+  experienceTo_month: {
+    type: Number,
+  },
+  experienceTo: {
+    type: Number,
+  },
+  hrExperienceFrom: {
+    type: Number,
+  },
+  hrExperienceTo: {
+    type: Number,
   },
   workStatus: {
     type: String,
@@ -38,19 +50,22 @@ const VolunteerSchema = new mongoose.Schema({
     type: String,
   },
   language: {
-    type: Object,
+    type: Array,
   },
-  coreExperience: {
-    type: Object,
+  coreExperienceFrom: {
+    type: Number,
+  },
+  coreExperienceTo: {
+    type: Number,
   },
   skills: {
-    type: Object,
+    type: Array,
   },
   currentSkill: {
-    type: Object,
+    type: Array,
   },
   evalutionSkill: {
-    type: Object,
+    type: Array,
   },
   profileImage: {
     type: String,
@@ -67,11 +82,11 @@ const VolunteerSchema = new mongoose.Schema({
   roleCategory: {
     type: String,
   },
-  Role: {
-    type: Object,
-  },
   Education: {
-    type: Object,
+    type: String,
+  },
+  name: {
+    type: String,
   },
 });
 

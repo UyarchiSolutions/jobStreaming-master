@@ -34,7 +34,7 @@ const createEventCLimb = async (req) => {
           console.error(err);
         }
         let fileURL = data.Location;
-        let datas = { ...body, ...{ uploadResume: fileURL,testNewUser: 'Yes' } };
+        let datas = { ...body, ...{ uploadResume: fileURL, testNewUser: 'Yes' } };
         let findEnvent = await Eventslot.findOne({ slot: datas.slot, date: datas.date });
         if (findEnvent) {
           if (findEnvent.no_of_count >= findEnvent.booked_count) {
@@ -303,7 +303,7 @@ const updateTestWarmy = async (req) => {
       findEnvent.save();
       values = await EventRegister.findByIdAndUpdate(
         { _id: values._id },
-        { testEntry: true, testProfile: bodyData, },
+        { testEntry: true, testProfile: bodyData },
         { new: true }
       );
     }
@@ -316,6 +316,7 @@ const updateTestWarmy = async (req) => {
 const getTestUsers = async (req) => {
   const { key, action } = req.query;
   let matchCand = { active: true };
+  let matchStatus = { active: true };
 
   if (key && key != null && key != 'null' && key != '') {
     matchCand = {
@@ -323,15 +324,25 @@ const getTestUsers = async (req) => {
     };
   }
 
+  if (action && action != null && action != 'null' && action != '') {
+    if (action == 'Pending') {
+      matchStatus = { status: { $nin: ['Activated', 'Link Send', 'Completed'] } };
+    } else {
+      matchStatus = { status: action };
+    }
+  }
   let values = await EventRegister.aggregate([
     {
       $match: {
         testEntry: true,
       },
     },
-    { $match: matchCand },
+    { $match: { $and: [matchCand, matchStatus] } },
   ]);
-  return values;
+
+  let count = await EventRegister.find({ testEntry: true }).count();
+
+  return { values, count };
 };
 
 const updateStatus = async (req) => {
