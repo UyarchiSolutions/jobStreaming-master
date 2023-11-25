@@ -333,7 +333,7 @@ const getTestUsers = async (req) => {
   }
   let values = await EventRegister.aggregate([
     {
-      $sort: { createdAt: -1 },
+      $sort: { testDate: -1 },
     },
     {
       $match: {
