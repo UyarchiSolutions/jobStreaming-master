@@ -359,6 +359,8 @@ const updateStatus = async (req) => {
   return values;
 };
 
+
+
 module.exports = {
   createEventCLimb,
   slotDetails,

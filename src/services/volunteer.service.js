@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const moment = require('moment');
 const { Volunteer } = require('../models/vlounteer.model');
+const { EventRegister } = require('../models/climb-event.model');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 
@@ -40,4 +41,69 @@ const getProfile = async (req) => {
   return findById;
 };
 
-module.exports = { createVolunteer, setPassword, Login, getProfile };
+const MatchCandidate = async (req) => {
+  let id = req.userId;
+  let values = await Volunteer.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Volunteer not found');
+  }
+  let volunSkills = values.currentSkill;
+  keySkillSearch = { testEntry: true };
+  if (volunSkills.length > 0) {
+    let arr = [];
+    volunSkills.forEach((e) => {
+      arr.push({ 'testProfile.coreSkill': { $elemMatch: { $regex: e, $options: 'i' } } });
+    });
+    keySkillSearch = { $or: arr };
+  } else {
+    keySkillSearch;
+  }
+
+  if (values.Role == 'Tech Volunteer') {
+    let findCand = await EventRegister.aggregate([
+      {
+        $match: {
+          $and: [keySkillSearch],
+        },
+      },
+      {
+        $addFields: {
+          isIdInArray: {
+            $in: [id, '$intrest'],
+          },
+        },
+      },
+    ]);
+
+    return findCand;
+  } else {
+    let findCand = await EventRegister.aggregate([
+      {
+        $match: {
+          $and: [{ testEntry: true }],
+        },
+      },
+      {
+        $addFields: {
+          isIdInArray: {
+            $in: [id, '$intrest'],
+          },
+        },
+      },
+    ]);
+    return findCand;
+  }
+};
+
+const CandidateIntrestUpdate = async (req) => {
+  let volunteerId = req.userId;
+  let candId = req.params.id;
+  let cand = await EventRegister.findById(candId);
+  if (!cand) {
+    throw new ApiError(httpStatus.BAD_REQUEST, " Couldn't find candidate");
+  }
+  cand = await EventRegister.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId } }, { new: true });
+  return cand;
+};
+
+module.exports = { createVolunteer, setPassword, Login, getProfile, MatchCandidate, CandidateIntrestUpdate };

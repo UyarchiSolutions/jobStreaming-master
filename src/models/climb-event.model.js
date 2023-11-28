@@ -80,6 +80,10 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
     testDate: {
       type: Date,
     },
+    intrest: {
+      type: Array,
+      default: [],
+    },
   },
   { timestamps: true }
 );

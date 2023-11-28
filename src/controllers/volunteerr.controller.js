@@ -28,9 +28,21 @@ const getProfile = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const MatchCandidate = catchAsync(async (req, res) => {
+  const data = await VolunteerService.MatchCandidate(req);
+  res.send(data);
+});
+
+const CandidateIntrestUpdate = catchAsync(async (req, res) => {
+  const data = await VolunteerService.CandidateIntrestUpdate(req);
+  res.send(data);
+});
+
 module.exports = {
   createVolunteer,
   setPassword,
   Login,
   getProfile,
+  MatchCandidate,
+  CandidateIntrestUpdate,
 };
