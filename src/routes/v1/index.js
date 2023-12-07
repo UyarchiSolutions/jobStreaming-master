@@ -24,11 +24,16 @@ const router = express.Router();
 const agoraRoute = require('./AgoraAppId.route');
 const volunteerRoute = require('./volunteer.route');
 const eventClimb = require('./event-climb.router');
+const AgriEvent = require('./agri.Event.route')
 
 const defaultRoutes = [
   {
     path: '/auth',
     route: authRoute,
+  },
+  {
+    path: '/agriEvent',
+    route: AgriEvent,
   },
   {
     path: '/volunteer',
