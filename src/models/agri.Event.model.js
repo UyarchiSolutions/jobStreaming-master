@@ -24,7 +24,8 @@ const AgriCandidateSchema = new mongoose.Schema(
       default: true,
     },
     skills: {
-      type: String,
+      type: Array,
+      default: [],
     },
     collageName: {
       type: String,
