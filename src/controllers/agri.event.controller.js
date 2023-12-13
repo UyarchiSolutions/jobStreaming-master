@@ -27,10 +27,16 @@ const getUserById = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const createCandidateReview = catchAsync(async (req, res) => {
+  const data = await AgriEventService.createCandidateReview(req);
+  res.send(data);
+});
+
 module.exports = {
   createAgriEvent,
   createSlots,
   slotDetailsAgri,
   updateCandidate,
   getUserById,
+  createCandidateReview,
 };

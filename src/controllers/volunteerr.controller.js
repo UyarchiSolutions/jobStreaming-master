@@ -38,6 +38,11 @@ const CandidateIntrestUpdate = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const uploadProfileImage = catchAsync(async (req, res) => {
+  const data = await VolunteerService.uploadProfileImage(req);
+  res.send(data);
+});
+
 module.exports = {
   createVolunteer,
   setPassword,
@@ -45,4 +50,5 @@ module.exports = {
   getProfile,
   MatchCandidate,
   CandidateIntrestUpdate,
+  uploadProfileImage,
 };

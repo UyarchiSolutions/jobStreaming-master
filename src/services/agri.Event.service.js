@@ -2,6 +2,8 @@ const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
 const { AgriCandidate, AgriEventSlot } = require('../models/agri.Event.model');
 const moment = require('moment');
+const AWS = require('aws-sdk');
+
 const createAgriEvent = async (req) => {
   let findByMobile = await AgriCandidate.findOne({ mobile: req.body.mobile });
   if (findByMobile) {
@@ -67,10 +69,48 @@ const getUserById = async (req) => {
   return findUser;
 };
 
+const createCandidateReview = async (req) => {
+  const body = req.body;
+  let creations = await AgriCandidate.create(body);
+  return creations;
+};
+
+const imageUploadAgriCand = async (req) => {
+  let id = req.params.id;
+  let findCand = await AgriCandidate.findById(id);
+  if (!findCand) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Not Found');
+  }
+  if (req.file) {
+    const s3 = new AWS.S3({
+      accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+      secretAccessKey: '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',
+      region: 'ap-south-1',
+    });
+    let params = {
+      Bucket: 'jobresume',
+      Key: req.file.originalname,
+      Body: req.file.buffer,
+      ACL: 'public-read',
+      ContentType: req.file.mimetype,
+    };
+    return new Promise((resolve, reject) => {
+      s3.upload(params, (err, res) => {
+        if (err) {
+          reject(err);
+        } else {
+          
+        }
+      });
+    });
+  }
+};
+
 module.exports = {
   createAgriEvent,
   createSlots,
   slotDetailsAgri,
   updateCandidate,
   getUserById,
+  createCandidateReview,
 };

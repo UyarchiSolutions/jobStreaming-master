@@ -5,6 +5,7 @@ const { EventRegister } = require('../models/climb-event.model');
 const { AgriCandidate } = require('../models/agri.Event.model');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
+const AWS = require('aws-sdk')
 
 const createVolunteer = async (req) => {
   let body = req.body;
@@ -102,4 +103,44 @@ const CandidateIntrestUpdate = async (req) => {
   return cand;
 };
 
-module.exports = { createVolunteer, setPassword, Login, getProfile, MatchCandidate, CandidateIntrestUpdate };
+const uploadProfileImage = async (req) => {
+  let id = req.params.id;
+  let findVol = await Volunteer.findById(id);
+  if (!findVol) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Volunteer does not exist');
+  }
+  if (req.file) {
+    const s3 = new AWS.S3({
+      accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+      secretAccessKey: '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',
+      region: 'ap-south-1',
+    });
+    let params = {
+      Bucket: 'jobresume',
+      Key: req.file.originalname,
+      Body: req.file.buffer,
+      ACL: 'public-read',
+      ContentType: req.file.mimetype,
+    };
+    return new Promise((resolve, reject) => {
+      s3.upload(params, async (err, res) => {
+        if (err) {
+          reject(err);
+        } else {
+          let updateImgLoca = await Volunteer.findByIdAndUpdate({ _id: id }, { profileImage: res.Location }, { new: true });
+          resolve(updateImgLoca);
+        }
+      });
+    });
+  }
+};
+
+module.exports = {
+  createVolunteer,
+  setPassword,
+  Login,
+  getProfile,
+  MatchCandidate,
+  CandidateIntrestUpdate,
+  uploadProfileImage,
+};

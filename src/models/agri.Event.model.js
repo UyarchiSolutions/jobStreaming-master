@@ -101,7 +101,39 @@ const event_slot_AgriSchema = new mongoose.Schema(
 
 const AgriEventSlot = mongoose.model('AgriEventSlot', event_slot_AgriSchema);
 
+const agriCandReviewSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    volunteerId: {
+      type: String,
+    },
+    rating: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    desc: {
+      type: String,
+    },
+    candId: {
+      type: String,
+    },
+    streamId: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const agriCandReview = mongoose.model('AgriCandReview', agriCandReviewSchema);
+
 module.exports = {
   AgriCandidate,
   AgriEventSlot,
+  agriCandReview,
 };
