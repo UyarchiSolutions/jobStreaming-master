@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const moment = require('moment');
 const { Volunteer } = require('../models/vlounteer.model');
 const { EventRegister } = require('../models/climb-event.model');
+const { AgriCandidate } = require('../models/agri.Event.model');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 
@@ -48,11 +49,11 @@ const MatchCandidate = async (req) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Volunteer not found');
   }
   let volunSkills = values.currentSkill;
-  keySkillSearch = { testEntry: true };
+  keySkillSearch = { active: true };
   if (volunSkills.length > 0) {
     let arr = [];
     volunSkills.forEach((e) => {
-      arr.push({ 'testProfile.coreSkill': { $elemMatch: { $regex: e, $options: 'i' } } });
+      arr.push({ skills: { $elemMatch: { $regex: e, $options: 'i' } } });
     });
     keySkillSearch = { $or: arr };
   } else {
@@ -60,7 +61,7 @@ const MatchCandidate = async (req) => {
   }
 
   if (values.Role == 'Tech Volunteer') {
-    let findCand = await EventRegister.aggregate([
+    let findCand = await AgriCandidate.aggregate([
       {
         $match: {
           $and: [keySkillSearch],
@@ -77,12 +78,7 @@ const MatchCandidate = async (req) => {
 
     return findCand;
   } else {
-    let findCand = await EventRegister.aggregate([
-      {
-        $match: {
-          $and: [{ testEntry: true }],
-        },
-      },
+    let findCand = await AgriCandidate.aggregate([
       {
         $addFields: {
           isIdInArray: {
@@ -98,11 +94,11 @@ const MatchCandidate = async (req) => {
 const CandidateIntrestUpdate = async (req) => {
   let volunteerId = req.userId;
   let candId = req.params.id;
-  let cand = await EventRegister.findById(candId);
+  let cand = await AgriCandidate.findById(candId);
   if (!cand) {
     throw new ApiError(httpStatus.BAD_REQUEST, " Couldn't find candidate");
   }
-  cand = await EventRegister.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId } }, { new: true });
+  cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId } }, { new: true });
   return cand;
 };
 

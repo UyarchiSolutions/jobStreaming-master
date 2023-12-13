@@ -59,6 +59,10 @@ const AgriCandidateSchema = new mongoose.Schema(
     time: {
       type: String,
     },
+    intrest: {
+      type: Array,
+      default: [],
+    },
   },
   { timestamps: true }
 );
