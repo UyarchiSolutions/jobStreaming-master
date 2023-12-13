@@ -5,7 +5,7 @@ const { EventRegister } = require('../models/climb-event.model');
 const { AgriCandidate } = require('../models/agri.Event.model');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
-const AWS = require('aws-sdk')
+const AWS = require('aws-sdk');
 
 const createVolunteer = async (req) => {
   let body = req.body;
