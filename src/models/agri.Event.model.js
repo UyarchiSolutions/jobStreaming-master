@@ -27,21 +27,6 @@ const AgriCandidateSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    collageName: {
-      type: String,
-    },
-    batchFrom: {
-      type: String,
-    },
-    batchTo: {
-      type: String,
-    },
-    sslc: {
-      type: String,
-    },
-    hsc: {
-      type: String,
-    },
     dob: {
       type: String,
     },
@@ -57,6 +42,22 @@ const AgriCandidateSchema = new mongoose.Schema(
       type: String,
     },
     time: {
+      type: String,
+    },
+    slotbooked: {
+      type: Boolean,
+      default: false,
+    },
+    Instituitionname: {
+      type: String,
+    },
+    affiliateduniversity: {
+      type: String,
+    },
+    Education: {
+      type: String,
+    },
+    course: {
       type: String,
     },
     intrest: {

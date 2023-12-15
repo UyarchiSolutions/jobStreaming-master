@@ -135,6 +135,15 @@ const uploadProfileImage = async (req) => {
   }
 };
 
+const getVolunteersDetails = async (req) => {
+  let id = req.userId;
+  let values = await Volunteer.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
+  }
+  return values;
+};
+
 module.exports = {
   createVolunteer,
   setPassword,
@@ -143,4 +152,5 @@ module.exports = {
   MatchCandidate,
   CandidateIntrestUpdate,
   uploadProfileImage,
+  getVolunteersDetails,
 };
