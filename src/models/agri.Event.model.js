@@ -60,6 +60,9 @@ const AgriCandidateSchema = new mongoose.Schema(
     course: {
       type: String,
     },
+    yearOfPassing: {
+      type: String,
+    },
     intrest: {
       type: Array,
       default: [],
