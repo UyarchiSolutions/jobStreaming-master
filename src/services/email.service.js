@@ -83,6 +83,21 @@ const volunteerMailVerification = async (data) => {
   await transport.sendMail(msg);
 };
 
+const candiRegReceveMail = async (data) => {
+  const { mail, name } = data;
+  let data1 = await ejs.renderFile(__dirname + '/agriCand.ejs', {
+    email: mail,
+    name: name,
+  });
+  const msg = {
+    from: config.email.from,
+    to: mail,
+    subject: 'Email verification',
+    html: data1,
+  };
+  await transport.sendMail(msg);
+};
+
 const sendsuccessTestMail = async (data) => {
   const { mail, name, testProfile } = data;
   let data1 = await ejs.renderFile(__dirname + '/testwarmy.ejs', {
@@ -238,4 +253,5 @@ module.exports = {
   send_email_update,
   sendsuccessTestMail,
   volunteerMailVerification,
+  candiRegReceveMail,
 };

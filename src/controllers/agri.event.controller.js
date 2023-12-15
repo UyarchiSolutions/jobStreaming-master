@@ -1,9 +1,11 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const AgriEventService = require('../services/agri.Event.service');
+const { candiRegReceveMail } = require('../services/email.service');
 
 const createAgriEvent = catchAsync(async (req, res) => {
   const data = await AgriEventService.createAgriEvent(req);
+  await candiRegReceveMail(data);
   res.send(data);
 });
 
