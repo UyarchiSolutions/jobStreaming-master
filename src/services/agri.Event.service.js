@@ -1,7 +1,7 @@
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
 const { AgriCandidate, AgriEventSlot } = require('../models/agri.Event.model');
-const { EventRegister } = require('../models/climb-event.model')
+const { EventRegister } = require('../models/climb-event.model');
 const moment = require('moment');
 const AWS = require('aws-sdk');
 const XLSX = require('xlsx');
@@ -112,11 +112,51 @@ const ExcelDatas = async (req) => {
     const workbook = XLSX.read(req.file.buffer);
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-    const emailColumnIndex = rows[0].findIndex(cell => cell.includes('Email'));
-    const emailFields = rows.slice(1).map(row => row[emailColumnIndex]).filter(Email => Email);
-    let MatchedDatas = await EventRegister.find({mail:{$in:emailFields}})
-    let UnMatchedDatas = await EventRegister.find({mail:{$nin:emailFields}})
-    return {MatchedDatas,UnMatchedDatas }
+    const emailColumnIndex = rows[0].findIndex((cell) => cell.includes('Email'));
+    const extractedData = [];
+    const emailsDats = [];
+    const contacts = [];
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
+    const contactNumberRegex = /\b\d{10}\b/;
+    const headerRow = rows[0];
+    const nameIndex = headerRow.indexOf('Name');
+    const emailIndex = headerRow.indexOf('Email');
+    const contactNumberIndex = headerRow.indexOf('Contact No');
+
+    rows.slice(1).forEach((row) => {
+      const name = row[nameIndex];
+      const email = row[emailIndex];
+      const contactNumber = row[contactNumberIndex];
+      if (email && emailRegex.test(email) && contactNumber && contactNumberRegex.test(contactNumber)) {
+        extractedData.push({ name, email, contactNumber });
+        emailsDats.push(email);
+        contacts.push(contactNumber);
+      }
+    });
+    const queryMail = { mail: { $in: emailsDats } };
+    const queryContact = { mobileNumber: { $in: contacts } };
+
+    let MatchedDatas = await EventRegister.aggregate([
+      {
+        $match: { $or: [queryMail, queryContact] },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: 1,
+          email: '$mail',
+          mobileNumber: 1,
+          mobileNumber: 1,
+          currentLocation: 1,
+          education: 1,
+          year_of_passedout: 1,
+          uploadResume: 1,
+        },
+      },
+    ]);
+    const matchedEmails = new Set(MatchedDatas.map((item) => item.email));
+    const unmatchedObjects = extractedData.filter((item) => !matchedEmails.has(item.email));
+    return { UnMatchedData: unmatchedObjects, matchedData: MatchedDatas };
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Upload file');
   }

@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const AgriEventService = require('../services/agri.Event.service');
-const { candiRegReceveMail } = require('../services/email.service');
+const { candiRegReceveMail, eventMailSend } = require('../services/email.service');
 
 const createAgriEvent = catchAsync(async (req, res) => {
   const data = await AgriEventService.createAgriEvent(req);
@@ -39,6 +39,11 @@ const ExcelDatas = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const EmailSend = catchAsync(async (req, res) => {
+  await eventMailSend(req.body.email);
+  res.send({ message: 'Mail sent successfully' });
+});
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -47,4 +52,5 @@ module.exports = {
   getUserById,
   createCandidateReview,
   ExcelDatas,
+  EmailSend,
 };

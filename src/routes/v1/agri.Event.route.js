@@ -13,5 +13,6 @@ router.route('/update/candidate/:id').put(AgriEventController.updateCandidate);
 router.route('/getCandidate/:id').get(AgriEventController.getUserById);
 router.route('/candidate/review').post(AgriEventController.createCandidateReview);
 router.route('/ExcelDatas').post(upload, AgriEventController.ExcelDatas);
+router.route('/mailsend').post(AgriEventController.EmailSend);
 
 module.exports = router;

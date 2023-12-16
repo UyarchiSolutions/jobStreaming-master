@@ -68,6 +68,19 @@ const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
   await transport.sendMail(msg);
 };
 
+const eventMailSend = async (to) => {
+  data1 = await ejs.renderFile(__dirname + '/sample.ejs');
+  const msg = {
+    from: config.email.from,
+    to: to,
+    // to:"vignesh1041996@gmail.com",
+    subject: 'Internship Opportunity-Final/Pre final years-Free Guidance',
+    html: data1,
+  };
+  // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
+  await transport.sendMail(msg);
+};
+
 const volunteerMailVerification = async (data) => {
   const { email, name } = data;
   let data1 = await ejs.renderFile(__dirname + '/volunteer-emailverify.ejs', {
@@ -254,4 +267,5 @@ module.exports = {
   sendsuccessTestMail,
   volunteerMailVerification,
   candiRegReceveMail,
+  eventMailSend,
 };
