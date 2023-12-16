@@ -153,8 +153,8 @@ const ExcelDatas = async (req) => {
         },
       },
     ]);
-    const matchedEmails = new Set(MatchedDatas.map((item) => item.mobileNumber));
-    const unmatchedObjects = extractedData.filter((item) => !matchedEmails.has(item.contactNumber));
+    const matchedEmails = new Set(MatchedDatas.map((item) => item.email));
+    const unmatchedObjects = extractedData.filter((item) => !matchedEmails.has(item.email));
     return { UnMatchedDatas: unmatchedObjects, MatchedDatas: MatchedDatas };
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Upload file');
