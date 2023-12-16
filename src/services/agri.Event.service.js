@@ -1,8 +1,10 @@
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
 const { AgriCandidate, AgriEventSlot } = require('../models/agri.Event.model');
+const { EventRegister } = require('../models/climb-event.model')
 const moment = require('moment');
 const AWS = require('aws-sdk');
+const XLSX = require('xlsx');
 
 const createAgriEvent = async (req) => {
   let findByMobile = await AgriCandidate.findOne({ mobile: req.body.mobile });
@@ -99,10 +101,24 @@ const imageUploadAgriCand = async (req) => {
         if (err) {
           reject(err);
         } else {
-          
         }
       });
     });
+  }
+};
+
+const ExcelDatas = async (req) => {
+  if (req.file) {
+    const workbook = XLSX.read(req.file.buffer);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    const emailColumnIndex = rows[0].findIndex(cell => cell.includes('Email'));
+    const emailFields = rows.slice(1).map(row => row[emailColumnIndex]).filter(Email => Email);
+    let MatchedDatas = await EventRegister.find({mail:{$in:emailFields}})
+    let UnMatchedDatas = await EventRegister.find({mail:{$nin:emailFields}})
+    return {MatchedDatas,UnMatchedDatas }
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Upload file');
   }
 };
 
@@ -113,4 +129,5 @@ module.exports = {
   updateCandidate,
   getUserById,
   createCandidateReview,
+  ExcelDatas,
 };

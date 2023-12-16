@@ -34,6 +34,11 @@ const createCandidateReview = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const ExcelDatas = catchAsync(async (req, res) => {
+  const data = await AgriEventService.ExcelDatas(req);
+  res.send(data);
+});
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -41,4 +46,5 @@ module.exports = {
   updateCandidate,
   getUserById,
   createCandidateReview,
+  ExcelDatas,
 };
