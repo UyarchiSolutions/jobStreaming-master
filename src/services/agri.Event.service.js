@@ -146,7 +146,6 @@ const ExcelDatas = async (req) => {
           name: 1,
           email: '$mail',
           mobileNumber: 1,
-          mobileNumber: 1,
           currentLocation: 1,
           education: 1,
           year_of_passedout: 1,
