@@ -151,11 +151,28 @@ const getCandidatesForInterview = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
   }
-  let candidates = await AgriCandidate.aggregate([
+  let candidates = await IntrestedCandidate.aggregate([
     {
-      $match: { intrest: { $in: [id] } },
+      $match: {
+        volunteerId: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'agricandidates',
+        localField: 'candId',
+        foreignField: '_id',
+        as: 'Cand',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$Cand',
+      },
     },
   ]);
+  return candidates;
 };
 
 module.exports = {
@@ -167,4 +184,5 @@ module.exports = {
   CandidateIntrestUpdate,
   uploadProfileImage,
   getVolunteersDetails,
+  getCandidatesForInterview,
 };
