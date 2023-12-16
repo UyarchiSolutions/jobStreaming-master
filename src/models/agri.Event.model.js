@@ -136,8 +136,37 @@ const agriCandReviewSchema = new mongoose.Schema(
 
 const agriCandReview = mongoose.model('AgriCandReview', agriCandReviewSchema);
 
+const IntrestCandidateSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    candId: {
+      type: String,
+    },
+    volunteerId: {
+      type: String,
+    },
+    status: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    activatedDate: {
+      type: Date,
+    },
+  },
+  { timestamps: true }
+);
+
+const IntrestedCandidate = mongoose.model('intrestedCandidate', IntrestCandidateSchema);
+
 module.exports = {
   AgriCandidate,
   AgriEventSlot,
   agriCandReview,
+  IntrestedCandidate,
 };

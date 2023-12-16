@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const moment = require('moment');
 const { Volunteer } = require('../models/vlounteer.model');
 const { EventRegister } = require('../models/climb-event.model');
-const { AgriCandidate } = require('../models/agri.Event.model');
+const { AgriCandidate, IntrestedCandidate } = require('../models/agri.Event.model');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const AWS = require('aws-sdk');
@@ -100,6 +100,7 @@ const CandidateIntrestUpdate = async (req) => {
     throw new ApiError(httpStatus.BAD_REQUEST, " Couldn't find candidate");
   }
   cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId } }, { new: true });
+  await IntrestedCandidate.create({ candId: candId, volunteerId: volunteerId, status: 'Intrested' });
   return cand;
 };
 
@@ -142,6 +143,19 @@ const getVolunteersDetails = async (req) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
   }
   return values;
+};
+
+const getCandidatesForInterview = async (req) => {
+  let id = req.userId;
+  let values = await Volunteer.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
+  }
+  let candidates = await AgriCandidate.aggregate([
+    {
+      $match: { intrest: { $in: [id] } },
+    },
+  ]);
 };
 
 module.exports = {
