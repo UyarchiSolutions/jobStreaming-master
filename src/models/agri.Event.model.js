@@ -67,6 +67,10 @@ const AgriCandidateSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    techIntrest: {
+      type: Array,
+      default: [],
+    },
   },
   { timestamps: true }
 );
@@ -157,6 +161,9 @@ const IntrestCandidateSchema = new mongoose.Schema(
     },
     activatedDate: {
       type: Date,
+    },
+    Role: {
+      type: String,
     },
   },
   { timestamps: true }

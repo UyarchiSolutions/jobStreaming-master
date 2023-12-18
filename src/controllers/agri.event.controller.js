@@ -44,6 +44,11 @@ const EmailSend = catchAsync(async (req, res) => {
   res.send({ message: 'Mail sent successfully' });
 });
 
+const getAgriCandidates = catchAsync(async (req, res) => {
+  const data = await AgriEventService.getAgriCandidates(req);
+  res.send(data);
+});
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -53,4 +58,5 @@ module.exports = {
   createCandidateReview,
   ExcelDatas,
   EmailSend,
+  getAgriCandidates,
 };

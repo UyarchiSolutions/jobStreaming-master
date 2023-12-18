@@ -5,6 +5,7 @@ const { EventRegister } = require('../models/climb-event.model');
 const moment = require('moment');
 const AWS = require('aws-sdk');
 const XLSX = require('xlsx');
+const { pipeline } = require('nodemailer/lib/xoauth2');
 
 const createAgriEvent = async (req) => {
   let findByMobile = await AgriCandidate.findOne({ mobile: req.body.mobile });
@@ -161,6 +162,15 @@ const ExcelDatas = async (req) => {
   }
 };
 
+const getAgriCandidates = async (req) => {
+  const AgriCandidates = await AgriCandidate.aggregate([
+    {
+      $match: { active: true },
+    },
+  ]);
+  return AgriCandidates;
+};
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -169,4 +179,5 @@ module.exports = {
   getUserById,
   createCandidateReview,
   ExcelDatas,
+  getAgriCandidates,
 };
