@@ -14,7 +14,6 @@ const createEventCLimb = async (req) => {
   if (findBymobile) {
     throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mobile Number Already Exist');
   }
-
   if (req.file) {
     const s3 = new AWS.S3({
       accessKeyId: 'AKIA3323XNN7Y2RU77UG',
@@ -31,11 +30,12 @@ const createEventCLimb = async (req) => {
     return new Promise((resolve, reject) => {
       s3.upload(params, async (err, data) => {
         if (err) {
-          console.error(err);
+          reject(err);
         }
         let fileURL = data.Location;
-        let datas = { ...body, ...{ uploadResume: fileURL, testNewUser: 'Yes' } };
+        let datas = { ...body, ...{ uploadResume: fileURL, } };
         let findEnvent = await Eventslot.findOne({ slot: datas.slot, date: datas.date });
+        console.log(findEnvent)
         if (findEnvent) {
           if (findEnvent.no_of_count >= findEnvent.booked_count) {
             findEnvent.booked_count = findEnvent.booked_count + 1;
@@ -358,8 +358,6 @@ const updateStatus = async (req) => {
   values = await EventRegister.findByIdAndUpdate({ _id: id }, body, { new: true });
   return values;
 };
-
-
 
 module.exports = {
   createEventCLimb,

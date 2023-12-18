@@ -109,6 +109,9 @@ const event_slot = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    sortcount:{
+      type: Number,
+    }
   },
   { timestamps: true }
 );

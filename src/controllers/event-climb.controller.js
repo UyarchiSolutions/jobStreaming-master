@@ -6,6 +6,8 @@ const { authService, userService, tokenService, emailService, candidateRegistrat
 
 const createEventClimb = catchAsync(async (req, res) => {
   const data = await climbeventService.createEventCLimb(req);
+  console.log(data)
+  await emailService.sendsuccessTestMail(data);
   res.send(data);
 });
 

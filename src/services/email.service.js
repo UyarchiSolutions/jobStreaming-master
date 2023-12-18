@@ -11,12 +11,12 @@ const transport = nodemailer.createTransport(config.email.smtp);
 // const transport2 = nodemailer.createTransport(config.email2.smtp);
 const transporter2 = nodemailer.createTransport({
   host: 'smtp.hostinger.com', // Replace with your SMTP server host
-  port: 465, // Replace with your SMTP server port (587 is a common secure TLS/STARTTLS port)
+  port: 465,
   auth: {
-    user: 'test@warmy.co.in',
-    pass: 'Dhoni@001',
+    user: 'noreply@warmy.co.in',
+    pass: 'Asesea@001',
   },
-  from: 'test@warmy.co.in',
+  from: 'noreply@warmy.co.in',
 });
 
 /* istanbul ignore next */
@@ -112,22 +112,19 @@ const candiRegReceveMail = async (data) => {
 };
 
 const sendsuccessTestMail = async (data) => {
-  const { mail, name, testProfile } = data;
+  const { mail, name, date, slot } = data;
   let data1 = await ejs.renderFile(__dirname + '/testwarmy.ejs', {
     email: mail,
     name: name,
-    date: testProfile.date,
-    time: testProfile.time,
+    date: date,
+    time: slot,
   });
-
   const msg = {
-    from: 'test@warmy.co.in',
+    from: 'noreply@warmy.co.in',
     to: mail,
-    // to:"vignesh1041996@gmail.com",
-    subject: 'Assessment Registration Online-Associate Software Engineer-Acknowledgement',
+    subject: 'Registration Success-Associate Software Engineer-Acknowledgement',
     html: data1,
   };
-  // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   await transporter2.sendMail(msg);
 };
 
