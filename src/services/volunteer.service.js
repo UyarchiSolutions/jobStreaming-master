@@ -99,7 +99,7 @@ const CandidateIntrestUpdate = async (req) => {
   if (!cand) {
     throw new ApiError(httpStatus.BAD_REQUEST, " Couldn't find candidate");
   }
-  let values = await Volunteer.findById(id);
+  let values = await Volunteer.findById(volunteerId);
   if (values.Role == 'HR Volunteer') {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId } }, { new: true });
   } else {
