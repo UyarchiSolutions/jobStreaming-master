@@ -180,6 +180,19 @@ const getCandidateById = async (req) => {
   return values;
 };
 
+const getCandBy = async (req) => {
+  const { mob_email } = req.body;
+  let findByEmail = await AgriCandidate.findOne({ mail: mob_email });
+  let findBymobile = await AgriCandidate.findOne({ mobile: mob_email });
+  if (findByEmail != null) {
+    return findByEmail;
+  } else if (findBymobile != null) {
+    return findBymobile;
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Mobile OR Email Address');
+  }
+};
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -190,4 +203,5 @@ module.exports = {
   ExcelDatas,
   getAgriCandidates,
   getCandidateById,
+  getCandBy,
 };

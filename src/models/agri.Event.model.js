@@ -103,6 +103,9 @@ const event_slot_AgriSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    Type: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

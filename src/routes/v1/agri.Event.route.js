@@ -16,4 +16,5 @@ router.route('/ExcelDatas').post(upload, AgriEventController.ExcelDatas);
 router.route('/mailsend').post(AgriEventController.EmailSend);
 router.route('/agri/cand').get(AgriEventController.getAgriCandidates);
 router.route('/getCandidateById/:id').get(AgriEventController.getCandidateById);
+router.route('/getCandBy').post(AgriEventController.getCandBy);
 module.exports = router;
