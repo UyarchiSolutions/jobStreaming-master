@@ -49,6 +49,11 @@ const getAgriCandidates = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getCandidateById = catchAsync(async (req, res) => {
+  const data = await AgriEventService.getCandidateById(req);
+  res.send(data);
+});
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -59,4 +64,5 @@ module.exports = {
   ExcelDatas,
   EmailSend,
   getAgriCandidates,
+  getCandidateById,
 };
