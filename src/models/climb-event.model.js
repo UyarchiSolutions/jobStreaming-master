@@ -84,6 +84,10 @@ const ClicmbEventRegisterSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    NewTestEntry: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
@@ -109,9 +113,9 @@ const event_slot = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    sortcount:{
+    sortcount: {
       type: Number,
-    }
+    },
   },
   { timestamps: true }
 );
@@ -143,9 +147,41 @@ const event_slot_Test = new mongoose.Schema(
     dateTime: {
       type: Date,
     },
+    Type: String,
   },
   { timestamps: true }
 );
 const EventslotTest = mongoose.model('eventslottest', event_slot_Test);
 
-module.exports = { EventRegister, Eventslot, EventslotTest };
+const event_slot_TestNew = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    date: {
+      type: String,
+    },
+    slot: {
+      type: String,
+    },
+    no_of_count: {
+      type: Number,
+    },
+    booked_count: {
+      type: Number,
+      default: 0,
+    },
+    sortcount: {
+      type: Number,
+    },
+    dateTime: {
+      type: Date,
+    },
+    Type: String,
+  },
+  { timestamps: true }
+);
+const EventslotTestNew = mongoose.model('eventslottestnew', event_slot_TestNew);
+
+module.exports = { EventRegister, Eventslot, EventslotTest, EventslotTestNew };

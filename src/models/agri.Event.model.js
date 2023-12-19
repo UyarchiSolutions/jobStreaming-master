@@ -174,9 +174,38 @@ const IntrestCandidateSchema = new mongoose.Schema(
 
 const IntrestedCandidate = mongoose.model('intrestedCandidate', IntrestCandidateSchema);
 
+const SlotBookingSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    Type: {
+      type: String,
+    },
+    candId: {
+      type: String,
+    },
+    date: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const SlotBooking = mongoose.model('SlotBooking', SlotBookingSchema);
+
 module.exports = {
   AgriCandidate,
   AgriEventSlot,
   agriCandReview,
   IntrestedCandidate,
+  SlotBooking,
 };

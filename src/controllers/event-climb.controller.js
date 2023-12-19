@@ -6,7 +6,7 @@ const { authService, userService, tokenService, emailService, candidateRegistrat
 
 const createEventClimb = catchAsync(async (req, res) => {
   const data = await climbeventService.createEventCLimb(req);
-  console.log(data)
+  console.log(data);
   await emailService.sendsuccessTestMail(data);
   res.send(data);
 });
@@ -63,6 +63,12 @@ const updateTestWarmy = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const updateTestWarmyNew = catchAsync(async (req, res) => {
+  const data = await climbeventService.updateTestWarmyNew(req);
+  await emailService.sendsuccessTestMail(data);
+  res.send(data);
+});
+
 const insertSlotsTest = catchAsync(async (req, res) => {
   const data = await climbeventService.insertSlotsTest(req);
   res.send(data);
@@ -83,8 +89,28 @@ const getTestUsers = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getTestUsersNew = catchAsync(async (req, res) => {
+  const data = await climbeventService.getTestUsersNew(req);
+  res.send(data);
+});
+
 const updateStatus = catchAsync(async (req, res) => {
   const data = await climbeventService.updateStatus(req);
+  res.send(data);
+});
+
+const insertSlotsTestNew = catchAsync(async (req, res) => {
+  const data = await climbeventService.insertSlotsTestNew(req);
+  res.send(data);
+});
+
+const slotDetailsTestNewHR = catchAsync(async (req, res) => {
+  const data = await climbeventService.slotDetailsTestNewHR();
+  res.send(data);
+});
+
+const slotDetailsTestNewTech = catchAsync(async (req, res) => {
+  const data = await climbeventService.slotDetailsTestNewTech();
   res.send(data);
 });
 
@@ -105,4 +131,9 @@ module.exports = {
   createTestCandidates,
   getTestUsers,
   updateStatus,
+  insertSlotsTestNew,
+  slotDetailsTestNewHR,
+  slotDetailsTestNewTech,
+  updateTestWarmyNew,
+  getTestUsersNew,
 };

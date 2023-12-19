@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
-const { EventRegister, Eventslot, EventslotTest } = require('../models/climb-event.model');
+const { EventRegister, Eventslot, EventslotTest, EventslotTestNew } = require('../models/climb-event.model');
 const AWS = require('aws-sdk');
 
 const createEventCLimb = async (req) => {
@@ -33,9 +33,9 @@ const createEventCLimb = async (req) => {
           reject(err);
         }
         let fileURL = data.Location;
-        let datas = { ...body, ...{ uploadResume: fileURL, } };
+        let datas = { ...body, ...{ uploadResume: fileURL } };
         let findEnvent = await Eventslot.findOne({ slot: datas.slot, date: datas.date });
-        console.log(findEnvent)
+        console.log(findEnvent);
         if (findEnvent) {
           if (findEnvent.no_of_count >= findEnvent.booked_count) {
             findEnvent.booked_count = findEnvent.booked_count + 1;
@@ -132,6 +132,16 @@ const insertSlotsTest = async (body) => {
   return slot;
 };
 
+const insertSlotsTestNew = async (body) => {
+  let date = body.body;
+  const dateTimeString = `${date.date} ${date.slot}`;
+  const momentObject = moment(dateTimeString, 'YYYY-MM-DD hh:mm A');
+  const isoDateTime = momentObject.toISOString();
+  let datas = { ...date, ...{ dateTime: isoDateTime } };
+  let slot = await EventslotTestNew.create(datas);
+  return slot;
+};
+
 const slotDetailsTest = async () => {
   let slots = await EventslotTest.aggregate([
     {
@@ -158,6 +168,95 @@ const slotDetailsTest = async () => {
     { $sort: { date: 1 } },
   ]);
   return slots;
+};
+
+const slotDetailsTestNewHR = async () => {
+  let slots = await EventslotTestNew.aggregate([
+    {
+      $match: { Type: 'HR' },
+    },
+    {
+      $match: {
+        $expr: {
+          $and: [{ $gt: ['$no_of_count', '$booked_count'] }],
+        },
+      },
+    },
+    { $sort: { sortcount: 1 } },
+    {
+      $group: {
+        _id: { date: '$date' },
+        time: { $push: '$slot' },
+      },
+    },
+    {
+      $project: {
+        _id: '',
+        date: '$_id.date',
+        time: 1,
+      },
+    },
+    { $sort: { date: 1 } },
+  ]);
+  return slots;
+};
+
+const slotDetailsTestNewTech = async () => {
+  let slots = await EventslotTestNew.aggregate([
+    {
+      $match: { Type: 'TECH' },
+    },
+    {
+      $match: {
+        $expr: {
+          $and: [{ $gt: ['$no_of_count', '$booked_count'] }],
+        },
+      },
+    },
+    { $sort: { sortcount: 1 } },
+    {
+      $group: {
+        _id: { date: '$date' },
+        time: { $push: '$slot' },
+      },
+    },
+    {
+      $project: {
+        _id: '',
+        date: '$_id.date',
+        time: 1,
+      },
+    },
+    { $sort: { date: 1 } },
+  ]);
+  return slots;
+};
+
+const updateTestWarmyNew = async (req) => {
+  let values = await EventRegister.findById(req.params.id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidates not found');
+  }
+
+  if (values.NewTestEntry == true) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Already You Profile Updated');
+  }
+  const bodyData = req.body;
+  let findEnvent = await EventslotTestNew.findOne({ slot: bodyData.time, date: bodyData.date });
+  if (findEnvent) {
+    if (findEnvent.no_of_count >= findEnvent.booked_count) {
+      findEnvent.booked_count = findEnvent.booked_count + 1;
+      findEnvent.save();
+      values = await EventRegister.findByIdAndUpdate(
+        { _id: values._id },
+        { NewTestEntry: true, testProfile: bodyData, testDate: moment() },
+        { new: true }
+      );
+    }
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Engached');
+  }
+  return values;
 };
 
 const getAllRegistered_Candidate = async (query) => {
@@ -270,13 +369,13 @@ const verify_cand = async (req) => {
   let findbyemail = await EventRegister.findOne({ mail: mob_email });
 
   if (findbyemail) {
-    if (findbyemail.testEntry) {
+    if (findbyemail.NewTestEntry) {
       throw new ApiError(httpStatus.BAD_REQUEST, '*Your Profile Already Updated');
     } else {
       return findbyemail;
     }
   } else if (findbyMobile) {
-    if (findbyMobile.testEntry) {
+    if (findbyMobile.NewTestEntry) {
       throw new ApiError(httpStatus.BAD_REQUEST, '*Your Profile Already Updated');
     } else {
       return findbyMobile;
@@ -348,6 +447,41 @@ const getTestUsers = async (req) => {
   return { values, count };
 };
 
+const getTestUsersNew = async (req) => {
+  const { key, action } = req.query;
+  let matchCand = { active: true };
+  let matchStatus = { active: true };
+
+  if (key && key != null && key != 'null' && key != '') {
+    matchCand = {
+      $or: [{ mail: { $regex: key, $options: 'i' } }, { mobileNumber: { $regex: key, $options: 'i' } }],
+    };
+  }
+
+  if (action && action != null && action != 'null' && action != '') {
+    if (action == 'Pending') {
+      matchStatus = { status: { $nin: ['Activated', 'Link Send', 'Completed'] } };
+    } else {
+      matchStatus = { status: action };
+    }
+  }
+  let values = await EventRegister.aggregate([
+    {
+      $sort: { testDate: -1 },
+    },
+    {
+      $match: {
+        NewTestEntry: true,
+      },
+    },
+    { $match: { $and: [matchCand, matchStatus] } },
+  ]);
+
+  let count = await EventRegister.find({ NewTestEntry: true }).count();
+
+  return { values, count };
+};
+
 const updateStatus = async (req) => {
   const body = req.body;
   const id = req.params.id;
@@ -376,4 +510,9 @@ module.exports = {
   createTestCandidates,
   getTestUsers,
   updateStatus,
+  insertSlotsTestNew,
+  slotDetailsTestNewHR,
+  slotDetailsTestNewTech,
+  updateTestWarmyNew,
+  getTestUsersNew,
 };

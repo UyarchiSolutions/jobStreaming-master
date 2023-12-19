@@ -22,9 +22,14 @@ router.route('/getDetails/ByCandidate').get(Auth, ClimbController.getDetailsByCa
 router.route('/update/Profile/Candidate').post(Auth, ClimbController.updateProfileCandidate);
 router.route('/verify/cand').post(ClimbController.verify_cand);
 router.route('/update/TestWarmy/:id').put(ClimbController.updateTestWarmy);
+router.route('/update/TestWarmy/new/:id').put(ClimbController.updateTestWarmyNew);
 router.route('/insertSlots/Test').post(ClimbController.insertSlotsTest);
 router.route('/slotDetails/Test').get(ClimbController.slotDetailsTest);
 router.route('/createTest/Candidates').post(UploadFile, ClimbController.createTestCandidates);
 router.route('/getTestUsers').get(ClimbController.getTestUsers);
 router.route('/update/Status/:id').put(ClimbController.updateStatus);
+router.route('/insertSlotsTest/New').post(ClimbController.insertSlotsTestNew);
+router.route('/slotDetails/TestNewHR').get(ClimbController.slotDetailsTestNewHR);
+router.route('/slotDetails/TestNewTech').get(ClimbController.slotDetailsTestNewTech);
+router.route('/getTestUsers/New').get(ClimbController.getTestUsersNew);
 module.exports = router;
