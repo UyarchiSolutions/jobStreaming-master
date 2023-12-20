@@ -26,9 +26,11 @@ let http = require('http');
 let server = http.Server(app);
 let socketIO = require('socket.io');
 let io = socketIO(server);
+const moment = require('moment');
 
 server.listen(config.port, () => {
   logger.info(`Listening to port ${config.port}`);
+  console.log(new Date('2023-12-20T12:34:56').getTime(), new Date("2023-12-21"), new Date(),moment('21-12-2023').format())
 });
 io.sockets.on('connection', async (socket) => {
   socket.on('groupchat', async (data) => {

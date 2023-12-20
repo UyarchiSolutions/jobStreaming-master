@@ -152,6 +152,9 @@ const getVolunteersDetails = async (req) => {
 
 const getCandidatesForInterview = async (req) => {
   let id = req.userId;
+  let role = req.Role == 'HR Volunteer' ? 'HR' : 'Tech';
+
+  console.log(role)
   let values = await Volunteer.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
@@ -166,6 +169,20 @@ const getCandidatesForInterview = async (req) => {
       $lookup: {
         from: 'agricandidates',
         localField: 'candId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'slotbookings',
+              localField: '_id',
+              foreignField: 'candId',
+              pipeline: [
+                { $match: { $and: [{ Type: { $eq: role } }] } }
+              ],
+              as: 'slotbookings',
+            },
+          },
+          { $unwind: "$slotbookings" }
+        ],
         foreignField: '_id',
         as: 'Cand',
       },

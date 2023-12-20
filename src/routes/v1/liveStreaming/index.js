@@ -3,6 +3,7 @@ const generateAuthTokens = require('./generateToken.route');
 const multihostModal = require('./generateToken-multihost.route');
 const chatModel = require('./chat.route');
 const docsRoute = require('../docs.route');
+const demostream = require('../liveStreaming/DemoStream.route');
 const config = require('../../../config/config');
 
 const router = express.Router();
@@ -20,6 +21,10 @@ const defaultRoutes = [
     path: '/chat',
     route: chatModel,
   },
+  {
+    path: "/demostream",
+    route: demostream
+  }
 ];
 
 const devRoutes = [

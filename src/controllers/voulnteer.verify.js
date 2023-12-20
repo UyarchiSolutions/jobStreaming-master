@@ -21,6 +21,7 @@ const authorization = async (req, res, next) => {
       return res.send(httpStatus.UNAUTHORIZED, 'User Not Available');
     }
     req.userId = payload.sub;
+    req.Role = userss.Role;
     return next();
   } catch {
     return res.send(httpStatus.UNAUTHORIZED, 'Invalid Access Token');
