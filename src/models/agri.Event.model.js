@@ -199,6 +199,9 @@ const SlotBookingSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    DateTime: {
+      type: Number
+    }
   },
   { timestamps: true }
 );

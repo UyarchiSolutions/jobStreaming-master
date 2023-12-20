@@ -30,7 +30,9 @@ const moment = require('moment');
 
 server.listen(config.port, () => {
   logger.info(`Listening to port ${config.port}`);
-  console.log(new Date('2023-12-20T12:34:56').getTime(), new Date("2023-12-21"), new Date(),moment('21-12-2023').format())
+  //  console.log(new Date(moment('21-12-2023 12:00 PM', 'DD-MM-YYYY hh:mm A').toISOString()).getTime());
+  // console.log(moment('21-12-2023 12:00 PM', 'DD-MM-YYYY hh:mm A').toISOString());
+  // console.log(moment(1703140200000).format("DD-MM-yyyy hh:mm a"))
 });
 io.sockets.on('connection', async (socket) => {
   socket.on('groupchat', async (data) => {
