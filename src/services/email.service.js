@@ -13,10 +13,10 @@ const transporter2 = nodemailer.createTransport({
   host: 'smtp.hostinger.com', // Replace with your SMTP server host
   port: 465,
   auth: {
-    user: 'noreply1@warmy.co.in',
+    user: 'noreply@warmy.co.in',
     pass: 'Asesea@001',
   },
-  from: 'noreply1@warmy.co.in',
+  from: 'noreply@warmy.co.in',
 });
 
 /* istanbul ignore next */
@@ -120,7 +120,7 @@ const sendsuccessTestMail = async (data) => {
     time: slot,
   });
   const msg = {
-    from: 'noreply1@warmy.co.in',
+    from: 'noreply@warmy.co.in',
     to: mail,
     subject: 'Registration Success-Associate Software Engineer-Acknowledgement',
     html: data1,
@@ -138,7 +138,7 @@ const sendsuccessTestMailNew = async (data) => {
     time: testProfile.time,
   });
   const msg = {
-    from: 'noreply1@warmy.co.in',
+    from: 'noreply@warmy.co.in',
     to: mail,
     subject: 'Interview Registration Success-Associate Software Engineer-Acknowledgement',
     html: data1,
