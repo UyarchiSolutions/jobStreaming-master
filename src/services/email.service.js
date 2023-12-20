@@ -128,6 +128,24 @@ const sendsuccessTestMail = async (data) => {
   await transporter2.sendMail(msg);
 };
 
+const sendsuccessTestMailNew = async (data) => {
+  const { mail, name, date, slot,testProfile } = data;
+  console.log(data)
+  let data1 = await ejs.renderFile(__dirname + '/testwarmynew.ejs', {
+    email: mail,
+    name: name,
+    date: testProfile.date,
+    time: testProfile.time,
+  });
+  const msg = {
+    from: 'noreply1@warmy.co.in',
+    to: mail,
+    subject: 'Interview Registration Success-Associate Software Engineer-Acknowledgement',
+    html: data1,
+  };
+  await transporter2.sendMail(msg);
+};
+
 const sendEmailTemplate = async (to, subject, text) => {
   const msg = { from: config.email.from, to, subject, text };
   // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
@@ -265,4 +283,5 @@ module.exports = {
   volunteerMailVerification,
   candiRegReceveMail,
   eventMailSend,
+  sendsuccessTestMailNew,
 };

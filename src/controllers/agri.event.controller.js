@@ -15,8 +15,9 @@ const createSlots = catchAsync(async (req, res) => {
 });
 
 const slotDetailsAgri = catchAsync(async (req, res) => {
-  const data = await AgriEventService.slotDetailsAgri();
-  res.send(data);
+  const data1 = await AgriEventService.slotDetailsAgriTch(req);
+  const data2 = await AgriEventService.slotDetailsAgriHR(req);
+  res.send({ Tech: data1, HR: data2 });
 });
 
 const updateCandidate = catchAsync(async (req, res) => {
@@ -59,6 +60,11 @@ const getCandBy = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const createSlotBooking = catchAsync(async (req, res) => {
+  const data = await AgriEventService.createSlotBooking(req);
+  res.send(data);
+});
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -71,4 +77,5 @@ module.exports = {
   getAgriCandidates,
   getCandidateById,
   getCandBy,
+  createSlotBooking,
 };

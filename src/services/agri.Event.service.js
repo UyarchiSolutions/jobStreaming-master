@@ -1,6 +1,6 @@
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
-const { AgriCandidate, AgriEventSlot } = require('../models/agri.Event.model');
+const { AgriCandidate, AgriEventSlot, SlotBooking } = require('../models/agri.Event.model');
 const { EventRegister } = require('../models/climb-event.model');
 const moment = require('moment');
 const AWS = require('aws-sdk');
@@ -30,9 +30,31 @@ const createSlots = async (req, res) => {
   return slots;
 };
 
-const slotDetailsAgri = async () => {
+const slotDetailsAgriHR = async () => {
   let slots = await AgriEventSlot.aggregate([
-    { $match: { active: true } },
+    { $match: { Type: 'HR' } },
+    { $sort: { sortcount: 1 } },
+    {
+      $group: {
+        _id: { date: '$date' },
+        time: { $push: '$slot' },
+      },
+    },
+    {
+      $project: {
+        _id: '',
+        date: '$_id.date',
+        time: 1,
+      },
+    },
+    { $sort: { date: 1 } },
+  ]);
+  return slots;
+};
+
+const slotDetailsAgriTch = async () => {
+  let slots = await AgriEventSlot.aggregate([
+    { $match: { Type: 'TECH' } },
     { $sort: { sortcount: 1 } },
     {
       $group: {
@@ -193,10 +215,20 @@ const getCandBy = async (req) => {
   }
 };
 
+const createSlotBooking = async (req) => {
+  const body = req.body;
+  body.forEach(async (e) => {
+    let creations = await SlotBooking.create({ candId: e.candId, date: e.date, time: e.time, Type: e.Type });
+    return creations;
+  });
+  return { message: 'Slot Booking created successfully' };
+};
+
 module.exports = {
   createAgriEvent,
   createSlots,
-  slotDetailsAgri,
+  slotDetailsAgriHR,
+  slotDetailsAgriTch,
   updateCandidate,
   getUserById,
   createCandidateReview,
@@ -204,4 +236,5 @@ module.exports = {
   getAgriCandidates,
   getCandidateById,
   getCandBy,
+  createSlotBooking,
 };

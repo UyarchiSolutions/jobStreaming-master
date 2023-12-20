@@ -65,7 +65,7 @@ const updateTestWarmy = catchAsync(async (req, res) => {
 
 const updateTestWarmyNew = catchAsync(async (req, res) => {
   const data = await climbeventService.updateTestWarmyNew(req);
-  await emailService.sendsuccessTestMail(data);
+  await emailService.sendsuccessTestMailNew(data);
   res.send(data);
 });
 
