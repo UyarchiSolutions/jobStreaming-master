@@ -201,7 +201,12 @@ const SlotBookingSchema = mongoose.Schema(
     },
     DateTime: {
       type: Number
-    }
+    },
+    streamStatus: {
+      type: String,
+      default: 'Pending',
+    },
+
   },
   { timestamps: true }
 );

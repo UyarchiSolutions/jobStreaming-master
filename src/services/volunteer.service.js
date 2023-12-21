@@ -181,16 +181,26 @@ const getCandidatesForInterview = async (req) => {
               as: 'slotbookings',
             },
           },
-          { $unwind: "$slotbookings" }
+          { $unwind: "$slotbookings" },
+          {
+            $addFields: {
+              DateTime: "$slotbookings.DateTime",
+              channel: "$slotbookings._id"
+            },
+          },
+
         ],
         foreignField: '_id',
         as: 'Cand',
       },
     },
     {
-      $unwind: {
-        preserveNullAndEmptyArrays: true,
-        path: '$Cand',
+      $unwind: '$Cand'
+    },
+    {
+      $addFields: {
+        DateTime: "$Cand.DateTime",
+        channel: "$Cand.channel"
       },
     },
   ]);
