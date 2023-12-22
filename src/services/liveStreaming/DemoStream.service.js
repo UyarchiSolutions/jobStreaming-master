@@ -14,6 +14,12 @@ const {
   Democloudrecord,
   MutibleDemo
 } = require('../../models/liveStreaming/demo.realestate.model');
+
+const { AgriCandidate,
+  AgriEventSlot,
+  agriCandReview,
+  IntrestedCandidate,
+  SlotBooking, } = require("../../models/agri.Event.model")
 const jwt = require('jsonwebtoken');
 const agoraToken = require('../AgoraAppId.service');
 
@@ -62,84 +68,6 @@ const getDatas = async () => {
   return stream;
 };
 
-const get_stream_details = async (req) => {
-  let stream = await DemoPost.findById(req.query.id);
-  if (!stream) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
-  }
-
-
-  stream = await DemoPost.aggregate([
-    { $match: { $and: [{ _id: { $eq: stream._id } }] } },
-    {
-      $lookup: {
-        from: 'demousers',
-        localField: 'userId',
-        foreignField: '_id',
-        as: 'demousers',
-      },
-    },
-    {
-      $unwind: '$demousers',
-    },
-    {
-      $lookup: {
-        from: 'demostreamhis',
-        localField: 'runningStream',
-        foreignField: '_id',
-        as: 'demostreamhis',
-      },
-    },
-    {
-      $unwind: {
-        preserveNullAndEmptyArrays: true,
-        path: '$demostreamhis',
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        "imageArr": 1,
-        "status": 1,
-        "newsPaper": 1,
-        "Edition": 1,
-        "dateOfAd": 1,
-        "createdAt": 1,
-        "updatedAt": 1,
-        "image": 1,
-        "Description": 1,
-        "bhkBuilding": 1,
-        "category": 1,
-        "furnitionStatus": 1,
-        "location": 1,
-        "postType": 1,
-        "priceExp": 1,
-        "propertyType": 1,
-        linkstatus: 1,
-        tenantType: 1,
-        ageOfProperty: 1,
-        otp_verifiyed: 1,
-        finish: 1,
-        streamDate: 1,
-        userName: "$demousers.userName",
-        mobileNumber: "$demousers.mobileNumber",
-        locationss: "$demousers.location",
-        mail: "$demousers.mail",
-        start: "$demostreamhis.start",
-        end: "$demostreamhis.end",
-        actualEnd: "$demostreamhis.actualEnd",
-        streamStatus: "$demostreamhis.status",
-        agoraAppId: "$demostreamhis.agoraAppId",
-        streamID: "$demostreamhis._id"
-      }
-    }
-  ])
-  if (stream.length == 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
-  }
-  return stream[0];
-};
-
 const send_otp = async (req) => {
   console.log(req.query.id)
   let stream = await DemoPost.findById(req.query.id);
@@ -154,15 +82,15 @@ const send_otp = async (req) => {
 
 
 const verify_otp = async (req) => {
-  let { otp, id } = req.body;
-  const token = await DemoPost.findById(id);
+  let { otp, stream } = req.body;
+  const token = await SlotBooking.findById(stream);
   if (!token) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
   }
 
   let Datenow = new Date().getTime();
   let verify = await Demootpverify.findOne({
-    streamID: id,
+    streamID: stream,
     OTP: otp,
     verify: false,
     expired: false,
@@ -174,51 +102,12 @@ const verify_otp = async (req) => {
     verify.verify = true;
     verify.expired = true;
     verify.save();
-    const stream = await DemoPost.findById(verify.streamID);
+    const stream = await SlotBooking.findById(verify.streamID);
     stream.otp_verifiyed = verify._id;
     stream.linkstatus = 'Verified';
     stream.save();
   }
   return verify;
-};
-
-const send_otp_now = async (stream) => {
-  let OTPCODE = Math.floor(100000 + Math.random() * 900000);
-  let Datenow = new Date().getTime();
-  let otpsend = await Demootpverify.findOne({
-    streamID: stream._id,
-    otpExpiedTime: { $gte: Datenow },
-    verify: false,
-    expired: false,
-  });
-  if (!otpsend) {
-    const token = await DemoUser.findById(stream.userId);
-    await Demootpverify.updateMany(
-      { streamID: stream._id, verify: false },
-      { $set: { verify: true, expired: true } },
-      { new: true }
-    );
-    let exp = moment().add(3, 'minutes');
-    let otp = await Demootpverify.create({
-      OTP: OTPCODE,
-      verify: false,
-      mobile: token.mobileNumber,
-      streamID: stream._id,
-      DateIso: moment(),
-      userID: stream.userId,
-      expired: false,
-      otpExpiedTime: exp,
-    });
-    let message = `Dear ${token.userName},thank you for the registration to the event AgriExpoLive2023 .Your OTP for logging into the account is ${OTPCODE}- AgriExpoLive2023(An Ookam company event)`;
-    let reva = await axios.get(
-      `http://panel.smsmessenger.in/api/mt/SendSMS?user=ookam&password=ookam&senderid=OOKAMM&channel=Trans&DCS=0&flashsms=0&number=${token.mobileNumber}&text=${message}&route=6&peid=1701168700339760716&DLTTemplateId=1707168958877302526`
-    );
-    console.log(reva.data);
-    otpsend = { otpExpiedTime: otp.otpExpiedTime };
-  } else {
-    otpsend = { otpExpiedTime: otpsend.otpExpiedTime };
-  }
-  return otpsend;
 };
 
 
@@ -301,49 +190,48 @@ const end_stream = async (req) => {
 
 const seller_go_live = async (req) => {
   let { post } = req.body;
-  const token = await DemoPost.findById(post);
+  const token = await SlotBooking.findById(post);
   const uid = await generateUid();
   const role = Agora.RtcRole.PUBLISHER;
   if (!token) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Channel Token');
   }
-  let his = await MutibleDemo.findById(token.runningStream);
-  if (!his) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'History not found');
-  }
-  if (his.agoraAppId == null) {
-    let agoraID = await agoraToken.token_assign(1500, his._id, 'demo');
+
+  if (token.agoraAppId == null) {
+    let agoraID = await agoraToken.token_assign(1500, token._id, 'demo');
     if (agoraID) {
-      his.agoraAppId = agoraID.element._id;
-      his.save();
-    }
-
-  }
-
-  if (token.status == 'Ready') {
-    let expirationTimestamp = moment(his.end) / 1000;
-    const agrotoken = await geenerate_rtc_token(his._id, uid, role, expirationTimestamp, his.agoraAppId);
-    let demotoken = await DemostreamToken.findOne({ type: 'HOST', channel: his._id });
-    if (!demotoken) {
-      demotoken = await DemostreamToken.create({
-        expirationTimestamp: expirationTimestamp * 1000,
-        streamID: token._id,
-        type: 'HOST',
-        uid: uid,
-        agoraID: his.agoraAppId,
-        token: agrotoken,
-        channel: his._id,
-        dateISO: moment(),
-        userID: token.userId,
-      });
-      token.status = 'On-Going';
+      token.agoraAppId = agoraID.element._id;
       token.save();
-      req.io.emit(his._id + 'stream_on_going', token);
     }
 
   }
+  let exp = moment(token.DateTime).add(30, 'minutes');
 
-  await cloude_recording_stream(token._id, his.agoraAppId, his.end);
+  let demotoken = await DemostreamToken.findOne({ type: 'HOST', channel: token._id, userID: req.userId });
+  if (!demotoken) {
+    let expirationTimestamp = moment(exp) / 1000;
+    const agrotoken = await geenerate_rtc_token(token._id, uid, role, expirationTimestamp, token.agoraAppId);
+    demotoken = await DemostreamToken.create({
+      expirationTimestamp: expirationTimestamp * 1000,
+      streamID: token._id,
+      type: 'HOST',
+      uid: uid,
+      agoraID: token.agoraAppId,
+      token: agrotoken,
+      channel: token._id,
+      dateISO: moment(),
+      userID: req.userId,
+    });
+
+  }
+
+  if (token.streamStatus == 'Pending') {
+    token.streamStatus = 'On-Going';
+    token.save();
+    req.io.emit(token._id + 'stream_on_going', token);
+  }
+
+  await cloude_recording_stream(token._id, token.agoraAppId, exp);
 
   return token;
 
@@ -514,9 +402,7 @@ const generateUid = async () => {
 
 const cloude_recording_stream = async (stream, app, endTime) => {
 
-  const stremRequiest = await DemoPost.findById(stream);
-  let his = await MutibleDemo.findById(stremRequiest.runningStream);
-
+  const stremRequiest = await SlotBooking.findById(stream);
   let agoraToken = await AgoraAppId.findById(app);
   let record = await Democloudrecord.findOne({ streamId: stream, recoredStart: { $eq: 'acquire' } });
   if (!record) {
@@ -542,13 +428,13 @@ const cloude_recording_stream = async (stream, app, endTime) => {
           const uid = await generateUid();
           const role = Agora.RtcRole.SUBSCRIBER;
           const expirationTimestamp = endTime / 1000;
-          const token = await geenerate_rtc_token(his._id, uid, role, expirationTimestamp, his.agoraAppId);
+          const token = await geenerate_rtc_token(stremRequiest._id, uid, role, expirationTimestamp, stremRequiest.agoraAppId);
           record = await Democloudrecord.create({
             date: moment().format('YYYY-MM-DD'),
             time: moment().format('HHMMSS'),
             created: moment(),
             Uid: uid,
-            chennel: his._id,
+            chennel: stremRequiest._id,
             created_num: new Date().getTime(),
             expDate: expirationTimestamp * 1000,
             type: 'CloudRecording',
@@ -560,18 +446,18 @@ const cloude_recording_stream = async (stream, app, endTime) => {
           // await agora_acquire(record._id, agoraToken);
         });
     } else {
-      await Democloudrecord.updateMany({ chennel: his._id }, { recoredStart: 'stop' }, { new: true });
+      await Democloudrecord.updateMany({ chennel: stremRequiest._id }, { recoredStart: 'stop' }, { new: true });
       const uid = await generateUid();
       const role = Agora.RtcRole.SUBSCRIBER;
       const expirationTimestamp = endTime / 1000;
-      const token = await geenerate_rtc_token(his._id, uid, role, expirationTimestamp, agoraToken._id);
+      const token = await geenerate_rtc_token(stremRequiest._id, uid, role, expirationTimestamp, agoraToken._id);
       console.log(stremRequiest)
       record = await Democloudrecord.create({
         date: moment().format('YYYY-MM-DD'),
         time: moment().format('HHMMSS'),
         created: moment(),
         Uid: uid,
-        chennel: his._id,
+        chennel: stremRequiest._id,
         created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
         expDate: expirationTimestamp * 1000,
         type: 'CloudRecording',
@@ -619,11 +505,10 @@ const agora_acquire = async (id, agroaID) => {
 };
 
 const recording_start = async (id) => {
-  const stremRequiest = await DemoPost.findById(id);
-  let his = await MutibleDemo.findById(stremRequiest.runningStream);
-  let token = await Democloudrecord.findOne({ chennel: stremRequiest.runningStream, recoredStart: { $eq: 'acquire' } });
+  const stremRequiest = await SlotBooking.findById(id);
+  let token = await Democloudrecord.findOne({ chennel: stremRequiest._id, recoredStart: { $eq: 'acquire' } });
   if (token) {
-    let agoraToken = await AgoraAppId.findById(his.agoraAppId);
+    let agoraToken = await AgoraAppId.findById(stremRequiest.agoraAppId);
     const Authorization = `Basic ${Buffer.from(agoraToken.Authorization.replace(/\s/g, '')).toString('base64')}`;
     if (token.recoredStart == 'acquire') {
       console.log('start', agoraToken, token);
@@ -1036,6 +921,124 @@ const buyer_interested = async (req) => {
   return instrest;
 
 }
+
+
+
+const get_stream_details_check_golive = async (req) => {
+  let userId = req.userId;
+  console.log(userId)
+  const token = await SlotBooking.findById(req.query.id);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Slot not found');
+  }
+
+  const streampost = await AgriCandidate.findById(token.candId)
+  const agora = await DemostreamToken.findOne({ streamID: token._id, type: 'HOST', userID: userId });
+  const agoraID = await AgoraAppId.findById(token.agoraAppId);
+  const allowed_count = await DemostreamToken.find({ golive: true, status: 'resgistered', streamID: token._id }).count();
+  let exp = moment(token.DateTime).add(30, 'minutes');
+  await cloude_recording_stream(token._id, token.agoraAppId, exp);
+
+
+  return { token, streampost, agora, agoraID, allowed_count };
+};
+
+
+
+
+const verifyToken = async (req) => {
+  const token = await SlotBooking.findById(req.query.id);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
+  }
+  // console.log(token.streamValitity)
+  // try {
+  //   const payload = jwt.verify(token.streamValitity, 'demoStream');
+  // } catch (err) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, 'Link has Expired');
+  // }
+  let user = await AgriCandidate.findById(token.candId);
+  let mobileNumber = user.mobile;
+  return { token, mobileNumber };
+};
+
+
+const verification_sms_send = async (req) => {
+  console.log(req.query.id)
+  const token = await SlotBooking.findById(req.query.id);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
+  }
+
+  let res = await send_otp_now(token);
+  return res;
+};
+
+
+
+
+const send_otp_now = async (stream) => {
+  let OTPCODE = Math.floor(100000 + Math.random() * 900000);
+  let Datenow = new Date().getTime();
+  let otpsend = await Demootpverify.findOne({
+    streamID: stream._id,
+    otpExpiedTime: { $gte: Datenow },
+    verify: false,
+    expired: false,
+  });
+  if (!otpsend) {
+    const token = await AgriCandidate.findById(stream.candId);
+    await Demootpverify.updateMany(
+      { streamID: stream._id, verify: false },
+      { $set: { verify: true, expired: true } },
+      { new: true }
+    );
+    let exp = moment().add(3, 'minutes');
+    let otp = await Demootpverify.create({
+      OTP: OTPCODE,
+      verify: false,
+      mobile: token.mobile,
+      streamID: stream._id,
+      DateIso: moment(),
+      userID: stream.candId,
+      expired: false,
+      otpExpiedTime: exp,
+    });
+    let message = `Dear ${token.userName},thank you for the registration to the event AgriExpoLive2023 .Your OTP for logging into the account is ${OTPCODE}- AgriExpoLive2023(An Ookam company event)`;
+    let reva = await axios.get(
+      `http://panel.smsmessenger.in/api/mt/SendSMS?user=ookam&password=ookam&senderid=OOKAMM&channel=Trans&DCS=0&flashsms=0&number=${token.mobile}&text=${message}&route=6&peid=1701168700339760716&DLTTemplateId=1707168958877302526`
+    );
+    console.log(reva.data);
+    otpsend = { otpExpiedTime: otp.otpExpiedTime };
+  } else {
+    otpsend = { otpExpiedTime: otpsend.otpExpiedTime };
+  }
+  return otpsend;
+};
+
+
+
+
+const get_stream_details = async (req) => {
+  let stream = await SlotBooking.findById(req.query.id);
+  if (!stream) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+
+
+  stream = await SlotBooking.aggregate([
+    { $match: { $and: [{ _id: { $eq: stream._id } }] } },
+
+  ])
+  if (stream.length == 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  return stream[0];
+};
+
+
+
+
 module.exports = {
   getDatas,
   get_stream_details,
@@ -1051,5 +1054,9 @@ module.exports = {
   get_buyer_join_stream,
   buyer_go_live_stream,
   byer_get_stream_details,
-  buyer_interested
+  buyer_interested,
+  get_stream_details_check_golive,
+  recording_start,
+  verifyToken,
+  verification_sms_send
 };

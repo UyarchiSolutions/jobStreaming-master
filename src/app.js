@@ -28,6 +28,7 @@ let socketIO = require('socket.io');
 let io = socketIO(server);
 const moment = require('moment');
 
+
 server.listen(config.port, () => {
   logger.info(`Listening to port ${config.port}`);
   //  console.log(new Date(moment('21-12-2023 12:00 PM', 'DD-MM-YYYY hh:mm A').toISOString()).getTime());
@@ -35,18 +36,19 @@ server.listen(config.port, () => {
   // console.log(moment(1703140200000).format("DD-MM-yyyy hh:mm a"))
 });
 io.sockets.on('connection', async (socket) => {
-  socket.on('groupchat', async (data) => {
-    await chetModule.chat_room_create(data, io);
+
+  socket.on('groupchathost_demo', async (data) => {
+    await chetModule.chat_room_create_host_demo(data, io);
   });
-  socket.on('admin_approve', async (data) => {
-    await chetModule.admin_approve(data, io);
+  socket.on('groupchathost_demo_buyer', async (data) => {
+    await chetModule.chat_room_create_host_demo_sub(data, io);
   });
-  socket.on('rice_hands', async (data) => {
-    await chetModule.rice_hands(data, io);
+  socket.on('privateChat', async (data) => {
+    // await privatechat.recived_message(data, io, socket.handshake.auth);
   });
-  socket.on('', (msg) => {
-    console.log('message: ' + msg);
-  });
+
+
+
 });
 app.use(function (req, res, next) {
   req.io = io;
