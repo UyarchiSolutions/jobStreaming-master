@@ -231,6 +231,8 @@ const seller_go_live = async (req) => {
     req.io.emit(token._id + 'stream_on_going', token);
   }
 
+
+
   await cloude_recording_stream(token._id, token.agoraAppId, exp);
 
   return token;
@@ -1038,6 +1040,28 @@ const get_stream_details = async (req) => {
 
 
 
+const get_buyer_token = async (req) => {
+  let otp_verify = await Demootpverify.findById(req.query.verify);
+  if (!otp_verify) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Join token not found');
+  }
+
+  let demotoken = await SlotBooking.findById(otp_verify.streamID);
+  if (!demotoken) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SlotBooking  not found');
+  }
+  const stream = await AgriCandidate.findById(demotoken.candId);
+  if (!stream) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  const appID = await AgoraAppId.findById(demotoken.agoraAppId);
+
+
+  return { demotoken, stream, appID };
+
+};
+
+
 
 module.exports = {
   getDatas,
@@ -1058,5 +1082,6 @@ module.exports = {
   get_stream_details_check_golive,
   recording_start,
   verifyToken,
-  verification_sms_send
+  verification_sms_send,
+  get_buyer_token
 };

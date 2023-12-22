@@ -219,7 +219,9 @@ const createSlotBooking = async (req) => {
   const body = req.body;
   body.forEach(async (e) => {
     let iso = new Date(moment(e.date + " " + e.time, 'DD-MM-YYYY hh:mm A').toISOString()).getTime()
-    let creations = await SlotBooking.create({ candId: e.candId, date: e.date, time: e.time, Type: e.Type, DateTime: iso });
+    let end = moment(iso).add(30, 'minutes');
+
+    let creations = await SlotBooking.create({ candId: e.candId, date: e.date, time: e.time, Type: e.Type, DateTime: iso, endTime: end });
     return creations;
   });
   return { message: 'Slot Booking created successfully' };
