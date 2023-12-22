@@ -219,6 +219,9 @@ const SlotBookingSchema = mongoose.Schema(
     linkstatus: {
       type: String,
       default: 'Pending'
+    },
+    endTime: {
+      type: Number
     }
   },
   { timestamps: true }
