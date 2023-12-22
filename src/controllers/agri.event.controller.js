@@ -65,6 +65,11 @@ const createSlotBooking = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getIntrestedByCand_Role = catchAsync(async (req, res) => {
+  const data = await AgriEventService.getIntrestedByCand_Role(req);
+  res.send(data);
+});
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -78,4 +83,5 @@ module.exports = {
   getCandidateById,
   getCandBy,
   createSlotBooking,
+  getIntrestedByCand_Role,
 };

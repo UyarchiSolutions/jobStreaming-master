@@ -71,6 +71,10 @@ const AgriCandidateSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    status: {
+      type: String,
+      default: 'Pendin',
+    },
   },
   { timestamps: true }
 );
@@ -108,7 +112,7 @@ const event_slot_AgriSchema = new mongoose.Schema(
     },
     dateTime: {
       type: Number,
-    }
+    },
   },
   { timestamps: true }
 );
@@ -200,8 +204,8 @@ const SlotBookingSchema = mongoose.Schema(
       default: true,
     },
     DateTime: {
-      type: Number
-    }
+      type: Number,
+    },
   },
   { timestamps: true }
 );

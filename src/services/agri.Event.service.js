@@ -1,6 +1,6 @@
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
-const { AgriCandidate, AgriEventSlot, SlotBooking } = require('../models/agri.Event.model');
+const { AgriCandidate, AgriEventSlot, SlotBooking, IntrestedCandidate } = require('../models/agri.Event.model');
 const { EventRegister } = require('../models/climb-event.model');
 const moment = require('moment');
 const AWS = require('aws-sdk');
@@ -25,7 +25,7 @@ const createSlots = async (req, res) => {
   const dateTimeString = `${date.date} ${date.slot}`;
   const momentObject = moment(dateTimeString, 'YYYY-MM-DD hh:mm A');
   const isoDateTime = momentObject.toISOString();
-  let datas = { ...date, ...{ dateTime: isoDateTime } };
+  let datas = { ...date };
   const slots = await AgriEventSlot.create(datas);
   return slots;
 };
@@ -189,8 +189,75 @@ const getAgriCandidates = async (req) => {
     {
       $match: { active: true },
     },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $match: { Role: 'HR Volunteer' } }],
+        as: 'HRcandidates',
+      },
+    },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $match: { Role: { $ne: 'HR Volunteer' } } }],
+        as: 'Techcandidates',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        mail: 1,
+        createdAt: 1,
+        HRIntrest: { $size: '$HRcandidates' },
+        TechIntrest: { $size: '$Techcandidates' },
+        status: { $ifNull: ['$status', 'Pending'] },
+      },
+    },
   ]);
   return AgriCandidates;
+};
+
+const getIntrestedByCand_Role = async (req) => {
+  let role = req.params.role;
+  let Role;
+  if (role === 'HR') {
+    Role = 'HR Volunteer';
+  } else {
+    Role = 'TECH Volunteer';
+  }
+  let id = req.params.id;
+  let value = await IntrestedCandidate.aggregate([
+    {
+      $match: {
+        candId: id,
+        Role: Role,
+      },
+    },
+    {
+      $lookup: {
+        from: 'volunteers',
+        localField: 'volunteerId',
+        foreignField: '_id',
+        as: 'volunteer',
+      },
+    },
+    {
+      $unwind: '$volunteer',
+    },
+    {
+      $project: {
+        _id: 1,
+        Name: '$volunteer.name',
+      },
+    },
+  ]);
+
+  return value;
 };
 
 const getCandidateById = async (req) => {
@@ -218,7 +285,7 @@ const getCandBy = async (req) => {
 const createSlotBooking = async (req) => {
   const body = req.body;
   body.forEach(async (e) => {
-    let iso = new Date(moment(e.date + " " + e.time, 'DD-MM-YYYY hh:mm A').toISOString()).getTime()
+    let iso = new Date(moment(e.date + ' ' + e.time, 'DD-MM-YYYY hh:mm A').toISOString()).getTime();
     let creations = await SlotBooking.create({ candId: e.candId, date: e.date, time: e.time, Type: e.Type, DateTime: iso });
     return creations;
   });
@@ -238,4 +305,5 @@ module.exports = {
   getCandidateById,
   getCandBy,
   createSlotBooking,
+  getIntrestedByCand_Role,
 };
