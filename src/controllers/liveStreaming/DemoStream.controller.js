@@ -82,6 +82,27 @@ const getStreamDetails = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_stream_details_check_golive = catchAsync(async (req, res) => {
+  const data = await demostream.get_stream_details_check_golive(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+const start_cloud_record = catchAsync(async (req, res) => {
+  const data = await demostream.recording_start(req.query.id);
+  res.send(data);
+});
+
+
+const get_stream_verify = catchAsync(async (req, res) => {
+  const data = await demostream.verifyToken(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+const verification_sms_send = catchAsync(async (req, res) => {
+  const data = await demostream.verification_sms_send(req);
+  res.send(data);
+});
+
 module.exports = {
   getDatas,
   get_stream_details,
@@ -99,4 +120,8 @@ module.exports = {
   byer_get_stream_details,
   buyer_interested,
   getStreamDetails,
+  get_stream_details_check_golive,
+  start_cloud_record,
+  get_stream_verify,
+  verification_sms_send
 };

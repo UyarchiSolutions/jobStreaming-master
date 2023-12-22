@@ -204,8 +204,22 @@ const SlotBookingSchema = mongoose.Schema(
       default: true,
     },
     DateTime: {
-      type: Number,
+      type: Number
     },
+    streamStatus: {
+      type: String,
+      default: 'Pending',
+    },
+    agoraAppId: {
+      type: String,
+    },
+    otp_verifiyed: {
+      type: String,
+    },
+    linkstatus: {
+      type: String,
+      default: 'Pending'
+    }
   },
   { timestamps: true }
 );

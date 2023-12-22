@@ -2,6 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const demostream = require('../../../controllers/liveStreaming/DemoStream.controller');
+const volunteerAuth = require('../../../controllers/voulnteer.verify');
 
 router.route('/getDatas').get(demostream.getDatas);
 
@@ -13,7 +14,7 @@ router.route('/one/more/time').post(demostream.add_one_more_time);
 
 router.route('/end/stream').get(demostream.end_stream);
 
-router.route('/seller/go/live').post(demostream.seller_go_live);
+router.route('/seller/go/live').post(volunteerAuth, demostream.seller_go_live);
 router.route('/seller/live/details').get(demostream.seller_go_live_details);
 
 router.route('/video/start/cloud').get(demostream.start_cloud);
@@ -27,6 +28,17 @@ router.route('/buyer/go/live').get(demostream.buyer_go_live_stream);
 router.route('/buyer/stream/details').get(demostream.byer_get_stream_details);
 router.route('/buyer/interest/now').post(demostream.buyer_interested);
 router.route('/getStreamDetails/:id').get(demostream.getStreamDetails);
+
+router.route('/get/stream/details/golive').get(volunteerAuth, demostream.get_stream_details_check_golive);
+
+router.route('/start/cloud/record').get(demostream.start_cloud_record);
+
+
+router.route('/verify/token/stream').get(demostream.get_stream_verify);
+router.route('/verification/sms/send').get(demostream.verification_sms_send);
+
+router.route('/verify/sms/now').post(demostream.verify_otp);
+
 
 // router.route('').get(demostream.send_sms_now);
 

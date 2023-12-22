@@ -45,6 +45,8 @@ const getProfile = async (req) => {
 
 const MatchCandidate = async (req) => {
   let id = req.userId;
+  let Role = req.Role;
+  console.log(Role);
   let values = await Volunteer.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Volunteer not found');
@@ -69,10 +71,44 @@ const MatchCandidate = async (req) => {
         },
       },
       {
+        $lookup: {
+          from: 'slotbookings',
+          localField: '_id',
+          foreignField: 'candId',
+          pipeline: [{ $match: { streamStatus: 'Pending', Type: 'Tech' } }],
+          as: 'candidate',
+        },
+      },
+      {
+        $unwind: '$candidate',
+      },
+      {
         $addFields: {
           isIdInArray: {
             $in: [id, '$intrest'],
           },
+        },
+      },
+      {
+        $addFields: {
+          techIntrest: {
+            $in: [id, '$intrest'],
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          skills: 1,
+          name: 1,
+          location: 1,
+          yearOfPassing: 1,
+          techIntrest: 1,
+          intrest: 1,
+          slotDate: '$candidate.date',
+          slotTime: '$candidate.time',
+          Type: '$candidate.Type',
+          isIdInArray: 1,
         },
       },
     ]);
@@ -81,10 +117,44 @@ const MatchCandidate = async (req) => {
   } else {
     let findCand = await AgriCandidate.aggregate([
       {
+        $lookup: {
+          from: 'slotbookings',
+          localField: '_id',
+          foreignField: 'candId',
+          pipeline: [{ $match: { streamStatus: 'Pending', Type: 'HR' } }],
+          as: 'candidate',
+        },
+      },
+      {
+        $unwind: '$candidate',
+      },
+      {
         $addFields: {
           isIdInArray: {
             $in: [id, '$intrest'],
           },
+        },
+      },
+      {
+        $addFields: {
+          techIntrest: {
+            $in: [id, '$intrest'],
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          skills: 1,
+          name: 1,
+          location: 1,
+          yearOfPassing: 1,
+          techIntrest: 1,
+          intrest: 1,
+          slotDate: '$candidate.date',
+          slotTime: '$candidate.time',
+          Type: '$candidate.Type',
+          isIdInArray: 1,
         },
       },
     ]);
@@ -180,15 +250,28 @@ const getCandidatesForInterview = async (req) => {
             },
           },
           { $unwind: '$slotbookings' },
+          {
+            $addFields: {
+              DateTime: '$slotbookings.DateTime',
+              channel: '$slotbookings._id',
+              streamStatus: '$slotbookings.streamStatus',
+              streamId: '$slotbookings._id',
+            },
+          },
         ],
         foreignField: '_id',
         as: 'Cand',
       },
     },
     {
-      $unwind: {
-        preserveNullAndEmptyArrays: true,
-        path: '$Cand',
+      $unwind: '$Cand',
+    },
+    {
+      $addFields: {
+        DateTime: '$Cand.DateTime',
+        channel: '$Cand.channel',
+        streamStatus: '$Cand.streamStatus',
+        streamId: '$Cand.streamId',
       },
     },
   ]);
