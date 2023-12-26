@@ -231,6 +231,8 @@ const getIntrestedByCand_Role = async (req) => {
     Role = 'TECH Volunteer';
   }
   let id = req.params.id;
+  let time = new Date().getTime();
+  console.log(time);
   let value = await IntrestedCandidate.aggregate([
     {
       $match: {
@@ -254,25 +256,49 @@ const getIntrestedByCand_Role = async (req) => {
     },
     {
       $lookup: {
-        from: 'volunteers',
+        from: 'slotbookings',
         localField: 'volunteerId',
-        pipeline: [{ $group: { _id: null, count: { $sum: 1 } } }],
-        foreignField: '_id',
-        as: 'volunteers',
+        pipeline: [{ $match: { endTime: { $lt: time } } }],
+        foreignField: 'volunteerId',
+        as: 'Completedslots',
       },
     },
     {
-      $unwind: '$volunteers',
+      $lookup: {
+        from: 'slotbookings',
+        localField: 'volunteerId',
+        pipeline: [{ $match: { DateTime: { $gt: time } } }],
+        foreignField: 'volunteerId',
+        as: 'upComming',
+      },
     },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        pipeline: [{ $match: { status: 'Intrested' } }, { $group: { _id: null, total: { $sum: 1 } } }],
+        foreignField: '_id',
+        as: 'Pending',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$Pending',
+      },
+    },
+    // Today Pending
     {
       $project: {
         _id: 1,
         Name: '$volunteer.name',
-        pastRecord: '$volunteers.count',
         slotIdnew: 1,
         status: 1,
         slotId: 1,
         volunteerId: '$volunteer._id',
+        pastRecord: { $size: '$Completedslots' },
+        upComming: { $size: '$upComming' },
+        Pending: { $ifNull: ['$Pending.total', 0] },
       },
     },
   ]);

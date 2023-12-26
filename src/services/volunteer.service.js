@@ -2,10 +2,11 @@ const httpStatus = require('http-status');
 const moment = require('moment');
 const { Volunteer } = require('../models/vlounteer.model');
 const { EventRegister } = require('../models/climb-event.model');
-const { AgriCandidate, IntrestedCandidate } = require('../models/agri.Event.model');
+const { AgriCandidate, IntrestedCandidate, SlotBooking } = require('../models/agri.Event.model');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const AWS = require('aws-sdk');
+const { HttpStatusCode } = require('axios');
 
 const createVolunteer = async (req) => {
   let body = req.body;
@@ -216,12 +217,20 @@ const CandidateIntrestUpdate = async (req) => {
   } else {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { techIntrest: volunteerId } }, { new: true });
   }
+  let slots = await SlotBooking.findById(slotId);
+  if (!slots) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slots Not Found');
+  }
   await IntrestedCandidate.create({
     candId: candId,
     volunteerId: volunteerId,
     status: 'Intrested',
     Role: values.Role,
     slotId: slotId,
+    slotDate: slots.date,
+    slotTime: slots.time,
+    startTime: slots.DateTime,
+    endTime: slots.endTime,
   });
   return cand;
 };

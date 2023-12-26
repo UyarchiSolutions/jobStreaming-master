@@ -178,6 +178,18 @@ const IntrestCandidateSchema = new mongoose.Schema(
     slotId: {
       type: String,
     },
+    slotDate: {
+      type: String,
+    },
+    slotTime: {
+      type: String,
+    },
+    startTime: {
+      type: Number,
+    },
+    endTime: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );
