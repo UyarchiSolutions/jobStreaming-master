@@ -232,7 +232,8 @@ const getIntrestedByCand_Role = async (req) => {
   }
   let id = req.params.id;
   let time = new Date().getTime();
-  console.log(time);
+  let today = moment().format('DD-MM-YYYY');
+  console.log(today);
   let value = await IntrestedCandidate.aggregate([
     {
       $match: {
@@ -287,7 +288,45 @@ const getIntrestedByCand_Role = async (req) => {
         path: '$Pending',
       },
     },
+
     // Today Pending
+
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        pipeline: [{ $match: { slotDate: today, status: 'Intrested' } }, { $group: { _id: null, total: { $sum: 1 } } }],
+        foreignField: '_id',
+        as: 'TodayPending',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TodayPending',
+      },
+    },
+
+    // Today Upcomming
+
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        pipeline: [
+          { $match: { status: 'Approved', DateTime: { $gt: time } } },
+          { $group: { _id: null, total: { $sum: 1 } } },
+        ],
+        foreignField: '_id',
+        as: 'TodayUpcoming',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TodayUpcoming',
+      },
+    },
     {
       $project: {
         _id: 1,
@@ -299,6 +338,8 @@ const getIntrestedByCand_Role = async (req) => {
         pastRecord: { $size: '$Completedslots' },
         upComming: { $size: '$upComming' },
         Pending: { $ifNull: ['$Pending.total', 0] },
+        TodayPending: { $ifNull: ['$TodayPending.total', 0] },
+        TodayUpcoming: { $ifNull: ['$TodayUpcoming.total', 0] },
       },
     },
   ]);
