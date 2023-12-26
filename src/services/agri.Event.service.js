@@ -285,9 +285,9 @@ const getCandBy = async (req) => {
 const createSlotBooking = async (req) => {
   const body = req.body;
   body.forEach(async (e) => {
+
     let iso = new Date(moment(e.date + ' ' + e.time, 'DD-MM-YYYY hh:mm A').toISOString()).getTime();
     let end = moment(iso).add(30, 'minutes');
-
     let creations = await SlotBooking.create({
       candId: e.candId,
       date: e.date,
@@ -296,9 +296,9 @@ const createSlotBooking = async (req) => {
       DateTime: iso,
       endTime: end,
     });
-    return creations;
+    await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true }, { new: true });
+    return creations
   });
-  await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true }, { new: true });
   return { message: 'Slot Booking created successfully' };
 };
 
