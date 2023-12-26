@@ -70,6 +70,11 @@ const getIntrestedByCand_Role = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const AdminApprove = catchAsync(async (req, res) => {
+  const data = await AgriEventService.AdminApprove(req);
+  res.send(data);
+});
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -84,4 +89,5 @@ module.exports = {
   getCandBy,
   createSlotBooking,
   getIntrestedByCand_Role,
+  AdminApprove,
 };

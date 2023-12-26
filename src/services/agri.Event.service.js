@@ -239,6 +239,9 @@ const getIntrestedByCand_Role = async (req) => {
       },
     },
     {
+      $addFields: { slotIdnew: '$slotId' },
+    },
+    {
       $lookup: {
         from: 'volunteers',
         localField: 'volunteerId',
@@ -250,9 +253,26 @@ const getIntrestedByCand_Role = async (req) => {
       $unwind: '$volunteer',
     },
     {
+      $lookup: {
+        from: 'volunteers',
+        localField: 'volunteerId',
+        pipeline: [{ $group: { _id: null, count: { $sum: 1 } } }],
+        foreignField: '_id',
+        as: 'volunteers',
+      },
+    },
+    {
+      $unwind: '$volunteers',
+    },
+    {
       $project: {
         _id: 1,
         Name: '$volunteer.name',
+        pastRecord: '$volunteers.count',
+        slotIdnew: 1,
+        status: 1,
+        slotId: 1,
+        volunteerId: '$volunteer._id',
       },
     },
   ]);
@@ -285,7 +305,6 @@ const getCandBy = async (req) => {
 const createSlotBooking = async (req) => {
   const body = req.body;
   body.forEach(async (e) => {
-
     let iso = new Date(moment(e.date + ' ' + e.time, 'DD-MM-YYYY hh:mm A').toISOString()).getTime();
     let end = moment(iso).add(30, 'minutes');
     let creations = await SlotBooking.create({
@@ -297,9 +316,24 @@ const createSlotBooking = async (req) => {
       endTime: end,
     });
     await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true }, { new: true });
-    return creations
+    return creations;
   });
   return { message: 'Slot Booking created successfully' };
+};
+
+const AdminApprove = async (req) => {
+  const { slotId, volunteerId, intrestId } = req.body;
+  let getIntrested = await IntrestedCandidate.findById(intrestId);
+  if (!getIntrested) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Intrested Data Not Found, Some One Deleted From Database 😠');
+  }
+  let getSlots = await SlotBooking.findById(slotId);
+  if (!getSlots) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Data Not Found, Some One Deleted From Database 😠');
+  }
+  getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
+  getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
+  return getIntrested;
 };
 
 module.exports = {
@@ -316,4 +350,5 @@ module.exports = {
   getCandBy,
   createSlotBooking,
   getIntrestedByCand_Role,
+  AdminApprove,
 };

@@ -72,6 +72,20 @@ const MatchCandidate = async (req) => {
       },
       {
         $lookup: {
+          from: 'intrestedcandidates',
+          localField: '_id',
+          foreignField: 'candId',
+          pipeline: [{ $match: { status: 'Approved' } }],
+          as: 'Intrested',
+        },
+      },
+      {
+        $unwind: {
+          path: '$Intrested',
+        },
+      },
+      {
+        $lookup: {
           from: 'slotbookings',
           localField: '_id',
           foreignField: 'candId',
@@ -108,9 +122,15 @@ const MatchCandidate = async (req) => {
           slotDate: '$candidate.date',
           slotTime: '$candidate.time',
           Type: '$candidate.Type',
+          slotId: '$candidate._id',
           isIdInArray: 1,
+          Intrested: '$Intrested',
+          status: '$Intrested.status',
         },
       },
+      // {
+      //   $match: { status: 'Approved' },
+      // },
     ]);
 
     return findCand;
@@ -142,6 +162,20 @@ const MatchCandidate = async (req) => {
           },
         },
       },
+      // {
+      //   $lookup: {
+      //     from: 'intrestedcandidates',
+      //     localField: '_id',
+      //     foreignField: 'candId',
+      //     pipeline: [{ $match: { status: 'Approved' } }],
+      //     as: 'Intrested',
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: '$Intrested',
+      //   },
+      // },
       {
         $project: {
           _id: 1,
@@ -154,9 +188,15 @@ const MatchCandidate = async (req) => {
           slotDate: '$candidate.date',
           slotTime: '$candidate.time',
           Type: '$candidate.Type',
+          slotId: '$candidate._id',
           isIdInArray: 1,
+          // Intrested: '$Intrested',
+          // status: '$Intrested.status',
         },
       },
+      // {
+      //   $match: { status: 'Approved' },
+      // },
     ]);
     return findCand;
   }
@@ -165,6 +205,7 @@ const MatchCandidate = async (req) => {
 const CandidateIntrestUpdate = async (req) => {
   let volunteerId = req.userId;
   let candId = req.params.id;
+  let slotId = req.params.slotId;
   let cand = await AgriCandidate.findById(candId);
   if (!cand) {
     throw new ApiError(httpStatus.BAD_REQUEST, " Couldn't find candidate");
@@ -175,7 +216,13 @@ const CandidateIntrestUpdate = async (req) => {
   } else {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { techIntrest: volunteerId } }, { new: true });
   }
-  await IntrestedCandidate.create({ candId: candId, volunteerId: volunteerId, status: 'Intrested', Role: values.Role });
+  await IntrestedCandidate.create({
+    candId: candId,
+    volunteerId: volunteerId,
+    status: 'Intrested',
+    Role: values.Role,
+    slotId: slotId,
+  });
   return cand;
 };
 
@@ -233,6 +280,7 @@ const getCandidatesForInterview = async (req) => {
     {
       $match: {
         volunteerId: id,
+        status: 'Approved',
       },
     },
     {

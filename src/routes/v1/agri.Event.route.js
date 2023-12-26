@@ -19,4 +19,5 @@ router.route('/getCandidateById/:id').get(AgriEventController.getCandidateById);
 router.route('/getCandBy').post(AgriEventController.getCandBy);
 router.route('/create/SlotBooking').post(AgriEventController.createSlotBooking);
 router.route('/getIntrested/ByCand_Role/:id/:role').get(AgriEventController.getIntrestedByCand_Role);
+router.route('/AdminApprove').post(AgriEventController.AdminApprove);
 module.exports = router;

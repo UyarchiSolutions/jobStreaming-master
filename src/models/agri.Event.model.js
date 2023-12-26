@@ -175,6 +175,9 @@ const IntrestCandidateSchema = new mongoose.Schema(
     Role: {
       type: String,
     },
+    slotId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
@@ -204,7 +207,7 @@ const SlotBookingSchema = mongoose.Schema(
       default: true,
     },
     DateTime: {
-      type: Number
+      type: Number,
     },
     streamStatus: {
       type: String,
@@ -218,11 +221,14 @@ const SlotBookingSchema = mongoose.Schema(
     },
     linkstatus: {
       type: String,
-      default: 'Pending'
+      default: 'Pending',
     },
     endTime: {
-      type: Number
-    }
+      type: Number,
+    },
+    volunteerId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
