@@ -73,7 +73,7 @@ const AgriCandidateSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: 'Pendin',
+      default: 'Pending',
     },
   },
   { timestamps: true }
