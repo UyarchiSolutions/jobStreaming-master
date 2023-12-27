@@ -288,9 +288,7 @@ const getIntrestedByCand_Role = async (req) => {
         path: '$Pending',
       },
     },
-
     // Today Pending
-
     {
       $lookup: {
         from: 'intrestedcandidates',
@@ -306,9 +304,7 @@ const getIntrestedByCand_Role = async (req) => {
         path: '$TodayPending',
       },
     },
-
     // Today Upcomming
-
     {
       $lookup: {
         from: 'intrestedcandidates',
