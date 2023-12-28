@@ -4653,8 +4653,8 @@ const manage_employer = async (body) => {
         $and: [locationfilter, sortByfilter, industryfiletr, searchfilter, mobilenumberfilter],
       },
     },
-    { $skip: parseInt(range) * parseInt(page) },
-    { $limit: parseInt(range) },
+    // { $skip: parseInt(range) * parseInt(page) },
+    // { $limit: parseInt(range) },
   ]);
   const count = await EmployerRegistration.aggregate([
     {
