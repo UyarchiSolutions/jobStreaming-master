@@ -3,7 +3,6 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const { toJSON, paginate } = require('./plugins');
 const { roles } = require('../config/roles');
-const { StringDecoder } = require('string_decoder');
 const { v4 } = require('uuid');
 
 const candiadteSearchSchema = mongoose.Schema(
@@ -249,8 +248,8 @@ const createoutSearchHistorySaveShema = mongoose.Schema(
     gender: {
       type: String,
     },
-    searchTittle:{
-      type:String,
+    searchTittle: {
+      type: String,
     },
     time: {
       type: String,

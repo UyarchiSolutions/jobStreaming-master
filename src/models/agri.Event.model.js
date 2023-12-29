@@ -129,7 +129,7 @@ const agriCandReviewSchema = new mongoose.Schema(
       type: String,
     },
     rating: {
-      type: String,
+      type: Array,
     },
     active: {
       type: Boolean,
@@ -142,6 +142,58 @@ const agriCandReviewSchema = new mongoose.Schema(
       type: String,
     },
     streamId: {
+      type: String,
+    },
+    Role: {
+      type: String,
+    },
+    underStating: {
+      type: Number,
+    },
+    logic: {
+      type: Number,
+    },
+    coding: {
+      type: Number,
+    },
+    projectUnderStanding: {
+      type: Number,
+    },
+    communication: {
+      type: Number,
+    },
+    individualCode: {
+      type: Number,
+    },
+    comments: {
+      type: String,
+    },
+    skillAVG: {
+      type: Number,
+    },
+    attrAVG: {
+      type: Number,
+    },
+    langAVG: {
+      type: Number,
+    },
+    lang: {
+      type: Array,
+      default: [],
+    },
+    curCTC: {
+      type: String,
+    },
+    expCTC: {
+      type: String,
+    },
+    noticePeriod: {
+      type: String,
+    },
+    performance: {
+      type: String,
+    },
+    attitude: {
       type: String,
     },
   },
