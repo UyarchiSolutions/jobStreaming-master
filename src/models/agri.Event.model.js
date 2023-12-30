@@ -320,6 +320,9 @@ const BookedSlotsShema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    candId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

@@ -437,8 +437,13 @@ const getCandBy = async (req) => {
 
 const createSlotBooking = async (req) => {
   const body = req.body;
-  let slotCreate = await BookedSlot.create({ slots: body });
-  await body.forEach(async (e) => {
+
+  let findExistSlot = await BookedSlot.findOne({ candId: body.candId });
+  if (findExistSlot) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Your Interview Time Got Over ');
+  }
+  let slotCreate = await BookedSlot.create({ slots: body.slot, candId: body.candId });
+  await body.slot.forEach(async (e) => {
     let iso = new Date(moment(e.date + ' ' + e.time, 'DD-MM-YYYY hh:mm A').toISOString()).getTime();
     let end = moment(iso).add(30, 'minutes');
     let creations = await SlotBooking.create({
