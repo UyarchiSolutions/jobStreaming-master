@@ -286,6 +286,7 @@ const getAgriCandidates = async (req) => {
         HRIntrest: { $size: '$HRcandidates' },
         TechIntrest: { $size: '$Techcandidates' },
         status: { $ifNull: ['$status', 'Pending'] },
+        clear: 1,
       },
     },
   ]);
@@ -409,8 +410,17 @@ const getIntrestedByCand_Role = async (req) => {
       },
     },
   ]);
+  let Counts = await IntrestedCandidate.aggregate([
+    {
+      $match: {
+        candId: id,
+        Role: Role,
+        status: 'Approved',
+      },
+    },
+  ]);
 
-  return value;
+  return { value, Counts };
 };
 
 const getCandidateById = async (req) => {
@@ -476,9 +486,39 @@ const AdminApprove = async (req) => {
   if (!getSlots) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Data Not Found, Some One Deleted From Database 😠');
   }
+  let findMatches = await IntrestedCandidate.find({
+    slotId: slotId,
+    candId: getIntrested.candId,
+    status: 'Approved',
+  }).count();
+  console.log(findMatches);
+  if (findMatches >= 2) {
+    throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
+  }
   getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
   getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
   return getIntrested;
+};
+
+const Undo = async (req) => {
+  const id = req.params.id;
+  console.log(id, 'params');
+  let getIntrested = await IntrestedCandidate.findById(id);
+  if (!getIntrested) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Data');
+  }
+  getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: id }, { status: 'Intrested' }, { new: true });
+  return getIntrested;
+};
+
+const clearCandidates = async (req) => {
+  let id = req.params.id;
+  let values = await AgriCandidate.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate Not Found');
+  }
+  values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { clear: true }, { new: true });
+  return values;
 };
 
 module.exports = {
@@ -496,4 +536,6 @@ module.exports = {
   createSlotBooking,
   getIntrestedByCand_Role,
   AdminApprove,
+  Undo,
+  clearCandidates,
 };

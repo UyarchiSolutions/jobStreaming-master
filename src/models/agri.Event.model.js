@@ -75,6 +75,10 @@ const AgriCandidateSchema = new mongoose.Schema(
       type: String,
       default: 'Pending',
     },
+    clear: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
@@ -241,6 +245,10 @@ const IntrestCandidateSchema = new mongoose.Schema(
     },
     endTime: {
       type: Number,
+    },
+    clear: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

@@ -75,6 +75,16 @@ const AdminApprove = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const Undo = catchAsync(async (req, res) => {
+  const data = await AgriEventService.Undo(req);
+  res.send(data);
+});
+
+const clearCandidates = catchAsync(async (req, res) => {
+  const data = await AgriEventService.clearCandidates(req);
+  res.send(data);
+});
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -90,4 +100,6 @@ module.exports = {
   createSlotBooking,
   getIntrestedByCand_Role,
   AdminApprove,
+  Undo,
+  clearCandidates,
 };
