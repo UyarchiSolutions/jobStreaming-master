@@ -427,8 +427,14 @@ const getCandBy = async (req) => {
   let findByEmail = await AgriCandidate.findOne({ mail: mob_email });
   let findBymobile = await AgriCandidate.findOne({ mobile: mob_email });
   if (findByEmail != null) {
+    if (findByEmail.slotbooked == true) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Your Slot Booking has Completed');
+    }
     return findByEmail;
   } else if (findBymobile != null) {
+    if (findBymobile.slotbooked == true) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Your Slot Booking has Completed');
+    }
     return findBymobile;
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Mobile OR Email Address');
