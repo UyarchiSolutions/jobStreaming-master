@@ -437,7 +437,6 @@ const getCandBy = async (req) => {
 
 const createSlotBooking = async (req) => {
   const body = req.body;
-
   let findExistSlot = await BookedSlot.findOne({ candId: body.candId });
   if (findExistSlot) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Your Interview Time Got Over ');
