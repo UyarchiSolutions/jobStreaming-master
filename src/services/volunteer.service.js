@@ -52,7 +52,7 @@ const MatchCandidate = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Volunteer not found');
   }
-  let volunSkills = values.currentSkill;
+  let volunSkills = values.skills;
   keySkillSearch = { active: true };
   if (volunSkills.length > 0) {
     let arr = [];
@@ -65,6 +65,7 @@ const MatchCandidate = async (req) => {
   }
 
   if (values.Role == 'Tech Volunteer') {
+    console.log(values);
     let findCand = await AgriCandidate.aggregate([
       {
         $match: {
@@ -76,13 +77,13 @@ const MatchCandidate = async (req) => {
           from: 'intrestedcandidates',
           localField: '_id',
           foreignField: 'candId',
-          pipeline: [{ $match: { status: 'Approved' } }],
           as: 'Intrested',
         },
       },
       {
         $unwind: {
           path: '$Intrested',
+          preserveNullAndEmptyArrays: true,
         },
       },
       {
