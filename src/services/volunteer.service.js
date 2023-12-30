@@ -65,27 +65,27 @@ const MatchCandidate = async (req) => {
   }
 
   if (values.Role == 'Tech Volunteer') {
-    console.log(values);
+    // console.log(values);
     let findCand = await AgriCandidate.aggregate([
       {
         $match: {
           $and: [keySkillSearch],
         },
       },
-      {
-        $lookup: {
-          from: 'intrestedcandidates',
-          localField: '_id',
-          foreignField: 'candId',
-          as: 'Intrested',
-        },
-      },
-      {
-        $unwind: {
-          path: '$Intrested',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+      // {
+      //   $lookup: {
+      //     from: 'intrestedcandidates',
+      //     localField: '_id',
+      //     foreignField: 'candId',
+      //     as: 'Intrested',
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: '$Intrested',
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
       {
         $lookup: {
           from: 'slotbookings',
@@ -126,8 +126,8 @@ const MatchCandidate = async (req) => {
           Type: '$candidate.Type',
           slotId: '$candidate._id',
           isIdInArray: 1,
-          Intrested: '$Intrested',
-          status: '$Intrested.status',
+          // Intrested: '$Intrested',
+          // status: '$Intrested.status',
         },
       },
       // {
