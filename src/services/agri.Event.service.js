@@ -298,7 +298,7 @@ const getIntrestedByCand_Role = async (req) => {
   if (role === 'HR') {
     Role = 'HR Volunteer';
   } else {
-    Role = 'TECH Volunteer';
+    Role = 'Tech Volunteer';
   }
   let id = req.params.id;
   let time = new Date().getTime();

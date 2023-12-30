@@ -108,7 +108,7 @@ const MatchCandidate = async (req) => {
       {
         $addFields: {
           techIntrest: {
-            $in: [id, '$intrest'],
+            $in: [id, '$techIntrest'],
           },
         },
       },
