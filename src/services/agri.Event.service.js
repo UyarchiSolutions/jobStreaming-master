@@ -6,6 +6,7 @@ const {
   SlotBooking,
   IntrestedCandidate,
   agriCandReview,
+  BookedSlot,
 } = require('../models/agri.Event.model');
 const { EventRegister } = require('../models/climb-event.model');
 const moment = require('moment');
@@ -436,7 +437,8 @@ const getCandBy = async (req) => {
 
 const createSlotBooking = async (req) => {
   const body = req.body;
-  body.forEach(async (e) => {
+  let slotCreate = await BookedSlot.create({ slots: body });
+  await body.forEach(async (e) => {
     let iso = new Date(moment(e.date + ' ' + e.time, 'DD-MM-YYYY hh:mm A').toISOString()).getTime();
     let end = moment(iso).add(30, 'minutes');
     let creations = await SlotBooking.create({
@@ -446,6 +448,7 @@ const createSlotBooking = async (req) => {
       Type: e.Type,
       DateTime: iso,
       endTime: end,
+      slotId: slotCreate._id,
     });
     await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true }, { new: true });
     return creations;

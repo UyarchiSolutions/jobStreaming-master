@@ -293,11 +293,38 @@ const SlotBookingSchema = mongoose.Schema(
     volunteerId: {
       type: String,
     },
+    slotId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
 
 const SlotBooking = mongoose.model('SlotBooking', SlotBookingSchema);
+
+const BookedSlotsShema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    slots: {
+      type: Array,
+      default: [],
+    },
+    status: {
+      type: String,
+      default: 'Pending',
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const BookedSlot = mongoose.model('agribookedslots', BookedSlotsShema);
 
 module.exports = {
   AgriCandidate,
@@ -305,4 +332,5 @@ module.exports = {
   agriCandReview,
   IntrestedCandidate,
   SlotBooking,
+  BookedSlot,
 };
