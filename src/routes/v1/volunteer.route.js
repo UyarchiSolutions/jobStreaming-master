@@ -20,4 +20,5 @@ router.route('/Candidate/IntrestUpdate/:id/:slotId').get(volunteerAuth, voluntee
 router.route('/upload/ProfileImage/:id').put(upload, volunteerController.uploadProfileImage);
 router.route('/getVolunteers/Details').get(volunteerAuth, volunteerController.getVolunteersDetails);
 router.route('/getCandidates/ForInterview').get(volunteerAuth, volunteerController.getCandidatesForInterview);
+router.route('/updateVolunteer/:id').put(volunteerController.updateVolunteer);
 module.exports = router;

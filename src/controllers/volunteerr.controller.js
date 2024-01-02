@@ -53,6 +53,11 @@ const getCandidatesForInterview = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const updateVolunteer = catchAsync(async (req, res) => {
+  const data = await VolunteerService.updateVolunteer(req);
+  res.send(data);
+});
+
 module.exports = {
   createVolunteer,
   setPassword,
@@ -63,4 +68,5 @@ module.exports = {
   uploadProfileImage,
   getVolunteersDetails,
   getCandidatesForInterview,
+  updateVolunteer,
 };

@@ -336,6 +336,15 @@ const getCandidatesForInterview = async (req) => {
   return candidates;
 };
 
+const updateVolunteer = async (req) => {
+  let findById = await Volunteer.findById(req.params.id);
+  if (!findById) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Volunteer not found');
+  }
+  findById = await Volunteer.findByIdAndUpdate({ _id: req.params.id }, req.body, { new: true });
+  return findById;
+};
+
 module.exports = {
   createVolunteer,
   setPassword,
@@ -346,4 +355,5 @@ module.exports = {
   uploadProfileImage,
   getVolunteersDetails,
   getCandidatesForInterview,
+  updateVolunteer,
 };
