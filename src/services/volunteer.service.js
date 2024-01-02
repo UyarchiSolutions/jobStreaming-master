@@ -10,6 +10,14 @@ const { HttpStatusCode } = require('axios');
 
 const createVolunteer = async (req) => {
   let body = req.body;
+  let findByEmail = await Volunteer.findOne({ email: body.email });
+  let  findByMobile = await Volunteer.findOne({ mobileNumber: body.mobileNumber });
+  if (findByEmail) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email Already Exists');
+  }
+  if (findByMobile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Already Exists');
+  }
   let creations = await Volunteer.create(body);
   return creations;
 };
