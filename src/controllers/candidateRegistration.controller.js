@@ -16,10 +16,10 @@ const register = catchAsync(async (req, res) => {
   let findByEmail = await CandidateRegistration.findOne({ email: req.body.email });
   let findByMobile = await CandidateRegistration.findOne({ mobileNumber: req.body.mobileNumber });
   if (findByMobile) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Registered In Candidate');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Already Exists');
   }
   if (findByEmail) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email Already Registered in Candidate');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email Already Exists');
   }
 
   if (password != confirmpassword) {
