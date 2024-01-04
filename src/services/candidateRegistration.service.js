@@ -13,7 +13,6 @@ const bcrypt = require('bcryptjs');
 const Axios = require('axios');
 const moment = require('moment');
 const { authService, userService, tokenService, emailService, candidateRegistrationService } = require('../services');
-const e = require('express');
 
 const createCandidate = async (userBody, files) => {};
 
@@ -115,7 +114,6 @@ const UsersLogin = async (userBody) => {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Email Not Verified');
     }
     if (await userName.isPasswordMatch(password)) {
-      console.log('Password Macthed');
       await CandidateRegistration.findOneAndUpdate(
         { email: email },
         { latestdate: moment().format('YYYY-MM-DD') },

@@ -458,16 +458,12 @@ const edit_details = async (id, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
-  if (updateBody.edit) {
-    let datas = user.eduDetails;
-    datas.splice(updateBody.indexDel, 1);
-    user.eduDetails = datas;
-    user.save();
-  }
-  const data = await KeySkill.findOneAndUpdate({ userId: id }, updateBody, { new: true });
-  data.eduDetails.push(updateBody);
-  data.save();
-  return data;
+  user.eduDetails[updateBody.indexDel].drQualification = updateBody.drQualification;
+  let edu = user.eduDetails;
+  edu.splice(updateBody.indexDel, 1, updateBody);
+  user.eduDetails = edu;
+  user.save();
+  return user;
 };
 
 const deleteById = async (id) => {
