@@ -454,16 +454,22 @@ const updateByIdImage = async (id, updateBody) => {
 };
 
 const edit_details = async (id, updateBody) => {
-  const user = await KeySkill.findOne({ userId: id });
+  let user = await KeySkill.findOne({ userId: id });
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Keyskill not found');
   }
-  user.eduDetails[updateBody.indexDel].drQualification = updateBody.drQualification;
-  let edu = user.eduDetails;
-  edu.splice(updateBody.indexDel, 1, updateBody);
-  user.eduDetails = edu;
-  user.save();
-  return user;
+  if (updateBody.edit) {
+    user.eduDetails[updateBody.indexDel].drQualification = updateBody.drQualification;
+    let edu = user.eduDetails;
+    edu.splice(updateBody.indexDel, 1, updateBody);
+    user.eduDetails = edu;
+    user.save();
+    return user;
+  } else {
+    user.eduDetails.push(updateBody);
+    user.save();
+    return user;
+  }
 };
 
 const deleteById = async (id) => {
