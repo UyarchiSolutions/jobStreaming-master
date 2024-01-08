@@ -82,12 +82,45 @@ const ClimbCandidateSchema = new mongoose.Schema(
     resume: {
       type: String,
     },
+    password: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
 
 const ClimbCandidate = mongoose.model('climbcandidate', ClimbCandidateSchema);
 
+const SaveCandidateOTPSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    OTP: {
+      type: Number,
+    },
+    Mobile: {
+      type: Number,
+    },
+    Used: {
+      type: Boolean,
+      default: false,
+    },
+    ExpireTime: {
+      type: Number,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const CandOTP = mongoose.model('ClimbOTP', SaveCandidateOTPSchema);
+
 module.exports = {
   ClimbCandidate,
+  CandOTP,
 };
