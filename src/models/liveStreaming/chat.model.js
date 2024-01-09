@@ -31,8 +31,24 @@ const Groupchat_schema = mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    type: {
+    shopId: {
         type: String,
+    },
+    userName: {
+        type: String,
+    },
+    userType: {
+        type: String,
+    },
+    joinuser: {
+        type: String,
+    },
+    supplierId: {
+        type: String,
+    },
+    removeMessage: {
+        type: Boolean,
+        default: false,
     }
 
 });
