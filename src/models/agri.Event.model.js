@@ -304,6 +304,13 @@ const SlotBookingSchema = mongoose.Schema(
     slotId: {
       type: String,
     },
+    current_watching_stream: {
+      type: Number,
+      default: 0,
+    },
+    mainhost: {
+      type: String,
+    }
   },
   { timestamps: true }
 );
@@ -337,6 +344,45 @@ const BookedSlotsShema = mongoose.Schema(
 
 const BookedSlot = mongoose.model('agribookedslots', BookedSlotsShema);
 
+
+
+const referenceSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    slotId: {
+      type: Array,
+    },
+    userId: {
+      type: String,
+      default: 'Pending',
+    },
+    name_1: {
+      type: String,
+    },
+    mobile_1: {
+      type: Number,
+    },
+    designation_1: {
+      type: String,
+    },
+    name_2: {
+      type: String,
+    },
+    mobile_2: {
+      type: Number,
+    },
+    designation_2: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const Reference = mongoose.model('reference', referenceSchema);
+
 module.exports = {
   AgriCandidate,
   AgriEventSlot,
@@ -344,4 +390,6 @@ module.exports = {
   IntrestedCandidate,
   SlotBooking,
   BookedSlot,
+  Reference
+
 };

@@ -19,7 +19,7 @@ const { AgriCandidate,
   AgriEventSlot,
   agriCandReview,
   IntrestedCandidate,
-  SlotBooking, } = require("../../models/agri.Event.model")
+  SlotBooking, Reference } = require("../../models/agri.Event.model")
 const jwt = require('jsonwebtoken');
 const agoraToken = require('../AgoraAppId.service');
 
@@ -227,7 +227,10 @@ const seller_go_live = async (req) => {
 
   if (token.streamStatus == 'Pending') {
     token.streamStatus = 'On-Going';
+    token.mainhost = demotoken._id;
     token.save();
+    demotoken.mainhost = true;
+    demotoken.save();
     req.io.emit(token._id + 'stream_on_going', token);
   }
 
@@ -970,6 +973,41 @@ const get_buyer_token = async (req) => {
 };
 
 
+const get_reference = async (req) => {
+  let userId = req.userId;
+  console.log(userId)
+  const token = await SlotBooking.findById(req.query.id);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Slot not found');
+  }
+  let reference = await Reference.findOne({ userId: userId, slotId: token._id });
+
+  return reference;
+};
+
+const add_reference = async (req) => {
+  let userId = req.userId;
+  console.log(userId)
+  const token = await SlotBooking.findById(req.query.id);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Slot not found');
+  }
+  let reference = await Reference.findOne({ userId: userId, slotId: token._id });
+  if (!reference) {
+    reference = await Reference.create(req.body)
+    reference.userId = userId;
+    reference.slotId = token._id;
+    reference.save();
+  }
+  else {
+    reference = await Reference.findByIdAndUpdate({ _id: reference._id }, req.body, { new: true });
+  }
+
+  return reference;
+
+};
+
+
 
 module.exports = {
   getDatas,
@@ -991,5 +1029,7 @@ module.exports = {
   recording_start,
   verifyToken,
   verification_sms_send,
-  get_buyer_token
+  get_buyer_token,
+  get_reference,
+  add_reference
 };

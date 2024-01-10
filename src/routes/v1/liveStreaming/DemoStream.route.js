@@ -42,6 +42,11 @@ router.route('/verify/sms/now').post(demostream.verify_otp);
 router.route('/get/buyer/token').get(demostream.get_buyer_token);
 
 
+router.route('/add/reference').post(volunteerAuth,demostream.add_reference);
+router.route('/get/reference').get(volunteerAuth,demostream.get_reference);
+
+
+
 
 // router.route('').get(demostream.send_sms_now);
 
