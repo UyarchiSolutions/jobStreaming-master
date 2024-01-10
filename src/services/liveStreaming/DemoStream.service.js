@@ -165,26 +165,15 @@ const add_one_more_time = async (req) => {
 };
 
 const end_stream = async (req) => {
-  let value = await DemoPost.findByIdAndUpdate(
-    { _id: req.query.id },
-    { status: 'Completed', streamEnd_Time: moment(), userList: [], end_Status: 'HostLeave' },
-    { new: true }
-  );
-  if (!value) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
+  let userId = req.userId;
+  const token = await SlotBooking.findById(req.query.id);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Slot not found');
   }
-
-  let his = await MutibleDemo.findById(value.runningStream);
-  if (!his) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'History not found');
-  }
-  his.status = "Completed";
-  his.end = new Date().getTime();
-  his.save();
-
-
-  req.io.emit(req.query.id + '_stream_end', { value: true });
-  return value;
+  token.streamStatus = "Completed";
+  token.save();
+  req.io.emit(token._id + '_stream_end', { value: true });
+  return token;
 };
 
 
