@@ -108,6 +108,17 @@ const get_buyer_token = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
+
+const get_reference = catchAsync(async (req, res) => {
+  const data = await demostream.get_reference(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const add_reference = catchAsync(async (req, res) => {
+  const data = await demostream.add_reference(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
 module.exports = {
   getDatas,
   get_stream_details,
@@ -129,5 +140,7 @@ module.exports = {
   start_cloud_record,
   get_stream_verify,
   verification_sms_send,
-  get_buyer_token
+  get_buyer_token,
+  get_reference,
+  add_reference
 };

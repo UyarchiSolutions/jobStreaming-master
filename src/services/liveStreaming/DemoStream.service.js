@@ -19,7 +19,7 @@ const { AgriCandidate,
   AgriEventSlot,
   agriCandReview,
   IntrestedCandidate,
-  SlotBooking, } = require("../../models/agri.Event.model")
+  SlotBooking, Reference } = require("../../models/agri.Event.model")
 const jwt = require('jsonwebtoken');
 const agoraToken = require('../AgoraAppId.service');
 
@@ -165,26 +165,15 @@ const add_one_more_time = async (req) => {
 };
 
 const end_stream = async (req) => {
-  let value = await DemoPost.findByIdAndUpdate(
-    { _id: req.query.id },
-    { status: 'Completed', streamEnd_Time: moment(), userList: [], end_Status: 'HostLeave' },
-    { new: true }
-  );
-  if (!value) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
+  let userId = req.userId;
+  const token = await SlotBooking.findById(req.query.id);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Slot not found');
   }
-
-  let his = await MutibleDemo.findById(value.runningStream);
-  if (!his) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'History not found');
-  }
-  his.status = "Completed";
-  his.end = new Date().getTime();
-  his.save();
-
-
-  req.io.emit(req.query.id + '_stream_end', { value: true });
-  return value;
+  token.streamStatus = "Completed";
+  token.save();
+  req.io.emit(token._id + '_stream_end', { value: true });
+  return token;
 };
 
 
@@ -227,7 +216,10 @@ const seller_go_live = async (req) => {
 
   if (token.streamStatus == 'Pending') {
     token.streamStatus = 'On-Going';
+    token.mainhost = demotoken._id;
     token.save();
+    demotoken.mainhost = true;
+    demotoken.save();
     req.io.emit(token._id + 'stream_on_going', token);
   }
 
@@ -643,14 +635,8 @@ const buyer_join_stream = async (req) => {
     user.save();
   }
 
-  const stream = await MutibleDemo.findById(streamId);
-  const post = await DemoPost.findById(stream.streamId);
-  if (!stream) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
-  }
-  if (stream.status == 'Completed') {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Stream Completed');
-  }
+  const stream = await SlotBooking.findById(streamId);
+
   let demotoken = await DemostreamToken.findOne({ userID: user._id, streamID: stream._id });
   if (!demotoken) {
     demotoken = await DemostreamToken.create({
@@ -664,27 +650,9 @@ const buyer_join_stream = async (req) => {
     });
   }
 
-  let register = await DemostreamToken.find({ streamID: demotoken.streamID, status: 'resgistered' }).count();
-  if (register < 300) {
-    demotoken.golive = true;
-    if (post.status == 'Scheduled') {
-      post.status = 'Ready';
-      post.save();
-      stream.status = 'Ready';
-      stream.save();
-
-    }
-  } else {
-    demotoken.golive = false;
-  }
-  demotoken.status = 'resgistered';
-  demotoken.save();
 
 
-  setTimeout(async () => {
-    register = await DemostreamToken.find({ streamID: demotoken.streamID, status: 'resgistered' }).count();
-    req.io.emit(demotoken.streamID + '_buyer_registor', { register, stream });
-  }, 300);
+
   return demotoken;
 }
 
@@ -782,15 +750,15 @@ const buyer_go_live_stream = async (req) => {
   if (!demotoken) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
-  const stream = await MutibleDemo.findById(demotoken.streamID);
+  const stream = await SlotBooking.findById(demotoken.streamID);
   console.log(stream)
   if (stream) {
     if (demotoken.token == null && stream.agoraAppId != null) {
       const uid = await generateUid();
       const role = Agora.RtcRole.SUBSCRIBER;
-      let expirationTimestamp = stream.end / 1000;
+      let expirationTimestamp = stream.endTime / 1000;
       const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp, stream.agoraAppId);
-      demotoken.expirationTimestamp = stream.end;
+      demotoken.expirationTimestamp = stream.endTime;
       demotoken.uid = uid;
       demotoken.token = token;
       demotoken.save();
@@ -801,83 +769,15 @@ const buyer_go_live_stream = async (req) => {
 
 
 const byer_get_stream_details = async (req) => {
-  let demotoken = await DemostreamToken.findById(req.query.id);
+  let demotoken = await DemostreamToken.findById(req.query.join);
   if (!demotoken) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
-  const stream = await MutibleDemo.findById(demotoken.streamID);
+  const stream = await SlotBooking.findById(demotoken.streamID);
   const agora = await AgoraAppId.findById(stream.agoraAppId);
+  const candId = await AgriCandidate.findById(stream.candId);
 
-  let post = await DemoPost.aggregate([
-    { $match: { $and: [{ _id: { $eq: stream.streamId } }] } },
-    {
-      $lookup: {
-        from: 'demousers',
-        localField: 'userId',
-        foreignField: '_id',
-        as: 'demousers',
-      },
-    },
-    {
-      $unwind: '$demousers',
-    },
-    {
-      $lookup: {
-        from: 'demointresteds',
-        localField: '_id',
-        foreignField: 'streamHis',
-        as: 'demointresteds',
-      },
-    },
-    {
-      $unwind: {
-        preserveNullAndEmptyArrays: true,
-        path: '$demointresteds',
-      },
-    },
-    {
-      $addFields: {
-        intrested: { $ifNull: ['$demointresteds.intrested', false] },
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        "imageArr": 1,
-        "status": 1,
-        "newsPaper": 1,
-        "Edition": 1,
-        "dateOfAd": 1,
-        "createdAt": 1,
-        "updatedAt": 1,
-        "image": 1,
-        "Description": 1,
-        "bhkBuilding": 1,
-        "category": 1,
-        "furnitionStatus": 1,
-        "location": 1,
-        "postType": 1,
-        "priceExp": 1,
-        "propertyType": 1,
-        linkstatus: 1,
-        tenantType: 1,
-        ageOfProperty: 1,
-        otp_verifiyed: 1,
-        finish: 1,
-        streamDate: 1,
-        userName: "$demousers.userName",
-        mobileNumber: "$demousers.mobileNumber",
-        locationss: "$demousers.location",
-        mail: "$demousers.mail",
-        intrested: 1
-      }
-    }
-  ])
-
-  if (post.length == 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
-  }
-  return { post: post[0], stream, agora, demotoken };
+  return { stream, agora, demotoken, candId };
 };
 
 
@@ -1041,7 +941,7 @@ const get_stream_details = async (req) => {
 
 
 const get_buyer_token = async (req) => {
-  let otp_verify = await Demootpverify.findById(req.query.verify);
+  let otp_verify = await DemostreamToken.findById(req.query.id);
   if (!otp_verify) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Join token not found');
   }
@@ -1057,7 +957,42 @@ const get_buyer_token = async (req) => {
   const appID = await AgoraAppId.findById(demotoken.agoraAppId);
 
 
-  return { demotoken, stream, appID };
+  return { demotoken, stream, appID, otp_verify };
+
+};
+
+
+const get_reference = async (req) => {
+  let userId = req.userId;
+  console.log(userId)
+  const token = await SlotBooking.findById(req.query.id);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Slot not found');
+  }
+  let reference = await Reference.findOne({ userId: userId, slotId: token._id });
+
+  return reference;
+};
+
+const add_reference = async (req) => {
+  let userId = req.userId;
+  console.log(userId)
+  const token = await SlotBooking.findById(req.query.id);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Slot not found');
+  }
+  let reference = await Reference.findOne({ userId: userId, slotId: token._id });
+  if (!reference) {
+    reference = await Reference.create(req.body)
+    reference.userId = userId;
+    reference.slotId = token._id;
+    reference.save();
+  }
+  else {
+    reference = await Reference.findByIdAndUpdate({ _id: reference._id }, req.body, { new: true });
+  }
+
+  return reference;
 
 };
 
@@ -1083,5 +1018,7 @@ module.exports = {
   recording_start,
   verifyToken,
   verification_sms_send,
-  get_buyer_token
+  get_buyer_token,
+  get_reference,
+  add_reference
 };

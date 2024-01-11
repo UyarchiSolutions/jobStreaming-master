@@ -216,6 +216,10 @@ const Demostreamchema = mongoose.Schema({
   demoPost: {
     type: String,
   },
+  mainhost: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const DemostreamToken = mongoose.model('demostreamtoken', Demostreamchema);

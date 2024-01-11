@@ -21,11 +21,11 @@ router.route('/video/start/cloud').get(demostream.start_cloud);
 
 // Buyer Side Stream
 
-router.route('/buyer/join/stream').post(demostream.buyer_join_stream);
+router.route('/join/stream/candidate').post(demostream.buyer_join_stream);
 router.route('/buyer/get/property').post(demostream.get_buyer_join_stream);
 router.route('/buyer/go/live').get(demostream.buyer_go_live_stream);
 
-router.route('/buyer/stream/details').get(demostream.byer_get_stream_details);
+router.route('/verify/token/stream/buyer').get(demostream.byer_get_stream_details);
 router.route('/buyer/interest/now').post(demostream.buyer_interested);
 router.route('/getStreamDetails/:id').get(demostream.getStreamDetails);
 
@@ -40,6 +40,11 @@ router.route('/verification/sms/send').get(demostream.verification_sms_send);
 router.route('/verify/sms/now').post(demostream.verify_otp);
 
 router.route('/get/buyer/token').get(demostream.get_buyer_token);
+
+
+router.route('/add/reference').post(volunteerAuth,demostream.add_reference);
+router.route('/get/reference').get(volunteerAuth,demostream.get_reference);
+
 
 
 
