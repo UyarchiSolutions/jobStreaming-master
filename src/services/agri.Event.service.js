@@ -284,6 +284,36 @@ const getAgriCandidates = async (req) => {
       },
     },
     {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $sort: { createdAt: -1 } }, { $limit: 1 }, { $match: { Type: 'Tech' } }],
+        as: 'TechID',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TechID',
+      },
+    },
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $sort: { createdAt: -1 } }, { $limit: 1 }, { $match: { Type: 'HR' } }],
+        as: 'HRID',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$HRID',
+      },
+    },
+    {
       $project: {
         _id: 1,
         name: 1,
@@ -293,6 +323,8 @@ const getAgriCandidates = async (req) => {
         TechIntrest: { $size: '$Techcandidates' },
         status: { $ifNull: ['$status', 'Pending'] },
         clear: 1,
+        techId: { $ifNull: ['$TechID._id', null] },
+        hrId: { $ifNull: ['$HRID._id', null] },
       },
     },
   ]);
