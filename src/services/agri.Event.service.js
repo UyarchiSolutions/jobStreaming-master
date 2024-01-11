@@ -325,6 +325,7 @@ const getAgriCandidates = async (req) => {
         clear: 1,
         techId: { $ifNull: ['$TechID._id', null] },
         hrId: { $ifNull: ['$HRID._id', null] },
+        hrClear: 1,
       },
     },
   ]);
@@ -445,18 +446,32 @@ const getIntrestedByCand_Role = async (req) => {
         Pending: { $ifNull: ['$Pending.total', 0] },
         TodayPending: { $ifNull: ['$TodayPending.total', 0] },
         TodayUpcoming: { $ifNull: ['$TodayUpcoming.total', 0] },
+        hrStatus: 1,
       },
     },
   ]);
-  let Counts = await IntrestedCandidate.aggregate([
-    {
-      $match: {
-        candId: id,
-        Role: Role,
-        status: 'Approved',
+  let Counts;
+  if (role == 'HR') {
+    Counts = await IntrestedCandidate.aggregate([
+      {
+        $match: {
+          candId: id,
+          Role: Role,
+          hrStatus: 'Approved',
+        },
       },
-    },
-  ]);
+    ]);
+  } else {
+    Counts = await IntrestedCandidate.aggregate([
+      {
+        $match: {
+          candId: id,
+          Role: Role,
+          status: 'Approved',
+        },
+      },
+    ]);
+  }
 
   return { value, Counts };
 };
@@ -529,13 +544,13 @@ const AdminApprove = async (req) => {
     let findMatches = await IntrestedCandidate.find({
       slotId: slotId,
       candId: getIntrested.candId,
-      status: 'Approved',
+      hrStatus: 'Approved',
       Role: 'HR Volunteer',
     }).count();
     if (findMatches >= 2) {
       throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
     }
-    getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
+    getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { hrStatus: 'Approved' }, { new: true });
     getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
   } else {
     let findMatches = await IntrestedCandidate.find({
@@ -568,11 +583,17 @@ const Undo = async (req) => {
 
 const clearCandidates = async (req) => {
   let id = req.params.id;
+  let role = req.params.role;
   let values = await AgriCandidate.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate Not Found');
   }
-  values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { clear: true }, { new: true });
+  if (role == 'HR') {
+    values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { hrClear: true }, { new: true });
+  } else {
+    values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { clear: true }, { new: true });
+  }
+  console.log(role);
   return values;
 };
 

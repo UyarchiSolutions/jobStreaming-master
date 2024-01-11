@@ -85,6 +85,10 @@ const AgriCandidateSchema = new mongoose.Schema(
     resumeUrl: {
       type: String,
     },
+    hrClear: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

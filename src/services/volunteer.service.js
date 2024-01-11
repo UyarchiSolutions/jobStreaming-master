@@ -290,16 +290,23 @@ const getCandidatesForInterview = async (req) => {
   let role = req.Role == 'HR Volunteer' ? 'HR' : 'Tech';
 
   console.log(role);
+  let statusMatch = { active: true };
+  if (role == 'HR') {
+    statusMatch = {
+      hrStatus: 'Approved',
+    };
+  } else {
+    statusMatch = {
+      status: 'Approved',
+    };
+  }
   let values = await Volunteer.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
   }
   let candidates = await IntrestedCandidate.aggregate([
     {
-      $match: {
-        volunteerId: id,
-        status: 'Approved',
-      },
+      $match: { $and: [{ volunteerId: id }, statusMatch] },
     },
     {
       $lookup: {
