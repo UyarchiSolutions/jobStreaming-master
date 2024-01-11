@@ -31,7 +31,6 @@ const SetPassword = catchAsync(async (req, res) => {
 const LoginClimbCandidate = catchAsync(async (req, res) => {
   const data = await ClimbCandService.LoginClimbCandidate(req);
   let token = await Token.generateAuthTokens(data);
-  console.log(token);
   res.send({ data, token });
 });
 

@@ -170,7 +170,7 @@ const createCandidateReview = async (req) => {
   return creations;
 };
 
-const imageUploadAgriCand = async (req) => {
+const ResumeUploadAgriCand = async (req) => {
   let id = req.params.id;
   let findCand = await AgriCandidate.findById(id);
   if (!findCand) {
@@ -190,11 +190,17 @@ const imageUploadAgriCand = async (req) => {
       ContentType: req.file.mimetype,
     };
     return new Promise((resolve, reject) => {
-      s3.upload(params, (err, res) => {
+      s3.upload(params, async (err, res) => {
         if (err) {
           reject(err);
         } else {
+          let resumeUploaded = await AgriCandidate.findByIdAndUpdate(
+            { _id: id },
+            { resumeUrl: res.Location },
+            { new: true }
+          );
         }
+        resolve(resumeUploaded);
       });
     });
   }
@@ -538,4 +544,5 @@ module.exports = {
   AdminApprove,
   Undo,
   clearCandidates,
+  ResumeUploadAgriCand,
 };

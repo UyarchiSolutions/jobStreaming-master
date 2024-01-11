@@ -16,6 +16,9 @@ const AgriCandidateSchema = new mongoose.Schema(
     mobile: {
       type: String,
     },
+    gender: {
+      type: String,
+    },
     location: {
       type: String,
     },
@@ -78,6 +81,9 @@ const AgriCandidateSchema = new mongoose.Schema(
     clear: {
       type: Boolean,
       default: false,
+    },
+    resumeUrl: {
+      type: String,
     },
   },
   { timestamps: true }
