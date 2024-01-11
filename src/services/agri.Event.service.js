@@ -323,7 +323,7 @@ const getAgriCandidates = async (req) => {
         TechIntrest: { $size: '$Techcandidates' },
         status: { $ifNull: ['$status', 'Pending'] },
         clear: 1,
-        techId:{ $ifNull: ['$TechID._id', null] } ,
+        techId: { $ifNull: ['$TechID._id', null] },
         hrId: { $ifNull: ['$HRID._id', null] },
       },
     },
@@ -515,7 +515,7 @@ const createSlotBooking = async (req) => {
 };
 
 const AdminApprove = async (req) => {
-  const { slotId, volunteerId, intrestId } = req.body;
+  const { slotId, volunteerId, intrestId, Role } = req.body;
   let getIntrested = await IntrestedCandidate.findById(intrestId);
   if (!getIntrested) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Intrested Data Not Found, Some One Deleted From Database 😠');
@@ -524,17 +524,34 @@ const AdminApprove = async (req) => {
   if (!getSlots) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Data Not Found, Some One Deleted From Database 😠');
   }
-  let findMatches = await IntrestedCandidate.find({
-    slotId: slotId,
-    candId: getIntrested.candId,
-    status: 'Approved',
-  }).count();
-  console.log(findMatches);
-  if (findMatches >= 2) {
-    throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
+  console.log(req.body);
+  if (Role == 'HR') {
+    let findMatches = await IntrestedCandidate.find({
+      slotId: slotId,
+      candId: getIntrested.candId,
+      status: 'Approved',
+      Role: 'HR Volunteer',
+    }).count();
+    if (findMatches >= 2) {
+      throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
+    }
+    getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
+    getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
+  } else {
+    let findMatches = await IntrestedCandidate.find({
+      slotId: slotId,
+      candId: getIntrested.candId,
+      status: 'Approved',
+      Role: 'Tech Volunteer',
+    }).count();
+    console.log(findMatches);
+    if (findMatches >= 2) {
+      throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
+    }
+    getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
+    getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
   }
-  getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
-  getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
+
   return getIntrested;
 };
 

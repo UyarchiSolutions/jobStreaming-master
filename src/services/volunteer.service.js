@@ -11,7 +11,7 @@ const { HttpStatusCode } = require('axios');
 const createVolunteer = async (req) => {
   let body = req.body;
   let findByEmail = await Volunteer.findOne({ email: body.email });
-  let  findByMobile = await Volunteer.findOne({ mobileNumber: body.mobileNumber });
+  let findByMobile = await Volunteer.findOne({ mobileNumber: body.mobileNumber });
   if (findByEmail) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email Already Exists');
   }
@@ -155,9 +155,9 @@ const MatchCandidate = async (req) => {
           as: 'candidate',
         },
       },
-      // {
-      //   $unwind: '$candidate',
-      // },
+      {
+        $unwind: '$candidate',
+      },
       {
         $addFields: {
           isIdInArray: {
@@ -220,15 +220,15 @@ const CandidateIntrestUpdate = async (req) => {
   if (!cand) {
     throw new ApiError(httpStatus.BAD_REQUEST, " Couldn't find candidate");
   }
+  let slots = await SlotBooking.findById(slotId);
+  if (!slots) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slots Not Found');
+  }
   let values = await Volunteer.findById(volunteerId);
   if (values.Role == 'HR Volunteer') {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId } }, { new: true });
   } else {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { techIntrest: volunteerId } }, { new: true });
-  }
-  let slots = await SlotBooking.findById(slotId);
-  if (!slots) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Slots Not Found');
   }
   await IntrestedCandidate.create({
     candId: candId,
