@@ -74,27 +74,12 @@ const MatchCandidate = async (req) => {
   let commingDataMatch = { active: true };
 
   if (values.Role == 'Tech Volunteer') {
-    // console.log(values);
     let findCand = await AgriCandidate.aggregate([
       {
         $match: {
           $and: [keySkillSearch],
         },
       },
-      // {
-      //   $lookup: {
-      //     from: 'intrestedcandidates',
-      //     localField: '_id',
-      //     foreignField: 'candId',
-      //     as: 'Intrested',
-      //   },
-      // },
-      // {
-      //   $unwind: {
-      //     path: '$Intrested',
-      //     preserveNullAndEmptyArrays: true,
-      //   },
-      // },
       {
         $lookup: {
           from: 'slotbookings',
@@ -137,8 +122,6 @@ const MatchCandidate = async (req) => {
           isIdInArray: '$isIdInArrayss',
           Tech: { $size: '$techIntrest' },
           HR: { $size: '$intrest' },
-          // Intrested: '$Intrested',
-          // status: '$Intrested.status',
         },
       },
       {
@@ -175,20 +158,6 @@ const MatchCandidate = async (req) => {
           },
         },
       },
-      // {
-      //   $lookup: {
-      //     from: 'intrestedcandidates',
-      //     localField: '_id',
-      //     foreignField: 'candId',
-      //     pipeline: [{ $match: { status: 'Approved' } }],
-      //     as: 'Intrested',
-      //   },
-      // },
-      // {
-      //   $unwind: {
-      //     path: '$Intrested',
-      //   },
-      // },
       {
         $project: {
           _id: 1,
@@ -205,16 +174,11 @@ const MatchCandidate = async (req) => {
           isIdInArray: '$isIdInArrayss',
           Tech: { $size: '$techIntrest' },
           HR: { $size: '$intrest' },
-          // Intrested: '$Intrested',
-          // status: '$Intrested.status',
         },
       },
       {
         $match: { HR: { $lt: 5 } },
       },
-      // {
-      //   $match: { status: 'Approved' },
-      // },
     ]);
     return findCand;
   }
