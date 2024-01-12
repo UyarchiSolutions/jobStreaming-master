@@ -71,6 +71,8 @@ const MatchCandidate = async (req) => {
     keySkillSearch;
   }
 
+  let commingDataMatch = { active: true };
+
   if (values.Role == 'Tech Volunteer') {
     // console.log(values);
     let findCand = await AgriCandidate.aggregate([
@@ -133,13 +135,15 @@ const MatchCandidate = async (req) => {
           Type: '$candidate.Type',
           slotId: '$candidate._id',
           isIdInArray: 1,
+          Tech: { $size: '$techIntrest' },
+          HR: { $size: '$intrest' },
           // Intrested: '$Intrested',
           // status: '$Intrested.status',
         },
       },
-      // {
-      //   $match: { status: 'Approved' },
-      // },
+      {
+        $match: { Tech: { $lt: 5 } },
+      },
     ]);
 
     return findCand;
@@ -199,9 +203,14 @@ const MatchCandidate = async (req) => {
           Type: '$candidate.Type',
           slotId: '$candidate._id',
           isIdInArray: 1,
+          Tech: { $size: '$techIntrest' },
+          HR: { $size: '$intrest' },
           // Intrested: '$Intrested',
           // status: '$Intrested.status',
         },
+      },
+      {
+        $match: { HR: { $lt: 5 } },
       },
       // {
       //   $match: { status: 'Approved' },
