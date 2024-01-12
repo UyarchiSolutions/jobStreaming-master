@@ -109,14 +109,14 @@ const MatchCandidate = async (req) => {
       },
       {
         $addFields: {
-          isIdInArray: {
+          isIdInArrayss: {
             $in: [id, '$intrest'],
           },
         },
       },
       {
         $addFields: {
-          techIntrest: {
+          techIntrestss: {
             $in: [id, '$techIntrest'],
           },
         },
@@ -128,13 +128,13 @@ const MatchCandidate = async (req) => {
           name: 1,
           location: 1,
           yearOfPassing: 1,
-          techIntrest: 1,
+          techIntrest: '$techIntrestss',
           intrest: 1,
           slotDate: '$candidate.date',
           slotTime: '$candidate.time',
           Type: '$candidate.Type',
           slotId: '$candidate._id',
-          isIdInArray: 1,
+          isIdInArray: '$isIdInArrayss',
           Tech: { $size: '$techIntrest' },
           HR: { $size: '$intrest' },
           // Intrested: '$Intrested',
@@ -163,15 +163,15 @@ const MatchCandidate = async (req) => {
       },
       {
         $addFields: {
-          isIdInArray: {
+          isIdInArrayss: {
             $in: [id, '$intrest'],
           },
         },
       },
       {
         $addFields: {
-          techIntrest: {
-            $in: [id, '$intrest'],
+          techIntrestss: {
+            $in: [id, '$techIntrest'],
           },
         },
       },
@@ -197,12 +197,12 @@ const MatchCandidate = async (req) => {
           location: 1,
           yearOfPassing: 1,
           techIntrest: 1,
-          intrest: 1,
+          intrest: '$techIntrestss',
           slotDate: '$candidate.date',
           slotTime: '$candidate.time',
           Type: '$candidate.Type',
           slotId: '$candidate._id',
-          isIdInArray: 1,
+          isIdInArray: '$isIdInArrayss',
           Tech: { $size: '$techIntrest' },
           HR: { $size: '$intrest' },
           // Intrested: '$Intrested',
