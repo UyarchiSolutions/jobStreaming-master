@@ -82,10 +82,11 @@ const eventMailSend = async (to) => {
 };
 
 const volunteerMailVerification = async (data) => {
-  const { email, name } = data;
+  const { email, name, _id } = data;
   let data1 = await ejs.renderFile(__dirname + '/volunteer-emailverify.ejs', {
     email: email,
     name: name,
+    id: _id,
   });
   const msg = {
     from: config.email.from,

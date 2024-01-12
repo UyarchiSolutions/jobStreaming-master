@@ -58,6 +58,16 @@ const updateVolunteer = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const sendOTP = catchAsync(async (req, res) => {
+  const data = await VolunteerService.sendOTP(req);
+  res.send(data);
+});
+
+const VerifyOTP = catchAsync(async (req, res) => {
+  const data = await VolunteerService.VerifyOTP(req);
+  res.send(data);
+});
+
 module.exports = {
   createVolunteer,
   setPassword,
@@ -69,4 +79,6 @@ module.exports = {
   getVolunteersDetails,
   getCandidatesForInterview,
   updateVolunteer,
+  sendOTP,
+  VerifyOTP,
 };

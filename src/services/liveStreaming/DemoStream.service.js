@@ -74,7 +74,6 @@ const send_otp = async (req) => {
   if (!stream) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
   }
-
   let res = await send_otp_now(stream);
   return res;
 };

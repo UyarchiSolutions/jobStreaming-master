@@ -1,13 +1,12 @@
 const httpStatus = require('http-status');
 const moment = require('moment');
-const { Volunteer } = require('../models/vlounteer.model');
+const { Volunteer, VolunteerOTP } = require('../models/vlounteer.model');
 const { EventRegister } = require('../models/climb-event.model');
 const { AgriCandidate, IntrestedCandidate, SlotBooking } = require('../models/agri.Event.model');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const AWS = require('aws-sdk');
-const { HttpStatusCode } = require('axios');
-
+const axios = require('axios');
 const createVolunteer = async (req) => {
   let body = req.body;
   let findByEmail = await Volunteer.findOne({ email: body.email });
@@ -360,6 +359,113 @@ const updateVolunteer = async (req) => {
   return findById;
 };
 
+// const send_otp = async (req) => {
+//   console.log(req.query.id)
+//   let stream = await DemoPost.findById(req.query.id);
+//   if (!stream) {
+//     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
+//   }
+//   let res = await send_otp_now(stream);
+//   return res;
+// };
+
+const send_otp_now = async (stream) => {
+  let OTPCODE = Math.floor(100000 + Math.random() * 900000);
+  let Datenow = new Date().getTime();
+  let otpsend = await VolunteerOTP.findOne({
+    VolunteerId: stream._id,
+    otpExpiedTime: { $gte: Datenow },
+    verify: false,
+    expired: false,
+  });
+  if (!otpsend) {
+    const token = await Volunteer.findById(stream._id);
+    await VolunteerOTP.updateMany(
+      { VolunteerId: stream._id, verify: false },
+      { $set: { verify: true, expired: true } },
+      { new: true }
+    );
+    let exp = moment().add(5, 'minutes');
+    let otp = await VolunteerOTP.create({
+      OTP: OTPCODE,
+      verify: false,
+      mobile: token.mobileNumber,
+      VolunteerId: stream._id,
+      DateIso: moment(),
+      expired: false,
+      otpExpiedTime: exp,
+    });
+    let message = `${OTPCODE} is the Onetime password(OTP) for mobile number verification . This is usable once and valid for 5 minutes from the request- Climb(An Ookam company product)`;
+    let reva = await axios.get(
+      `http://panel.smsmessenger.in/api/mt/SendSMS?user=ookam&password=ookam&senderid=OOKAMM&channel=Trans&DCS=0&flashsms=0&number=${token.mobileNumber}&text=${message}&route=6&peid=1701168700339760716&DLTTemplateId=1707170322899337958`
+    );
+    console.log(reva.data);
+    otpsend = { otpExpiedTime: otp.otpExpiedTime };
+  } else {
+    otpsend = { otpExpiedTime: otpsend.otpExpiedTime };
+  }
+  return otpsend;
+};
+
+const sendOTP = async (req, res) => {
+  let volunteer = await Volunteer.findById(req.query.id);
+  if (!volunteer) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'OTP NOT Send');
+  }
+  let otpsend = await send_otp_now(volunteer);
+  return otpsend;
+};
+
+const verify_otp = async (req) => {
+  let { otp, stream } = req.body;
+  const token = await SlotBooking.findById(stream);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
+  }
+
+  let Datenow = new Date().getTime();
+  let verify = await Demootpverify.findOne({
+    streamID: stream,
+    OTP: otp,
+    verify: false,
+    expired: false,
+    otpExpiedTime: { $gt: Datenow },
+  });
+  if (!verify) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid OTP');
+  } else {
+    verify.verify = true;
+    verify.expired = true;
+    verify.save();
+    const stream = await SlotBooking.findById(verify.streamID);
+    stream.otp_verifiyed = verify._id;
+    stream.linkstatus = 'Verified';
+    stream.save();
+  }
+  return verify;
+};
+
+const VerifyOTP = async (req) => {
+  let { id, OTP } = req.body;
+  let Datenow = new Date().getTime();
+  let verify = await VolunteerOTP.findOne({
+    VolunteerId: id,
+    OTP: OTP,
+    verify: false,
+    expired: false,
+    otpExpiedTime: { $gt: Datenow },
+  });
+  if (!verify) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid OTP');
+  } else {
+    verify.verify = true;
+    verify.expired = true;
+    verify.save();
+    let values = await Volunteer.findById(verify.VolunteerId);
+    return values;
+  }
+};
+
 module.exports = {
   createVolunteer,
   setPassword,
@@ -371,4 +477,6 @@ module.exports = {
   getVolunteersDetails,
   getCandidatesForInterview,
   updateVolunteer,
+  sendOTP,
+  VerifyOTP,
 };
