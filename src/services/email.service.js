@@ -129,8 +129,8 @@ const sendsuccessTestMail = async (data) => {
 };
 
 const sendsuccessTestMailNew = async (data) => {
-  const { mail, name, date, slot,testProfile } = data;
-  console.log(data)
+  const { mail, name, date, slot, testProfile } = data;
+  console.log(data);
   let data1 = await ejs.renderFile(__dirname + '/testwarmynew.ejs', {
     email: mail,
     name: name,
@@ -141,6 +141,24 @@ const sendsuccessTestMailNew = async (data) => {
     from: 'noreply@warmy.co.in',
     to: mail,
     subject: 'Interview Registration Success-Associate Software Engineer-Acknowledgement',
+    html: data1,
+  };
+  await transporter2.sendMail(msg);
+};
+
+const agriCandidateSlotBookedMail = async (data) => {
+  const { mail, name, date, slot } = data;
+  console.log(data);
+  let data1 = await ejs.renderFile(__dirname + '/testwarmynew.ejs', {
+    email: mail,
+    name: name,
+    date: date,
+    time: slot,
+  });
+  const msg = {
+    from: 'noreply@warmy.co.in',
+    to: mail,
+    subject: 'Agri job Fair Slot Confirmation Message',
     html: data1,
   };
   await transporter2.sendMail(msg);
@@ -284,4 +302,5 @@ module.exports = {
   candiRegReceveMail,
   eventMailSend,
   sendsuccessTestMailNew,
+  agriCandidateSlotBookedMail,
 };

@@ -12,6 +12,7 @@ const { EventRegister } = require('../models/climb-event.model');
 const moment = require('moment');
 const AWS = require('aws-sdk');
 const XLSX = require('xlsx');
+const { agriCandidateSlotBookedMail } = require('./email.service');
 
 const createAgriEvent = async (req) => {
   let findByMobile = await AgriCandidate.findOne({ mobile: req.body.mobile });
@@ -506,10 +507,18 @@ const getCandBy = async (req) => {
 
 const createSlotBooking = async (req) => {
   const body = req.body;
+  let findCand = await AgriCandidate.findById(body.candId);
+  console.log(findCand);
   let findExistSlot = await BookedSlot.findOne({ candId: body.candId });
   if (findExistSlot) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Your Interview Time Got Over ');
   }
+  let emailData = {
+    mail: findCand.mail,
+    name: findCand.name,
+    date: body.slot[0].date,
+    slot: body.slot[0].time,
+  };
   let slotCreate = await BookedSlot.create({ slots: body.slot, candId: body.candId });
   await body.slot.forEach(async (e) => {
     let iso = new Date(moment(e.date + ' ' + e.time, 'DD-MM-YYYY hh:mm A').toISOString()).getTime();
@@ -526,6 +535,7 @@ const createSlotBooking = async (req) => {
     await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true }, { new: true });
     return creations;
   });
+  await agriCandidateSlotBookedMail(emailData);
   return { message: 'Slot Booking created successfully' };
 };
 
