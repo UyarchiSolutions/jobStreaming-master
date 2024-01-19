@@ -107,6 +107,14 @@ const MatchCandidate = async (req) => {
         },
       },
       {
+        $lookup: {
+          from: 'intrestedcandidates',
+          localField: '_id',
+          foreignField: 'candId',
+          as: 'intrestedcand',
+        },
+      },
+      {
         $project: {
           _id: 1,
           skills: 1,
@@ -156,6 +164,14 @@ const MatchCandidate = async (req) => {
           techIntrestss: {
             $in: [id, '$techIntrest'],
           },
+        },
+      },
+      {
+        $lookup: {
+          from: 'intrestedcandidates',
+          localField: '_id',
+          foreignField: 'candId',
+          as: 'intrestedcand',
         },
       },
       {
@@ -439,6 +455,47 @@ const VerifyOTP = async (req) => {
   }
 };
 
+const getIntrestedCandidates = async (req) => {
+  let userId = req.userId;
+  let role = req.Role == 'HR Volunteer' ? 'HR' : 'Tech';
+  let matchIntrestedCand = { active: true };
+  if (role == 'HR') {
+    matchIntrestedCand = { intrest: { $in: [userId] } };
+  } else {
+    matchIntrestedCand = { techIntrest: { $in: [userId] } };
+  }
+  let values = await AgriCandidate.aggregate([
+    {
+      $match: matchIntrestedCand,
+    },
+  ]);
+  return values;
+};
+
+const UndoIntrestedCandidate = async (req) => {
+  let candId = req.params.id;
+  let volId = req.userId;
+  let role = req.Role;
+  let findCand = await AgriCandidate.findById(candId);
+  if (!findCand) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Sorry  Deleted Choosen From AgriCandidate table');
+  }
+  if (role == 'HR Volunteer') {
+    let findind = findCand.intrest.findIndex((e) => {
+      return e == volId;
+    });
+    findCand.intrest.splice(findind, 1);
+  } else {
+    let findind = findCand.techIntrest.findIndex((e) => {
+      return e == volId;
+    });
+    findCand.techIntrest.splice(findind, 1);
+  }
+  findCand.save();
+  await IntrestedCandidate.deleteOne({ candId: candId, volunteerId: volId });
+  return findCand;
+};
+
 module.exports = {
   createVolunteer,
   setPassword,
@@ -452,4 +509,6 @@ module.exports = {
   updateVolunteer,
   sendOTP,
   VerifyOTP,
+  getIntrestedCandidates,
+  UndoIntrestedCandidate,
 };

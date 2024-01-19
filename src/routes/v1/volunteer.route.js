@@ -23,4 +23,6 @@ router.route('/getCandidates/ForInterview').get(volunteerAuth, volunteerControll
 router.route('/updateVolunteer/:id').put(volunteerController.updateVolunteer);
 router.route('/sendOTP').get(volunteerController.sendOTP);
 router.route('/verifyOTP').post(volunteerController.VerifyOTP);
+router.route('/getIntrestedCandidates').get(volunteerAuth, volunteerController.getIntrestedCandidates);
+router.route('/UndoIntrestedCandidate/:id').get(volunteerAuth, volunteerController.UndoIntrestedCandidate);
 module.exports = router;
