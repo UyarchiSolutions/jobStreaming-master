@@ -52,14 +52,14 @@ const sendVerificationEmail = async (to, token, mobilenumber) => {
 };
 
 const sendVerificationEmailEmp = async (userData) => {
-  const { name, _id } = userData;
-  data1 = await ejs.renderFile(__dirname + '/employTemplate.ejs', {
+  const { name, _id, email } = userData;
+  data1 = await ejs.renderFile(__dirname + '/employerTemplate.ejs', {
     name: name,
     id: _id,
   });
   const msg = {
     from: config.email.from,
-    to: to,
+    to: email,
     subject: 'templates',
     html: data1,
   };

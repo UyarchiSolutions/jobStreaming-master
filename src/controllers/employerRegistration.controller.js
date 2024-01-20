@@ -151,6 +151,21 @@ const sendOTP = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const VerifyOTP = catchAsync(async (req, res) => {
+  const data = await EmployerRegistration.VerifyOTP(req);
+  res.send(data);
+});
+
+const getEmployerByMobile = catchAsync(async (req, res) => {
+  const data = await EmployerRegistration.getEmployerByMobile(req);
+  res.send(data);
+});
+
+const setPasswordById = catchAsync(async (req, res) => {
+  const data = await EmployerRegistration.setPasswordById(req);
+  res.send(data);
+})
+
 module.exports = {
   register,
   verify_email,
@@ -173,6 +188,9 @@ module.exports = {
   uploadProfileImage,
   uploadEmployerFile,
   sendOTP,
+  VerifyOTP,
+  getEmployerByMobile,
+  setPasswordById
   //   logout,
   //   refreshTokens,
   //   forgotPassword,

@@ -19,6 +19,10 @@ const createEmployer = async (userBody) => {
   if (!userBody.password == userBody.confirmpassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Confirm Password Incorrect');
   }
+  let findByMobile = await EmployerRegistration.findOne({ mobileNumber: mobileNumber });
+  if (findByMobile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile NumberAlready Exists');
+  }
   let data = await EmployerRegistration.create(userBody);
   return data;
 };
@@ -409,7 +413,7 @@ const send_otp_now = async (stream) => {
     let reva = await axios.get(
       `http://panel.smsmessenger.in/api/mt/SendSMS?user=ookam&password=ookam&senderid=OOKAMM&channel=Trans&DCS=0&flashsms=0&number=${token.mobileNumber}&text=${message}&route=6&peid=1701168700339760716&DLTTemplateId=1707170322899337958`
     );
-    console.log(reva.data,"asdas");
+    console.log(reva.data, 'asdas');
     otpsend = { otpExpiedTime: otp.otpExpiedTime };
   } else {
     otpsend = { otpExpiedTime: otpsend.otpExpiedTime };
@@ -424,6 +428,49 @@ const sendOTP = async (req) => {
   }
   let otpsend = await send_otp_now(emp);
   return otpsend;
+};
+
+const VerifyOTP = async (req) => {
+  let { id, OTP } = req.body;
+  let Datenow = new Date().getTime();
+  let verify = await EmployerOTP.findOne({
+    empId: id,
+    OTP: OTP,
+    verify: false,
+    expired: false,
+    otpExpiedTime: { $gt: Datenow },
+  });
+  if (!verify) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid OTP');
+  } else {
+    verify.verify = true;
+    verify.expired = true;
+    verify.save();
+    let values = await EmployerRegistration.findById(verify.empId);
+    return values;
+  }
+};
+
+const getEmployerByMobile = async (req) => {
+  const { mobileNumber } = req.body;
+  let employer = await EmployerRegistration.findOne({ mobileNumber: mobileNumber });
+  if (!employer) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Not Registered');
+  }
+  return employer;
+};
+
+const setPasswordById = async (req) => {
+  const { id, password } = req.body;
+  let findEmp = await EmployerRegistration.findById(id);
+  if (!findEmp) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Employer Not Fouund');
+  }
+  console.log(req.body);
+  const salt = await bcrypt.genSalt(10);
+  let password1 = await bcrypt.hash(password, salt);
+  findEmp = await EmployerRegistration.findOneAndUpdate({ _id: id }, { password: password1 }, { new: true });
+  return findEmp;
 };
 
 module.exports = {
@@ -448,6 +495,9 @@ module.exports = {
   uploadProfileImage,
   uploadEmployerFile,
   sendOTP,
+  VerifyOTP,
+  getEmployerByMobile,
+  setPasswordById,
   //   getUserById,
   //   getUserByEmail,
   //   updateUserById,

@@ -8,7 +8,6 @@ const storage = multer.memoryStorage({
     callback(null, '');
   },
 });
-
 const UploadFile = multer({ storage }).single('uploadResume');
 
 router.route('/').post(UploadFile, ClimbController.createEventClimb);
