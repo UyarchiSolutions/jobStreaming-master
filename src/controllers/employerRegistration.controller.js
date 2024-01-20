@@ -10,7 +10,7 @@ const register = catchAsync(async (req, res) => {
   await user.save();
   res.status(httpStatus.CREATED).send({ user, tokens });
   //   console.log(user._id)
-  await emailService.sendVerificationEmailEmp(user.email, tokens.access.token, user.mobileNumber);
+  await emailService.sendVerificationEmailEmp(user, tokens.access.token);
 });
 
 const verify_email = catchAsync(async (req, res) => {
@@ -146,6 +146,11 @@ const uploadEmployerFile = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const sendOTP = catchAsync(async (req, res) => {
+  const data = await EmployerRegistration.sendOTP(req);
+  res.send(data);
+});
+
 module.exports = {
   register,
   verify_email,
@@ -167,6 +172,7 @@ module.exports = {
   getEmployerById,
   uploadProfileImage,
   uploadEmployerFile,
+  sendOTP,
   //   logout,
   //   refreshTokens,
   //   forgotPassword,

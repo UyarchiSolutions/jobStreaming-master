@@ -405,35 +405,6 @@ const sendOTP = async (req, res) => {
   return otpsend;
 };
 
-const verify_otp = async (req) => {
-  let { otp, stream } = req.body;
-  const token = await SlotBooking.findById(stream);
-  if (!token) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
-  }
-
-  let Datenow = new Date().getTime();
-  let verify = await Demootpverify.findOne({
-    streamID: stream,
-    OTP: otp,
-    verify: false,
-    expired: false,
-    otpExpiedTime: { $gt: Datenow },
-  });
-  if (!verify) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid OTP');
-  } else {
-    verify.verify = true;
-    verify.expired = true;
-    verify.save();
-    const stream = await SlotBooking.findById(verify.streamID);
-    stream.otp_verifiyed = verify._id;
-    stream.linkstatus = 'Verified';
-    stream.save();
-  }
-  return verify;
-};
-
 const VerifyOTP = async (req) => {
   let { id, OTP } = req.body;
   let Datenow = new Date().getTime();

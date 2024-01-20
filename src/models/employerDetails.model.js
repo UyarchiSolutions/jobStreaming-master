@@ -514,6 +514,45 @@ const RecruiterSchema = mongoose.Schema(
   }
 );
 const Recruiters = mongoose.model('recruiter', RecruiterSchema);
+
+const EmployeOtpSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  DateIso: {
+    type: Number,
+  },
+  date: {
+    type: String,
+  },
+  created: {
+    type: Date,
+  },
+  mobile: {
+    type: Number,
+  },
+  empId: {
+    type: String,
+  },
+  OTP: {
+    type: Number,
+  },
+  verify: {
+    type: Boolean,
+    default: true,
+  },
+  expired: {
+    type: Boolean,
+    default: true,
+  },
+  otpExpiedTime: {
+    type: Number,
+  },
+});
+
+const EmployerOTP = mongoose.model('empotp', EmployeOtpSchema);
+
 module.exports = {
   EmployerDetails,
   EmployerPostjob,
@@ -522,4 +561,5 @@ module.exports = {
   EmployerMailTemplate,
   EmployerMailNotification,
   Recruiters,
+  EmployerOTP,
 };

@@ -51,20 +51,18 @@ const sendVerificationEmail = async (to, token, mobilenumber) => {
   await transport.sendMail(msg);
 };
 
-const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
-  data1 = await ejs.renderFile(__dirname + '/employVerify.ejs', {
-    mobilenumber: mobilenumber,
-    email: to,
+const sendVerificationEmailEmp = async (userData) => {
+  const { name, _id } = userData;
+  data1 = await ejs.renderFile(__dirname + '/employTemplate.ejs', {
+    name: name,
+    id: _id,
   });
-
   const msg = {
     from: config.email.from,
     to: to,
-    // to:"vignesh1041996@gmail.com",
     subject: 'templates',
     html: data1,
   };
-  // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   await transport.sendMail(msg);
 };
 

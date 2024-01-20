@@ -11,13 +11,30 @@ const createEventClimb = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const createEventClimb_intern = catchAsync(async (req, res) => {
+  const data = await climbeventService.createEventCLimb_intern(req);
+  console.log(data);
+  await emailService.sendsuccessTestMail(data);
+  res.send(data);
+});
 const getSlots = catchAsync(async (req, res) => {
   const data = await climbeventService.slotDetails();
+  res.send(data);
+});
+// slotDetails_intern
+
+const getSlots_intern = catchAsync(async (req, res) => {
+  const data = await climbeventService.slotDetails_intern();
   res.send(data);
 });
 
 const insertSlots = catchAsync(async (req, res) => {
   const data = await climbeventService.insertSlots(req.body);
+  res.send(data);
+});
+
+const insertSlots_intern = catchAsync(async (req, res) => {
+  const data = await climbeventService.insertSlots_intern(req.body);
   res.send(data);
 });
 
@@ -136,4 +153,7 @@ module.exports = {
   slotDetailsTestNewTech,
   updateTestWarmyNew,
   getTestUsersNew,
+  insertSlots_intern,
+  getSlots_intern,
+  createEventClimb_intern,
 };

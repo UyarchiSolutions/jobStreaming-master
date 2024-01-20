@@ -9,6 +9,8 @@ const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
 const AWS = require('aws-sdk');
+const { EmployerOTP } = require('../models/employerDetails.model');
+const axios = require('axios');
 
 const createEmployer = async (userBody) => {
   if (await EmployerRegistration.isEmailTaken(userBody.email)) {
@@ -377,6 +379,53 @@ const uploadEmployerFile = async (req) => {
   });
 };
 
+const send_otp_now = async (stream) => {
+  let OTPCODE = Math.floor(100000 + Math.random() * 900000);
+  let Datenow = new Date().getTime();
+  let otpsend = await EmployerOTP.findOne({
+    empId: stream._id,
+    otpExpiedTime: { $gte: Datenow },
+    verify: false,
+    expired: false,
+  });
+  if (!otpsend) {
+    const token = await EmployerRegistration.findById(stream._id);
+    await EmployerOTP.updateMany(
+      { empId: stream._id, verify: false },
+      { $set: { verify: true, expired: true } },
+      { new: true }
+    );
+    let exp = moment().add(5, 'minutes');
+    let otp = await EmployerOTP.create({
+      OTP: OTPCODE,
+      verify: false,
+      mobile: token.mobileNumber,
+      empId: stream._id,
+      DateIso: moment(),
+      expired: false,
+      otpExpiedTime: exp,
+    });
+    let message = `${OTPCODE} is the Onetime password(OTP) for mobile number verification . This is usable once and valid for 5 minutes from the request- Climb(An Ookam company product)`;
+    let reva = await axios.get(
+      `http://panel.smsmessenger.in/api/mt/SendSMS?user=ookam&password=ookam&senderid=OOKAMM&channel=Trans&DCS=0&flashsms=0&number=${token.mobileNumber}&text=${message}&route=6&peid=1701168700339760716&DLTTemplateId=1707170322899337958`
+    );
+    console.log(reva.data,"asdas");
+    otpsend = { otpExpiedTime: otp.otpExpiedTime };
+  } else {
+    otpsend = { otpExpiedTime: otpsend.otpExpiedTime };
+  }
+  return otpsend;
+};
+
+const sendOTP = async (req) => {
+  let emp = await EmployerRegistration.findById(req.query.id);
+  if (!emp) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'OTP NOT Send');
+  }
+  let otpsend = await send_otp_now(emp);
+  return otpsend;
+};
+
 module.exports = {
   createEmployer,
   verify_email,
@@ -398,6 +447,7 @@ module.exports = {
   getEmployerById,
   uploadProfileImage,
   uploadEmployerFile,
+  sendOTP,
   //   getUserById,
   //   getUserByEmail,
   //   updateUserById,
