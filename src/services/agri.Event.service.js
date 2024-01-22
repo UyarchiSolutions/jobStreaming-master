@@ -304,7 +304,7 @@ const getAgriCandidates = async (req) => {
         from: 'slotbookings',
         localField: '_id',
         foreignField: 'candId',
-        pipeline: [{ $sort: { createdAt: -1 } }, { $limit: 1 }, { $match: { Type: 'HR' } }],
+        pipeline: [{ $sort: { createdAt: -1 } }, { $match: { Type: 'HR' } }, { $limit: 1 }],
         as: 'HRID',
       },
     },
