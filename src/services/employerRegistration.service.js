@@ -107,24 +107,25 @@ const UsersLogin = async (userBody) => {
   const { email, password } = userBody;
   let date = moment().format('YYYY-MM-DD');
   let userName = await EmployerRegistration.findOne({ email: email });
+
+  if (!userName) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email Not Registered');
+  }
   if (userName.adminStatus == 'Pending' || userName.adminStatus == 'false') {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Admin Not Approved');
   }
-  if (!userName) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
-  } else {
-    if (userName.adminStatus == 'debarred') {
-      throw new ApiError(httpStatus.UNAUTHORIZED, 'Your account is debarred');
-    }
-    if (userName.active == false) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, 'Your account is de_active');
-    }
-    if (await userName.isPasswordMatch(password)) {
-      await EmployerRegistration.findByIdAndUpdate({ _id: userName._id }, { latestdate: date }, { new: true });
-    } else {
-      throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
-    }
+  if (userName.adminStatus == 'debarred') {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Your account is debarred');
   }
+  if (userName.active == false) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Your account is de_active');
+  }
+  if (!await userName.isPasswordMatch(password)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Passwoed Doesn't Match");
+  }
+  userName =await EmployerRegistration.findByIdAndUpdate({ _id: userName._id }, { latestdate: date }, { new: true });
+
+
   return userName;
 };
 
