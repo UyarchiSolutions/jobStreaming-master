@@ -344,7 +344,6 @@ const getIntrestedByCand_Role = async (req) => {
   let id = req.params.id;
   let time = new Date().getTime();
   let today = moment().format('DD-MM-YYYY');
-  console.log(today);
   let value = await IntrestedCandidate.aggregate([
     {
       $match: {
