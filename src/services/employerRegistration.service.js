@@ -19,7 +19,7 @@ const createEmployer = async (userBody) => {
   if (!userBody.password == userBody.confirmpassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Confirm Password Incorrect');
   }
-  let findByMobile = await EmployerRegistration.findOne({ mobileNumber: mobileNumber });
+  let findByMobile = await EmployerRegistration.findOne({ mobileNumber: userBody.mobileNumber });
   if (findByMobile) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile NumberAlready Exists');
   }
