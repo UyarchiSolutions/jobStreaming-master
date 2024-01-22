@@ -50,7 +50,7 @@ const forget_password_set = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   const user = await EmployerRegistration.UsersLogin(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
-  res.send({ user, tokens });
+  res.send(tokens);
 });
 
 const forgot = catchAsync(async (req, res) => {
