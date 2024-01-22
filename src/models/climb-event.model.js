@@ -240,12 +240,11 @@ const ClicmbEventRegisterInternSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
-    currentLocation: {
-      type: String,
-    },
-    education: {
-      type: String,
-    },
+    institution: String,
+    courseName: String,
+    courseTiming: String,
+    do_you_work: String,
+    pincode: String,
     year_of_passedout: {
       type: String,
     },
@@ -295,10 +294,6 @@ const ClicmbEventRegisterInternSchema = new mongoose.Schema(
     intrest: {
       type: Array,
       default: [],
-    },
-    NewTestEntry: {
-      type: Boolean,
-      default: false,
     },
   },
   { timestamps: true }
