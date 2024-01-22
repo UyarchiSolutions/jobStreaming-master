@@ -88,18 +88,8 @@ const createEventCLimb_intern = async (req) => {
         }
         let fileURL = data.Location;
         let datas = { ...body, ...{ uploadResume: fileURL } };
-        let findEnvent = await EventslotIntern.findOne({ slot: datas.slot, date: datas.date });
-        console.log(findEnvent);
-        if (findEnvent) {
-          if (findEnvent.no_of_count >= findEnvent.booked_count) {
-            findEnvent.booked_count = findEnvent.booked_count + 1;
-            findEnvent.save();
-            let creations = await EventRegisterIntern.create(datas);
-            resolve(creations);
-          } else {
-            reject({ slot: 'Slot Engached' });
-          }
-        }
+        let creations = await EventRegisterIntern.create(datas);
+        resolve(creations);
       });
     });
   }
