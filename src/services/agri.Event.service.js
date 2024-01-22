@@ -304,7 +304,7 @@ const getAgriCandidates = async (req) => {
         from: 'slotbookings',
         localField: '_id',
         foreignField: 'candId',
-        pipeline: [{ $sort: { createdAt: -1 } }, { $limit: 1 }, { $match: { Type: 'HR' } }],
+        pipeline: [{ $sort: { createdAt: -1 } }, { $match: { Type: 'HR' } }, { $limit: 1 }],
         as: 'HRID',
       },
     },
@@ -344,7 +344,6 @@ const getIntrestedByCand_Role = async (req) => {
   let id = req.params.id;
   let time = new Date().getTime();
   let today = moment().format('DD-MM-YYYY');
-  console.log(today);
   let value = await IntrestedCandidate.aggregate([
     {
       $match: {

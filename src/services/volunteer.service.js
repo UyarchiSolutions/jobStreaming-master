@@ -279,13 +279,21 @@ const getCandidatesForInterview = async (req) => {
 
   console.log(role);
   let statusMatch = { active: true };
+  let ClearMatch = { active: true };
+
   if (role == 'HR') {
     statusMatch = {
       hrStatus: 'Approved',
     };
+    ClearMatch = {
+      hrclear: true,
+    };
   } else {
     statusMatch = {
       status: 'Approved',
+    };
+    clear = {
+      techclear: true,
     };
   }
   let values = await Volunteer.findById(id);
@@ -333,7 +341,12 @@ const getCandidatesForInterview = async (req) => {
         channel: '$Cand.channel',
         streamStatus: '$Cand.streamStatus',
         streamId: '$Cand.streamId',
+        hrclear: '$Cand.hrClear',
+        techclear: '$Cand.clear',
       },
+    },
+    {
+      $match: ClearMatch,
     },
   ]);
   return candidates;
@@ -438,6 +451,21 @@ const getIntrestedCandidates = async (req) => {
   let values = await AgriCandidate.aggregate([
     {
       $match: matchIntrestedCand,
+    },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $match: { volunteerId: userId } }],
+        as: 'IntrestedCandidate',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$IntrestedCandidate',
+      },
     },
   ]);
   return values;
