@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { EmployerRegistration } = require('../models');
+const { EmployerRegistration } = require('../models/employerRegistration.model');
 const { EmployeOtp } = require('../models');
 const { emailService } = require('../services');
 const { OTPModel } = require('../models');
@@ -446,8 +446,7 @@ const VerifyOTP = async (req) => {
     verify.verify = true;
     verify.expired = true;
     verify.save();
-    let values = await EmployerRegistration.findById(verify.empId);
-    return values;
+    return { verfiedOTP: verify._id };
   }
 };
 
@@ -462,7 +461,16 @@ const getEmployerByMobile = async (req) => {
 
 const setPasswordById = async (req) => {
   const { id, password } = req.body;
-  let findEmp = await EmployerRegistration.findById(id);
+  let verify = await EmployerOTP.findById(id)
+  if (!verify) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Verfication Need');
+  }
+  if (verify.setpassword == true) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Verfication Already used');
+  }
+  verify.setpassword = true;
+  verify.save();
+  let findEmp = await EmployerRegistration.findById(verify.empId);
   if (!findEmp) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Employer Not Fouund');
   }

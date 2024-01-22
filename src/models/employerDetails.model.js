@@ -549,6 +549,10 @@ const EmployeOtpSchema = new mongoose.Schema({
   otpExpiedTime: {
     type: Number,
   },
+  setpassword: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const EmployerOTP = mongoose.model('empotp', EmployeOtpSchema);
