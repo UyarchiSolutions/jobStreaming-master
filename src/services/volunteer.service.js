@@ -1,17 +1,16 @@
 const httpStatus = require('http-status');
 const moment = require('moment');
-const { Volunteer } = require('../models/vlounteer.model');
+const { Volunteer, VolunteerOTP } = require('../models/vlounteer.model');
 const { EventRegister } = require('../models/climb-event.model');
 const { AgriCandidate, IntrestedCandidate, SlotBooking } = require('../models/agri.Event.model');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const AWS = require('aws-sdk');
-const { HttpStatusCode } = require('axios');
-
+const axios = require('axios');
 const createVolunteer = async (req) => {
   let body = req.body;
   let findByEmail = await Volunteer.findOne({ email: body.email });
-  let  findByMobile = await Volunteer.findOne({ mobileNumber: body.mobileNumber });
+  let findByMobile = await Volunteer.findOne({ mobileNumber: body.mobileNumber });
   if (findByEmail) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email Already Exists');
   }
@@ -72,28 +71,15 @@ const MatchCandidate = async (req) => {
     keySkillSearch;
   }
 
+  let commingDataMatch = { active: true };
+
   if (values.Role == 'Tech Volunteer') {
-    // console.log(values);
     let findCand = await AgriCandidate.aggregate([
       {
         $match: {
           $and: [keySkillSearch],
         },
       },
-      // {
-      //   $lookup: {
-      //     from: 'intrestedcandidates',
-      //     localField: '_id',
-      //     foreignField: 'candId',
-      //     as: 'Intrested',
-      //   },
-      // },
-      // {
-      //   $unwind: {
-      //     path: '$Intrested',
-      //     preserveNullAndEmptyArrays: true,
-      //   },
-      // },
       {
         $lookup: {
           from: 'slotbookings',
@@ -108,16 +94,24 @@ const MatchCandidate = async (req) => {
       },
       {
         $addFields: {
-          isIdInArray: {
+          isIdInArrayss: {
             $in: [id, '$intrest'],
           },
         },
       },
       {
         $addFields: {
-          techIntrest: {
+          techIntrestss: {
             $in: [id, '$techIntrest'],
           },
+        },
+      },
+      {
+        $lookup: {
+          from: 'intrestedcandidates',
+          localField: '_id',
+          foreignField: 'candId',
+          as: 'intrestedcand',
         },
       },
       {
@@ -127,20 +121,20 @@ const MatchCandidate = async (req) => {
           name: 1,
           location: 1,
           yearOfPassing: 1,
-          techIntrest: 1,
+          techIntrest: '$techIntrestss',
           intrest: 1,
           slotDate: '$candidate.date',
           slotTime: '$candidate.time',
           Type: '$candidate.Type',
           slotId: '$candidate._id',
-          isIdInArray: 1,
-          // Intrested: '$Intrested',
-          // status: '$Intrested.status',
+          isIdInArray: '$isIdInArrayss',
+          Tech: { $size: '$techIntrest' },
+          HR: { $size: '$intrest' },
         },
       },
-      // {
-      //   $match: { status: 'Approved' },
-      // },
+      {
+        $match: { Tech: { $lt: 5 } },
+      },
     ]);
 
     return findCand;
@@ -160,32 +154,26 @@ const MatchCandidate = async (req) => {
       },
       {
         $addFields: {
-          isIdInArray: {
+          isIdInArrayss: {
             $in: [id, '$intrest'],
           },
         },
       },
       {
         $addFields: {
-          techIntrest: {
-            $in: [id, '$intrest'],
+          techIntrestss: {
+            $in: [id, '$techIntrest'],
           },
         },
       },
-      // {
-      //   $lookup: {
-      //     from: 'intrestedcandidates',
-      //     localField: '_id',
-      //     foreignField: 'candId',
-      //     pipeline: [{ $match: { status: 'Approved' } }],
-      //     as: 'Intrested',
-      //   },
-      // },
-      // {
-      //   $unwind: {
-      //     path: '$Intrested',
-      //   },
-      // },
+      {
+        $lookup: {
+          from: 'intrestedcandidates',
+          localField: '_id',
+          foreignField: 'candId',
+          as: 'intrestedcand',
+        },
+      },
       {
         $project: {
           _id: 1,
@@ -194,19 +182,19 @@ const MatchCandidate = async (req) => {
           location: 1,
           yearOfPassing: 1,
           techIntrest: 1,
-          intrest: 1,
+          intrest: '$techIntrestss',
           slotDate: '$candidate.date',
           slotTime: '$candidate.time',
           Type: '$candidate.Type',
           slotId: '$candidate._id',
-          isIdInArray: 1,
-          // Intrested: '$Intrested',
-          // status: '$Intrested.status',
+          isIdInArray: '$isIdInArrayss',
+          Tech: { $size: '$techIntrest' },
+          HR: { $size: '$intrest' },
         },
       },
-      // {
-      //   $match: { status: 'Approved' },
-      // },
+      {
+        $match: { HR: { $lt: 5 } },
+      },
     ]);
     return findCand;
   }
@@ -220,15 +208,15 @@ const CandidateIntrestUpdate = async (req) => {
   if (!cand) {
     throw new ApiError(httpStatus.BAD_REQUEST, " Couldn't find candidate");
   }
+  let slots = await SlotBooking.findById(slotId);
+  if (!slots) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slots Not Found');
+  }
   let values = await Volunteer.findById(volunteerId);
   if (values.Role == 'HR Volunteer') {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId } }, { new: true });
   } else {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { techIntrest: volunteerId } }, { new: true });
-  }
-  let slots = await SlotBooking.findById(slotId);
-  if (!slots) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Slots Not Found');
   }
   await IntrestedCandidate.create({
     candId: candId,
@@ -290,16 +278,23 @@ const getCandidatesForInterview = async (req) => {
   let role = req.Role == 'HR Volunteer' ? 'HR' : 'Tech';
 
   console.log(role);
+  let statusMatch = { active: true };
+  if (role == 'HR') {
+    statusMatch = {
+      hrStatus: 'Approved',
+    };
+  } else {
+    statusMatch = {
+      status: 'Approved',
+    };
+  }
   let values = await Volunteer.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
   }
   let candidates = await IntrestedCandidate.aggregate([
     {
-      $match: {
-        volunteerId: id,
-        status: 'Approved',
-      },
+      $match: { $and: [{ volunteerId: id }, statusMatch] },
     },
     {
       $lookup: {
@@ -353,6 +348,125 @@ const updateVolunteer = async (req) => {
   return findById;
 };
 
+// const send_otp = async (req) => {
+//   console.log(req.query.id)
+//   let stream = await DemoPost.findById(req.query.id);
+//   if (!stream) {
+//     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Link');
+//   }
+//   let res = await send_otp_now(stream);
+//   return res;
+// };
+
+const send_otp_now = async (stream) => {
+  let OTPCODE = Math.floor(100000 + Math.random() * 900000);
+  let Datenow = new Date().getTime();
+  let otpsend = await VolunteerOTP.findOne({
+    VolunteerId: stream._id,
+    otpExpiedTime: { $gte: Datenow },
+    verify: false,
+    expired: false,
+  });
+  if (!otpsend) {
+    const token = await Volunteer.findById(stream._id);
+    await VolunteerOTP.updateMany(
+      { VolunteerId: stream._id, verify: false },
+      { $set: { verify: true, expired: true } },
+      { new: true }
+    );
+    let exp = moment().add(5, 'minutes');
+    let otp = await VolunteerOTP.create({
+      OTP: OTPCODE,
+      verify: false,
+      mobile: token.mobileNumber,
+      VolunteerId: stream._id,
+      DateIso: moment(),
+      expired: false,
+      otpExpiedTime: exp,
+    });
+    let message = `${OTPCODE} is the Onetime password(OTP) for mobile number verification . This is usable once and valid for 5 minutes from the request- Climb(An Ookam company product)`;
+    let reva = await axios.get(
+      `http://panel.smsmessenger.in/api/mt/SendSMS?user=ookam&password=ookam&senderid=OOKAMM&channel=Trans&DCS=0&flashsms=0&number=${token.mobileNumber}&text=${message}&route=6&peid=1701168700339760716&DLTTemplateId=1707170322899337958`
+    );
+    console.log(reva.data);
+    otpsend = { otpExpiedTime: otp.otpExpiedTime };
+  } else {
+    otpsend = { otpExpiedTime: otpsend.otpExpiedTime };
+  }
+  return otpsend;
+};
+
+const sendOTP = async (req, res) => {
+  let volunteer = await Volunteer.findById(req.query.id);
+  if (!volunteer) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'OTP NOT Send');
+  }
+  let otpsend = await send_otp_now(volunteer);
+  return otpsend;
+};
+
+const VerifyOTP = async (req) => {
+  let { id, OTP } = req.body;
+  let Datenow = new Date().getTime();
+  let verify = await VolunteerOTP.findOne({
+    VolunteerId: id,
+    OTP: OTP,
+    verify: false,
+    expired: false,
+    otpExpiedTime: { $gt: Datenow },
+  });
+  if (!verify) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid OTP');
+  } else {
+    verify.verify = true;
+    verify.expired = true;
+    verify.save();
+    let values = await Volunteer.findById(verify.VolunteerId);
+    return values;
+  }
+};
+
+const getIntrestedCandidates = async (req) => {
+  let userId = req.userId;
+  let role = req.Role == 'HR Volunteer' ? 'HR' : 'Tech';
+  let matchIntrestedCand = { active: true };
+  if (role == 'HR') {
+    matchIntrestedCand = { intrest: { $in: [userId] } };
+  } else {
+    matchIntrestedCand = { techIntrest: { $in: [userId] } };
+  }
+  let values = await AgriCandidate.aggregate([
+    {
+      $match: matchIntrestedCand,
+    },
+  ]);
+  return values;
+};
+
+const UndoIntrestedCandidate = async (req) => {
+  let candId = req.params.id;
+  let volId = req.userId;
+  let role = req.Role;
+  let findCand = await AgriCandidate.findById(candId);
+  if (!findCand) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Sorry  Deleted Choosen From AgriCandidate table');
+  }
+  if (role == 'HR Volunteer') {
+    let findind = findCand.intrest.findIndex((e) => {
+      return e == volId;
+    });
+    findCand.intrest.splice(findind, 1);
+  } else {
+    let findind = findCand.techIntrest.findIndex((e) => {
+      return e == volId;
+    });
+    findCand.techIntrest.splice(findind, 1);
+  }
+  findCand.save();
+  await IntrestedCandidate.deleteOne({ candId: candId, volunteerId: volId });
+  return findCand;
+};
+
 module.exports = {
   createVolunteer,
   setPassword,
@@ -364,4 +478,8 @@ module.exports = {
   getVolunteersDetails,
   getCandidatesForInterview,
   updateVolunteer,
+  sendOTP,
+  VerifyOTP,
+  getIntrestedCandidates,
+  UndoIntrestedCandidate,
 };

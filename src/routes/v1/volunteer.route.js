@@ -21,4 +21,8 @@ router.route('/upload/ProfileImage/:id').put(upload, volunteerController.uploadP
 router.route('/getVolunteers/Details').get(volunteerAuth, volunteerController.getVolunteersDetails);
 router.route('/getCandidates/ForInterview').get(volunteerAuth, volunteerController.getCandidatesForInterview);
 router.route('/updateVolunteer/:id').put(volunteerController.updateVolunteer);
+router.route('/sendOTP').get(volunteerController.sendOTP);
+router.route('/verifyOTP').post(volunteerController.VerifyOTP);
+router.route('/getIntrestedCandidates').get(volunteerAuth, volunteerController.getIntrestedCandidates);
+router.route('/UndoIntrestedCandidate/:id').get(volunteerAuth, volunteerController.UndoIntrestedCandidate);
 module.exports = router;

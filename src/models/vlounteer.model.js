@@ -113,6 +113,48 @@ VolunteerSchema.pre('save', async function (next) {
 
 const Volunteer = mongoose.model('volunteer', VolunteerSchema);
 
+const VolunteerOTPSchema = mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  DateIso: {
+    type: Number,
+  },
+  date: {
+    type: String,
+  },
+  created: {
+    type: Date,
+  },
+  mobile: {
+    type: Number,
+  },
+  VolunteerId: {
+    type: String,
+  },
+  userID: {
+    type: String,
+  },
+  OTP: {
+    type: Number,
+  },
+  verify: {
+    type: Boolean,
+    default: true,
+  },
+  expired: {
+    type: Boolean,
+    default: true,
+  },
+  otpExpiedTime: {
+    type: Number,
+  },
+});
+
+const VolunteerOTP = new mongoose.model('volunteerotp', VolunteerOTPSchema);
+
 module.exports = {
   Volunteer,
+  VolunteerOTP,
 };

@@ -47,5 +47,9 @@ router.route('/getEmployerById/:id').get(employerRegistration.getEmployerById);
 // router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
 router.route('/uploadProfileImage/:id').post(adUpload, employerRegistration.uploadProfileImage);
 router.route('/upload/EmployerFile/:id').post(UploadFile, employerRegistration.uploadEmployerFile);
+router.route('/sendOTP').get(employerRegistration.sendOTP);
+router.route('/verifyOTP').post(employerRegistration.VerifyOTP);
+router.route('/getEmployerByMobile').post(employerRegistration.getEmployerByMobile);
+router.route('/setpassword').post(employerRegistration.setPasswordById);
 
 module.exports = router;

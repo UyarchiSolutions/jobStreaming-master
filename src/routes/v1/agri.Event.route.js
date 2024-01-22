@@ -21,5 +21,6 @@ router.route('/create/SlotBooking').post(AgriEventController.createSlotBooking);
 router.route('/getIntrested/ByCand_Role/:id/:role').get(AgriEventController.getIntrestedByCand_Role);
 router.route('/AdminApprove').post(AgriEventController.AdminApprove);
 router.route('/Undo/:id').get(AgriEventController.Undo);
-router.route('/clearCandidates/:id').get(AgriEventController.clearCandidates);
+router.route('/clearCandidates/:id/:role').get(AgriEventController.clearCandidates);
+router.route('/ResumeUploadAgriCand/:id').put(upload, AgriEventController.ResumeUploadAgriCand);
 module.exports = router;

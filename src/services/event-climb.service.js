@@ -1,7 +1,14 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
-const { EventRegister, Eventslot, EventslotTest, EventslotTestNew } = require('../models/climb-event.model');
+const {
+  EventRegister,
+  Eventslot,
+  EventslotTest,
+  EventslotTestNew,
+  EventslotIntern,
+  EventRegisterIntern,
+} = require('../models/climb-event.model');
 const AWS = require('aws-sdk');
 
 const createEventCLimb = async (req) => {
@@ -41,6 +48,53 @@ const createEventCLimb = async (req) => {
             findEnvent.booked_count = findEnvent.booked_count + 1;
             findEnvent.save();
             let creations = await EventRegister.create(datas);
+            resolve(creations);
+          } else {
+            reject({ slot: 'Slot Engached' });
+          }
+        }
+      });
+    });
+  }
+};
+
+const createEventCLimb_intern = async (req) => {
+  let body = req.body;
+  let findByemail = await EventRegisterIntern.findOne({ mail: body.mail });
+  if (findByemail) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mail ID Already Exist');
+  }
+  let findBymobile = await EventRegisterIntern.findOne({ mobileNumber: body.mobileNumber });
+  if (findBymobile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mobile Number Already Exist');
+  }
+  if (req.file) {
+    const s3 = new AWS.S3({
+      accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+      secretAccessKey: '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',
+      region: 'ap-south-1',
+    });
+    let params = {
+      Bucket: 'jobresume',
+      Key: req.file.originalname,
+      Body: req.file.buffer,
+      ACL: 'public-read',
+      ContentType: req.file.mimetype,
+    };
+    return new Promise((resolve, reject) => {
+      s3.upload(params, async (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        let fileURL = data.Location;
+        let datas = { ...body, ...{ uploadResume: fileURL } };
+        let findEnvent = await EventslotIntern.findOne({ slot: datas.slot, date: datas.date });
+        console.log(findEnvent);
+        if (findEnvent) {
+          if (findEnvent.no_of_count >= findEnvent.booked_count) {
+            findEnvent.booked_count = findEnvent.booked_count + 1;
+            findEnvent.save();
+            let creations = await EventRegisterIntern.create(datas);
             resolve(creations);
           } else {
             reject({ slot: 'Slot Engached' });
@@ -120,6 +174,39 @@ const slotDetails = async () => {
 const insertSlots = async (date) => {
   let slot = await Eventslot.create(date);
   return slot;
+};
+
+const insertSlots_intern = async (date) => {
+  let slot = await EventslotIntern.create(date);
+  return slot;
+};
+
+const slotDetails_intern = async () => {
+  let slots = await EventslotIntern.aggregate([
+    {
+      $match: {
+        $expr: {
+          $and: [{ $gt: ['$no_of_count', '$booked_count'] }],
+        },
+      },
+    },
+    { $sort: { sortcount: 1 } },
+    {
+      $group: {
+        _id: { date: '$date' },
+        time: { $push: '$slot' },
+      },
+    },
+    {
+      $project: {
+        _id: '',
+        date: '$_id.date',
+        time: 1,
+      },
+    },
+    { $sort: { date: 1 } },
+  ]);
+  return slots;
 };
 
 const insertSlotsTest = async (body) => {
@@ -515,4 +602,7 @@ module.exports = {
   slotDetailsTestNewTech,
   updateTestWarmyNew,
   getTestUsersNew,
+  insertSlots_intern,
+  slotDetails_intern,
+  createEventCLimb_intern,
 };

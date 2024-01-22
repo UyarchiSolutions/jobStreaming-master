@@ -51,20 +51,18 @@ const sendVerificationEmail = async (to, token, mobilenumber) => {
   await transport.sendMail(msg);
 };
 
-const sendVerificationEmailEmp = async (to, token, mobilenumber) => {
-  data1 = await ejs.renderFile(__dirname + '/employVerify.ejs', {
-    mobilenumber: mobilenumber,
-    email: to,
+const sendVerificationEmailEmp = async (userData) => {
+  const { name, _id, email } = userData;
+  data1 = await ejs.renderFile(__dirname + '/employerTemplate.ejs', {
+    name: name,
+    id: _id,
   });
-
   const msg = {
     from: config.email.from,
-    to: to,
-    // to:"vignesh1041996@gmail.com",
+    to: email,
     subject: 'templates',
     html: data1,
   };
-  // await EmployeOtp.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   await transport.sendMail(msg);
 };
 
@@ -82,10 +80,11 @@ const eventMailSend = async (to) => {
 };
 
 const volunteerMailVerification = async (data) => {
-  const { email, name } = data;
+  const { email, name, _id } = data;
   let data1 = await ejs.renderFile(__dirname + '/volunteer-emailverify.ejs', {
     email: email,
     name: name,
+    id: _id,
   });
   const msg = {
     from: config.email.from,
@@ -129,8 +128,8 @@ const sendsuccessTestMail = async (data) => {
 };
 
 const sendsuccessTestMailNew = async (data) => {
-  const { mail, name, date, slot,testProfile } = data;
-  console.log(data)
+  const { mail, name, date, slot, testProfile } = data;
+  console.log(data);
   let data1 = await ejs.renderFile(__dirname + '/testwarmynew.ejs', {
     email: mail,
     name: name,
@@ -141,6 +140,24 @@ const sendsuccessTestMailNew = async (data) => {
     from: 'noreply@warmy.co.in',
     to: mail,
     subject: 'Interview Registration Success-Associate Software Engineer-Acknowledgement',
+    html: data1,
+  };
+  await transporter2.sendMail(msg);
+};
+
+const agriCandidateSlotBookedMail = async (data) => {
+  const { mail, name, date, slot } = data;
+  console.log(data);
+  let data1 = await ejs.renderFile(__dirname + '/testwarmynew.ejs', {
+    email: mail,
+    name: name,
+    date: date,
+    time: slot,
+  });
+  const msg = {
+    from: 'noreply@warmy.co.in',
+    to: mail,
+    subject: 'Agri job Fair Slot Confirmation Message',
     html: data1,
   };
   await transporter2.sendMail(msg);
@@ -284,4 +301,5 @@ module.exports = {
   candiRegReceveMail,
   eventMailSend,
   sendsuccessTestMailNew,
+  agriCandidateSlotBookedMail,
 };

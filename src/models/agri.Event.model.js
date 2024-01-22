@@ -16,6 +16,9 @@ const AgriCandidateSchema = new mongoose.Schema(
     mobile: {
       type: String,
     },
+    gender: {
+      type: String,
+    },
     location: {
       type: String,
     },
@@ -76,6 +79,13 @@ const AgriCandidateSchema = new mongoose.Schema(
       default: 'Pending',
     },
     clear: {
+      type: Boolean,
+      default: false,
+    },
+    resumeUrl: {
+      type: String,
+    },
+    hrClear: {
       type: Boolean,
       default: false,
     },
@@ -250,6 +260,10 @@ const IntrestCandidateSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    hrStatus: {
+      type: String,
+      default: 'Pending',
+    },
   },
   { timestamps: true }
 );
@@ -310,7 +324,7 @@ const SlotBookingSchema = mongoose.Schema(
     },
     mainhost: {
       type: String,
-    }
+    },
   },
   { timestamps: true }
 );
@@ -343,8 +357,6 @@ const BookedSlotsShema = mongoose.Schema(
 );
 
 const BookedSlot = mongoose.model('agribookedslots', BookedSlotsShema);
-
-
 
 const referenceSchema = mongoose.Schema(
   {
@@ -390,6 +402,5 @@ module.exports = {
   IntrestedCandidate,
   SlotBooking,
   BookedSlot,
-  Reference
-
+  Reference,
 };

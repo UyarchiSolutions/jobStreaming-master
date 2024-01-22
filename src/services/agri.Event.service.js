@@ -12,6 +12,7 @@ const { EventRegister } = require('../models/climb-event.model');
 const moment = require('moment');
 const AWS = require('aws-sdk');
 const XLSX = require('xlsx');
+const { agriCandidateSlotBookedMail } = require('./email.service');
 
 const createAgriEvent = async (req) => {
   let findByMobile = await AgriCandidate.findOne({ mobile: req.body.mobile });
@@ -170,7 +171,7 @@ const createCandidateReview = async (req) => {
   return creations;
 };
 
-const imageUploadAgriCand = async (req) => {
+const ResumeUploadAgriCand = async (req) => {
   let id = req.params.id;
   let findCand = await AgriCandidate.findById(id);
   if (!findCand) {
@@ -190,11 +191,17 @@ const imageUploadAgriCand = async (req) => {
       ContentType: req.file.mimetype,
     };
     return new Promise((resolve, reject) => {
-      s3.upload(params, (err, res) => {
+      s3.upload(params, async (err, res) => {
         if (err) {
           reject(err);
         } else {
+          let resumeUploaded = await AgriCandidate.findByIdAndUpdate(
+            { _id: id },
+            { resumeUrl: res.Location },
+            { new: true }
+          );
         }
+        resolve(resumeUploaded);
       });
     });
   }
@@ -278,6 +285,36 @@ const getAgriCandidates = async (req) => {
       },
     },
     {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $match: { Type: 'Tech' } }, { $sort: { createdAt: -1 } }, { $limit: 1 }],
+        as: 'TechID',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TechID',
+      },
+    },
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $sort: { createdAt: -1 } }, { $limit: 1 }, { $match: { Type: 'HR' } }],
+        as: 'HRID',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$HRID',
+      },
+    },
+    {
       $project: {
         _id: 1,
         name: 1,
@@ -287,6 +324,9 @@ const getAgriCandidates = async (req) => {
         TechIntrest: { $size: '$Techcandidates' },
         status: { $ifNull: ['$status', 'Pending'] },
         clear: 1,
+        techId: { $ifNull: ['$TechID._id', null] },
+        hrId: { $ifNull: ['$HRID._id', null] },
+        hrClear: 1,
       },
     },
   ]);
@@ -407,18 +447,32 @@ const getIntrestedByCand_Role = async (req) => {
         Pending: { $ifNull: ['$Pending.total', 0] },
         TodayPending: { $ifNull: ['$TodayPending.total', 0] },
         TodayUpcoming: { $ifNull: ['$TodayUpcoming.total', 0] },
+        hrStatus: 1,
       },
     },
   ]);
-  let Counts = await IntrestedCandidate.aggregate([
-    {
-      $match: {
-        candId: id,
-        Role: Role,
-        status: 'Approved',
+  let Counts;
+  if (role == 'HR') {
+    Counts = await IntrestedCandidate.aggregate([
+      {
+        $match: {
+          candId: id,
+          Role: Role,
+          hrStatus: 'Approved',
+        },
       },
-    },
-  ]);
+    ]);
+  } else {
+    Counts = await IntrestedCandidate.aggregate([
+      {
+        $match: {
+          candId: id,
+          Role: Role,
+          status: 'Approved',
+        },
+      },
+    ]);
+  }
 
   return { value, Counts };
 };
@@ -453,10 +507,18 @@ const getCandBy = async (req) => {
 
 const createSlotBooking = async (req) => {
   const body = req.body;
+  let findCand = await AgriCandidate.findById(body.candId);
+  console.log(findCand);
   let findExistSlot = await BookedSlot.findOne({ candId: body.candId });
   if (findExistSlot) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Your Interview Time Got Over ');
   }
+  let emailData = {
+    mail: findCand.mail,
+    name: findCand.name,
+    date: body.slot[0].date,
+    slot: body.slot[0].time,
+  };
   let slotCreate = await BookedSlot.create({ slots: body.slot, candId: body.candId });
   await body.slot.forEach(async (e) => {
     let iso = new Date(moment(e.date + ' ' + e.time, 'DD-MM-YYYY hh:mm A').toISOString()).getTime();
@@ -473,11 +535,12 @@ const createSlotBooking = async (req) => {
     await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true }, { new: true });
     return creations;
   });
+  await agriCandidateSlotBookedMail(emailData);
   return { message: 'Slot Booking created successfully' };
 };
 
 const AdminApprove = async (req) => {
-  const { slotId, volunteerId, intrestId } = req.body;
+  const { slotId, volunteerId, intrestId, Role } = req.body;
   let getIntrested = await IntrestedCandidate.findById(intrestId);
   if (!getIntrested) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Intrested Data Not Found, Some One Deleted From Database 😠');
@@ -486,17 +549,34 @@ const AdminApprove = async (req) => {
   if (!getSlots) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Data Not Found, Some One Deleted From Database 😠');
   }
-  let findMatches = await IntrestedCandidate.find({
-    slotId: slotId,
-    candId: getIntrested.candId,
-    status: 'Approved',
-  }).count();
-  console.log(findMatches);
-  if (findMatches >= 2) {
-    throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
+  console.log(req.body);
+  if (Role == 'HR') {
+    let findMatches = await IntrestedCandidate.find({
+      slotId: slotId,
+      candId: getIntrested.candId,
+      hrStatus: 'Approved',
+      Role: 'HR Volunteer',
+    }).count();
+    if (findMatches >= 2) {
+      throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
+    }
+    getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { hrStatus: 'Approved' }, { new: true });
+    getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
+  } else {
+    let findMatches = await IntrestedCandidate.find({
+      slotId: slotId,
+      candId: getIntrested.candId,
+      status: 'Approved',
+      Role: 'Tech Volunteer',
+    }).count();
+    console.log(findMatches);
+    if (findMatches >= 2) {
+      throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
+    }
+    getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
+    getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
   }
-  getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
-  getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
+
   return getIntrested;
 };
 
@@ -513,11 +593,17 @@ const Undo = async (req) => {
 
 const clearCandidates = async (req) => {
   let id = req.params.id;
+  let role = req.params.role;
   let values = await AgriCandidate.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate Not Found');
   }
-  values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { clear: true }, { new: true });
+  if (role == 'HR') {
+    values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { hrClear: true }, { new: true });
+  } else {
+    values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { clear: true }, { new: true });
+  }
+  console.log(role);
   return values;
 };
 
@@ -538,4 +624,5 @@ module.exports = {
   AdminApprove,
   Undo,
   clearCandidates,
+  ResumeUploadAgriCand,
 };

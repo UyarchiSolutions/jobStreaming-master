@@ -8,12 +8,14 @@ const storage = multer.memoryStorage({
     callback(null, '');
   },
 });
-
 const UploadFile = multer({ storage }).single('uploadResume');
 
 router.route('/').post(UploadFile, ClimbController.createEventClimb);
+router.route('/intern').post(UploadFile, ClimbController.createEventClimb_intern);
 router.route('/slot').get(ClimbController.getSlots);
 router.route('/slot').post(ClimbController.insertSlots);
+router.route('/slot/intern').post(ClimbController.insertSlots_intern);
+router.route('/slot/intern').get(ClimbController.getSlots_intern);
 router.route('/getAllRegistered/Candidate').get(ClimbController.getAllRegistered_Candidate);
 router.route('/getSlotDetails/WithCandidate').get(ClimbController.getSlotDetails_WithCandidate);
 router.route('/getCandidateBySlot/:date/:time').get(ClimbController.getCandidateBySlot);
