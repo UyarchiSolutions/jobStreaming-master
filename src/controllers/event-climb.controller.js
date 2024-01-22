@@ -12,6 +12,7 @@ const createEventClimb = catchAsync(async (req, res) => {
 });
 
 const createEventClimb_intern = catchAsync(async (req, res) => {
+  console.log("dfjhhjjhmjh")
   const data = await climbeventService.createEventCLimb_intern(req);
   console.log(data);
   await emailService.sendsuccessTestMail(data);
