@@ -157,4 +157,4 @@ userEmpSchema.pre('save', async function (next) {
  * @typedef User
  */
 const EmployerRegistration = mongoose.model('employerRegistration', userEmpSchema);
-module.exports = EmployerRegistration;
+module.exports = {EmployerRegistration};
