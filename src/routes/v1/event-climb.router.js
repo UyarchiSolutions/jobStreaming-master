@@ -34,4 +34,5 @@ router.route('/insertSlotsTest/New').post(ClimbController.insertSlotsTestNew);
 router.route('/slotDetails/TestNewHR').get(ClimbController.slotDetailsTestNewHR);
 router.route('/slotDetails/TestNewTech').get(ClimbController.slotDetailsTestNewTech);
 router.route('/getTestUsers/New').get(ClimbController.getTestUsersNew);
+router.route('/getWorkShopCand').get(ClimbController.getWorkShopCand);
 module.exports = router;

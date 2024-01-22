@@ -10,6 +10,7 @@ const {
   EventRegisterIntern,
 } = require('../models/climb-event.model');
 const AWS = require('aws-sdk');
+const { options } = require('joi');
 
 const createEventCLimb = async (req) => {
   let body = req.body;
@@ -570,6 +571,31 @@ const updateStatus = async (req) => {
   return values;
 };
 
+const getWorkShopCand = async (req) => {
+  const { user, gender, coursetime } = req.query;
+  let userMatch = { active: true };
+  let genderMatch = { active: true };
+  let courseTimeMatch = { active: true };
+
+  if (user && user != '' && user != null && user != 'null') {
+    userMatch = { $or: [{ mail: { $regex: user, $options: 'i' } }, { mobileNumber: { $regex: user, $options: 'i' } }] };
+  }
+  if (gender && gender != null && gender != '' && gender != 'null') {
+    genderMatch = { gender: { $regex: gender, $options: 'i' } };
+  }
+
+  if (coursetime && coursetime != '' && coursetime != 'null') {
+    courseTimeMatch = { courseTiming: { $regex: coursetime, $options: 'i' } };
+  }
+
+  let values = await EventRegisterIntern.aggregate([
+    {
+      $match: { $and: [userMatch, genderMatch, courseTimeMatch] },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   createEventCLimb,
   slotDetails,
@@ -595,4 +621,5 @@ module.exports = {
   insertSlots_intern,
   slotDetails_intern,
   createEventCLimb_intern,
+  getWorkShopCand,
 };
