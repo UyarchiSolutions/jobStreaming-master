@@ -109,7 +109,7 @@ const employerDetailsSchema = mongoose.Schema(
       type: String,
     },
     preferedIndustry: {
-      type: Array,
+      type: String,
     },
     functionalArea: {
       type: String,
@@ -156,7 +156,10 @@ const employerDetailsSchema = mongoose.Schema(
     interviewendDate: {
       type: String,
     },
-    interviewTime: {
+    interviewFromTime: {
+      type: String,
+    },
+    interviewToTime:{
       type: String,
     },
     interviewerName: {
@@ -165,8 +168,14 @@ const employerDetailsSchema = mongoose.Schema(
     interviewerContactNumber: {
       type: Number,
     },
+    perksBenefits: {
+      type: String,
+    },
     startTime: {
       type: String,
+    },
+    education: {
+      type: Array,
     },
     endTime: {
       type: String,
@@ -262,7 +271,7 @@ const employerPostDraftSchema = mongoose.Schema(
     candidateDescription: {
       type: String,
     },
-    workplaceType: {
+    workMode: {
       type: String,
     },
     industry: {
@@ -551,8 +560,8 @@ const EmployeOtpSchema = new mongoose.Schema({
   },
   setpassword: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const EmployerOTP = mongoose.model('empotp', EmployeOtpSchema);

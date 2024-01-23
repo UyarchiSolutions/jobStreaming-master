@@ -24,71 +24,12 @@ const { emailService } = require('../services');
 //keySkill
 
 const createEmpDetails = async (userId, userBody) => {
-  // let app = await EmployerRegistration.findOne({_id:userId, adminStatus:"Approved"})
   let app = await EmployerRegistration.findOne({ _id: userId });
   if (!app) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
-  // const {validity} = userBody;
-  let date = moment().format('YYYY-MM-DD');
-  let creat1 = moment().format('HHmmss');
-  let data;
-  let values;
-  if (userBody.jobortemplate == 'job') {
-    let expiredDate;
-    // console.log(validity);
-    const plan = await PlanPayment.findOne({ userId: userId, active: true });
-    let pay;
-    if (plan) {
-      pay = await CreatePlan.findOne({ _id: plan.planId });
-    }
-    if (pay) {
-      expiredDate = moment().add(pay.jobPostVAlidity, 'days').format('YYYY-MM-DD');
-    } else {
-      expiredDate = moment().add(1, 'days').format('YYYY-MM-DD');
-    }
-    if (!userBody.interviewDate) {
-      values = { ...userBody, ...{ userId: userId, expiredDate: expiredDate, date: date, time: creat1 } };
-    } else {
-      values = {
-        ...userBody,
-        ...{
-          userId: userId,
-          expiredDate: expiredDate,
-          date: date,
-          time: creat1,
-          interviewstartDate: interviewDate.startDate,
-          interviewendDate: interviewDate.endDate,
-        },
-      };
-    }
-    const freeCount = await EmployerDetails.find({ userId: userId });
-    const usser = await EmployerRegistration.findById(userId);
-    console.log(freeCount.length, usser.freePlanCount);
-    if (freeCount.length >= usser.freePlanCount) {
-      const da = await PlanPayment.findOne({ userId: userId, active: true });
-      if (!da) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'your not pay the plan');
-      }
-      if (date > da.expDate) {
-        await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true });
-        throw new ApiError(httpStatus.NOT_FOUND, 'plan time expired');
-      }
-      const createPlan = await CreatePlan.findOne({ _id: da.planId });
-      if (da.countjobPost == createPlan.jobPost) {
-        await PlanPayment.findByIdAndUpdate({ _id: da._id }, { active: false }, { new: true });
-        throw new ApiError(httpStatus.NOT_FOUND, 'jobpost limit over...');
-      }
-      // }
-      let count = (da.countjobPost += 1);
-      await PlanPayment.findByIdAndUpdate({ _id: da._id }, { countjobPost: count }, { new: true });
-    }
-
-    data = await EmployerDetails.create(values);
-  } else {
-    values = { ...userBody, ...{ userId: userId, date: date, time: creat1 } };
-    data = await EmployerDetails.create(values);
-  }
+  let values = { ...userBody, ...{ userId: userId } };
+  let data = await EmployerDetails.create(values);
   return data;
 };
 
