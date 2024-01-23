@@ -295,6 +295,9 @@ const ClicmbEventRegisterInternSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    slotId:{
+      type: String,
+    }
   },
   { timestamps: true }
 );

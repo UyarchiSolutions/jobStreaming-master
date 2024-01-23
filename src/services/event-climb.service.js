@@ -315,7 +315,8 @@ const updateTestIntern = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Candidates not found');
   }
-  if (values.testEntry == true) {
+
+  if (values.NewTestEntry == true) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Already You Profile Updated');
   }
   const bodyData = req.body;
@@ -326,7 +327,7 @@ const updateTestIntern = async (req) => {
       findEnvent.save();
       values = await EventRegisterIntern.findByIdAndUpdate(
         { _id: values._id },
-        { testEntry: true, testProfile: bodyData, testDate: moment() },
+        { NewTestEntry: true, testProfile: bodyData, testDate: moment(), slotId: findEnvent._id },
         { new: true }
       );
     }
@@ -628,13 +629,13 @@ const verify_cand_Intern = async (req) => {
   let findbyemail = await EventRegisterIntern.findOne({ mail: mob_email });
 
   if (findbyemail) {
-    if (findbyemail.NewTestEntry) {
+    if (findbyemail.testEntry) {
       throw new ApiError(httpStatus.BAD_REQUEST, '*Your Profile Already Updated');
     } else {
       return findbyemail;
     }
   } else if (findbyMobile) {
-    if (findbyMobile.NewTestEntry) {
+    if (findbyMobile.testEntry) {
       throw new ApiError(httpStatus.BAD_REQUEST, '*Your Profile Already Updated');
     } else {
       return findbyMobile;
