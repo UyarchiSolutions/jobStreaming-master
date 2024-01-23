@@ -87,6 +87,12 @@ const updateTestWarmyNew = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const updateTestIntern = catchAsync(async (req, res) => {
+  const data = await climbeventService.updateTestIntern(req);
+  await emailService.sendsuccessTestMailNew(data);
+  res.send(data);
+});
+
 const insertSlotsTest = catchAsync(async (req, res) => {
   const data = await climbeventService.insertSlotsTest(req);
   res.send(data);
@@ -137,6 +143,11 @@ const getWorkShopCand = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const verify_cand_Intern = catchAsync(async (req, res) => {
+  const data = await climbeventService.verify_cand_Intern(req);
+  res.send(data);
+});
+
 module.exports = {
   createEventClimb,
   getSlots,
@@ -163,4 +174,6 @@ module.exports = {
   getSlots_intern,
   createEventClimb_intern,
   getWorkShopCand,
+  verify_cand_Intern,
+  updateTestIntern,
 };

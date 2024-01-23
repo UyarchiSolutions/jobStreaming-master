@@ -310,6 +310,32 @@ const slotDetailsTestNewTech = async () => {
   return slots;
 };
 
+const updateTestIntern = async (req) => {
+  let values = await EventRegisterIntern.findById(req.params.id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidates not found');
+  }
+  if (values.testEntry == true) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Already You Profile Updated');
+  }
+  const bodyData = req.body;
+  let findEnvent = await EventslotIntern.findOne({ slot: bodyData.time, date: bodyData.date });
+  if (findEnvent) {
+    if (findEnvent.no_of_count >= findEnvent.booked_count) {
+      findEnvent.booked_count = findEnvent.booked_count + 1;
+      findEnvent.save();
+      values = await EventRegisterIntern.findByIdAndUpdate(
+        { _id: values._id },
+        { testEntry: true, testProfile: bodyData, testDate: moment() },
+        { new: true }
+      );
+    }
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Engached');
+  }
+  return values;
+};
+
 const updateTestWarmyNew = async (req) => {
   let values = await EventRegister.findById(req.params.id);
   if (!values) {
@@ -596,6 +622,28 @@ const getWorkShopCand = async (req) => {
   return values;
 };
 
+const verify_cand_Intern = async (req) => {
+  const { mob_email } = req.body;
+  let findbyMobile = await EventRegisterIntern.findOne({ mobileNumber: mob_email });
+  let findbyemail = await EventRegisterIntern.findOne({ mail: mob_email });
+
+  if (findbyemail) {
+    if (findbyemail.NewTestEntry) {
+      throw new ApiError(httpStatus.BAD_REQUEST, '*Your Profile Already Updated');
+    } else {
+      return findbyemail;
+    }
+  } else if (findbyMobile) {
+    if (findbyMobile.NewTestEntry) {
+      throw new ApiError(httpStatus.BAD_REQUEST, '*Your Profile Already Updated');
+    } else {
+      return findbyMobile;
+    }
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Mobile Number Or E-mail Not Registered');
+  }
+};
+
 module.exports = {
   createEventCLimb,
   slotDetails,
@@ -622,4 +670,6 @@ module.exports = {
   slotDetails_intern,
   createEventCLimb_intern,
   getWorkShopCand,
+  verify_cand_Intern,
+  updateTestIntern,
 };
