@@ -645,6 +645,40 @@ const verify_cand_Intern = async (req) => {
   }
 };
 
+const getInternSlots = async (req) => {
+  const data = await EventslotIntern.aggregate([
+    {
+      $lookup: {
+        from: 'climbeventregisterinterns',
+        localField: '_id',
+        foreignField: 'slotId',
+        as: 'slots',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        date: 1,
+        slot: 1,
+        cand: { $size: '$slots' },
+      },
+    },
+  ]);
+  return data;
+};
+
+const getWorkshopCandidatesBySlot = async (req) => {
+  let id = req.params.id;
+  const data = await EventRegisterIntern.aggregate([
+    {
+      $match: {
+        slotId: id,
+      },
+    },
+  ]);
+  return data;
+};
+
 module.exports = {
   createEventCLimb,
   slotDetails,
@@ -673,4 +707,6 @@ module.exports = {
   getWorkShopCand,
   verify_cand_Intern,
   updateTestIntern,
+  getInternSlots,
+  getWorkshopCandidatesBySlot,
 };

@@ -38,5 +38,7 @@ router.route('/slotDetails/TestNewHR').get(ClimbController.slotDetailsTestNewHR)
 router.route('/slotDetails/TestNewTech').get(ClimbController.slotDetailsTestNewTech);
 router.route('/getTestUsers/New').get(ClimbController.getTestUsersNew);
 router.route('/getWorkShopCand').get(ClimbController.getWorkShopCand);
-router.route('/verify/cand/Intern').post(ClimbController.verify_cand_Intern)
+router.route('/verify/cand/Intern').post(ClimbController.verify_cand_Intern);
+router.route('/getInternSlots').get(ClimbController.getInternSlots);
+router.route('/getWorkshop/Slot/:id').get(ClimbController.getWorkshopCandidatesBySlot)
 module.exports = router;

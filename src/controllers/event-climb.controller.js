@@ -148,6 +148,16 @@ const verify_cand_Intern = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getInternSlots = catchAsync(async (req, res) => {
+  const data = await climbeventService.getInternSlots(req);
+  res.send(data);
+});
+
+const getWorkshopCandidatesBySlot = catchAsync(async (req, res) => {
+  const data = await climbeventService.getWorkshopCandidatesBySlot(req);
+  res.send(data);
+});
+
 module.exports = {
   createEventClimb,
   getSlots,
@@ -176,4 +186,6 @@ module.exports = {
   getWorkShopCand,
   verify_cand_Intern,
   updateTestIntern,
+  getInternSlots,
+  getWorkshopCandidatesBySlot,
 };
