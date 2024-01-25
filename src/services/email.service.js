@@ -121,7 +121,7 @@ const sendsuccessTestMail = async (data) => {
   const msg = {
     from: 'noreply@warmy.co.in',
     to: mail,
-    subject: 'Registration Success-Associate Software Engineer-Acknowledgement',
+    subject: 'Registration Success-Entrepreneurship Workshop-COURAGE-Acknowledgement',
     html: data1,
   };
   await transporter2.sendMail(msg);
