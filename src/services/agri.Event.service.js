@@ -606,6 +606,15 @@ const clearCandidates = async (req) => {
   return values;
 };
 
+const getCandidatesReport = async (req) => {
+  let values = await AgriCandidate.aggregate([
+    {
+      $match: { active: true },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -624,4 +633,5 @@ module.exports = {
   Undo,
   clearCandidates,
   ResumeUploadAgriCand,
+  getCandidatesReport,
 };
