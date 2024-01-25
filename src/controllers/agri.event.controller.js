@@ -95,6 +95,11 @@ const getCandidatesReport = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getStreamDetailsByCand = catchAsync(async (req,res)=>{
+  const data = await AgriEventService.getStreamDetailsByCand(req);
+  res.send(data);
+})
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -114,4 +119,5 @@ module.exports = {
   clearCandidates,
   ResumeUploadAgriCand,
   getCandidatesReport,
+  getStreamDetailsByCand
 };
