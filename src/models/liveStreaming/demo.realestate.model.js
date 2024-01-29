@@ -392,6 +392,10 @@ const democloud_record = mongoose.Schema({
     type: String,
     default: 'Pending',
   },
+  videoLink_mp4:{
+    type: String,
+    default: 'Pending'
+  },
   video: {
     type: Boolean,
     default: true,

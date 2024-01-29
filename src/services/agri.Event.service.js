@@ -8,6 +8,9 @@ const {
   agriCandReview,
   BookedSlot,
 } = require('../models/agri.Event.model');
+
+const { Democloudrecord } = require('../models/liveStreaming/demo.realestate.model');
+
 const { EventRegister } = require('../models/climb-event.model');
 const moment = require('moment');
 const AWS = require('aws-sdk');
@@ -606,6 +609,63 @@ const clearCandidates = async (req) => {
   return values;
 };
 
+const getCandidatesReport = async (req) => {
+  let values = await AgriCandidate.aggregate([
+    {
+      $match: { active: true },
+    },
+  ]);
+  return values;
+};
+
+const getStreamDetailsByCand = async (req) => {
+  let id = req.params.id;
+  let values = await SlotBooking.aggregate([
+    { $match: { candId: id } },
+    {
+      $lookup: {
+        from: 'democloundrecords',
+        localField: '_id',
+        foreignField: 'chennel',
+        pipeline: [{ $match: { videoLink_mp4: { $ne: null } } }],
+        as: 'StreamRecord',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: false,
+        path: '$StreamRecord',
+      },
+    },
+    {
+      $lookup: {
+        from: 'volunteers',
+        localField: 'volunteerId',
+        foreignField: '_id',
+        as: 'volunteer',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$volunteer',
+      },
+    },
+    {
+      $project:{
+        _id:1,
+        start:"$DateTime",
+        endTime:1,
+        Type:1,
+        streamStatus:1,
+        videoURL:"$StreamRecord.videoLink_mp4",
+        Name:"$volunteer.name"
+      }
+    }
+  ]);
+  return values;
+};
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -624,4 +684,6 @@ module.exports = {
   Undo,
   clearCandidates,
   ResumeUploadAgriCand,
+  getCandidatesReport,
+  getStreamDetailsByCand,
 };

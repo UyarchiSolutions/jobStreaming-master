@@ -23,4 +23,6 @@ router.route('/AdminApprove').post(AgriEventController.AdminApprove);
 router.route('/Undo/:id').get(AgriEventController.Undo);
 router.route('/clearCandidates/:id/:role').get(AgriEventController.clearCandidates);
 router.route('/ResumeUploadAgriCand/:id').put(upload, AgriEventController.ResumeUploadAgriCand);
+router.route('/getCandidatesReport').get(AgriEventController.getCandidatesReport);
+router.route('/getStreamDetailsByCand/:id').get(AgriEventController.getStreamDetailsByCand)
 module.exports = router;
