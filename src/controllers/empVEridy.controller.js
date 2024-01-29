@@ -6,11 +6,11 @@ const { tokenTypes } = require('../config/tokens');
 const jwt = require('jsonwebtoken');
 const tokenService = require('../services/token.service');
 const config = require('../config/config');
-const { EmployerRegistration } = require('../models');
+const { EmployerRegistration } = require('../models/employerRegistration.model');
 
 const authorization = async (req, res, next) => {
   const token = req.headers.auth;
-  // console.log(token);
+  console.log(token);
   // console.log(req.headers.auth);
   // console.log(req.headers['auth']);
   if (!token) {

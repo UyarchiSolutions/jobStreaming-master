@@ -4642,6 +4642,15 @@ const getEmployerRegister = async (id) => {
   return values;
 };
 
+const get_my_profile = async (req) => {
+  let userId = req.userId;
+  let values = await EmployerRegistration.findById(userId);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
+  }
+  return values;
+};
+
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -4691,4 +4700,5 @@ module.exports = {
   employer_contactnumber,
   getEmployerRegister,
   location_api,
+  get_my_profile,
 };

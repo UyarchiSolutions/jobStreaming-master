@@ -77,4 +77,11 @@ router.route('/get_Recruiter_id/:id').get(employerDetailsController.get_Recruite
 router.route('/Recruiter_edit/:id').put(employerDetailsController.Recruiter_edit);
 router.route('/Recruiter_delete/:id').delete(employerDetailsController.Recruiter_delete);
 router.route('/getEmployerRegister/:id').get(employerDetailsController.getEmployerRegister);
+
+
+
+
+
+router.route('/myprofile').get(authorization,employerDetailsController.get_my_profile);
+
 module.exports = router;

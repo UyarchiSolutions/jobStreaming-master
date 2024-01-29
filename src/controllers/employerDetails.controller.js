@@ -262,6 +262,12 @@ const location_api = catchAsync(async (req, res) => {
   const user = await employerDetailsService.location_api(req.query.input);
   res.send(user);
 });
+
+const get_my_profile= catchAsync(async (req, res) => {
+  console.log(req.query)
+  const user = await employerDetailsService.get_my_profile(req);
+  res.send(user);
+});
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -311,4 +317,5 @@ module.exports = {
   employer_contactnumber,
   getEmployerRegister,
   location_api,
+  get_my_profile
 };

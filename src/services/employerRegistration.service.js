@@ -325,7 +325,7 @@ const getEmployerById = async (id) => {
 // });
 
 const uploadProfileImage = async (req) => {
-  let id = req.params.id;
+  let id = req.userId;
   let findEmployee = await EmployerRegistration.findById(id);
   if (!findEmployee) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Naot Found');
@@ -355,7 +355,7 @@ const uploadProfileImage = async (req) => {
 };
 
 const uploadEmployerFile = async (req) => {
-  let id = req.params.id;
+  let id = req.userId;
   let findEmployee = await EmployerRegistration.findById(id);
   if (!findEmployee) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Naot Found');
