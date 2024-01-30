@@ -112,7 +112,7 @@ const get_allcourse = async () => {
 
 const get_all_specialization = async (body) => {
   const { arr } = body;
-  let data = await AllSpecialization.find({ courseId: { $in: arr } });
+  let data = await AllSpecialization.find({ courseId: { $eq: arr } });
   return data;
 };
 
