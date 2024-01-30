@@ -100,6 +100,11 @@ const getStreamDetailsByCand = catchAsync(async (req,res)=>{
   res.send(data);
 })
 
+const active_Inactive_candidate = catchAsync(async(req,res)=>{
+  const data = await AgriEventService.active_Inactive_candidate(req);
+  res.send(data)
+})
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -119,5 +124,6 @@ module.exports = {
   clearCandidates,
   ResumeUploadAgriCand,
   getCandidatesReport,
-  getStreamDetailsByCand
+  getStreamDetailsByCand,
+  active_Inactive_candidate
 };

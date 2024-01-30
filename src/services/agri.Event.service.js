@@ -618,6 +618,21 @@ const getCandidatesReport = async (req) => {
   return values;
 };
 
+const active_Inactive_candidate = async (req)=>{
+  let id = req.params.id
+  let findCand = await AgriCandidate.findById(id);
+  if(!findCand){
+    throw new ApiError(httpStatus.BAD_REQUEST, "Candidate Not Found Some Delete From DataBase")
+  }
+  if(findCand.active){
+    findCand.active = false
+  }else{
+    findCand.active = false
+  }
+  findCand.save();
+  return findCand
+}
+
 const getStreamDetailsByCand = async (req) => {
   let id = req.params.id;
   let values = await SlotBooking.aggregate([
@@ -686,4 +701,5 @@ module.exports = {
   ResumeUploadAgriCand,
   getCandidatesReport,
   getStreamDetailsByCand,
+  active_Inactive_candidate,
 };

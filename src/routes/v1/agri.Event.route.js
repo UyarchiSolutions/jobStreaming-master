@@ -24,5 +24,6 @@ router.route('/Undo/:id').get(AgriEventController.Undo);
 router.route('/clearCandidates/:id/:role').get(AgriEventController.clearCandidates);
 router.route('/ResumeUploadAgriCand/:id').put(upload, AgriEventController.ResumeUploadAgriCand);
 router.route('/getCandidatesReport').get(AgriEventController.getCandidatesReport);
-router.route('/getStreamDetailsByCand/:id').get(AgriEventController.getStreamDetailsByCand)
+router.route('/getStreamDetailsByCand/:id').get(AgriEventController.getStreamDetailsByCand);
+router.route('/active/Inactive/candidate/:id').get(AgriEventController.active_Inactive_candidate)
 module.exports = router;
