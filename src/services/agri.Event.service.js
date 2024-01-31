@@ -612,7 +612,7 @@ const clearCandidates = async (req) => {
 const getCandidatesReport = async (req) => {
   let values = await AgriCandidate.aggregate([
     {
-      $match: { active: true },
+      $match: { _id:{$ne:null} },
     },
   ]);
   return values;
@@ -627,7 +627,7 @@ const active_Inactive_candidate = async (req)=>{
   if(findCand.active){
     findCand.active = false
   }else{
-    findCand.active = false
+    findCand.active = true
   }
   findCand.save();
   return findCand
