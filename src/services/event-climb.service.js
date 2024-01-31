@@ -93,6 +93,9 @@ const createEventCLimb_intern = async (req) => {
         resolve(creations);
       });
     });
+  }else{
+    let creations = await EventRegisterIntern.create(body);
+    return creations
   }
 };
 
