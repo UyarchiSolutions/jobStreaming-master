@@ -626,6 +626,68 @@ const getCandidatesReport = async (req) => {
     {
       $match: {$and:[CandiMatch,locationMatch]},
     },
+    {
+      $lookup:{
+        from:"agricandreviews",
+        localField:"_id",
+        foreignField:"candId",
+        pipeline:[{$match:{Role:{$ne:"Tech Volunteer"}}}, {$group:{_id:null,hrRating:{$sum:"$attrAVG"}}}],
+        as:"hrrating"
+      }
+    },
+    {
+      $unwind:{
+        preserveNullAndEmptyArrays:true,
+        path:"$hrrating"
+
+      }
+    },
+    {
+      $lookup:{
+        from:"agricandreviews",
+        localField:"_id",
+        foreignField:"candId",
+        pipeline:[{$match:{Role:"Tech Volunteer"}}, {$group:{_id:null,TechRating:{$sum:"$skillAVG"}, }}],
+        as:"techrating"
+      }
+    },
+    {
+      $unwind:{
+        preserveNullAndEmptyArrays:true,
+        path:"$techrating"
+
+      }
+    },
+    {
+      $project:{
+        _id:1,
+        Education:1,
+        active:1,
+        skills:1,
+        language:1,
+        booked:1,
+        slotbooked:1,
+        intrest:1,
+        techIntrest:1,
+        status:1,
+        clear:1,
+        hrClear:1,
+        name:1,
+        mail:1,
+        mobile:1,
+        location:1,
+        Instituitionname:1,
+        affiliateduniversity:1,
+        Education:1,
+        course:1,
+        yearOfPassing:1,
+        dob:1,
+        createdAt:1,
+        updatedAt:1,
+        hrRating: {$ifNull:["$hrrating.hrRating",0]},
+        techRating:{ $ifNull:["$techrating.TechRating",0] }
+      }
+    }
   ]);
 
   return values;
