@@ -24,7 +24,7 @@ const { emailService } = require('../services');
 //keySkill
 
 const createEmpDetails = async (userId, userBody) => {
-  let app = await EmployerRegistration.findOne({ _id: userId });
+  let app = await EmployerRegistration.findById(userId);
   if (!app) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }

@@ -141,12 +141,12 @@ const employerDetailsSchema = mongoose.Schema(
     qualificationDummy: {
       type: String,
     },
-    course: {
-      type: Array,
-    },
-    specialization: {
-      type: Array,
-    },
+    // course: {
+    //   type: Array,
+    // },
+    // specialization: {
+    //   type: Array,
+    // },
     openings: {
       type: Number,
     },
@@ -159,7 +159,7 @@ const employerDetailsSchema = mongoose.Schema(
     interviewFromTime: {
       type: String,
     },
-    interviewToTime:{
+    interviewToTime: {
       type: String,
     },
     interviewerName: {
@@ -214,6 +214,15 @@ const employerDetailsSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    education_object: {
+      type: Array,
+    },
+    education_array: {
+      type: Array,
+    },
+    education_match: {
+      type: Array,
+    }
   },
   {
     timestamps: true,
