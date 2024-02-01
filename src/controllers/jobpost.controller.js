@@ -14,8 +14,14 @@ const toggle_job_post= catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
+const get_post_details= catchAsync(async (req, res) => {
+  const data = await Jobpost.get_post_details(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
 module.exports = {
   get_my_job_post,
-  toggle_job_post
+  toggle_job_post,
+  get_post_details
 
 };
