@@ -91,7 +91,11 @@ const get_city = async (key) => {
 };
 
 const get_Rolecategory = async (id) => {
-  let data = await Rolecategory.find({ DepartmentId: id });
+  let dep = await Department.findOne({ Department: id });
+  if (!dep) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Department not found');
+  }
+  let data = await Rolecategory.find({ DepartmentId: dep._id });
   return data;
 };
 
