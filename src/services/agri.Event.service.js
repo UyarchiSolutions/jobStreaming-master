@@ -605,7 +605,6 @@ const clearCandidates = async (req) => {
   } else {
     values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { clear: true }, { new: true });
   }
-  console.log(role);
   return values;
 };
 
