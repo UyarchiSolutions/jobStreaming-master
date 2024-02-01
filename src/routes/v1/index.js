@@ -26,6 +26,7 @@ const volunteerRoute = require('./volunteer.route');
 const eventClimb = require('./event-climb.router');
 const AgriEvent = require('./agri.Event.route');
 const ClimbCand = require('./climb.cand.route');
+const jobpost = require('./jobpost.route');
 
 const defaultRoutes = [
   {
@@ -124,6 +125,11 @@ const defaultRoutes = [
     path: '/faqe',
     route: faqeRoute,
   },
+  {
+    path: '/jobpost',
+    route: jobpost,
+  },
+  
 ];
 
 const devRoutes = [
