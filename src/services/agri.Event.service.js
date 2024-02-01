@@ -610,11 +610,24 @@ const clearCandidates = async (req) => {
 };
 
 const getCandidatesReport = async (req) => {
+  const { cand, location } = req.query;
+  let CandiMatch = {_id:{$ne:null}};
+  let locationMatch = {_id:{$ne:null}};
+
+  if(cand && cand !='' && cand != null && cand != 'null'){
+    CandiMatch = {$or:[{ name:{$regex:cand,$options:"i"} },{mobile:{$regex:cand,$options:"i"} }]  }
+  }
+  
+  if(location&& location!='' && location!= null && location!= 'null'){
+    locationMatch = {location:{$regex:location,$options:"i"}}
+  }
+
   let values = await AgriCandidate.aggregate([
     {
-      $match: { active: true },
+      $match: {$and:[CandiMatch,locationMatch]},
     },
   ]);
+
   return values;
 };
 
@@ -627,7 +640,7 @@ const active_Inactive_candidate = async (req)=>{
   if(findCand.active){
     findCand.active = false
   }else{
-    findCand.active = false
+    findCand.active = true
   }
   findCand.save();
   return findCand
