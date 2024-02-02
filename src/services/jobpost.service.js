@@ -73,8 +73,25 @@ const get_post_details = async (req) => {
   return data;
 
 }
+
+const update_employer_post = async (req) => {
+  let userId = req.userId;
+  let data = await EmployerDetails.findById(req.query.id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
+  }
+
+  if (data.userId != userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
+  }
+  
+  data = await EmployerDetails.findByIdAndUpdate({ _id: data._id }, req.body, { new: true });
+  return data;
+}
+
 module.exports = {
   get_my_job_post,
   toggle_job_post,
-  get_post_details
+  get_post_details,
+  update_employer_post
 };
