@@ -214,10 +214,23 @@ const CandidateIntrestUpdate = async (req) => {
   }
   let values = await Volunteer.findById(volunteerId);
   if (values.Role == 'HR Volunteer') {
+    if (cand.interest_HR <= 5) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Slot Booking Full");
+    }
+    cand.interest_HR = cand.interest_HR + 1;
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId } }, { new: true });
   } else {
+    if (cand.interest_TECH <= 5) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Slot Booking Full");
+    }
+    cand.interest_TECH = cand.interest_TECH + 1;
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { techIntrest: volunteerId } }, { new: true });
   }
+  if (cand.interest_TECH <= 2 && cand.interest_HR <= 2) {
+    cand.status = 'Waiting For Approval';
+  }
+  cand.save();
+
   await IntrestedCandidate.create({
     candId: candId,
     volunteerId: volunteerId,
@@ -480,11 +493,14 @@ const UndoIntrestedCandidate = async (req) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Sorry  Deleted Choosen From AgriCandidate table');
   }
   if (role == 'HR Volunteer') {
+
+    findCand.interest_HR = findCand.interest_HR - 1
     let findind = findCand.intrest.findIndex((e) => {
       return e == volId;
     });
     findCand.intrest.splice(findind, 1);
   } else {
+    findCand.interest_TECH = findCand.interest_TECH - 1
     let findind = findCand.techIntrest.findIndex((e) => {
       return e == volId;
     });

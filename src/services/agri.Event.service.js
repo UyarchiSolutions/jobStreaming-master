@@ -534,7 +534,7 @@ const createSlotBooking = async (req) => {
       endTime: end,
       slotId: slotCreate._id,
     });
-    await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true }, { new: true });
+    await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true, status: "Interest Pending" }, { new: true });
     return creations;
   });
   await agriCandidateSlotBookedMail(emailData);
@@ -546,6 +546,11 @@ const AdminApprove = async (req) => {
   let getIntrested = await IntrestedCandidate.findById(intrestId);
   if (!getIntrested) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Intrested Data Not Found, Some One Deleted From Database 😠');
+  }
+
+  let cand = await AgriCandidate.findById(getIntrested.candId);
+  if (!cand) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate  not Fount 😠');
   }
   let getSlots = await SlotBooking.findById(slotId);
   if (!getSlots) {
@@ -562,6 +567,9 @@ const AdminApprove = async (req) => {
     if (findMatches >= 2) {
       throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
     }
+
+    cand.approved_HR = cand.approved_HR + 1;
+    cand.save();
     getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { hrStatus: 'Approved' }, { new: true });
     getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
   } else {
@@ -575,8 +583,14 @@ const AdminApprove = async (req) => {
     if (findMatches >= 2) {
       throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
     }
+    cand.approved_TECH = cand.approved_HR + 1;
+    cand.save();
     getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
     getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
+  }
+
+  if (cand.approved_HR == 2 && cand.approved_TECH == 2) {
+
   }
 
   return getIntrested;
@@ -610,81 +624,81 @@ const clearCandidates = async (req) => {
 
 const getCandidatesReport = async (req) => {
   const { cand, location } = req.query;
-  let CandiMatch = {_id:{$ne:null}};
-  let locationMatch = {_id:{$ne:null}};
+  let CandiMatch = { _id: { $ne: null } };
+  let locationMatch = { _id: { $ne: null } };
 
-  if(cand && cand !='' && cand != null && cand != 'null'){
-    CandiMatch = {$or:[{ name:{$regex:cand,$options:"i"} },{mobile:{$regex:cand,$options:"i"} }]  }
+  if (cand && cand != '' && cand != null && cand != 'null') {
+    CandiMatch = { $or: [{ name: { $regex: cand, $options: "i" } }, { mobile: { $regex: cand, $options: "i" } }] }
   }
-  
-  if(location&& location!='' && location!= null && location!= 'null'){
-    locationMatch = {location:{$regex:location,$options:"i"}}
+
+  if (location && location != '' && location != null && location != 'null') {
+    locationMatch = { location: { $regex: location, $options: "i" } }
   }
 
   let values = await AgriCandidate.aggregate([
     {
-      $match: {$and:[CandiMatch,locationMatch]},
+      $match: { $and: [CandiMatch, locationMatch] },
     },
     {
-      $lookup:{
-        from:"agricandreviews",
-        localField:"_id",
-        foreignField:"candId",
-        pipeline:[{$match:{Role:{$ne:"Tech Volunteer"}}}, {$group:{_id:null,hrRating:{$sum:"$attrAVG"}}}],
-        as:"hrrating"
+      $lookup: {
+        from: "agricandreviews",
+        localField: "_id",
+        foreignField: "candId",
+        pipeline: [{ $match: { Role: { $ne: "Tech Volunteer" } } }, { $group: { _id: null, hrRating: { $sum: "$attrAVG" } } }],
+        as: "hrrating"
       }
     },
     {
-      $unwind:{
-        preserveNullAndEmptyArrays:true,
-        path:"$hrrating"
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$hrrating"
 
       }
     },
     {
-      $lookup:{
-        from:"agricandreviews",
-        localField:"_id",
-        foreignField:"candId",
-        pipeline:[{$match:{Role:"Tech Volunteer"}}, {$group:{_id:null,TechRating:{$sum:"$skillAVG"}, }}],
-        as:"techrating"
+      $lookup: {
+        from: "agricandreviews",
+        localField: "_id",
+        foreignField: "candId",
+        pipeline: [{ $match: { Role: "Tech Volunteer" } }, { $group: { _id: null, TechRating: { $sum: "$skillAVG" }, } }],
+        as: "techrating"
       }
     },
     {
-      $unwind:{
-        preserveNullAndEmptyArrays:true,
-        path:"$techrating"
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$techrating"
 
       }
     },
     {
-      $project:{
-        _id:1,
-        Education:1,
-        active:1,
-        skills:1,
-        language:1,
-        booked:1,
-        slotbooked:1,
-        intrest:1,
-        techIntrest:1,
-        status:1,
-        clear:1,
-        hrClear:1,
-        name:1,
-        mail:1,
-        mobile:1,
-        location:1,
-        Instituitionname:1,
-        affiliateduniversity:1,
-        Education:1,
-        course:1,
-        yearOfPassing:1,
-        dob:1,
-        createdAt:1,
-        updatedAt:1,
-        hrRating: {$ifNull:["$hrrating.hrRating",0]},
-        techRating:{ $ifNull:["$techrating.TechRating",0] }
+      $project: {
+        _id: 1,
+        Education: 1,
+        active: 1,
+        skills: 1,
+        language: 1,
+        booked: 1,
+        slotbooked: 1,
+        intrest: 1,
+        techIntrest: 1,
+        status: 1,
+        clear: 1,
+        hrClear: 1,
+        name: 1,
+        mail: 1,
+        mobile: 1,
+        location: 1,
+        Instituitionname: 1,
+        affiliateduniversity: 1,
+        Education: 1,
+        course: 1,
+        yearOfPassing: 1,
+        dob: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        hrRating: { $ifNull: ["$hrrating.hrRating", 0] },
+        techRating: { $ifNull: ["$techrating.TechRating", 0] }
       }
     }
   ]);
@@ -692,15 +706,15 @@ const getCandidatesReport = async (req) => {
   return values;
 };
 
-const active_Inactive_candidate = async (req)=>{
+const active_Inactive_candidate = async (req) => {
   let id = req.params.id
   let findCand = await AgriCandidate.findById(id);
-  if(!findCand){
+  if (!findCand) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Candidate Not Found Some Delete From DataBase")
   }
-  if(findCand.active){
+  if (findCand.active) {
     findCand.active = false
-  }else{
+  } else {
     findCand.active = true
   }
   findCand.save();
@@ -741,14 +755,14 @@ const getStreamDetailsByCand = async (req) => {
       },
     },
     {
-      $project:{
-        _id:1,
-        start:"$DateTime",
-        endTime:1,
-        Type:1,
-        streamStatus:1,
-        videoURL:"$StreamRecord.videoLink_mp4",
-        Name:"$volunteer.name"
+      $project: {
+        _id: 1,
+        start: "$DateTime",
+        endTime: 1,
+        Type: 1,
+        streamStatus: 1,
+        videoURL: "$StreamRecord.videoLink_mp4",
+        Name: "$volunteer.name"
       }
     }
   ]);

@@ -76,7 +76,23 @@ const AgriCandidateSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: 'Pending',
+      default: 'Slot Chosen',
+    },
+    interest_HR: {
+      type: Number,
+      default: 0,
+    },
+    interest_TECH: {
+      type: Number,
+      default: 0,
+    },
+    approved_HR: {
+      type: Number,
+      default: 0,
+    },
+    approved_TECH: {
+      type: Number,
+      default: 0,
     },
     clear: {
       type: Boolean,

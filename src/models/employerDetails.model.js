@@ -222,6 +222,10 @@ const employerDetailsSchema = mongoose.Schema(
     },
     education_match: {
       type: Array,
+    },
+    status:{
+      type: String,
+      default:"Published"
     }
   },
   {

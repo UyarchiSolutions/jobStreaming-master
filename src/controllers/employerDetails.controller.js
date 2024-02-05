@@ -8,6 +8,13 @@ const createEmpDetails = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send({ user });
 });
 
+const create_draft_job_post= catchAsync(async (req, res) => {
+  const userId = req.userId;
+  const user = await employerDetailsService.create_draft_job_post(userId, req.body);
+  res.status(httpStatus.CREATED).send({ user });
+});
+
+
 const getByIdUser = catchAsync(async (req, res) => {
   let userId = req.userId;
   const user = await employerDetailsService.getByIdUser(userId);
@@ -317,5 +324,6 @@ module.exports = {
   employer_contactnumber,
   getEmployerRegister,
   location_api,
-  get_my_profile
+  get_my_profile,
+  create_draft_job_post
 };

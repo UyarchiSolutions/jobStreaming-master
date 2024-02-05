@@ -33,6 +33,17 @@ const createEmpDetails = async (userId, userBody) => {
   return data;
 };
 
+const create_draft_job_post = async (userId, userBody) => {
+  let app = await EmployerRegistration.findById(userId);
+  if (!app) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
+  }
+  let values = { ...userBody, ...{ userId: userId, status: "draft" } };
+  let data = await EmployerDetails.create(values);
+  return data;
+};
+
+
 const createEmpDetailsRepost = async (id, userBody) => {
   const { userId } = userBody;
   let expiredDate;
@@ -4701,4 +4712,5 @@ module.exports = {
   getEmployerRegister,
   location_api,
   get_my_profile,
+  create_draft_job_post
 };

@@ -10,6 +10,7 @@ const multer = require('multer');
 const upload = multer();
 
 router.route('/createEmpDetails').post(authorization, employerDetailsController.createEmpDetails);
+router.route('/draft/job/post').post(authorization, employerDetailsController.create_draft_job_post);
 router.route('/getEmpDetails').get(authorization, employerDetailsController.getByIdUser);
 router.route('/updateEmpDetails/:id').put(employerDetailsController.updateById);
 router.route('/deleteEmpDetails/:id').delete(employerDetailsController.deleteById);
@@ -82,6 +83,6 @@ router.route('/getEmployerRegister/:id').get(employerDetailsController.getEmploy
 
 
 
-router.route('/myprofile').get(authorization,employerDetailsController.get_my_profile);
+router.route('/myprofile').get(authorization, employerDetailsController.get_my_profile);
 
 module.exports = router;

@@ -16,7 +16,8 @@ const get_my_job_post = async (req) => {
     {
       $match: {
         $and: [
-          { userId: { $eq: userId } }
+          { userId: { $eq: userId } },
+          { status: { $ne: "draft" } },
         ]
       }
     },
@@ -29,7 +30,44 @@ const get_my_job_post = async (req) => {
     {
       $match: {
         $and: [
-          { userId: { $eq: userId } }
+          { userId: { $eq: userId } },
+          { status: { $ne: "draft" } },
+        ]
+      }
+    },
+    { $sort: { createdAt: -1 } },
+    { $skip: range * (page + 1) },
+    { $limit: range },
+  ])
+
+  return { data, next: next.length != 0 };
+};
+
+const get_my_job_post_draft = async (req) => {
+  let userId = req.userId;
+  console.log(userId)
+  let range = req.query.range == null || req.query.range == undefined || req.query.range == null ? 10 : parseInt(req.query.range);
+  let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
+  let data = await EmployerDetails.aggregate([
+    {
+      $match: {
+        $and: [
+          { userId: { $eq: userId } },
+          { status: { $eq: "draft" } },
+        ]
+      }
+    },
+    { $sort: { createdAt: -1 } },
+    { $skip: range * page },
+    { $limit: range },
+  ])
+
+  let next = await EmployerDetails.aggregate([
+    {
+      $match: {
+        $and: [
+          { userId: { $eq: userId } },
+          { status: { $eq: "draft" } },
         ]
       }
     },
@@ -84,7 +122,22 @@ const update_employer_post = async (req) => {
   if (data.userId != userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
   }
-  
+
+  data = await EmployerDetails.findByIdAndUpdate({ _id: data._id }, { ...req.body, ...{ status: "Published" } }, { new: true });
+  return data;
+}
+
+const update_employer_post_draft = async (req) => {
+  let userId = req.userId;
+  let data = await EmployerDetails.findById(req.query.id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
+  }
+
+  if (data.userId != userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
+  }
+
   data = await EmployerDetails.findByIdAndUpdate({ _id: data._id }, req.body, { new: true });
   return data;
 }
@@ -93,5 +146,7 @@ module.exports = {
   get_my_job_post,
   toggle_job_post,
   get_post_details,
-  update_employer_post
+  update_employer_post,
+  update_employer_post_draft,
+  get_my_job_post_draft
 };
