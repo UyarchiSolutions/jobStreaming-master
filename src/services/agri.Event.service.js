@@ -16,6 +16,7 @@ const moment = require('moment');
 const AWS = require('aws-sdk');
 const XLSX = require('xlsx');
 const { agriCandidateSlotBookedMail } = require('./email.service');
+const { update_email_send_otp } = require('./candidateRegistration.service');
 
 const createAgriEvent = async (req) => {
   let findByMobile = await AgriCandidate.findOne({ mobile: req.body.mobile });
@@ -590,7 +591,10 @@ const AdminApprove = async (req) => {
 
   if (cand.approved_HR == 2 && cand.approved_TECH == 2) {
     cand.status = 'Clear';
-    
+
+  }
+  else {
+    cand.status = 'Waiting For Approval';
   }
 
   cand.save();
@@ -615,11 +619,17 @@ const Undo = async (req) => {
     if (cand.approved_HR == 2 && cand.approved_TECH == 2) {
       cand.status = 'Clear';
     }
+    else {
+      cand.status = 'Waiting For Approval';
+    }
   }
   else {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: getIntrested.candId }, { approved_HR: cand.approved_HR - 1 }, { new: true });
     if (cand.approved_HR == 2 && cand.approved_TECH == 2) {
       cand.status = 'Clear';
+    }
+    else {
+      cand.status = 'Waiting For Approval';
     }
   }
 
