@@ -326,7 +326,7 @@ const getAgriCandidates = async (req) => {
         createdAt: 1,
         HRIntrest: { $size: '$HRcandidates' },
         TechIntrest: { $size: '$Techcandidates' },
-        status: { $ifNull: ['$status', 'Pending'] },
+        status: 1,
         clear: 1,
         techId: { $ifNull: ['$TechID._id', null] },
         hrId: { $ifNull: ['$HRID._id', null] },
