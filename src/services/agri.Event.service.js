@@ -557,7 +557,7 @@ const AdminApprove = async (req) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Data Not Found, Some One Deleted From Database 😠');
   }
   console.log(req.body);
-  if (Role == 'HR') {
+  if (getIntrested.Role != 'Tech Volunteer') {
     let findMatches = await IntrestedCandidate.find({
       slotId: slotId,
       candId: getIntrested.candId,
@@ -583,7 +583,7 @@ const AdminApprove = async (req) => {
     if (findMatches >= 2) {
       throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
     }
-    cand.approved_TECH = cand.approved_HR + 1;
+    cand.approved_TECH = cand.approved_TECH + 1;
     getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
     getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
   }
