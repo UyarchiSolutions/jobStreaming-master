@@ -331,6 +331,10 @@ const getAgriCandidates = async (req) => {
         techId: { $ifNull: ['$TechID._id', null] },
         hrId: { $ifNull: ['$HRID._id', null] },
         hrClear: 1,
+        interest_HR:1,
+        interest_TECH:1,
+        approved_HR:1,
+        approved_TECH:1
       },
     },
   ]);
