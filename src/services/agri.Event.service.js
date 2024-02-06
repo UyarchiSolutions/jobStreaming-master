@@ -590,7 +590,7 @@ const AdminApprove = async (req) => {
   }
 
   if (cand.approved_HR == 2 && cand.approved_TECH == 2) {
-    cand.status = 'Clear';
+    cand.status = 'Approved';
 
   }
   else {
@@ -617,7 +617,7 @@ const Undo = async (req) => {
   if (getIntrested.Role == 'Tech Volunteer') {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: getIntrested.candId }, { approved_TECH: cand.approved_TECH - 1 }, { new: true });
     if (cand.approved_HR == 2 && cand.approved_TECH == 2) {
-      cand.status = 'Clear';
+      cand.status = 'Approved';
     }
     else {
       cand.status = 'Waiting For Approval';
@@ -626,7 +626,7 @@ const Undo = async (req) => {
   else {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: getIntrested.candId }, { approved_HR: cand.approved_HR - 1 }, { new: true });
     if (cand.approved_HR == 2 && cand.approved_TECH == 2) {
-      cand.status = 'Clear';
+      cand.status = 'Approved';
     }
     else {
       cand.status = 'Waiting For Approval';
