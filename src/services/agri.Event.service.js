@@ -336,7 +336,11 @@ const getAgriCandidates = async (req) => {
         interest_HR: 1,
         interest_TECH: 1,
         approved_HR: 1,
-        approved_TECH: 1
+        approved_TECH: 1,
+        HR_DateTime: { $ifNull: ['$HRID.DateTime', null] },
+        Tech_DateTime: { $ifNull: ['$TechID.DateTime', null] },
+        HR_endTime: { $ifNull: ['$HRID.endTime', null] },
+        TECH_endTime: { $ifNull: ['$TechID.endTime', null] },
       },
     },
   ]);
