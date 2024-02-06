@@ -534,7 +534,7 @@ const createSlotBooking = async (req) => {
       endTime: end,
       slotId: slotCreate._id,
     });
-    await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true, status: "Interest Pending" }, { new: true });
+    await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true, status: "Slot Chosen" }, { new: true });
     return creations;
   });
   await agriCandidateSlotBookedMail(emailData);

@@ -76,7 +76,7 @@ const AgriCandidateSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: 'Slot Chosen',
+      default: 'Active',
     },
     interest_HR: {
       type: Number,

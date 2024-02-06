@@ -95,12 +95,12 @@ const getCandidatesReport = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-const getStreamDetailsByCand = catchAsync(async (req,res)=>{
+const getStreamDetailsByCand = catchAsync(async (req, res) => {
   const data = await AgriEventService.getStreamDetailsByCand(req);
   res.send(data);
 })
 
-const active_Inactive_candidate = catchAsync(async(req,res)=>{
+const active_Inactive_candidate = catchAsync(async (req, res) => {
   const data = await AgriEventService.active_Inactive_candidate(req);
   res.send(data)
 })
