@@ -231,7 +231,7 @@ const CandidateIntrestUpdate = async (req) => {
     }
     console.log(cand.interest_TECH, cand.interest_TECH + 1)
     // cand.interest_TECH = cand.interest_TECH + 1;
-    cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, {techIntrest: {  $push: volunteerId, interest_TECH: cand.interest_TECH + 1 } }, { new: true });
+    cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { techIntrest: { $push: volunteerId, }, interest_TECH: cand.interest_TECH + 1 }, { new: true });
     console.log(cand.interest_TECH, cand)
 
     if (cand.interest_TECH >= 2 && cand.interest_HR >= 2) {
