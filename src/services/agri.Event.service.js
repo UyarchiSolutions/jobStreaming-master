@@ -34,8 +34,8 @@ const createSlots = async (req, res) => {
   let date = req.body;
   const dateTimeString = `${date.date} ${date.slot}`;
   const momentObject = moment(dateTimeString, 'YYYY-MM-DD hh:mm A');
-  const isoDateTime = momentObject.toISOString();
-  let datas = { ...date };
+  // console.log(isoDateTime)
+  let datas = { ...date, ...{ dateTime: momentObject } };
   const slots = await AgriEventSlot.create(datas);
   return slots;
 };

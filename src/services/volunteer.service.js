@@ -214,13 +214,13 @@ const CandidateIntrestUpdate = async (req) => {
   }
   let values = await Volunteer.findById(volunteerId);
   if (values.Role == 'HR Volunteer') {
-    if (cand.interest_HR <= 5) {
+    if (cand.interest_HR >= 5) {
       throw new ApiError(httpStatus.BAD_REQUEST, "Slot Booking Full");
     }
     cand.interest_HR = cand.interest_HR + 1;
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId } }, { new: true });
   } else {
-    if (cand.interest_TECH <= 5) {
+    if (cand.interest_TECH >= 5) {
       throw new ApiError(httpStatus.BAD_REQUEST, "Slot Booking Full");
     }
     cand.interest_TECH = cand.interest_TECH + 1;
