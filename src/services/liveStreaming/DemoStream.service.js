@@ -172,6 +172,16 @@ const end_stream = async (req) => {
   token.streamStatus = "Completed";
   token.save();
   req.io.emit(token._id + '_stream_end', { value: true });
+
+
+  let cand = await AgriCandidate.findById(token.candId);
+  const slots = await SlotBooking.find({ candId: cand._id, streamStatus: "Completed" }).count();
+
+  if (slots == 2) {
+    cand.status = "Completed";
+    cand.save();
+  }
+
   return token;
 };
 
@@ -637,6 +647,9 @@ const buyer_join_stream = async (req) => {
 
   const stream = await SlotBooking.findById(streamId);
 
+  stream.linkstatus == 'Verified';
+
+  stream.save();
   let demotoken = await DemostreamToken.findOne({ userID: user._id, streamID: stream._id });
   if (!demotoken) {
     demotoken = await DemostreamToken.create({
