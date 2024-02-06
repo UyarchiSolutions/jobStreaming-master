@@ -603,7 +603,17 @@ const Undo = async (req) => {
   if (!getIntrested) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Data');
   }
-  getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: id }, { status: 'Intrested' }, { new: true });
+  getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: id }, { status: 'Pending', hrStatus: "Pending" }, { new: true });
+  let cand = await AgriCandidate.findById(getIntrested.candId);
+  if (!cand) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate not found');
+  }
+  if (getIntrested.Role == 'Tech Volunteer') {
+    cand = await AgriCandidate.findByIdAndUpdate({ _id: getIntrested.candId }, { approved_TECH: cand.approved_TECH - 1 }, { new: true });
+  }
+  else {
+    cand = await AgriCandidate.findByIdAndUpdate({ _id: getIntrested.candId }, { approved_HR: cand.approved_HR - 1 }, { new: true });
+  }
   return getIntrested;
 };
 
