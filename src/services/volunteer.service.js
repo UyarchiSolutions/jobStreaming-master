@@ -226,9 +226,11 @@ const CandidateIntrestUpdate = async (req) => {
     cand.interest_TECH = cand.interest_TECH + 1;
     cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { techIntrest: volunteerId } }, { new: true });
   }
-  if (cand.interest_TECH <= 2 && cand.interest_HR <= 2) {
+  if (cand.interest_TECH >= 2 && cand.interest_HR >= 2) {
     cand.status = 'Waiting For Approval';
   }
+
+  console.log(cand)
   cand.save();
 
   await IntrestedCandidate.create({
