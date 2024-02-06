@@ -569,7 +569,7 @@ const AdminApprove = async (req) => {
     }
 
     cand.approved_HR = cand.approved_HR + 1;
-    cand.save();
+    // cand.save();
     getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { hrStatus: 'Approved' }, { new: true });
     getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
   } else {
@@ -584,14 +584,16 @@ const AdminApprove = async (req) => {
       throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
     }
     cand.approved_TECH = cand.approved_HR + 1;
-    cand.save();
     getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { status: 'Approved' }, { new: true });
     getSlots = await SlotBooking.findByIdAndUpdate({ _id: slotId }, { volunteerId: volunteerId }, { new: true });
   }
 
   if (cand.approved_HR == 2 && cand.approved_TECH == 2) {
-
+    cand.status = 'Clear';
+    
   }
+
+  cand.save();
 
   return getIntrested;
 };
@@ -610,10 +612,18 @@ const Undo = async (req) => {
   }
   if (getIntrested.Role == 'Tech Volunteer') {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: getIntrested.candId }, { approved_TECH: cand.approved_TECH - 1 }, { new: true });
+    if (cand.approved_HR == 2 && cand.approved_TECH == 2) {
+      cand.status = 'Clear';
+    }
   }
   else {
     cand = await AgriCandidate.findByIdAndUpdate({ _id: getIntrested.candId }, { approved_HR: cand.approved_HR - 1 }, { new: true });
+    if (cand.approved_HR == 2 && cand.approved_TECH == 2) {
+      cand.status = 'Clear';
+    }
   }
+
+
   return getIntrested;
 };
 
