@@ -266,6 +266,8 @@ const ExcelDatas = async (req) => {
 };
 
 const getAgriCandidates = async (req) => {
+
+
   const AgriCandidates = await AgriCandidate.aggregate([
     {
       $match: { active: true },
@@ -331,10 +333,10 @@ const getAgriCandidates = async (req) => {
         techId: { $ifNull: ['$TechID._id', null] },
         hrId: { $ifNull: ['$HRID._id', null] },
         hrClear: 1,
-        interest_HR:1,
-        interest_TECH:1,
-        approved_HR:1,
-        approved_TECH:1
+        interest_HR: 1,
+        interest_TECH: 1,
+        approved_HR: 1,
+        approved_TECH: 1
       },
     },
   ]);
@@ -649,11 +651,13 @@ const clearCandidates = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate Not Found');
   }
-  if (role == 'HR') {
-    values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { hrClear: true }, { new: true });
-  } else {
-    values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { clear: true }, { new: true });
-  }
+  // if (role == 'HR') {
+  //   values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { hrClear: true }, { new: true });
+  // } else {
+  //   values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { clear: true }, { new: true });
+  // }
+  values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { clear: true, hrClear: true, status: "Cleared" }, { new: true });
+
   return values;
 };
 
