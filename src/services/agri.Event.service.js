@@ -632,6 +632,7 @@ const Undo = async (req) => {
       cand.status = 'Waiting For Approval';
     }
   }
+  cand.save();
 
 
   return getIntrested;
