@@ -647,7 +647,7 @@ const buyer_join_stream = async (req) => {
 
   const stream = await SlotBooking.findById(streamId);
 
-  stream.linkstatus == 'Verified';
+  stream.linkstatus = 'Verified';
 
   stream.save();
   let demotoken = await DemostreamToken.findOne({ userID: user._id, streamID: stream._id });
