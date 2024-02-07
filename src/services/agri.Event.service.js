@@ -273,7 +273,7 @@ const getAgriCandidates = async (req) => {
   if (req.query.status != 'all') {
     statusMatch = { status: { $eq: req.query.status } }
   }
-  if (req.query.search != null || req.query.search != '') {
+  if (req.query.search != null && req.query.search != '' && req.query.search != 'null') {
     search = { $or: [{ name: { $regex: req.query.search, $options: "i" } }, { mobile: { $regex: req.query.search, $options: "i" } }] }
 
   }
