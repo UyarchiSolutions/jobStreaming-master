@@ -272,6 +272,10 @@ const getAgriCandidates = async (req) => {
   if (req.query.status != 'all') {
     statusMatch = { status: { $eq: req.query.status } }
   }
+  if (req.query.status == null || req.query.status == '') {
+    statusMatch = { active: true }
+
+  }
 
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
 
