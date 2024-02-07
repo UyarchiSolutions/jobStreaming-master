@@ -268,14 +268,21 @@ const ExcelDatas = async (req) => {
 const getAgriCandidates = async (req) => {
 
   let statusMatch = { active: true }
+  let search = { active: true }
 
   if (req.query.status != 'all') {
     statusMatch = { status: { $eq: req.query.status } }
   }
+  if (req.query.search == null || req.query.search == '') {
+    search = { $or: [{ name: { $regex: req.query.search, $options: "i" } }, { mobile: { $regex: req.query.search, $options: "i" } }] }
+
+  }
+
   if (req.query.status == null || req.query.status == '') {
     statusMatch = { active: true }
 
   }
+
 
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
 
@@ -283,7 +290,7 @@ const getAgriCandidates = async (req) => {
 
   const AgriCandidates = await AgriCandidate.aggregate([
     {
-      $match: { $and: [{ active: { $eq: true } }, statusMatch] },
+      $match: { $and: [{ active: { $eq: true } }, statusMatch, search] },
     },
     {
       $lookup: {
@@ -367,7 +374,7 @@ const getAgriCandidates = async (req) => {
 
   const next = await AgriCandidate.aggregate([
     {
-      $match: { $and: [{ active: { $eq: true } }, statusMatch] },
+      $match: { $and: [{ active: { $eq: true } }, statusMatch, search] },
     },
     {
       $skip: 20 * (parseInt(page) + 1),
