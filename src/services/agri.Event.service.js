@@ -364,10 +364,10 @@ const getAgriCandidates = async (req) => {
       },
     },
     {
-      $skip: 1 * parseInt(page),
+      $skip: 20 * parseInt(page),
     },
     {
-      $limit: 1,
+      $limit: 20,
     },
   ]);
 
@@ -377,10 +377,10 @@ const getAgriCandidates = async (req) => {
       $match: { $and: [{ active: { $eq: true } }, statusMatch, search] },
     },
     {
-      $skip: 1 * (parseInt(page) + 1),
+      $skip: 20 * (parseInt(page) + 1),
     },
     {
-      $limit: 1,
+      $limit: 20,
     },
   ]);
 
