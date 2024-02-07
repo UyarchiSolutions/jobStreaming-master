@@ -267,10 +267,19 @@ const ExcelDatas = async (req) => {
 
 const getAgriCandidates = async (req) => {
 
+  let statusMatch = { active: true }
+
+  if (req.query.status != 'all') {
+    statusMatch = { status: { $eq: req.query.status } }
+  }
+
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
+
+
 
   const AgriCandidates = await AgriCandidate.aggregate([
     {
-      $match: { active: true },
+      $match: { $and: [{ active: { $eq: true } }, statusMatch] },
     },
     {
       $lookup: {
@@ -343,8 +352,29 @@ const getAgriCandidates = async (req) => {
         TECH_endTime: { $ifNull: ['$TechID.endTime', null] },
       },
     },
+    {
+      $skip: 20 * parseInt(page),
+    },
+    {
+      $limit: 20,
+    },
   ]);
-  return AgriCandidates;
+
+
+  const next = await AgriCandidate.aggregate([
+    {
+      $match: { $and: [{ active: { $eq: true } }, statusMatch] },
+    },
+    {
+      $skip: 20 * (parseInt(page) + 1),
+    },
+    {
+      $limit: 20,
+    },
+  ]);
+
+  return { value: AgriCandidates, next: next.length != 0 };
+
 };
 
 const getIntrestedByCand_Role = async (req) => {
