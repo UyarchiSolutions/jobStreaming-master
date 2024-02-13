@@ -519,7 +519,7 @@ const getCandidateById = async (req) => {
         as: 'Tech',
       },
     },
-    { $unwind: "Tech" },
+    { $unwind: "$Tech" },
     {
       $addFields: { techDate: '$Tech.DateTime' },
     },
@@ -532,11 +532,11 @@ const getCandidateById = async (req) => {
         as: 'HR',
       },
     },
-    { $unwind: "HR" },
+    { $unwind: "$HR" },
     {
       $addFields: { hrDate: '$HR.DateTime' },
     },
-    
+
   ])
 
   return values[0];
