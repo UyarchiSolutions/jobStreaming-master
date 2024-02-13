@@ -106,15 +106,21 @@ const getUserById = async (req) => {
 };
 
 const createCandidateReview = async (req) => {
-  const { Role, candId, rating, values, volunteerId, lang } = req.body;
+  const { Role, candId, values, volunteerId, lang } = req.body;
   let creations;
   if (Role == 'Tech Volunteer') {
-
     let datas = {
       Role: Role,
       candId: candId,
       volunteerId: volunteerId,
-      rating: rating,
+      coding: values.coding ? values.coding : '',
+      comments: values.comments ? values.comments : '',
+      communication: values.communication ? values.communication : '',
+      individualCode: values.individualCode ? values.individualCode : '',
+      logic: values.logic ? values.logic : '',
+      projectUnderStanding: values.projectUnderStanding ? values.projectUnderStanding : '',
+      rating: values.ratings ? values.ratings : '',
+      underStating: values.underStating ? values.underStating : '',
     };
     creations = await agriCandReview.create(datas);
   } else {
@@ -123,7 +129,7 @@ const createCandidateReview = async (req) => {
       Role: Role,
       candId: candId,
       volunteerId: volunteerId,
-      rating: rating,
+      rating: values.ratings ? values.ratings : '',
       lang: lang,
       expCTC: values.expCTC ? values.expCTC : '',
       curCTC: values.curCTC ? values.curCTC : '',

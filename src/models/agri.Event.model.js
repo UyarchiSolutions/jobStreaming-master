@@ -178,22 +178,22 @@ const agriCandReviewSchema = new mongoose.Schema(
       type: String,
     },
     underStating: {
-      type: Number,
+      type: String,
     },
     logic: {
-      type: Number,
+      type: String,
     },
     coding: {
-      type: Number,
+      type: String,
     },
     projectUnderStanding: {
-      type: Number,
+      type: String,
     },
     communication: {
-      type: Number,
+      type: String,
     },
     individualCode: {
-      type: Number,
+      type: String,
     },
     comments: {
       type: String,
