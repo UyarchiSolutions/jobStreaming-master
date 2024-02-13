@@ -537,8 +537,8 @@ const getCandidateById = async (req) => {
       $addFields: { hrDate: '$HR.DateTime' },
     },
 
-    { $unset: "$HR" },
-    { $unset: "$Tech" },
+    { $unset: "HR" },
+    { $unset: "Tech" },
 
   ])
 
