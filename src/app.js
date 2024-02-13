@@ -12,6 +12,7 @@ const { jwtStrategy } = require('./config/passport');
 const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const routes_v2 = require('./routes/v1/liveStreaming');
+const routes_v3 = require('./routes/v3/index');
 const logger = require('./config/logger');
 const cookieparser = require('cookie-parser');
 
@@ -107,6 +108,7 @@ if (config.env === 'production') {
 // v1 api routes
 app.use('/v1', routes);
 app.use('/v2', routes_v2);
+app.use('/v3', routes_v3);
 app.get('/', (req, res) => {
   res.sendStatus(200);
 });

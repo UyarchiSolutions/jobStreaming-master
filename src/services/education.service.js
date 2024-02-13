@@ -179,6 +179,31 @@ const getAllSpecByCourse = async (id) => {
   return values;
 };
 
+const get_all_department = async (req) => {
+  let values = await Department.find();
+  return values;
+};
+
+const get_all_role_category = async (req) => {
+
+  let values = await Rolecategory.aggregate([
+    {
+      $lookup: {
+        from: 'departments',
+        localField: 'DepartmentId',
+        foreignField: '_id',
+        pipeline: [
+          { $match: { Department: { $in: req.body.dept } } }
+        ],
+        as: 'departments',
+      },
+    },
+    { $unwind: '$departments' }
+  ])
+  return values;
+};
+
+
 module.exports = {
   createQualification,
   get_sslc_course,
@@ -205,4 +230,6 @@ module.exports = {
   get_Industries_all_search,
   getAllCoursesByQualificationId,
   getAllSpecByCourse,
+  get_all_department,
+  get_all_role_category
 };

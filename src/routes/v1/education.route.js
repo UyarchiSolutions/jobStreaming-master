@@ -30,4 +30,10 @@ router.route('/get_Industries_all/:limit').get(educationController.get_Industrie
 router.route('/get_Industries_all_search/:key').get(educationController.get_Industries_all_search);
 router.route('/Courses/:id').get(educationController.getAllCoursesByQualificationId);
 router.route('/specializations/:id').get(educationController.getAllSpecByCourse);
+
+
+router.route('/get/department').get(educationController.get_all_department);
+router.route('/get/role/category').post(educationController.get_all_role_category);
+
+
 module.exports = router;

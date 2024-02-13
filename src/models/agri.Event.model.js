@@ -159,7 +159,7 @@ const agriCandReviewSchema = new mongoose.Schema(
       type: String,
     },
     rating: {
-      type: Array,
+      type: Number,
     },
     active: {
       type: Boolean,

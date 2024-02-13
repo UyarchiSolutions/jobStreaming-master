@@ -109,67 +109,31 @@ const createCandidateReview = async (req) => {
   const { Role, candId, rating, values, volunteerId, lang } = req.body;
   let creations;
   if (Role == 'Tech Volunteer') {
-    let skillAvg = 0;
-    let attAvg = 0;
-    if (rating && rating.length > 0) {
-      let total = 0;
-      rating.forEach((e) => {
-        total += e.rating ? parseInt(e.rating) : 0;
-      });
-      skillAvg = total / rating.length;
-    }
-    let attTotal = 0;
-    attTotal += values.coding ? parseInt(values.coding) : 0;
-    attTotal += values.communication ? parseInt(values.communication) : 0;
-    attTotal += values.individualCode ? parseInt(values.individualCode) : 0;
-    attTotal += values.logic ? parseInt(values.logic) : 0;
-    attTotal += values.projectUnderStanding ? parseInt(values.projectUnderStanding) : 0;
-    attTotal += values.underStating ? parseInt(values.underStating) : 0;
-    attAvg = attTotal / 6;
+
     let datas = {
-      skillAVG: skillAvg,
-      attrAVG: attAvg,
-      coding: values.coding ? values.coding : 0,
-      communication: values.communication ? values.communication : 0,
-      logic: values.logic ? values.logic : 0,
-      projectUnderStanding: values.projectUnderStanding ? values.projectUnderStanding : 0,
-      underStating: values.underStating ? values.underStating : 0,
       Role: Role,
       candId: candId,
       volunteerId: volunteerId,
-      rating: rating ? rating : [],
+      rating: rating,
     };
     creations = await agriCandReview.create(datas);
   } else {
-    let langAVG = 0;
-    let attrAVG = 0;
-    if (lang && lang.length > 0) {
-      let total = 0;
-      let attTotal = 0;
 
-      lang.forEach((e) => {
-        total += e.rating ? parseInt(e.rating) : 0;
-      });
-      langAVG = total / lang.length;
-      attTotal += values.attitude ? parseInt(values.attitude) : 0;
-      attTotal += values.performance ? parseInt(values.performance) : 0;
-      attrAVG = attTotal / 2;
-      let data = {
-        langAVG: langAVG,
-        attrAVG: attrAVG,
-        Role: Role,
-        candId: candId,
-        volunteerId: volunteerId,
-        lang: lang,
-        expCTC: values.expCTC ? values.expCTC : '',
-        curCTC: values.curCTC ? values.curCTC : '',
-        noticePeriod: values.noticePeriod ? values.noticePeriod : '',
-        performance: values.performance ? values.performance : '',
-        attitude: values.attitude ? values.attitude : '',
-        desc: values.desc ? values.desc : '',
-      };
-      creations = await agriCandReview.create(data);
-    }
+    let data = {
+      Role: Role,
+      candId: candId,
+      volunteerId: volunteerId,
+      rating: rating,
+      lang: lang,
+      expCTC: values.expCTC ? values.expCTC : '',
+      curCTC: values.curCTC ? values.curCTC : '',
+      noticePeriod: values.noticePeriod ? values.noticePeriod : '',
+      performance: values.performance ? values.performance : '',
+      attitude: values.attitude ? values.attitude : '',
+      desc: values.desc ? values.desc : '',
+    };
+    creations = await agriCandReview.create(data);
+
   }
 
   return creations;
