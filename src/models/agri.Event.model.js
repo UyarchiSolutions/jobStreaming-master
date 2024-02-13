@@ -211,6 +211,10 @@ const agriCandReviewSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    skillsrated: {
+      type: Array,
+      default: [],
+    },
     curCTC: {
       type: String,
     },

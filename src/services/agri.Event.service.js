@@ -121,6 +121,7 @@ const createCandidateReview = async (req) => {
       projectUnderStanding: values.projectUnderStanding ? values.projectUnderStanding : '',
       rating: values.ratings ? values.ratings : '',
       underStating: values.underStating ? values.underStating : '',
+      skillsrated: values.skillsrated ? values.skillsrated : [],
     };
     creations = await agriCandReview.create(datas);
   } else {
