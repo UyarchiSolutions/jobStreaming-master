@@ -2551,9 +2551,9 @@ const existing_saved_folder = async (req) => {
   return new Promise(async (resolve, reject) => {
     let saved = [];
     for (let i=0; i < candidate.length; i++) {
-      let save = await Savedcandidate.findOne({ folderId: folders._id, candidateId: a, userId: userId });
+      let save = await Savedcandidate.findOne({ folderId: folders._id, candidateId: candidate[i], userId: userId });
       if (!save) {
-        save = await Savedcandidate.create({ folderId: folders._id, candidateId: a, userId: userId });
+        save = await Savedcandidate.create({ folderId: folders._id, candidateId: candidate[i], userId: userId });
       }
       saved.push(save);
     }

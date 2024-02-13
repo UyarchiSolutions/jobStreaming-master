@@ -508,7 +508,38 @@ const getCandidateById = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate not found');
   }
-  return values;
+  values = await AgriCandidate.aggregate([
+    { $match: { $and: [{ _id: id }] } },
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $match: { Type: 'Tech' } }],
+        as: 'Tech',
+      },
+    },
+    { $unwind: "Tech" },
+    {
+      $addFields: { techDate: '$Tech.DateTime' },
+    },
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $match: { Type: 'HR' } }],
+        as: 'HR',
+      },
+    },
+    { $unwind: "HR" },
+    {
+      $addFields: { hrDate: '$HR.DateTime' },
+    },
+    
+  ])
+
+  return values[0];
 };
 
 const getCandBy = async (req) => {
