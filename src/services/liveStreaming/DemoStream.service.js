@@ -170,12 +170,13 @@ const end_stream = async (req) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Slot not found');
   }
   token.streamStatus = "Completed";
+  token.rating = "Rating Incomplete";
   token.save();
   req.io.emit(token._id + '_stream_end', { value: true });
 
 
   let cand = await AgriCandidate.findById(token.candId);
-  const slots = await SlotBooking.find({ candId: cand._id, streamStatus: "Completed", rating: "Rating Incomplete" }).count();
+  const slots = await SlotBooking.find({ candId: cand._id, streamStatus: "Completed", }).count();
 
   if (slots == 2) {
     cand.status = "Completed";
