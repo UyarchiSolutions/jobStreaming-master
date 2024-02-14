@@ -862,17 +862,57 @@ const getStreamDetailsByCand = async (req) => {
         path: '$volunteer',
       },
     },
+
+    {
+      $lookup: {
+        from: 'agricandreviews',
+        localField: 'candId',
+        foreignField: 'candId',
+        pipeline: [
+          { $match: { Role: { $eq: "Tech Volunteer" } } },
+          { $group: { _id: null, count: { $sum: 1 } } }
+        ],
+        as: 'agricandreviews_tech',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$agricandreviews_tech',
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'agricandreviews',
+        localField: 'candId',
+        foreignField: 'candId',
+        pipeline: [
+          { $match: { Role: { $eq: "HR Volunteer" } } },
+          { $group: { _id: null, count: { $sum: 1 } } }
+        ],
+        as: 'agricandreviews_hr',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$agricandreviews_hr',
+      },
+    },
     {
       $project: {
         _id: 1,
         start: "$DateTime",
         endTime: 1,
         Type: 1,
-        rating:1,
+        rating: 1,
         streamStatus: 1,
         videoURL: "$StreamRecord.videoLink_mp4",
         Name: "$volunteer.name",
-        linkstatus: 1
+        linkstatus: 1,
+        Hr_Count: "$agricandreviews_hr.count",
+        Tech_Count: "$agricandreviews_tech.count"
       }
     }
   ]);
