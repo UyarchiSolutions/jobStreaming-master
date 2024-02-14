@@ -41,5 +41,8 @@ router.route('/create/savefolder').post(authorization, employerCandidateSearch.c
 router.route('/existing/savefolder').post(authorization, employerCandidateSearch.existing_saved_folder);
 router.route('/get/folders').get(authorization, employerCandidateSearch.get_my_folder);
 
+router.route('/get/my/saved/folders').get(authorization, employerCandidateSearch.get_my_saved_folder);
+
+
 
 module.exports = router;

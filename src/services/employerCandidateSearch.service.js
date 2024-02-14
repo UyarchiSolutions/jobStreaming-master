@@ -2530,7 +2530,7 @@ const create_saved_folder = async (req) => {
     console.log(candidate)
     let saved = [];
     for (let i = 0; i < candidate.length; i++) {
-      let save = await Savedcandidate.create({ folderId: folder._id, candidateId: candidate[i] });
+      let save = await Savedcandidate.create({ folderId: folder._id, candidateId: candidate[i], userId: userId });
       saved.push(save);
     }
     resolve({ saved });
@@ -2550,7 +2550,7 @@ const existing_saved_folder = async (req) => {
   }
   return new Promise(async (resolve, reject) => {
     let saved = [];
-    for (let i=0; i < candidate.length; i++) {
+    for (let i = 0; i < candidate.length; i++) {
       let save = await Savedcandidate.findOne({ folderId: folders._id, candidateId: candidate[i], userId: userId });
       if (!save) {
         save = await Savedcandidate.create({ folderId: folders._id, candidateId: candidate[i], userId: userId });
@@ -2567,6 +2567,50 @@ const get_my_folder = async (req) => {
   return folders;
 }
 
+
+const get_my_saved_folder = async (req) => {
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
+  let range = req.query.range == '' || req.query.range == null || req.query.range == null ? 10 : parseInt(req.query.range);
+
+  let folders = await Folder.aggregate([
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: 'saved-candidates',
+        localField: '_id',
+        foreignField: 'folderId',
+        pipeline: [
+          { $group: { _id: null, count: { $sum: 1 } } }
+        ],
+        as: 'saved-candidates',
+      },
+    },
+    {
+      $unwind: {
+        path: '$saved-candidates',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $addFields: {
+        candidateCount: { $ifNull: ['$saved-candidates.count', 0] },
+      },
+    },
+    { $unset: "saved-candidates" },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
+  ])
+  let next = await Folder.aggregate([
+    { $sort: { created: 1 } },
+    {
+      $skip: range * (parseInt(page) + 1),
+    },
+    {
+      $limit: range,
+    },
+  ])
+  return { folders, next: next.length != 0 };
+}
 
 module.exports = {
   // createCandidateSearch,
@@ -2599,5 +2643,6 @@ module.exports = {
   // recent_saver_search_delete,
   create_saved_folder,
   existing_saved_folder,
-  get_my_folder
+  get_my_folder,
+  get_my_saved_folder
 };

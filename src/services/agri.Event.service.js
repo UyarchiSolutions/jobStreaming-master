@@ -825,7 +825,7 @@ const getStreamDetailsByCand = async (req) => {
     },
     {
       $unwind: {
-        preserveNullAndEmptyArrays: false,
+        preserveNullAndEmptyArrays: true,
         path: '$StreamRecord',
       },
     },
@@ -851,7 +851,8 @@ const getStreamDetailsByCand = async (req) => {
         Type: 1,
         streamStatus: 1,
         videoURL: "$StreamRecord.videoLink_mp4",
-        Name: "$volunteer.name"
+        Name: "$volunteer.name",
+        linkstatus:1
       }
     }
   ]);

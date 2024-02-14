@@ -329,6 +329,10 @@ const SlotBookingSchema = mongoose.Schema(
       type: String,
       default: 'Pending',
     },
+    rating: {
+      type: String,
+      default: 'Pending',
+    },
     endTime: {
       type: Number,
     },
@@ -345,6 +349,7 @@ const SlotBookingSchema = mongoose.Schema(
     mainhost: {
       type: String,
     },
+
   },
   { timestamps: true }
 );
