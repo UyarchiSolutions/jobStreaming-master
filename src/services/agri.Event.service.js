@@ -904,7 +904,7 @@ const getStreamDetailsByCand = async (req) => {
       $addFields: {
         retingCount: {
           $cond: {
-            if: { $gt: ["$Type", 'HR'] },
+            if: { $eq: ["$Type", 'HR'] },
             then: { $ifNull: ['$agricandreviews_hr.count', 0] },
             else: { $ifNull: ['$agricandreviews_tech.count', 0] },
           },
