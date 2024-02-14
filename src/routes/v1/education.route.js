@@ -36,4 +36,8 @@ router.route('/get/department').get(educationController.get_all_department);
 router.route('/get/role/category').post(educationController.get_all_role_category);
 
 
+
+router.route('/import/course').get(educationController.import_course);
+
+
 module.exports = router;

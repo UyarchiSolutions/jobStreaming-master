@@ -137,6 +137,12 @@ const get_all_role_category = catchAsync(async (req, res) => {
   res.send(user);
 });
 
+const import_course= catchAsync(async (req, res) => {
+  const user = await educationService.import_course(req);
+  res.send(user);
+});
+
+
 
 
 
@@ -167,5 +173,6 @@ module.exports = {
   getAllCoursesByQualificationId,
   getAllSpecByCourse,
   get_all_department,
-  get_all_role_category
+  get_all_role_category,
+  import_course
 };

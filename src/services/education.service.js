@@ -203,6 +203,33 @@ const get_all_role_category = async (req) => {
   return values;
 };
 
+const import_course = async (req) => {
+
+  let data = await Qualification.aggregate([
+    {
+      $lookup: {
+        from: 'allcourses',
+        localField: '_id',
+        foreignField: 'QualificationId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'allspecializations',
+              localField: '_id',
+              foreignField: 'courseId',
+              as: 'allspecializations',
+            },
+          },
+        ],
+        as: 'allCourses',
+      },
+    },
+  ])
+
+  return data;
+
+}
+
 
 module.exports = {
   createQualification,
@@ -231,5 +258,6 @@ module.exports = {
   getAllCoursesByQualificationId,
   getAllSpecByCourse,
   get_all_department,
-  get_all_role_category
+  get_all_role_category,
+  import_course
 };
