@@ -156,6 +156,12 @@ const createCandidateReview = async (req) => {
       slot.save();
     }
   }
+  rating = await agriCandReview.find({ candId: candId, }).count();
+  if (rating == 4) {
+    let findCand = await AgriCandidate.findById(candId);
+    findCand.status = 'Rating Complete';
+    findCand.save();
+  }
   return creations;
 };
 
