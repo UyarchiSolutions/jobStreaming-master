@@ -181,7 +181,6 @@ const end_stream = async (req) => {
     cand.status = "Completed";
     cand.save();
   }
-
   return token;
 };
 

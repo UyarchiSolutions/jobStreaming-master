@@ -140,9 +140,22 @@ const createCandidateReview = async (req) => {
       desc: values.desc ? values.desc : '',
     };
     creations = await agriCandReview.create(data);
-
   }
-
+  rating = await agriCandReview.find({ Role: Role, candId: candId, }).count();
+  if (Role == 'Tech Volunteer') {
+    let slot = await SlotBooking.findOne({ Type: 'Tech', candId: candId });
+    if (slot && rating == 2) {
+      slot.rating = 'Rated';
+      slot.save();
+    }
+  }
+  else {
+    let slot = await SlotBooking.findOne({ Type: 'HR', candId: candId });
+    if (slot && rating == 2) {
+      slot.rating = 'Rated';
+      slot.save();
+    }
+  }
   return creations;
 };
 
@@ -852,7 +865,7 @@ const getStreamDetailsByCand = async (req) => {
         streamStatus: 1,
         videoURL: "$StreamRecord.videoLink_mp4",
         Name: "$volunteer.name",
-        linkstatus:1
+        linkstatus: 1
       }
     }
   ]);
