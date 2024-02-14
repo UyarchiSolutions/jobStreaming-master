@@ -868,6 +868,7 @@ const getStreamDetailsByCand = async (req) => {
         start: "$DateTime",
         endTime: 1,
         Type: 1,
+        rating:1,
         streamStatus: 1,
         videoURL: "$StreamRecord.videoLink_mp4",
         Name: "$volunteer.name",
