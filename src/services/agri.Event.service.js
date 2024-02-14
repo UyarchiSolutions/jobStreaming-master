@@ -901,6 +901,18 @@ const getStreamDetailsByCand = async (req) => {
       },
     },
     {
+      $addFields: {
+        retingCount: {
+          $cond: {
+            if: { $gt: ["$Type", 'HR'] },
+            then: { $ifNull: ['$agricandreviews_hr.count', 0] },
+            else: { $ifNull: ['$agricandreviews_tech.count', 0] },
+          },
+        }
+      },
+    },
+
+    {
       $project: {
         _id: 1,
         start: "$DateTime",
@@ -911,8 +923,7 @@ const getStreamDetailsByCand = async (req) => {
         videoURL: "$StreamRecord.videoLink_mp4",
         Name: "$volunteer.name",
         linkstatus: 1,
-        Hr_Count: "$agricandreviews_hr.count",
-        Tech_Count: "$agricandreviews_tech.count"
+        retingCount: 1
       }
     }
   ]);
