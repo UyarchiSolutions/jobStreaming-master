@@ -175,7 +175,7 @@ const end_stream = async (req) => {
 
 
   let cand = await AgriCandidate.findById(token.candId);
-  const slots = await SlotBooking.find({ candId: cand._id, streamStatus: "Completed", rating: "Ratting Pending" }).count();
+  const slots = await SlotBooking.find({ candId: cand._id, streamStatus: "Completed", rating: "Rating Incomplete" }).count();
 
   if (slots == 2) {
     cand.status = "Completed";
