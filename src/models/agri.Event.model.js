@@ -287,6 +287,10 @@ const IntrestCandidateSchema = new mongoose.Schema(
     rating: {
       type: String,
       default: 'Pending',
+    },
+    streamStatus: {
+      type: String,
+      default: 'Pending',
     }
   },
   { timestamps: true }
