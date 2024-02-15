@@ -284,6 +284,10 @@ const IntrestCandidateSchema = new mongoose.Schema(
       type: String,
       default: 'Pending',
     },
+    rating: {
+      type: String,
+      default: 'Pending',
+    }
   },
   { timestamps: true }
 );

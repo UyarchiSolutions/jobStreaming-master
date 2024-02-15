@@ -162,6 +162,12 @@ const createCandidateReview = async (req) => {
     findCand.status = 'Rating Complete';
     findCand.save();
   }
+
+  let find_intest = await IntrestedCandidate.findOne({ candId: candId, volunteerId: volunteerId, });
+  if (find_intest) {
+    find_intest.rating = 'Rated';
+    find_intest.save();
+  }
   return creations;
 };
 
