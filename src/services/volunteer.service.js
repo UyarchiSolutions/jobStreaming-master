@@ -371,7 +371,10 @@ const getCandidatesForInterview = async (req) => {
       $match: ClearMatch,
     },
   ]);
-  return candidates;
+
+  pending = await IntrestedCandidate.find({ streamStatus: "Joined", rating: { $ne: "Rating Pending" } });
+
+  return { candidates, pending: pending.length != 0 };
 };
 
 const updateVolunteer = async (req) => {
