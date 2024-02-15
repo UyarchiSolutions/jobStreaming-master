@@ -232,11 +232,13 @@ const seller_go_live = async (req) => {
     demotoken.save();
     req.io.emit(token._id + 'stream_on_going', token);
   }
-
-
-
   await cloude_recording_stream(token._id, token.agoraAppId, exp);
-
+  let find_intest = await IntrestedCandidate.findOne({ candId: token.candId, volunteerId: req.userId, });
+  if (find_intest) {
+    find_intest.rating = 'Rating Pending';
+    find_intest.streamStatus = 'Joined';
+    find_intest.save();
+  }
   return token;
 
 
