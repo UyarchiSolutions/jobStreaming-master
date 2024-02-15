@@ -219,7 +219,7 @@ const CandidateIntrestUpdate = async (req) => {
     }
     console.log(cand.interest_HR, cand.interest_HR + 1)
     // cand.interest_HR = cand.interest_HR + 1;
-       cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId }, interest_HR: cand.interest_HR + 1 }, { new: true });
+    cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId }, interest_HR: cand.interest_HR + 1 }, { new: true });
     console.log(cand.interest_HR, cand)
     if (cand.interest_TECH >= 2 && cand.interest_HR >= 2) {
       cand.status = 'Waiting For Approval';
@@ -361,7 +361,7 @@ const getCandidatesForInterview = async (req) => {
       $addFields: {
         DateTime: '$Cand.DateTime',
         channel: '$Cand.channel',
-        streamStatus: '$Cand.streamStatus',
+        streamStatus_can: '$Cand.streamStatus',
         streamId: '$Cand.streamId',
         hrclear: '$Cand.hrClear',
         techclear: '$Cand.clear',
