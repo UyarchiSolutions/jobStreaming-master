@@ -525,7 +525,8 @@ const getCandidateById = async (req) => {
   let id = req.params.id;
   let values = await AgriCandidate.findById(id);
   if (!values) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate not found');
+    let find = await SlotBooking.findById(id);
+    id = find.candId;
   }
   values = await AgriCandidate.aggregate([
     { $match: { $and: [{ _id: id }] } },
