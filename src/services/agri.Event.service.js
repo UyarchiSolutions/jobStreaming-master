@@ -827,7 +827,9 @@ const getCandidatesReport = async (req) => {
         createdAt: 1,
         updatedAt: 1,
         HrRatting: 1,
-        TechRatting: 1
+        TechRatting: 1,
+        tech_review_Count:1,
+        hr_review_Count:1
       }
     }
   ]);
