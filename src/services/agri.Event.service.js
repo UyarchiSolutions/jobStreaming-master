@@ -937,6 +937,59 @@ const getStreamDetailsByCand = async (req) => {
   return values;
 };
 
+
+const get_hr_review = async (req) => {
+  let candId = req.query.id;
+  let review = await IntrestedCandidate.aggregate([
+    { $match: { $and: [{ Role: { $eq: "HR Volunteer" } }, { hrStatus: { $eq: "Approved" } }, { candId: { $eq: candId } }] } },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: 'volunteerId',
+        foreignField: 'volunteerId',
+        pipeline: [{ $match: { $and: [{ Role: { $eq: 'HR Volunteer' } }, { candId: { $eq: candId } }] } }],
+        as: 'HRreview',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$HRreview"
+      }
+    },
+
+  ])
+
+  return review;
+
+}
+
+const get_tech_review = async (req) => {
+  let candId = req.query.id;
+  let review = await IntrestedCandidate.aggregate([
+    { $match: { $and: [{ Role: { $eq: "Tech Volunteer" } }, { hrStatus: { $eq: "Approved" } }, { candId: { $eq: candId } }] } },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: 'volunteerId',
+        foreignField: 'volunteerId',
+        pipeline: [{ $match: { $and: [{ Role: { $eq: 'Tech Volunteer' } }, { candId: { $eq: candId } }] } }],
+        as: 'HRreview',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$HRreview"
+      }
+    },
+
+  ])
+
+  return review;
+
+}
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -958,4 +1011,6 @@ module.exports = {
   getCandidatesReport,
   getStreamDetailsByCand,
   active_Inactive_candidate,
+  get_hr_review,
+  get_tech_review
 };

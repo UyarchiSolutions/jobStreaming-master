@@ -105,6 +105,17 @@ const active_Inactive_candidate = catchAsync(async (req, res) => {
   res.send(data)
 })
 
+
+const get_hr_review = catchAsync(async (req, res) => {
+  const data = await AgriEventService.get_hr_review(req);
+  res.send(data)
+})
+
+const get_tech_review= catchAsync(async (req, res) => {
+  const data = await AgriEventService.get_tech_review(req);
+  res.send(data)
+})
+
 module.exports = {
   createAgriEvent,
   createSlots,
@@ -125,5 +136,7 @@ module.exports = {
   ResumeUploadAgriCand,
   getCandidatesReport,
   getStreamDetailsByCand,
-  active_Inactive_candidate
+  active_Inactive_candidate,
+  get_hr_review,
+  get_tech_review
 };
