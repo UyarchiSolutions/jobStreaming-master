@@ -105,6 +105,14 @@ const AgriCandidateSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    experience_year: {
+      type: Number,
+      default: 0,
+    },
+    experience_month: {
+      type: Number,
+      default: 0,
+    }
   },
   { timestamps: true }
 );
