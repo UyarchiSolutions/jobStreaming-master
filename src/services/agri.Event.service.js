@@ -968,7 +968,7 @@ const get_hr_review = async (req) => {
     },
     { $unwind: "$volunteers" },
     {
-      $addFields: { slotIdnew: '$volunteers.name' },
+      $addFields: { name: '$volunteers.name' },
     },
     { $unset: "volunteers" }
 
@@ -1007,7 +1007,7 @@ const get_tech_review = async (req) => {
     },
     { $unwind: "$volunteers" },
     {
-      $addFields: { slotIdnew: '$volunteers.name' },
+      $addFields: { name: '$volunteers.name' },
     },
     { $unset: "volunteers" }
   ])
