@@ -72,13 +72,26 @@ const MatchCandidate = async (req) => {
   }
 
   let commingDataMatch = { active: true };
-
-  if (values.Role == 'Tech Volunteer') {
+  let match_experience = { active: true };
+  if (values.Role == 'Tech Volunteer') { // match_experience = 
+    let coreExperienceFrom = values.coreExperienceFrom;
+    let coreExperienceTo = values.coreExperienceTo;
+    let month = (coreExperienceTo * 100) / 1200;
+    totalexp = coreExperienceFrom + month;
+    match_experience = { experience: { $lt: totalexp } }
     let findCand = await AgriCandidate.aggregate([
       {
         $match: {
           $and: [keySkillSearch],
         },
+      },
+      {
+        $addFields: {
+          experience: { $add: [{ $divide: [{ $multiply: ["$experience_month", 100] }, 12] }, "$experience_year"] }
+        },
+      },
+      {
+        $match: { $and: [match_experience] },
       },
       {
         $lookup: {
@@ -130,6 +143,9 @@ const MatchCandidate = async (req) => {
           isIdInArray: '$isIdInArrayss',
           Tech: { $size: '$techIntrest' },
           HR: { $size: '$intrest' },
+          experience: 1,
+          experience_year: 1,
+          experience_month: 1
         },
       },
       {
@@ -139,6 +155,11 @@ const MatchCandidate = async (req) => {
 
     return findCand;
   } else {
+    let coreExperienceFrom = values.hrExperienceFrom;
+    let coreExperienceTo = values.hrExperienceTo;
+    let month = (coreExperienceTo * 100) / 1200;
+    totalexp = coreExperienceFrom + month;
+    match_experience = { experience: { $lt: totalexp } }
     let findCand = await AgriCandidate.aggregate([
       {
         $lookup: {
@@ -158,6 +179,14 @@ const MatchCandidate = async (req) => {
             $in: [id, '$intrest'],
           },
         },
+      },
+      {
+        $addFields: {
+          experience: { $add: [{ $divide: [{ $multiply: ["$experience_month", 100] }, 1200] }, "$experience_year"] }
+        },
+      },
+      {
+        $match: { $and: [match_experience] },
       },
       {
         $addFields: {
@@ -190,10 +219,13 @@ const MatchCandidate = async (req) => {
           isIdInArray: '$isIdInArrayss',
           Tech: { $size: '$techIntrest' },
           HR: { $size: '$intrest' },
+          experience: 1,
+          experience_year: 1,
+          experience_month: 1
         },
       },
       {
-        $match: { HR: { $lt: 5 } },
+        $match: { $and: [{ HR: { $lt: 5 } }] },
       },
     ]);
     return findCand;
