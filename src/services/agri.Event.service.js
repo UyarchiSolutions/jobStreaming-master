@@ -130,7 +130,7 @@ const createCandidateReview = async (req) => {
       Role: Role,
       candId: candId,
       volunteerId: volunteerId,
-      rating: values.ratings ? values.ratings : '',
+      rating: values.rating ? values.rating : '',
       lang: lang,
       expCTC: values.expCTC ? values.expCTC : '',
       curCTC: values.curCTC ? values.curCTC : '',
@@ -759,7 +759,7 @@ const getCandidatesReport = async (req) => {
         from: "agricandreviews",
         localField: "_id",
         foreignField: "candId",
-        pipeline: [{ $match: { Role: { $ne: "Tech Volunteer" } } }, { $group: { _id: null, hrRating: { $sum: "$attrAVG" } } }],
+        pipeline: [{ $match: { Role: { $ne: "Tech Volunteer" } } }, { $group: { _id: null, TechRating: { $sum: "$rating" }, count: { $sum: 1 } } }],
         as: "hrrating"
       }
     },
@@ -775,7 +775,7 @@ const getCandidatesReport = async (req) => {
         from: "agricandreviews",
         localField: "_id",
         foreignField: "candId",
-        pipeline: [{ $match: { Role: "Tech Volunteer" } }, { $group: { _id: null, TechRating: { $sum: "$skillAVG" }, } }],
+        pipeline: [{ $match: { Role: "Tech Volunteer" } }, { $group: { _id: null, TechRating: { $sum: "$rating" }, count: { $sum: 1 } } }],
         as: "techrating"
       }
     },
@@ -784,6 +784,12 @@ const getCandidatesReport = async (req) => {
         preserveNullAndEmptyArrays: true,
         path: "$techrating"
 
+      }
+    },
+    {
+      $addFields: {
+        TechRattings: { $divide: ["$techrating.TechRating", "$techrating.count"] },
+        hrRattings: { $divide: ["$hrrating.TechRating", "$hrrating.count"] }
       }
     },
     {
@@ -813,7 +819,10 @@ const getCandidatesReport = async (req) => {
         createdAt: 1,
         updatedAt: 1,
         hrRating: { $ifNull: ["$hrrating.hrRating", 0] },
-        techRating: { $ifNull: ["$techrating.TechRating", 0] }
+        techRating: { $ifNull: ["$techrating.TechRating", 0] },
+        techratingss: "$techrating",
+        hrRattings: 1,
+        TechRattings: 1
       }
     }
   ]);
