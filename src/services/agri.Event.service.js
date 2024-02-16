@@ -958,6 +958,20 @@ const get_hr_review = async (req) => {
       }
     },
 
+    {
+      $lookup: {
+        from: 'volunteers',
+        localField: 'volunteerId',
+        foreignField: '_id',
+        as: 'volunteers',
+      },
+    },
+    { $unwind: "$volunteers" },
+    {
+      $addFields: { slotIdnew: '$volunteers.name' },
+    },
+    { $unset: "volunteers" }
+
   ])
 
   return review;
@@ -983,7 +997,19 @@ const get_tech_review = async (req) => {
         path: "$Techreview"
       }
     },
-
+    {
+      $lookup: {
+        from: 'volunteers',
+        localField: 'volunteerId',
+        foreignField: '_id',
+        as: 'volunteers',
+      },
+    },
+    { $unwind: "$volunteers" },
+    {
+      $addFields: { slotIdnew: '$volunteers.name' },
+    },
+    { $unset: "volunteers" }
   ])
 
   return review;
