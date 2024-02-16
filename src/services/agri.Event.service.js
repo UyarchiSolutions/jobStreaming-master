@@ -788,8 +788,14 @@ const getCandidatesReport = async (req) => {
     },
     {
       $addFields: {
-        TechRattings: { $divide: ["$techrating.TechRating", "$techrating.count"] },
-        hrRattings: { $divide: ["$hrrating.TechRating", "$hrrating.count"] }
+        TechRatting: { $divide: ["$techrating.TechRating", "$techrating.count"] },
+        HrRatting: { $divide: ["$hrrating.TechRating", "$hrrating.count"] }
+      }
+    },
+    {
+      $addFields: {
+        TechRatting: { $ifNull: ["$TechRatting", 0] },
+        HrRatting: { $ifNull: ["$HrRatting", 0] }
       }
     },
     {
@@ -818,11 +824,8 @@ const getCandidatesReport = async (req) => {
         dob: 1,
         createdAt: 1,
         updatedAt: 1,
-        hrRating: { $ifNull: ["$hrrating.hrRating", 0] },
-        techRating: { $ifNull: ["$techrating.TechRating", 0] },
-        techratingss: "$techrating",
-        hrRattings: 1,
-        TechRattings: 1
+        HrRatting: 1,
+        TechRatting: 1
       }
     }
   ]);
