@@ -988,7 +988,7 @@ const get_tech_review = async (req) => {
         localField: 'volunteerId',
         foreignField: 'volunteerId',
         pipeline: [{ $match: { $and: [{ Role: { $eq: 'Tech Volunteer' } }, { candId: { $eq: candId } }] } }],
-        as: 'HRreview',
+        as: 'Techreview',
       },
     },
     {
