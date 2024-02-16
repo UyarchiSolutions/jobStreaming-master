@@ -944,7 +944,7 @@ const get_hr_review = async (req) => {
     { $match: { $and: [{ Role: { $eq: "HR Volunteer" } }, { hrStatus: { $eq: "Approved" } }, { candId: { $eq: candId } }] } },
     {
       $lookup: {
-        from: 'intrestedcandidates',
+        from: 'agricandreviews',
         localField: 'volunteerId',
         foreignField: 'volunteerId',
         pipeline: [{ $match: { $and: [{ Role: { $eq: 'HR Volunteer' } }, { candId: { $eq: candId } }] } }],
@@ -967,10 +967,10 @@ const get_hr_review = async (req) => {
 const get_tech_review = async (req) => {
   let candId = req.query.id;
   let review = await IntrestedCandidate.aggregate([
-    { $match: { $and: [{ Role: { $eq: "Tech Volunteer" } }, { hrStatus: { $eq: "Approved" } }, { candId: { $eq: candId } }] } },
+    { $match: { $and: [{ Role: { $eq: "Tech Volunteer" } }, { status: { $eq: "Approved" } }, { candId: { $eq: candId } }] } },
     {
       $lookup: {
-        from: 'intrestedcandidates',
+        from: 'agricandreviews',
         localField: 'volunteerId',
         foreignField: 'volunteerId',
         pipeline: [{ $match: { $and: [{ Role: { $eq: 'Tech Volunteer' } }, { candId: { $eq: candId } }] } }],
@@ -980,7 +980,7 @@ const get_tech_review = async (req) => {
     {
       $unwind: {
         preserveNullAndEmptyArrays: true,
-        path: "$HRreview"
+        path: "$Techreview"
       }
     },
 
