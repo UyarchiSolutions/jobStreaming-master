@@ -789,7 +789,9 @@ const getCandidatesReport = async (req) => {
     {
       $addFields: {
         TechRatting: { $divide: ["$techrating.TechRating", "$techrating.count"] },
-        HrRatting: { $divide: ["$hrrating.TechRating", "$hrrating.count"] }
+        tech_review_Count: { $ifNull: ["$techrating.count", 0] },
+        HrRatting: { $divide: ["$hrrating.TechRating", "$hrrating.count"] },
+        hr_review_Count: { $ifNull: ["$hrrating.count", 0] },
       }
     },
     {
