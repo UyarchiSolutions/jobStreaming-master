@@ -675,7 +675,12 @@ const AdminApprove = async (req) => {
 
   }
   else {
-    cand.status = 'Waiting For Approval';
+    if (cand.interest_HR < 2 || cand.interest_TECH < 2) {
+      cand.status = 'Slot Chosen';
+    }
+    else {
+      cand.status = 'Waiting For Approval';
+    }
   }
   cand.save();
   return getIntrested;
