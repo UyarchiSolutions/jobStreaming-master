@@ -118,12 +118,27 @@ const sendsuccessTestMail = async (data) => {
     date: date,
     time: slot,
   });
-  const msg = {
+  let msg = {
     from: 'noreply@warmy.co.in',
     to: mail,
     subject: 'Registration Success-Entrepreneurship Workshop-COURAGE-Acknowledgement',
     html: data1,
   };
+
+  if (data.user_type == 'IT') {
+    let data1 = await ejs.renderFile(__dirname + '/Entrepreneuship_IT.ejs', {
+      email: mail,
+      name: name,
+      date: date,
+      time: slot,
+    });
+    let msg = {
+      from: 'noreply@warmy.co.in',
+      to: mail,
+      subject: 'IT Entrepreneuship Drive-Registration-Acknowledgement',
+      html: data1,
+    };
+  }
   await transporter2.sendMail(msg);
 };
 
