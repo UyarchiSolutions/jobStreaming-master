@@ -650,7 +650,6 @@ const AdminApprove = async (req) => {
     if (findMatches >= 2) {
       throw new ApiError(httpStatus.BAD_REQUEST, ' Maximum Approval Limit exceeded ');
     }
-
     cand.approved_HR = cand.approved_HR + 1;
     // cand.save();
     getIntrested = await IntrestedCandidate.findByIdAndUpdate({ _id: intrestId }, { hrStatus: 'Approved' }, { new: true });
@@ -678,9 +677,7 @@ const AdminApprove = async (req) => {
   else {
     cand.status = 'Waiting For Approval';
   }
-
   cand.save();
-
   return getIntrested;
 };
 
@@ -702,7 +699,12 @@ const Undo = async (req) => {
       cand.status = 'Approved';
     }
     else {
-      cand.status = 'Waiting For Approval';
+      if (cand.interest_HR.length >= 2) {
+        cand.status = 'Slot Chosen';
+      }
+      else {
+        cand.status = 'Waiting For Approval';
+      }
     }
   }
   else {
@@ -711,7 +713,12 @@ const Undo = async (req) => {
       cand.status = 'Approved';
     }
     else {
-      cand.status = 'Waiting For Approval';
+      if (cand.interest_HR.length >= 2) {
+        cand.status = 'Slot Chosen';
+      }
+      else {
+        cand.status = 'Waiting For Approval';
+      }
     }
   }
   cand.save();
@@ -828,8 +835,8 @@ const getCandidatesReport = async (req) => {
         updatedAt: 1,
         HrRatting: 1,
         TechRatting: 1,
-        tech_review_Count:1,
-        hr_review_Count:1
+        tech_review_Count: 1,
+        hr_review_Count: 1
       }
     }
   ]);
