@@ -14,6 +14,12 @@ const createSlots = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getslots = catchAsync(async (req, res) => {
+  const data = await AgriEventService.getslots(req);
+  res.send(data);
+});
+
+
 const slotDetailsAgri = catchAsync(async (req, res) => {
   const data1 = await AgriEventService.slotDetailsAgriTch(req);
   const data2 = await AgriEventService.slotDetailsAgriHR(req);
@@ -128,6 +134,7 @@ module.exports = {
   slotDetailsAgri,
   updateCandidate,
   getUserById,
+  getslots,
   createCandidateReview,
   ExcelDatas,
   EmailSend,

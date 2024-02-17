@@ -8,6 +8,7 @@ const upload = multer({ storage }).single('file');
 
 router.route('/').post(AgriEventController.createAgriEvent);
 router.route('/agri/slots').post(AgriEventController.createSlots);
+router.route('/agri/slots').get(AgriEventController.getslots);
 router.route('/slots').get(AgriEventController.slotDetailsAgri);
 router.route('/update/candidate/:id').put(AgriEventController.updateCandidate);
 router.route('/getCandidate/:id').get(AgriEventController.getUserById);

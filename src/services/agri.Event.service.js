@@ -41,6 +41,27 @@ const createSlots = async (req, res) => {
   return slots;
 };
 
+const getslots = async (req, res) => {
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
+  const slots = await AgriEventSlot.aggregate([
+    {
+      $skip: 20 * parseInt(page),
+    },
+    {
+      $limit: 20,
+    },
+  ]);
+  const next = await AgriEventSlot.aggregate([
+    {
+      $skip: 20 * parseInt(page + 1),
+    },
+    {
+      $limit: 20,
+    },
+  ]);
+  return { slots, next: next.length != 0 };
+}
+
 const slotDetailsAgriHR = async () => {
   let slots = await AgriEventSlot.aggregate([
     { $match: { Type: 'HR' } },
@@ -1077,5 +1098,6 @@ module.exports = {
   active_Inactive_candidate,
   get_hr_review,
   get_tech_review,
-  link_send
+  link_send,
+  getslots
 };
