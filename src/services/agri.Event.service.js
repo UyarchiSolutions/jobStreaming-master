@@ -104,6 +104,16 @@ const getUserById = async (req) => {
   }
   return findUser;
 };
+const link_send = async (req) => {
+  let id = req.params.id;
+  let findUser = await AgriCandidate.findById(id);
+  if (!findUser) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate not found');
+  }
+  findUser.status = 'Link Shared';
+  findUser.save();
+  return findUser;
+}
 
 const createCandidateReview = async (req) => {
   const { Role, candId, values, volunteerId, lang } = req.body;
@@ -1066,5 +1076,6 @@ module.exports = {
   getStreamDetailsByCand,
   active_Inactive_candidate,
   get_hr_review,
-  get_tech_review
+  get_tech_review,
+  link_send
 };

@@ -30,6 +30,12 @@ const getUserById = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const link_send= catchAsync(async (req, res) => {
+  const data = await AgriEventService.link_send(req);
+  res.send(data);
+});
+
+
 const createCandidateReview = catchAsync(async (req, res) => {
   const data = await AgriEventService.createCandidateReview(req);
   res.send(data);
@@ -132,6 +138,7 @@ module.exports = {
   getIntrestedByCand_Role,
   AdminApprove,
   Undo,
+  link_send,
   clearCandidates,
   ResumeUploadAgriCand,
   getCandidatesReport,
