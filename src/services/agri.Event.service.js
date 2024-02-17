@@ -699,7 +699,7 @@ const Undo = async (req) => {
       cand.status = 'Approved';
     }
     else {
-      if (cand.interest_HR >= 2) {
+      if (cand.interest_HR < 2) {
         cand.status = 'Slot Chosen';
       }
       else {
@@ -713,7 +713,7 @@ const Undo = async (req) => {
       cand.status = 'Approved';
     }
     else {
-      if (cand.interest_TECH >= 2) {
+      if (cand.interest_TECH < 2) {
         cand.status = 'Slot Chosen';
       }
       else {
