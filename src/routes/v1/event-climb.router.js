@@ -12,6 +12,8 @@ const UploadFile = multer({ storage }).single('uploadResume');
 
 router.route('/').post(UploadFile, ClimbController.createEventClimb);
 router.route('/intern').post(UploadFile, ClimbController.createEventClimb_intern);
+router.route('/intern/it').post(UploadFile, ClimbController.createEventClimb_it);
+router.route('/intern/hr').post(UploadFile, ClimbController.createEventClimb_hr);
 router.route('/slot').get(ClimbController.getSlots);
 router.route('/slot').post(ClimbController.insertSlots);
 router.route('/slot/intern').post(ClimbController.insertSlots_intern);

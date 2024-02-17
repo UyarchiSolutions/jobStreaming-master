@@ -93,11 +93,93 @@ const createEventCLimb_intern = async (req) => {
         resolve(creations);
       });
     });
-  }else{
-    let creations = await EventRegisterIntern.create(body);
+  } else {
+    let creations = await EventRegisterIntern.create({ ...body, ...{ user_type: "Intern" } });
     return creations
   }
 };
+
+
+const createEventClimb_it = async (req) => {
+  let body = req.body;
+  let findByemail = await EventRegisterIntern.findOne({ mail: body.mail });
+  if (findByemail) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mail ID Already Exist');
+  }
+  let findBymobile = await EventRegisterIntern.findOne({ mobileNumber: body.mobileNumber });
+  if (findBymobile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mobile Number Already Exist');
+  }
+  if (req.file) {
+    const s3 = new AWS.S3({
+      accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+      secretAccessKey: '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',
+      region: 'ap-south-1',
+    });
+    let params = {
+      Bucket: 'jobresume',
+      Key: req.file.originalname,
+      Body: req.file.buffer,
+      ACL: 'public-read',
+      ContentType: req.file.mimetype,
+    };
+    return new Promise((resolve, reject) => {
+      s3.upload(params, async (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        let fileURL = data.Location;
+        let datas = { ...body, ...{ uploadResume: fileURL } };
+        let creations = await EventRegisterIntern.create(datas);
+        resolve(creations);
+      });
+    });
+  } else {
+    let creations = await EventRegisterIntern.create({ ...body, ...{ user_type: "IT" } });
+    return creations
+  }
+};
+
+const createEventClimb_hr = async (req) => {
+  let body = req.body;
+  let findByemail = await EventRegisterIntern.findOne({ mail: body.mail });
+  if (findByemail) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mail ID Already Exist');
+  }
+  let findBymobile = await EventRegisterIntern.findOne({ mobileNumber: body.mobileNumber });
+  if (findBymobile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, '*Entered Mobile Number Already Exist');
+  }
+  if (req.file) {
+    const s3 = new AWS.S3({
+      accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+      secretAccessKey: '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',
+      region: 'ap-south-1',
+    });
+    let params = {
+      Bucket: 'jobresume',
+      Key: req.file.originalname,
+      Body: req.file.buffer,
+      ACL: 'public-read',
+      ContentType: req.file.mimetype,
+    };
+    return new Promise((resolve, reject) => {
+      s3.upload(params, async (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        let fileURL = data.Location;
+        let datas = { ...body, ...{ uploadResume: fileURL } };
+        let creations = await EventRegisterIntern.create(datas);
+        resolve(creations);
+      });
+    });
+  } else {
+    let creations = await EventRegisterIntern.create({ ...body, ...{ user_type: "HR" } });
+    return creations
+  }
+};
+
 
 const createTestCandidates = async (req) => {
   let body = req.body;
@@ -712,4 +794,6 @@ module.exports = {
   updateTestIntern,
   getInternSlots,
   getWorkshopCandidatesBySlot,
+  createEventClimb_it,
+  createEventClimb_hr
 };

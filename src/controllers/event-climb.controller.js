@@ -18,6 +18,23 @@ const createEventClimb_intern = catchAsync(async (req, res) => {
   await emailService.sendsuccessTestMail(data);
   res.send(data);
 });
+
+const createEventClimb_it = catchAsync(async (req, res) => {
+  console.log('dfjhhjjhmjh');
+  const data = await climbeventService.createEventClimb_it(req);
+  console.log(data);
+  await emailService.sendsuccessTestMail(data);
+  res.send(data);
+});
+
+const createEventClimb_hr = catchAsync(async (req, res) => {
+  console.log('dfjhhjjhmjh');
+  const data = await climbeventService.createEventClimb_hr(req);
+  console.log(data);
+  await emailService.sendsuccessTestMail(data);
+  res.send(data);
+});
+
 const getSlots = catchAsync(async (req, res) => {
   const data = await climbeventService.slotDetails();
   res.send(data);
@@ -188,4 +205,6 @@ module.exports = {
   updateTestIntern,
   getInternSlots,
   getWorkshopCandidatesBySlot,
+  createEventClimb_it,
+  createEventClimb_hr
 };
