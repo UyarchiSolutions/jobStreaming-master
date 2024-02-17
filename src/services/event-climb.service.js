@@ -88,7 +88,7 @@ const createEventCLimb_intern = async (req) => {
           reject(err);
         }
         let fileURL = data.Location;
-        let datas = { ...body, ...{ uploadResume: fileURL } };
+        let datas = { ...body, ...{ uploadResume: fileURL, user_type: "Intern" } };
         let creations = await EventRegisterIntern.create(datas);
         resolve(creations);
       });
@@ -129,7 +129,7 @@ const createEventClimb_it = async (req) => {
           reject(err);
         }
         let fileURL = data.Location;
-        let datas = { ...body, ...{ uploadResume: fileURL } };
+        let datas = { ...body, ...{ uploadResume: fileURL, user_type: "IT" } };
         let creations = await EventRegisterIntern.create(datas);
         resolve(creations);
       });
@@ -169,7 +169,8 @@ const createEventClimb_hr = async (req) => {
           reject(err);
         }
         let fileURL = data.Location;
-        let datas = { ...body, ...{ uploadResume: fileURL } };
+        let datas = { ...body, ...{ uploadResume: fileURL, user_type: "HR" } };
+
         let creations = await EventRegisterIntern.create(datas);
         resolve(creations);
       });
