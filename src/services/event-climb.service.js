@@ -684,10 +684,11 @@ const updateStatus = async (req) => {
 };
 
 const getWorkShopCand = async (req) => {
-  const { user, gender, coursetime } = req.query;
+  const { user, gender, coursetime, user_type } = req.query;
   let userMatch = { active: true };
   let genderMatch = { active: true };
   let courseTimeMatch = { active: true };
+  let userType = { active: true };
 
   if (user && user != '' && user != null && user != 'null') {
     userMatch = { $or: [{ mail: { $regex: user, $options: 'i' } }, { mobileNumber: { $regex: user, $options: 'i' } }] };
@@ -700,9 +701,13 @@ const getWorkShopCand = async (req) => {
     courseTimeMatch = { courseTiming: { $regex: coursetime, $options: 'i' } };
   }
 
+  if (user_type != null && user_type != '' && user_type != 'null') {
+    userType = { user_type: { $eq: user_type } };
+  }
+
   let values = await EventRegisterIntern.aggregate([
     {
-      $match: { $and: [userMatch, genderMatch, courseTimeMatch] },
+      $match: { $and: [userMatch, genderMatch, courseTimeMatch, userType] },
     },
   ]);
   return values;
