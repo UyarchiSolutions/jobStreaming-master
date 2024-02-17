@@ -126,13 +126,13 @@ const sendsuccessTestMail = async (data) => {
   };
 
   if (data.user_type == 'IT') {
-    let data1 = await ejs.renderFile(__dirname + '/Entrepreneuship_IT.ejs', {
+     data1 = await ejs.renderFile(__dirname + '/Entrepreneuship_IT.ejs', {
       email: mail,
       name: name,
       date: date,
       time: slot,
     });
-    let msg = {
+     msg = {
       from: 'noreply@warmy.co.in',
       to: mail,
       subject: 'IT Entrepreneuship Drive-Registration-Acknowledgement',
