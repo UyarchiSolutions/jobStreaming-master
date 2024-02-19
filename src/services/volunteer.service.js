@@ -404,7 +404,7 @@ const getCandidatesForInterview = async (req) => {
     },
   ]);
 
-  pending = await IntrestedCandidate.find({ streamStatus: "Joined", rating: { $ne: "Rating Pending" } });
+  pending = await IntrestedCandidate.find({ streamStatus: "Joined", rating: { $eq: "Rating Pending" } });
 
   return { candidates, pending: pending.length != 0 };
 };
