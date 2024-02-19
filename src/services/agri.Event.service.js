@@ -298,9 +298,28 @@ const getAgriCandidates = async (req) => {
 
   let statusMatch = { active: true }
   let search = { active: true }
-
-  if (req.query.status != 'all') {
+  let timeout = { active: true }
+  let nowTime = new Date().getTime();
+  let end = moment(nowTime).add(1, 'days');
+  end = new Date(end).getTime();
+  if (req.query.status != 'all' && req.query.status != 'Emergency' && req.query.status != 'Timeout') {
     statusMatch = { status: { $eq: req.query.status } }
+  }
+  if (req.query.status == 'Emergency') {
+    statusMatch = {
+      status: { $in: ['Slot Chosen', 'Waiting For Approval', 'Approved', 'Cleared'] }
+
+    }
+    timeout = {
+      $or: [{ tech_time_onday: { $eq: true } }, { hr_time_onday: { $eq: true } }]
+    }
+  }
+  if (req.query.status == 'Timeout') {
+    statusMatch = { status: { $in: ['Slot Chosen', 'Waiting For Approval', 'Approved', 'Cleared'] } }
+
+    timeout = {
+      $or: [{ tech_time_timeout: { $eq: true } }, { hr_time_timeout: { $eq: true } }]
+    }
   }
   if (req.query.search != null && req.query.search != '' && req.query.search != 'null') {
     search = { $or: [{ name: { $regex: req.query.search, $options: "i" } }, { mobile: { $regex: req.query.search, $options: "i" } }] }
@@ -369,7 +388,71 @@ const getAgriCandidates = async (req) => {
         path: '$HRID',
       },
     },
+
+
     {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [
+          { $match: { $and: [{ Type: { $eq: 'Tech' } }, { streamStatus: { $ne: "Completed" } }, { streamStatus: { $ne: "On-Going" } }] } },
+          {
+            $addFields: {
+              onday: { $and: [{ $lt: ["$DateTime", end] }, { $gt: ["$DateTime", nowTime] }] },
+              timeout: { $lt: ["$DateTime", nowTime] },
+            }
+          },
+          { $limit: 1 },
+        ],
+        as: 'tech_time',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$tech_time',
+      },
+    },
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [
+          { $match: { $and: [{ Type: { $eq: 'HR' } }, { streamStatus: { $ne: "Completed" } }, { streamStatus: { $ne: "On-Going" } }] } },
+          {
+            $addFields: {
+              onday: { $and: [{ $lt: ["$DateTime", end] }, { $gt: ["$DateTime", nowTime] }] },
+              timeout: { $lt: ["$DateTime", nowTime] },
+
+            }
+          },
+          { $limit: 1 },
+          // { $group: { _id: { active: "$active" } } }
+        ],
+        as: 'hr_time',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$hr_time',
+      },
+    },
+    {
+      $addFields: {
+        tech_time_onday: { $ifNull: ["$tech_time.onday", false] },
+        tech_time_timeout: { $ifNull: ["$tech_time.timeout", false] },
+        tech_time_streamStatus: { $ifNull: ["$tech_time.streamStatus", "Completed"] },
+        hr_time_onday: { $ifNull: ["$hr_time.onday", false] },
+        hr_time_timeout: { $ifNull: ["$hr_time.timeout", false] },
+        hr_time_streamStatus: { $ifNull: ["$hr_time.streamStatus", "Completed"] },
+      },
+    },
+    { $match: timeout },
+    {
+
       $project: {
         _id: 1,
         name: 1,
@@ -390,6 +473,12 @@ const getAgriCandidates = async (req) => {
         Tech_DateTime: { $ifNull: ['$TechID.DateTime', null] },
         HR_endTime: { $ifNull: ['$HRID.endTime', null] },
         TECH_endTime: { $ifNull: ['$TechID.endTime', null] },
+        tech_time_onday: 1,
+        tech_time_timeout: 1,
+        tech_time_streamStatus: 1,
+        hr_time_onday: 1,
+        hr_time_timeout: 1,
+        hr_time_streamStatus: 1,
       },
     },
     {
@@ -405,6 +494,117 @@ const getAgriCandidates = async (req) => {
     {
       $match: { $and: [{ active: { $eq: true } }, statusMatch, search] },
     },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $match: { Role: 'HR Volunteer' } }],
+        as: 'HRcandidates',
+      },
+    },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $match: { Role: { $ne: 'HR Volunteer' } } }],
+        as: 'Techcandidates',
+      },
+    },
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $match: { Type: 'Tech' } }, { $sort: { createdAt: -1 } }, { $limit: 1 }],
+        as: 'TechID',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TechID',
+      },
+    },
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $sort: { createdAt: -1 } }, { $match: { Type: 'HR' } }, { $limit: 1 }],
+        as: 'HRID',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$HRID',
+      },
+    },
+
+
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [
+          { $match: { $and: [{ Type: { $eq: 'Tech' } }, { streamStatus: { $ne: "Completed" } }, { streamStatus: { $ne: "On-Going" } }] } },
+          {
+            $addFields: {
+              onday: { $and: [{ $lt: ["$DateTime", end] }, { $gt: ["$DateTime", nowTime] }] },
+              timeout: { $lt: ["$DateTime", nowTime] },
+            }
+          },
+          { $limit: 1 },
+        ],
+        as: 'tech_time',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$tech_time',
+      },
+    },
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [
+          { $match: { $and: [{ Type: { $eq: 'HR' } }, { streamStatus: { $ne: "Completed" } }, { streamStatus: { $ne: "On-Going" } }] } },
+          {
+            $addFields: {
+              onday: { $and: [{ $lt: ["$DateTime", end] }, { $gt: ["$DateTime", nowTime] }] },
+              timeout: { $lt: ["$DateTime", nowTime] },
+
+            }
+          },
+          { $limit: 1 },
+          // { $group: { _id: { active: "$active" } } }
+        ],
+        as: 'hr_time',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$hr_time',
+      },
+    },
+    {
+      $addFields: {
+        tech_time_onday: { $ifNull: ["$tech_time.onday", false] },
+        tech_time_timeout: { $ifNull: ["$tech_time.timeout", false] },
+        tech_time_streamStatus: { $ifNull: ["$tech_time.streamStatus", "Completed"] },
+        hr_time_onday: { $ifNull: ["$hr_time.onday", false] },
+        hr_time_timeout: { $ifNull: ["$hr_time.timeout", false] },
+        hr_time_streamStatus: { $ifNull: ["$hr_time.streamStatus", "Completed"] },
+      },
+    },
+    { $match: timeout },
     {
       $skip: 20 * (parseInt(page) + 1),
     },
