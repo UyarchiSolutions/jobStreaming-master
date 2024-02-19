@@ -1241,6 +1241,7 @@ const active_Inactive_candidate = async (req) => {
 
 const getStreamDetailsByCand = async (req) => {
   let id = req.params.id;
+  let now_time = new Date().getTime();
   let values = await SlotBooking.aggregate([
     { $match: { candId: id } },
     {
@@ -1320,6 +1321,18 @@ const getStreamDetailsByCand = async (req) => {
           },
         }
       },
+    },
+    {
+      $addFields: {
+        streamStatus: {
+          $cond: {
+            if: { $lt: ["$endTime", now_time] },
+            then: "Completed",
+            else: "$streamStatus",
+          },
+
+        }
+      }
     },
 
     {
