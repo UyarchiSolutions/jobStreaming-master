@@ -87,7 +87,7 @@ const MatchCandidate = async (req) => {
       },
       {
         $addFields: {
-          experience: { $add: [{ $divide: [{ $multiply: ["$experience_month", 100] }, 12] }, "$experience_year"] }
+          experience: { $add: [{ $divide: [{ $multiply: ["$experience_month", 100] }, 1200] }, "$experience_year"] },
         },
       },
       {
