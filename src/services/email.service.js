@@ -126,16 +126,30 @@ const sendsuccessTestMail = async (data) => {
   };
 
   if (data.user_type == 'IT') {
-     data1 = await ejs.renderFile(__dirname + '/Entrepreneuship_IT.ejs', {
+    data1 = await ejs.renderFile(__dirname + '/Entrepreneuship_IT.ejs', {
       email: mail,
       name: name,
       date: date,
       time: slot,
     });
-     msg = {
+    msg = {
       from: 'noreply@warmy.co.in',
       to: mail,
-      subject: 'IT Entrepreneuship Drive-Registration-Acknowledgement',
+      subject: 'IT Entrepreneurship Drive-Registration-Acknowledgement',
+      html: data1,
+    };
+  }
+  if (data.user_type == 'HR') {
+    data1 = await ejs.renderFile(__dirname + '/Entrepreneuship_HR.ejs', {
+      email: mail,
+      name: name,
+      date: date,
+      time: slot,
+    });
+    msg = {
+      from: 'noreply@warmy.co.in',
+      to: mail,
+      subject: 'IT Entrepreneurship Drive-Registration-Acknowledgement',
       html: data1,
     };
   }
