@@ -44,6 +44,7 @@ const createSlots = async (req, res) => {
 const getslots = async (req, res) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   const slots = await AgriEventSlot.aggregate([
+    { $sort: { dateTime: -1 } },
     {
       $skip: 20 * parseInt(page),
     },
@@ -52,6 +53,7 @@ const getslots = async (req, res) => {
     },
   ]);
   const next = await AgriEventSlot.aggregate([
+    { $sort: { dateTime: -1 } },
     {
       $skip: 20 * parseInt(page + 1),
     },
