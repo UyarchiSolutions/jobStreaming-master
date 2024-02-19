@@ -86,8 +86,8 @@ const slotDetailsAgriHR = async () => {
 
 const slotDetailsAgriTch = async () => {
   let slots = await AgriEventSlot.aggregate([
-    { $match: { Type: 'TECH' } },
-    { $sort: { sortcount: 1 } },
+    { $match: { Type: 'Tech' } },
+    { $sort: { dateTime: 1 } },
     {
       $group: {
         _id: { date: '$date' },
