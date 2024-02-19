@@ -647,7 +647,6 @@ const createSlotBooking = async (req) => {
       Type: e.Type,
       DateTime: iso,
       endTime: end,
-      slotId: slotCreate._id,
     });
     await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true, status: "Slot Chosen" }, { new: true });
     return creations;
