@@ -91,7 +91,7 @@ const slotDetailsAgriTch = async () => {
     {
       $group: {
         _id: { date: '$date' },
-        time: { $push: '$slot' },
+        time: { $push: '$date' },
       },
     },
     {
