@@ -202,7 +202,6 @@ const seller_go_live = async (req) => {
       token.agoraAppId = agoraID.element._id;
       token.save();
     }
-
   }
   let exp = moment(token.DateTime).add(30, 'minutes');
 
@@ -231,6 +230,7 @@ const seller_go_live = async (req) => {
     demotoken.mainhost = true;
     demotoken.save();
     req.io.emit(token._id + 'stream_on_going', token);
+    req.io.emit('interview_join', token);
   }
   await cloude_recording_stream(token._id, token.agoraAppId, exp);
   let find_intest = await IntrestedCandidate.findOne({ candId: token.candId, volunteerId: req.userId, });
