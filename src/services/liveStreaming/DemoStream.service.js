@@ -231,7 +231,6 @@ const seller_go_live = async (req) => {
     demotoken.save();
     req.io.emit(token._id + 'stream_on_going', token);
     req.io.emit('interview_join', token);
-    console.log("emitted Successfully");
   }
   await cloude_recording_stream(token._id, token.agoraAppId, exp);
   let find_intest = await IntrestedCandidate.findOne({ candId: token.candId, volunteerId: req.userId, });

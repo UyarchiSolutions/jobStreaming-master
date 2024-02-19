@@ -420,9 +420,15 @@ const getAgriCandidates = async (req) => {
 const getIntrestedByCand_Role = async (req) => {
   let role = req.params.role;
   let Role;
+  let upcomming_status = { active: true }
+  let upcomming_pending = { active: true }
   if (role === 'HR') {
     Role = 'HR Volunteer';
+    upcomming_status = { hrStatus: { $eq: 'Approved' } }
+    upcomming_pending = { hrStatus: { $eq: 'Pending' } }
   } else {
+    upcomming_status = { status: { $eq: 'Approved' } }
+    upcomming_pending = { status: { $eq: 'Pending' } }
     Role = 'Tech Volunteer';
   }
   let id = req.params.id;
@@ -517,6 +523,138 @@ const getIntrestedByCand_Role = async (req) => {
         path: '$TodayUpcoming',
       },
     },
+
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: 'volunteerId',
+        foreignField: 'volunteerId',
+        pipeline: [
+          { $addFields: { datess: { $toDate: "$startTime" } } },
+          {
+            $addFields: {
+              "streamDate": {
+                "$dateToString": {
+                  "format": "%d-%m-%Y",
+                  "date": "$datess"
+                }
+              }
+            }
+          },
+          { $match: { $and: [{ Role: { $eq: Role } }, { endTime: { $gt: time } }, upcomming_status] } },
+          { $group: { _id: null, count: { $sum: 1 } } }
+        ],
+        as: 'approved_upcoming',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$approved_upcoming"
+
+      }
+    },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: 'volunteerId',
+        foreignField: 'volunteerId',
+        pipeline: [
+          { $addFields: { datess: { $toDate: "$startTime" } } },
+          {
+            $addFields: {
+              "streamDate": {
+                "$dateToString": {
+                  "format": "%d-%m-%Y",
+                  "date": "$datess"
+                }
+              }
+            }
+          },
+          { $match: { $and: [{ Role: { $eq: Role } }, { endTime: { $gt: time } }, upcomming_pending] } },
+          { $group: { _id: null, count: { $sum: 1 } } }
+        ],
+        as: 'pending_upcoming',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$pending_upcoming"
+
+      }
+    },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: 'volunteerId',
+        foreignField: 'volunteerId',
+        pipeline: [
+
+          { $addFields: { datess: { $toDate: "$startTime" } } },
+          {
+            $addFields: {
+              "streamDate": {
+                "$dateToString": {
+                  "format": "%d-%m-%Y",
+                  "date": "$datess"
+                }
+              }
+            }
+          },
+          { $match: { $and: [{ Role: { $eq: Role } }, { endTime: { $gt: time } }, upcomming_status, { streamDate: { $eq: today } }] } },
+          { $group: { _id: null, count: { $sum: 1 } } }
+        ],
+        as: 'same_approved_upcoming',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$same_approved_upcoming"
+
+      }
+    },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: 'volunteerId',
+        foreignField: 'volunteerId',
+        pipeline: [
+
+          { $addFields: { datess: { $toDate: "$startTime" } } },
+          {
+            $addFields: {
+              "streamDate": {
+                "$dateToString": {
+                  "format": "%d-%m-%Y",
+                  "date": "$datess"
+                }
+              }
+            }
+          },
+          { $match: { $and: [{ Role: { $eq: Role } }, { endTime: { $gt: time } }, upcomming_pending, { streamDate: { $eq: today } }] } },
+          { $group: { _id: null, count: { $sum: 1 } } }
+        ],
+        as: 'same_pending_upcoming',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$same_pending_upcoming"
+
+      }
+    },
+
+    {
+      $addFields: {
+        approved_upcoming: { $ifNull: ["$approved_upcoming.count", 0] },
+        pending_upcoming: { $ifNull: ["$pending_upcoming.count", 0] },
+        same_approved_upcoming: { $ifNull: ["$same_approved_upcoming.count", 0] },
+        same_pending_upcoming: { $ifNull: ["$same_pending_upcoming.count", 0] },
+      }
+    },
     {
       $project: {
         _id: 1,
@@ -531,6 +669,10 @@ const getIntrestedByCand_Role = async (req) => {
         TodayPending: { $ifNull: ['$TodayPending.total', 0] },
         TodayUpcoming: { $ifNull: ['$TodayUpcoming.total', 0] },
         hrStatus: 1,
+        approved_upcoming: 1,
+        pending_upcoming: 1,
+        same_approved_upcoming: 1,
+        same_pending_upcoming: 1
       },
     },
   ]);
