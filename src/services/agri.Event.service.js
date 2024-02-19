@@ -627,7 +627,7 @@ const createSlotBooking = async (req) => {
   const body = req.body;
   let findCand = await AgriCandidate.findById(body.candId);
   console.log(findCand);
-  let findExistSlot = await SlotBooking.findOne({ candId: body.candId });
+  let findExistSlot = await BookedSlot.findOne({ candId: body.candId });
   if (findExistSlot) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Your Interview Time Got Over ');
   }
@@ -637,6 +637,7 @@ const createSlotBooking = async (req) => {
     date: body.slot[0].date,
     slot: body.slot[0].time,
   };
+  let slotCreate = await BookedSlot.create({ slots: body.slot, candId: body.candId });
   await body.slot.forEach(async (e) => {
     let iso = new Date(moment(e.date + ' ' + e.time, 'DD-MM-YYYY hh:mm A').toISOString()).getTime();
     let end = moment(iso).add(30, 'minutes');
@@ -647,6 +648,7 @@ const createSlotBooking = async (req) => {
       Type: e.Type,
       DateTime: iso,
       endTime: end,
+      slotId: slotCreate._id,
     });
     await AgriCandidate.findByIdAndUpdate({ _id: e.candId }, { slotbooked: true, status: "Slot Chosen" }, { new: true });
     return creations;
