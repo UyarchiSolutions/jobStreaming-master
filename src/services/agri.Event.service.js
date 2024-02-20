@@ -1320,13 +1320,18 @@ const getStreamDetailsByCand = async (req) => {
       $addFields: {
         streamStatus: {
           $cond: {
-            if: { $lt: ["$endTime", now_time] },
-            then: "Completed",
-            else: "$streamStatus",
-          },
-
+            if: { $ne: ["$streamStatus", 'On-Going'] },
+            then: "$streamStatus",
+            else: {
+              $cond: {
+                if: { $lt: ["$endTime", now_time] },
+                then: "Completed",
+                else: "$streamStatus",
+              },
+            }
+          }
         }
-      }
+      },
     },
 
     {
