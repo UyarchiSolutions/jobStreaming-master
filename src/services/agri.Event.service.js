@@ -1249,7 +1249,7 @@ const getStreamDetailsByCand = async (req) => {
         from: 'democloundrecords',
         localField: '_id',
         foreignField: 'chennel',
-        pipeline: [{ $match: { videoLink_mp4: { $ne: null } } }],
+        pipeline: [{ $match: { $and: [{ videoLink_mp4: { $ne: null } }, { videoLink_mp4: { $ne: "Pending" } }] } }],
         as: 'StreamRecord',
       },
     },
