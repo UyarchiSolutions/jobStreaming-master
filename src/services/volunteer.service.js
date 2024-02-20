@@ -404,9 +404,12 @@ const getCandidatesForInterview = async (req) => {
     },
   ]);
 
-  pending = await IntrestedCandidate.find({ volunteerId: id,streamStatus: "Joined", rating: { $eq: "Rating Pending" } });
-
-  return { candidates, pending: pending.length != 0 };
+  pending = await IntrestedCandidate.findOne({ volunteerId: id, streamStatus: "Joined", rating: { $eq: "Rating Pending" } });
+  let pending_id;
+  if (pending) {
+    pending_id = pending._id;
+  }
+  return { candidates, pending: pending.length != 0, pending_id: pending_id };
 };
 
 const updateVolunteer = async (req) => {
