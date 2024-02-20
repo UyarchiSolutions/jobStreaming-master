@@ -1254,12 +1254,6 @@ const getStreamDetailsByCand = async (req) => {
       },
     },
     {
-      $unwind: {
-        preserveNullAndEmptyArrays: true,
-        path: '$StreamRecord',
-      },
-    },
-    {
       $lookup: {
         from: 'volunteers',
         localField: 'volunteerId',
@@ -1343,7 +1337,7 @@ const getStreamDetailsByCand = async (req) => {
         Type: 1,
         rating: 1,
         streamStatus: 1,
-        videoURL: "$StreamRecord.videoLink_mp4",
+        StreamRecord: "$StreamRecord",
         Name: "$volunteer.name",
         linkstatus: 1,
         retingCount: 1
