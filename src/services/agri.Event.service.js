@@ -1345,7 +1345,8 @@ const getStreamDetailsByCand = async (req) => {
         StreamRecord: "$StreamRecord",
         Name: "$volunteer.name",
         linkstatus: 1,
-        retingCount: 1
+        retingCount: 1,
+        candidate_join: 1
       }
     }
   ]);
