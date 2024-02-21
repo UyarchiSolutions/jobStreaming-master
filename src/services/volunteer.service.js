@@ -409,7 +409,7 @@ const getCandidatesForInterview = async (req) => {
   if (pending) {
     pending_id = pending._id;
   }
-  return { candidates, pending: pending.length != 0, pending_id: pending_id };
+  return { candidates, pending: pending != null, pending_id: pending_id };
 };
 
 const updateVolunteer = async (req) => {
