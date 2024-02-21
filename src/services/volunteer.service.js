@@ -417,16 +417,33 @@ const getCandidatesForInterview = async (req) => {
   ]);
 
   // pending = await IntrestedCandidate.findOne({ volunteerId: id, streamStatus: "Joined", rating: { $eq: "Rating Pending" } });
-  pending = await IntrestedCandidate.findOne({ volunteerId: id, streamStatus: "Joined", rating: { $eq: "Rating Pending" } }).populate({
-    path: 'slotId',
+  pending = await IntrestedCandidate.find().populate({
+    path: '',
     model: 'SlotBooking',
+    match: { candidate_join: true }
   }).exec();
+  pending = await IntrestedCandidate.aggregate([
+    { $match: { $and: [{ volunteerId: id }, { streamStatus: "Joined" }, { rating: { $eq: "Rating Pending" } }] } },
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: 'slotId',
+        foreignField: '_id',
+        pipeline: [
+          { $match: { candidate_join: true } }
+        ],
+        as: 'slotId',
+      },
+    },
+    { $unwind: "$slotId" },
+    { $limit: 1 }
+  ])
   let pending_id;
   let pending_now = false;
-  if (pending) {
-    pending_now = pending.slotId.candidate_join;
-    if(pending_now)
-    pending_id = pending._id;
+  if (pending.length != 0) {
+    pending_now = pending[0].slotId.candidate_join;
+    if (pending_now)
+      pending_id = pending[0]._id;
   }
   return { candidates, pending: pending_now, pending_id: pending_id };
 };
