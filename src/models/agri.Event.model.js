@@ -365,6 +365,10 @@ const SlotBookingSchema = mongoose.Schema(
     mainhost: {
       type: String,
     },
+    candidate_join: {
+      type: Boolean,
+      default: false,
+    }
 
   },
   { timestamps: true }

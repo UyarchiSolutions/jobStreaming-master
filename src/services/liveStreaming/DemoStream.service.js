@@ -778,7 +778,11 @@ const buyer_go_live_stream = async (req) => {
       demotoken.token = token;
       demotoken.save();
     }
+    stream.candidate_join = true;
+    stream.save();
+    req.io.emit(stream._id + '_cantidate_join', { candidate_join: true });
   }
+
   return demotoken;
 };
 
