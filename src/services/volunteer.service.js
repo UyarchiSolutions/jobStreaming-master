@@ -390,6 +390,17 @@ const getCandidatesForInterview = async (req) => {
       $unwind: '$Cand',
     },
     {
+      $lookup: {
+        from: 'slotbookings',
+        localField: 'slotId',
+        foreignField: '_id',
+        as: 'slotbookings',
+      },
+    },
+    {
+      $unwind: '$slotbookings',
+    },
+    {
       $addFields: {
         DateTime: '$Cand.DateTime',
         channel: '$Cand.channel',
@@ -397,6 +408,7 @@ const getCandidatesForInterview = async (req) => {
         streamId: '$Cand.streamId',
         hrclear: '$Cand.hrClear',
         techclear: '$Cand.clear',
+        candidate_join: "$slotbookings.candidate_join"
       },
     },
     {
@@ -404,12 +416,19 @@ const getCandidatesForInterview = async (req) => {
     },
   ]);
 
-  pending = await IntrestedCandidate.findOne({ volunteerId: id, streamStatus: "Joined", rating: { $eq: "Rating Pending" } });
+  // pending = await IntrestedCandidate.findOne({ volunteerId: id, streamStatus: "Joined", rating: { $eq: "Rating Pending" } });
+  pending = await IntrestedCandidate.findOne({ volunteerId: id, streamStatus: "Joined", rating: { $eq: "Rating Pending" } }).populate({
+    path: 'slotId',
+    model: 'SlotBooking',
+  }).exec();
   let pending_id;
+  let pending_now = false;
   if (pending) {
+    pending_now = pending.slotId.candidate_join;
+    if(pending_now)
     pending_id = pending._id;
   }
-  return { candidates, pending: pending != null, pending_id: pending_id };
+  return { candidates, pending: pending_now, pending_id: pending_id };
 };
 
 const updateVolunteer = async (req) => {
