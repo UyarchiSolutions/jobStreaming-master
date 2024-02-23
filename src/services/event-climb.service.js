@@ -851,6 +851,10 @@ const verify_mobile = async (req) => {
   if (!finduser) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'This Number Not Registerd');
   }
+  if (finduser.user_type != 'Intern') {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'This Number Not Registerd');
+  }
+
   return { id: finduser._id }
 }
 module.exports = {
