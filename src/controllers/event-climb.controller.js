@@ -175,6 +175,20 @@ const getWorkshopCandidatesBySlot = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const generate_pdf = catchAsync(async (req, res) => {
+  console.log(true)
+  const data = await climbeventService.generate_pdf(req);
+  res.send(data);
+});
+
+const verify_mobile= catchAsync(async (req, res) => {
+  console.log(true)
+  const data = await climbeventService.verify_mobile(req);
+  res.send(data);
+});
+
+
+
 module.exports = {
   createEventClimb,
   getSlots,
@@ -206,5 +220,7 @@ module.exports = {
   getInternSlots,
   getWorkshopCandidatesBySlot,
   createEventClimb_it,
-  createEventClimb_hr
+  createEventClimb_hr,
+  generate_pdf,
+  verify_mobile
 };

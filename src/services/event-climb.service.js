@@ -11,6 +11,7 @@ const {
 } = require('../models/climb-event.model');
 const AWS = require('aws-sdk');
 const { options } = require('joi');
+const { v4: uuidv4 } = require('uuid');
 
 const createEventCLimb = async (req) => {
   let body = req.body;
@@ -770,6 +771,89 @@ const getWorkshopCandidatesBySlot = async (req) => {
   return data;
 };
 
+
+const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
+const fs = require('fs');
+const path = require('path');
+AWS.config.update({
+  accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+  secretAccessKey: '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',
+  region: 'ap-south-1'
+});
+const s3 = new AWS.S3();
+const generate_pdf = async (req) => {
+
+  let finduser = await EventRegisterIntern.findById(req.query.id);
+  // console.log(finduser)
+  if (!finduser) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'This Number Not Registerd');
+  }
+  console.log()
+  if (finduser.certificate_downloaded != true) {
+    return new Promise(async (resolve, reject) => {
+      // console.log("shjgyhj")
+      const existingPdfPath = path.resolve(__dirname, 'public', '../../../public/ext.pdf');
+      const existingPdfBytes = fs.readFileSync(existingPdfPath);
+      const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+      const page = pdfDoc.getPage(0);
+      const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+
+      const text = finduser.name.toUpperCase();
+
+      const textSize = font.widthOfTextAtSize(text, 20);
+      const pageWidth = page.getWidth();
+      const centerX = (pageWidth - textSize) / 2;
+
+
+      page.drawText(text, {
+        x: centerX,
+        y: 244,
+        size: 20,
+        color: rgb(0, 0, 0), // black
+      });
+
+
+      pdfDoc.setTitle('Courage')
+      pdfDoc.setAuthor('Bharathi')
+      pdfDoc.setProducer('Aravind')
+      pdfDoc.setCreator('GD (https://warmy.co.in)')
+
+      // Save the modified PDF
+      const modifiedPdfBytes = await pdfDoc.save();
+      console.log(modifiedPdfBytes, 876578, uuidv4)
+      let id = uuidv4();
+
+
+      const uploadParams = {
+        Bucket: 'jobresume',
+        Key: id + '.pdf',
+        ACL: 'public-read',
+        Body: modifiedPdfBytes,
+        ContentType: 'application/pdf'
+      };
+
+      const uploadResult = await s3.upload(uploadParams).promise();
+      finduser.certificate = uploadResult.Location;
+      finduser.certificate_downloaded = true;
+      finduser.save();
+      resolve({ pdf: uploadResult.Location });
+    })
+  }
+  else {
+    return { pdf: finduser.certificate }
+  }
+};
+
+const verify_mobile = async (req) => {
+
+  let finduser = await EventRegisterIntern.findOne({ mobileNumber: req.body.mobileNumber });
+  // console.log(finduser)
+  if (!finduser) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'This Number Not Registerd');
+  }
+  return { id: finduser._id }
+}
 module.exports = {
   createEventCLimb,
   slotDetails,
@@ -801,5 +885,7 @@ module.exports = {
   getInternSlots,
   getWorkshopCandidatesBySlot,
   createEventClimb_it,
-  createEventClimb_hr
+  createEventClimb_hr,
+  generate_pdf,
+  verify_mobile
 };

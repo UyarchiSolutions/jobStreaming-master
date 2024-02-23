@@ -300,7 +300,14 @@ const ClicmbEventRegisterInternSchema = new mongoose.Schema(
     },
     user_type: {
       type: String,
-    }
+    },
+    certificate: {
+      type: String,
+    },
+    certificate_downloaded: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
