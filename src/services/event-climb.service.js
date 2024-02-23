@@ -808,7 +808,7 @@ const generate_pdf = async (req) => {
 
       page.drawText(text, {
         x: centerX,
-        y: 244,
+        y: 238,
         size: 20,
         color: rgb(0, 0, 0), // black
       });
