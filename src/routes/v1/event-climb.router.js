@@ -45,7 +45,7 @@ router.route('/getInternSlots').get(ClimbController.getInternSlots);
 router.route('/getWorkshop/Slot/:id').get(ClimbController.getWorkshopCandidatesBySlot)
 
 router.route('/generate/pdf').get(ClimbController.generate_pdf)
-router.route('/verfiy/mobile').get(ClimbController.verify_mobile)
+router.route('/verfiy/mobile').post(ClimbController.verify_mobile)
 
 
 

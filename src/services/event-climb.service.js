@@ -822,7 +822,7 @@ const generate_pdf = async (req) => {
       // Save the modified PDF
       const modifiedPdfBytes = await pdfDoc.save();
       console.log(modifiedPdfBytes, 876578, uuidv4)
-      let id = uuidv4();
+      let id = "cerificate/" + finduser.name + '-' + finduser.mobileNumber + "-" + uuidv4();
 
 
       const uploadParams = {
@@ -848,7 +848,6 @@ const generate_pdf = async (req) => {
 const verify_mobile = async (req) => {
 
   let finduser = await EventRegisterIntern.findOne({ mobileNumber: req.body.mobileNumber });
-  // console.log(finduser)
   if (!finduser) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'This Number Not Registerd');
   }
