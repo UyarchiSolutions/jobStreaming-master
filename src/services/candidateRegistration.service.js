@@ -49,6 +49,58 @@ const createCandidate = async (req) => {
 
 };
 
+
+const opt_verification = async (req) => {
+  let user = await AgriCandidate.findById(req.body.id);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
+  }
+
+
+  return user;
+}
+
+
+
+const send_otp_now = async (stream) => {
+  let OTPCODE = Math.floor(100000 + Math.random() * 900000);
+  let Datenow = new Date().getTime();
+  let otpsend = await EmployerOTP.findOne({
+    empId: stream._id,
+    otpExpiedTime: { $gte: Datenow },
+    verify: false,
+    expired: false,
+  });
+  if (!otpsend) {
+    const token = await EmployerRegistration.findById(stream._id);
+    await EmployerOTP.updateMany(
+      { empId: stream._id, verify: false },
+      { $set: { verify: true, expired: true } },
+      { new: true }
+    );
+    let exp = moment().add(5, 'minutes');
+    let otp = await EmployerOTP.create({
+      OTP: OTPCODE,
+      verify: false,
+      mobile: token.mobileNumber,
+      empId: stream._id,
+      DateIso: moment(),
+      expired: false,
+      otpExpiedTime: exp,
+    });
+    let message = `${OTPCODE} is the Onetime password(OTP) for mobile number verification . This is usable once and valid for 5 minutes from the request- Climb(An Ookam company product)`;
+    let reva = await axios.get(
+      `http://panel.smsmessenger.in/api/mt/SendSMS?user=ookam&password=ookam&senderid=OOKAMM&channel=Trans&DCS=0&flashsms=0&number=${token.mobileNumber}&text=${message}&route=6&peid=1701168700339760716&DLTTemplateId=1707170322899337958`
+    );
+    console.log(reva.data, 'asdas');
+    otpsend = { otpExpiedTime: otp.otpExpiedTime };
+  } else {
+    otpsend = { otpExpiedTime: otpsend.otpExpiedTime };
+  }
+  return otpsend;
+};
+
+
 const getUserById = async (id) => {
   const data = await CandidateRegistration.findById(id);
   if (!data) {
@@ -348,6 +400,8 @@ module.exports = {
   update_email_send_otp_verify,
   update_mobilenumber_send_otp,
   update_mobilenumber_otp_verify,
+  send_otp_now,
+  opt_verification
   //   getUserById,
   //   getUserByEmail,
   //   updateUserById,

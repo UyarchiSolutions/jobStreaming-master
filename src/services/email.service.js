@@ -34,9 +34,9 @@ if (config.env !== 'test') {
  * @param {string} text
  * @returns {Promise}
  */
-const sendVerificationEmail = async (user) => {
+const sendVerificationEmail = async (user, tokens) => {
   data1 = await ejs.renderFile(__dirname + '/verifytemplate.ejs', {
-    ID: user._id,
+    ID: tokens,
     email: user.mail,
   });
 

@@ -116,7 +116,16 @@ const AgriCandidateSchema = new mongoose.Schema(
     setPassword: {
       type: Boolean,
       default: false
+    },
+    emailVerify: {
+      type: String,
+      default: "Pending"
+    },
+    mobileVerify: {
+      type: String,
+      default: "Pending"
     }
+
   },
   { timestamps: true }
 );

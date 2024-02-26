@@ -10,6 +10,7 @@ const author = require('../../controllers/empVEridy.controller');
 const router = express.Router();
 
 router.route('/register').post(uploadImage, candidateRegistration.register);
+router.route('/otp/verification').post(candidateRegistration.opt_verification);
 
 router.route('/userDetails').get(authorization, candidateRegistration.getUserById);
 
@@ -40,5 +41,9 @@ router.route('/updateResume').put(authorization, uploadImage, candidateRegistrat
 // router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
 // router.post('/send-verification-email', auth(), authController.sendVerificationEmail);
 // router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
+
+
+
+
 
 module.exports = router;

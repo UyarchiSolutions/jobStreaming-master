@@ -10,12 +10,18 @@ const moment = require('moment');
 const { http } = require('../config/logger');
 
 const register = catchAsync(async (req, res) => {
-
-
   const user = await candidateRegistrationService.createCandidate(req);
+  const tokens = await tokenService.generateAuthTokens(user);
+  await emailService.sendVerificationEmail(user,tokens);
+  res.send(user);
+});
+
+const opt_verification = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.opt_verification(req);
   await emailService.sendVerificationEmail(user);
   res.send(user);
 });
+
 
 const updateResume = catchAsync(async (req, res) => {
   let id = req.userId;
@@ -221,4 +227,5 @@ module.exports = {
   //   sendVerificationEmail,
   //   verifyEmail,
   updateResume,
+  opt_verification
 };

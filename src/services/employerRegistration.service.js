@@ -123,7 +123,7 @@ const UsersLogin = async (userBody) => {
   if (!await userName.isPasswordMatch(password)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Passwoed Doesn't Match");
   }
-  userName =await EmployerRegistration.findByIdAndUpdate({ _id: userName._id }, { latestdate: date }, { new: true });
+  userName = await EmployerRegistration.findByIdAndUpdate({ _id: userName._id }, { latestdate: date }, { new: true });
 
 
   return userName;
