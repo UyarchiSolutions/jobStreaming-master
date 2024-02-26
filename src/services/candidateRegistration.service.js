@@ -24,7 +24,7 @@ const {
 const AWS = require('aws-sdk');
 
 
-const createCandidate = async (userBody, files) => {
+const createCandidate = async (req) => {
 
   let user = await AgriCandidate.findOne({ mobile: req.body.mobile, setPassword: true });
   if (user) {
@@ -35,32 +35,17 @@ const createCandidate = async (userBody, files) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email Number Already Exists');
   }
   user = await AgriCandidate.findOne({ mail: req.body.mail, mobile: req.body.mobile });
-  const s3 = new AWS.S3({
-    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
-    secretAccessKey: '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',
-    region: 'ap-south-1',
-  });
-  let params = {
-    Bucket: 'jobresume',
-    Key: req.file.originalname,
-    Body: req.file.buffer,
-    ACL: 'public-read',
-    ContentType: req.file.mimetype,
-  };
 
-  return new Promise((resolve, reject) => {
-    s3.upload(params, async (err, data) => {
-      let values = { ...req.body, ...{ date: date, resume: data.Location } };
-      if (user) {
-        user = await AgriCandidate.findByIdAndUpdate({ _id: user._id }, values, { new: true });
-        resolve(user);
-      }
-      else {
-        user = await AgriCandidate.create(values);
-        resolve(user);
-      }
-    });
-  });
+  let values = req.body;
+  if (user) {
+    user = await AgriCandidate.findByIdAndUpdate({ _id: user._id }, values, { new: true });
+  }
+  else {
+    user = await AgriCandidate.create(values);
+
+  }
+
+  return user;
 
 };
 

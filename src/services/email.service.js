@@ -34,20 +34,18 @@ if (config.env !== 'test') {
  * @param {string} text
  * @returns {Promise}
  */
-const sendVerificationEmail = async (to, token, mobilenumber) => {
+const sendVerificationEmail = async (user) => {
   data1 = await ejs.renderFile(__dirname + '/verifytemplate.ejs', {
-    mobilenumber: mobilenumber,
-    email: to,
+    ID: user._id,
+    email: user.mail,
   });
 
   const msg = {
     from: config.email.from,
-    to: to,
-    // to:"vignesh1041996@gmail.com",
+    to: user.mail,
     subject: 'templates',
     html: data1,
   };
-  // await OTPModel.findOneAndUpdate({token:token},{otp:otp, userId:userId},{ new: true })
   await transport.sendMail(msg);
 };
 
