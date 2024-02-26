@@ -263,11 +263,11 @@ const update_email_send_otp_verify = async (body) => {
 };
 
 const update_mobilenumber_send_otp = async (id, body) => {
-  const data = await CandidateRegistration.findById(id);
+  const data = await AgriCandidate.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
   }
-  const data1 = await CandidateRegistration.findOne({ mobileNumber: body.mobileNumber });
+  const data1 = await AgriCandidate.findOne({ mobile: body.mobile });
   if (data1) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'already used this number');
   }

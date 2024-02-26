@@ -206,6 +206,7 @@ const createCandidateReview = async (req) => {
 
 const ResumeUploadAgriCand = async (req) => {
   let id = req.params.id;
+  console.log(id, 87976)
   let findCand = await AgriCandidate.findById(id);
   if (!findCand) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Not Found');
@@ -233,8 +234,8 @@ const ResumeUploadAgriCand = async (req) => {
             { resumeUrl: res.Location },
             { new: true }
           );
+          resolve(resumeUploaded);
         }
-        resolve(resumeUploaded);
       });
     });
   }
