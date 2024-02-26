@@ -36,7 +36,7 @@ const getUserById = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-const link_send= catchAsync(async (req, res) => {
+const link_send = catchAsync(async (req, res) => {
   const data = await AgriEventService.link_send(req);
   res.send(data);
 });
@@ -123,7 +123,7 @@ const get_hr_review = catchAsync(async (req, res) => {
   res.send(data)
 })
 
-const get_tech_review= catchAsync(async (req, res) => {
+const get_tech_review = catchAsync(async (req, res) => {
   const data = await AgriEventService.get_tech_review(req);
   res.send(data)
 })

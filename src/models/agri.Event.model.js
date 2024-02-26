@@ -112,6 +112,10 @@ const AgriCandidateSchema = new mongoose.Schema(
     experience_month: {
       type: Number,
       default: 0,
+    },
+    setPassword: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }

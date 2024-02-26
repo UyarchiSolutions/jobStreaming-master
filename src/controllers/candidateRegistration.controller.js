@@ -10,40 +10,11 @@ const moment = require('moment');
 const { http } = require('../config/logger');
 
 const register = catchAsync(async (req, res) => {
-  // const user = await candidateRegistrationService.createCandidate(req.body, req.file);
-  const { password, confirmpassword } = req.body;
-  let date = moment().format('YYYY-MM-DD');
-  let findByEmail = await CandidateRegistration.findOne({ email: req.body.email });
-  let findByMobile = await CandidateRegistration.findOne({ mobileNumber: req.body.mobileNumber });
-  if (findByMobile) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Already Exists');
-  }
-  if (findByEmail) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email Already Exists');
-  }
 
-  if (password != confirmpassword) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Confirm Password Incorrect');
-  }
-  const s3 = new AWS.S3({
-    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
-    secretAccessKey: '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',
-    region: 'ap-south-1',
-  });
-  let params = {
-    Bucket: 'jobresume',
-    Key: req.file.originalname,
-    Body: req.file.buffer,
-    ACL: 'public-read',
-    ContentType: req.file.mimetype,
-  };
-  s3.upload(params, async (err, data) => {
-    let values = { ...req.body, ...{ date: date, resume: data.Location } };
-    let d = await CandidateRegistration.create(values);
-    const tokens = await tokenService.generateAuthTokens(d);
-    res.status(httpStatus.CREATED).send({ user: d, tokens });
-    await emailService.sendVerificationEmail(req.body.email, tokens.access.token, req.body.mobileNumber);
-  });
+
+  const user = await candidateRegistrationService.createCandidate(req);
+  await emailService.sendVerificationEmail(user);
+  res.send(user);
 });
 
 const updateResume = catchAsync(async (req, res) => {
