@@ -10,7 +10,12 @@ const author = require('../../controllers/empVEridy.controller');
 const router = express.Router();
 
 router.route('/register').post(uploadImage, candidateRegistration.register);
-router.route('/otp/verification').post(candidateRegistration.opt_verification);
+router.route('/otp/verification').post(candidateRegistration.otp_verification);
+router.route('/otp/verify').post(candidateRegistration.verify_otp_now);
+router.route('/setpassword').post(candidateRegistration.forget_password_set);
+
+
+
 
 router.route('/userDetails').get(authorization, candidateRegistration.getUserById);
 
@@ -24,7 +29,6 @@ router.route('/mobile_verify').post(candidateRegistration.mobile_verify);
 router.route('/mobile_verify_Otp').post(candidateRegistration.mobile_verify_Otp);
 router.route('/forget_password').post(candidateRegistration.forget_password);
 router.route('/forget_password_Otp').post(candidateRegistration.forget_password_Otp);
-router.route('/forget_password_set/:id').post(candidateRegistration.forget_password_set);
 router.route('/change_pass').post(authorization, candidateRegistration.change_pass);
 router.route('/deactivate').post(authorization, candidateRegistration.deactivate);
 router.route('/getUser_update/:id').put(candidateRegistration.getUser_update);

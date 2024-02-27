@@ -12,16 +12,22 @@ const { http } = require('../config/logger');
 const register = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.createCandidate(req);
   const tokens = await tokenService.generateAuthTokens(user);
-  await emailService.sendVerificationEmail(user,tokens);
+  const savetoken = await candidateRegistrationService.create_email_verify(user, tokens);
+  await emailService.sendVerificationEmail(user, savetoken._id);
   res.send(user);
 });
 
-const opt_verification = catchAsync(async (req, res) => {
-  const user = await candidateRegistrationService.opt_verification(req);
-  await emailService.sendVerificationEmail(user);
+const otp_verification = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.otp_verification(req);
+  // await candidateRegistrationService.send_otp_now(user);
   res.send(user);
 });
 
+
+const verify_otp_now = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.verify_otp_now(req);
+  res.send(user);
+});
 
 const updateResume = catchAsync(async (req, res) => {
   let id = req.userId;
@@ -81,22 +87,14 @@ const forget_password_Otp = catchAsync(async (req, res) => {
 });
 
 const forget_password_set = catchAsync(async (req, res) => {
-  const user = await candidateRegistrationService.forget_password_set(req.params.id, req.body);
+  const user = await candidateRegistrationService.forget_password_set(req.body);
   res.send(user);
 });
 
 const login = catchAsync(async (req, res) => {
-  let Boolean = false;
   const user = await candidateRegistrationService.UsersLogin(req.body);
-  // console.log(user)
-  let details = await KeySkill.find({ userId: user._id });
-  // console.log(details)
-  if (details.length != 0) {
-    Boolean = true;
-  }
-  // console.log(Boolean)
-  const tokens = await tokenService.generateAuthTokens(user);
-  res.send({ user, tokens, Boolean });
+  const token = await tokenService.generateAuthTokens(user);
+  res.send({ token, user });
 });
 
 const forgot = catchAsync(async (req, res) => {
@@ -116,8 +114,9 @@ const forgot_verify_email = catchAsync(async (req, res) => {
 
 const getUserById = catchAsync(async (req, res) => {
   let userId = req.userId;
+  console.log(userId)
   const user = await candidateRegistrationService.getUserById(userId);
-  res.send({ user });
+  res.send(user);
 });
 
 const getMapLocation = catchAsync(async (req, res) => {
@@ -227,5 +226,6 @@ module.exports = {
   //   sendVerificationEmail,
   //   verifyEmail,
   updateResume,
-  opt_verification
+  otp_verification,
+  verify_otp_now
 };

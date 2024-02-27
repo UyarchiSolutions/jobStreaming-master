@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const { v4 } = require('uuid');
+const { toJSON, paginate } = require('./plugins');
+const bcrypt = require('bcryptjs');
 
 const AgriCandidateSchema = new mongoose.Schema(
   {
@@ -124,11 +126,53 @@ const AgriCandidateSchema = new mongoose.Schema(
     mobileVerify: {
       type: String,
       default: "Pending"
+    },
+    password: {
+      type: String,
     }
 
   },
   { timestamps: true }
 );
+
+
+
+// add plugin that converts mongoose to json
+AgriCandidateSchema.plugin(toJSON);
+AgriCandidateSchema.plugin(paginate);
+
+/**
+ * Check if email is taken
+ * @param {string} email - The user's email
+ * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
+ * @returns {Promise<boolean>}
+ */
+AgriCandidateSchema.statics.isEmailTaken = async function (email, excludeUserId) {
+  const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+  return !!user;
+};
+
+/**
+ * Check if password matches the user's password
+ * @param {string} password
+ * @returns {Promise<boolean>}
+ */
+AgriCandidateSchema.methods.isPasswordMatch = async function (password) {
+  const user = this;
+  return bcrypt.compare(password, user.password);
+};
+
+AgriCandidateSchema.pre('save', async function (next) {
+  const user = this;
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+  next();
+});
+
+/**
+ * @typedef User
+ */
 
 const AgriCandidate = mongoose.model('agricandidate', AgriCandidateSchema);
 
@@ -453,6 +497,98 @@ const referenceSchema = mongoose.Schema(
 
 const Reference = mongoose.model('reference', referenceSchema);
 
+
+
+
+
+
+const emailverifySchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+
+    userId: {
+      type: String,
+    },
+    type: {
+      type: String,
+    },
+    mail: {
+      type: String,
+    },
+    status: {
+      type: String,
+      default: 'Pending',
+    },
+    token: {
+      type: String,
+    }
+
+
+
+
+  },
+  { timestamps: true }
+);
+
+const Emailverify = mongoose.model('emailverify', emailverifySchema);
+
+
+
+
+
+const otpverifySchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+
+    userId: {
+      type: String,
+    },
+    type: {
+      type: String,
+    },
+    mail: {
+      type: String,
+    },
+    status: {
+      type: String,
+      default: 'Pending',
+    },
+    OTP: {
+      type: Number,
+    },
+    otpExpiedTime: {
+      type: Number,
+
+    },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    expired: {
+      type: Boolean,
+      default: false
+    },
+    DateIso: {
+      type: Number,
+    }
+
+
+
+
+  },
+  { timestamps: true }
+);
+
+const OTPverify = mongoose.model('otpverify', otpverifySchema);
+
+
+
 module.exports = {
   AgriCandidate,
   AgriEventSlot,
@@ -461,4 +597,6 @@ module.exports = {
   SlotBooking,
   BookedSlot,
   Reference,
+  Emailverify,
+  OTPverify
 };

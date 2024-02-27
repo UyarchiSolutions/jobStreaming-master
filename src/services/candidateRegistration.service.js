@@ -20,6 +20,9 @@ const {
   IntrestedCandidate,
   agriCandReview,
   BookedSlot,
+  Emailverify,
+  OTPverify
+
 } = require('../models/agri.Event.model');
 const AWS = require('aws-sdk');
 
@@ -50,59 +53,103 @@ const createCandidate = async (req) => {
 };
 
 
-const opt_verification = async (req) => {
-  let user = await AgriCandidate.findById(req.body.id);
-  if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
+const create_email_verify = async (user, token) => {
+  await Emailverify.updateMany({ userId: user._id, status: "Pending" }, { $set: { status: "expired" } }, { new: true })
+  let tokens = await Emailverify.create({ token: token.access.token, userId: user._id, type: "Candidate" });
+  return tokens;
+}
+
+
+const otp_verification = async (req) => {
+
+  let email = await Emailverify.findById(req.body.token);
+  if (!email) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invaid Link');
   }
+  if (email.status != 'Pending') {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invaid Link Status');
+  }
+  let user = await AgriCandidate.findById(email.userId);
+  // console.log(user, 879765)
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate Not Found');
+  }
+  user.emailVerify = 'Verified';
+  user.save();
+  let otp = await send_otp_now(user);
+  return otp;
+}
 
-
-  return user;
+const verify_otp_now = async (req) => {
+  let email = await Emailverify.findById(req.body.token);
+  if (!email) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invaid Link');
+  }
+  if (email.status != 'Pending') {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invaid Link Status');
+  }
+  let user = await AgriCandidate.findById(email.userId);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate Not Found');
+  }
+  console.log({ type: "Candidate", userId: user._id, OTP: req.body.OTP });
+  let otp = await OTPverify.findOne({ type: "Candidate", userId: user._id, OTP: req.body.OTP });
+  if (!otp) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid OTP');
+  }
+  if (otp.verify) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'OTP Already used');
+  }
+  otp.verify = true;
+  otp.save();
+  user.mobileVerify = 'Verified';
+  user.save();
+  email.status = 'Used';
+  email.save();
+  return { accessToken: email.token };
 }
 
 
 
-const send_otp_now = async (stream) => {
+const send_otp_now = async (user) => {
   let OTPCODE = Math.floor(100000 + Math.random() * 900000);
   let Datenow = new Date().getTime();
-  let otpsend = await EmployerOTP.findOne({
-    empId: stream._id,
+  let otpsend = await OTPverify.findOne({
+    userId: user._id,
+    type: "Candidate",
     otpExpiedTime: { $gte: Datenow },
     verify: false,
     expired: false,
   });
   if (!otpsend) {
-    const token = await EmployerRegistration.findById(stream._id);
-    await EmployerOTP.updateMany(
-      { empId: stream._id, verify: false },
-      { $set: { verify: true, expired: true } },
-      { new: true }
-    );
+    await OTPverify.updateMany({ empId: user._id, verify: false, type: "Candidate", }, { $set: { verify: true, expired: true } }, { new: true });
     let exp = moment().add(5, 'minutes');
-    let otp = await EmployerOTP.create({
+    let otp = await OTPverify.create({
       OTP: OTPCODE,
       verify: false,
-      mobile: token.mobileNumber,
-      empId: stream._id,
+      mobile: user.mobile,
+      userId: user._id,
       DateIso: moment(),
       expired: false,
       otpExpiedTime: exp,
+      type: "Candidate",
     });
     let message = `${OTPCODE} is the Onetime password(OTP) for mobile number verification . This is usable once and valid for 5 minutes from the request- Climb(An Ookam company product)`;
-    let reva = await axios.get(
-      `http://panel.smsmessenger.in/api/mt/SendSMS?user=ookam&password=ookam&senderid=OOKAMM&channel=Trans&DCS=0&flashsms=0&number=${token.mobileNumber}&text=${message}&route=6&peid=1701168700339760716&DLTTemplateId=1707170322899337958`
+    let reva = await Axios.get(
+      `http://panel.smsmessenger.in/api/mt/SendSMS?user=ookam&password=ookam&senderid=OOKAMM&channel=Trans&DCS=0&flashsms=0&number=${user.mobile}&text=${message}&route=6&peid=1701168700339760716&DLTTemplateId=1707170322899337958`
     );
-    console.log(reva.data, 'asdas');
     otpsend = { otpExpiedTime: otp.otpExpiedTime };
   } else {
     otpsend = { otpExpiedTime: otpsend.otpExpiedTime };
   }
+
+  console.log(otpsend)
   return otpsend;
 };
 
 
 const getUserById = async (id) => {
-  const data = await CandidateRegistration.findById(id);
+  const data = await AgriCandidate.findById(id);
   if (!data) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
   }
@@ -177,37 +224,43 @@ const forget_password_Otp = async (body) => {
   return { message: 'Otp Verification Success' };
 };
 
-const forget_password_set = async (id, body) => {
-  const { password, confirmpassword } = body;
-  if (password != confirmpassword) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'confirmpassword wrong');
+const forget_password_set = async (body) => {
+  const { password, confirmpassword, token } = body;
+  try {
+    const payload = jwt.verify(token, config.jwt.secret);
+
+    if (password != confirmpassword) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'confirmpassword wrong');
+    }
+    const salt = await bcrypt.genSalt(10);
+    let password1 = await bcrypt.hash(password, salt);
+    await AgriCandidate.findByIdAndUpdate({ _id: payload.sub }, { password: password1, setPassword: true }, { new: true });
+    return { setpassword: "Successfull" };
+
+  } catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Acccess');
   }
-  const salt = await bcrypt.genSalt(10);
-  let password1 = await bcrypt.hash(password, salt);
-  const data = await CandidateRegistration.findByIdAndUpdate({ _id: id }, { password: password1 }, { new: true });
-  return data;
+
 };
 
 const UsersLogin = async (userBody) => {
   const { email, password } = userBody;
-  let userName = await CandidateRegistration.findOne({ email: email });
+  let userName = await AgriCandidate.findOne({ mail: email });
 
   if (!userName) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email Not Registered');
-  } else {
-    if (userName.isEmailVerified != true) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Email Not Verified');
-    }
-    if (await userName.isPasswordMatch(password)) {
-      await CandidateRegistration.findOneAndUpdate(
-        { email: email },
-        { latestdate: moment().format('YYYY-MM-DD') },
-        { new: true }
-      );
-    } else {
-      throw new ApiError(httpStatus.UNAUTHORIZED, "Password Doesn't Match");
-    }
   }
+  if (userName.emailVerify != 'Verified') {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email Not Verified');
+  }
+  if (!await userName.isPasswordMatch(password)) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Password Doesn't Match");
+  }
+  userName = await AgriCandidate.findOneAndUpdate(
+    { mail: email },
+    { latestdate: moment().format('YYYY-MM-DD') },
+    { new: true }
+  );
   return userName;
 };
 
@@ -401,7 +454,9 @@ module.exports = {
   update_mobilenumber_send_otp,
   update_mobilenumber_otp_verify,
   send_otp_now,
-  opt_verification
+  otp_verification,
+  create_email_verify,
+  verify_otp_now
   //   getUserById,
   //   getUserByEmail,
   //   updateUserById,
