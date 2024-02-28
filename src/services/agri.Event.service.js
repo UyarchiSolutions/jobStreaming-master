@@ -949,21 +949,15 @@ const getCandidateById = async (req) => {
 
 const getCandBy = async (req) => {
   const { mob_email } = req.body;
-  let findByEmail = await AgriCandidate.findOne({ mail: mob_email });
-  let findBymobile = await AgriCandidate.findOne({ mobile: mob_email });
-  if (findByEmail != null) {
-    if (findByEmail.slotbooked == true) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Your Slot Booking has Completed');
-    }
-    return findByEmail;
-  } else if (findBymobile != null) {
-    if (findBymobile.slotbooked == true) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Your Slot Booking has Completed');
-    }
-    return findBymobile;
-  } else {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Mobile OR Email Address');
+  let findByEmail = await AgriCandidate.find({ $or: [{ mail: mob_email }, { mobile: mob_email }] });
+  if (findByEmail.length == 0) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Not exist');
   }
+  if (findByEmail.slotbooked == true) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Your Slot Booking has Completed');
+  }
+  return findByEmail[0];
+
 };
 
 const createSlotBooking = async (req) => {
