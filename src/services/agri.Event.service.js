@@ -956,7 +956,7 @@ const getCandBy = async (req) => {
   if (findByEmail.slotbooked == true) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Your Slot Booking has Completed');
   }
-  return findByEmail[0];
+  return { _id: findByEmail[0].id };
 
 };
 
