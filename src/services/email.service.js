@@ -36,8 +36,7 @@ if (config.env !== 'test') {
  */
 const sendVerificationEmail = async (user, tokens) => {
   data1 = await ejs.renderFile(__dirname + '/verifytemplate.ejs', {
-    ID: tokens,
-    email: user.mail,
+    OTP: tokens,
   });
 
   const msg = {

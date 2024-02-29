@@ -13,13 +13,12 @@ const register = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.createCandidate(req);
   const tokens = await tokenService.generateAuthTokens(user);
   const savetoken = await candidateRegistrationService.create_email_verify(user, tokens);
-  await emailService.sendVerificationEmail(user, savetoken._id);
-  res.send(user);
+  await emailService.sendVerificationEmail(user, savetoken.OTP);
+  res.send({ tokens, userId: user._id });
 });
 
 const otp_verification = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.otp_verification(req);
-  // await candidateRegistrationService.send_otp_now(user);
   res.send(user);
 });
 
@@ -91,6 +90,15 @@ const forget_password_set = catchAsync(async (req, res) => {
   res.send(user);
 });
 
+const email_verification = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.email_verification(req);
+  res.send(user);
+});
+const check_email_verification = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.check_email_verification(req);
+  res.send(user);
+});
+
 const login = catchAsync(async (req, res) => {
   const user = await candidateRegistrationService.UsersLogin(req.body);
   const token = await tokenService.generateAuthTokens(user);
@@ -103,7 +111,7 @@ const forgot = catchAsync(async (req, res) => {
 });
 
 const change_password = catchAsync(async (req, res) => {
-  const user = await candidateRegistrationService.change_password(req.params.id, req.body);
+  const user = await candidateRegistrationService.change_password(req.userId, req.body);
   res.send({ user });
 });
 
@@ -116,6 +124,43 @@ const getUserById = catchAsync(async (req, res) => {
   let userId = req.userId;
   console.log(userId)
   const user = await candidateRegistrationService.getUserById(userId);
+  res.send(user);
+});
+
+const update_basic_details = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.update_basic_details(req);
+  res.send(user);
+});
+
+
+const update_other_details = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.update_other_details(req);
+  res.send(user);
+});
+
+const upload_resume = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.upload_resume(req);
+  res.send(user);
+});
+
+
+
+const verify_email_new = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.verify_email_new(req);
+  res.send(user);
+});
+
+const verify_mobile = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.verify_mobile(req);
+  res.send(user);
+});
+
+const update_email_new = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.update_email_new(req);
+  res.send(user);
+});
+const update_mobile = catchAsync(async (req, res) => {
+  const user = await candidateRegistrationService.update_mobile(req);
   res.send(user);
 });
 
@@ -227,5 +272,15 @@ module.exports = {
   //   verifyEmail,
   updateResume,
   otp_verification,
-  verify_otp_now
+  verify_otp_now,
+  update_basic_details,
+  update_other_details,
+  upload_resume,
+  verify_email_new,
+  verify_mobile,
+  update_email_new,
+  update_mobile,
+  email_verification,
+  check_email_verification
+
 };

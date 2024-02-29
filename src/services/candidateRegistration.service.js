@@ -54,8 +54,10 @@ const createCandidate = async (req) => {
 
 
 const create_email_verify = async (user, token) => {
+  let OTPCODE = Math.floor(100000 + Math.random() * 900000);
+
   await Emailverify.updateMany({ userId: user._id, status: "Pending" }, { $set: { status: "expired" } }, { new: true })
-  let tokens = await Emailverify.create({ token: token.access.token, userId: user._id, type: "Candidate" });
+  let tokens = await Emailverify.create({ token: token.access.token, userId: user._id, type: "Candidate", OTP: OTPCODE });
   return tokens;
 }
 
@@ -111,6 +113,42 @@ const verify_otp_now = async (req) => {
 
 
 
+const update_mobile_number = async (mobile, userId) => {
+  let OTPCODE = Math.floor(100000 + Math.random() * 900000);
+  let Datenow = new Date().getTime();
+  let otpsend = await OTPverify.findOne({
+    userId: userId,
+    type: "Candidate",
+    otpExpiedTime: { $gte: Datenow },
+    verify: false,
+    expired: false,
+    mobile: mobile
+  });
+  console.log(otpsend, 8767)
+  if (!otpsend) {
+    await OTPverify.updateMany({ empId: userId, verify: false, type: "Candidate", }, { $set: { verify: true, expired: true } }, { new: true });
+    let exp = moment().add(5, 'minutes');
+    let otp = await OTPverify.create({
+      OTP: OTPCODE,
+      verify: false,
+      mobile: mobile,
+      userId: userId,
+      DateIso: moment(),
+      expired: false,
+      otpExpiedTime: exp,
+      type: "Candidate",
+    });
+    let message = `${OTPCODE} is the Onetime password(OTP) for mobile number verification . This is usable once and valid for 5 minutes from the request- Climb(An Ookam company product)`;
+    let reva = await Axios.get(
+      `http://panel.smsmessenger.in/api/mt/SendSMS?user=ookam&password=ookam&senderid=OOKAMM&channel=Trans&DCS=0&flashsms=0&number=${mobile}&text=${message}&route=6&peid=1701168700339760716&DLTTemplateId=1707170322899337958`
+    );
+    otpsend = { otpExpiedTime: otp.otpExpiedTime };
+  } else {
+    otpsend = { otpExpiedTime: otpsend.otpExpiedTime };
+  }
+  return otpsend;
+};
+
 const send_otp_now = async (user) => {
   let OTPCODE = Math.floor(100000 + Math.random() * 900000);
   let Datenow = new Date().getTime();
@@ -149,12 +187,122 @@ const send_otp_now = async (user) => {
 
 
 const getUserById = async (id) => {
-  const data = await AgriCandidate.findById(id);
+
+  const data = await AgriCandidate.findById(id, 'Education Instituitionname affiliateduniversity course createdAt dob experience_month experience_year gender language location mail mobile name resumeUrl skills yearOfPassing ')
   if (!data) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
   }
   return data;
 };
+
+const update_basic_details = async (req) => {
+  let cand = await AgriCandidate.findById(req.userId);
+  if (!cand) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }
+  const { name, gender, location } = req.body;
+
+  cand = await AgriCandidate.findByIdAndUpdate({ _id: req.userId }, { name, gender, location }, { new: true }).select("-password")
+  return cand;
+};
+
+const update_other_details = async (req) => {
+  const { skills,
+    Instituitionname,
+    affiliateduniversity,
+    Education,
+    course,
+    yearOfPassing,
+    dob,
+    language,
+    experience_year,
+    experience_month } = req.body;
+  let cand = await AgriCandidate.findById(req.userId);
+  if (!cand) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
+  }
+  const { name, gender, location } = req.body;
+
+  cand = await AgriCandidate.findByIdAndUpdate({ _id: req.userId }, {
+    skills,
+    Instituitionname,
+    affiliateduniversity,
+    Education,
+    course,
+    yearOfPassing,
+    dob,
+    language,
+    experience_year,
+    experience_month
+  }, { new: true }).select("-password")
+  return cand;
+
+}
+
+const upload_resume = async (req) => {
+  let id = req.userId;
+  let values = await AgriCandidate.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Candidate not Register');
+  }
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  let params = {
+    Bucket: 'jobresume',
+    Key: req.file.originalname,
+    Body: req.file.buffer,
+    ACL: 'public-read',
+    ContentType: req.file.mimetype,
+  };
+  return new Promise((resolve, reject) => {
+    s3.upload(params, async (err, data) => {
+      if (err) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'video upload Not Working..');
+      }
+      values = await AgriCandidate.findByIdAndUpdate({ _id: id }, { resumeUrl: data.Location }, { new: true });
+      resolve(values)
+    });
+
+  })
+}
+
+const verify_email_new = async (req) => {
+
+}
+const verify_mobile = async (req) => {
+
+  let userId = req.userId;
+  let user = await AgriCandidate.findById(userId);
+  let mobile = req.body.mobile;
+
+  let otp = await update_mobile_number(mobile, userId);
+  return otp;
+}
+
+const update_email_new = async (req) => {
+
+
+}
+const update_mobile = async (req) => {
+  let userId = req.userId;
+  let user = await AgriCandidate.findById(userId);
+
+  let otp = await OTPverify.findOne({ type: "Candidate", userId: user._id, OTP: req.body.OTP, verify: false });
+  if (!otp) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid OTP');
+  }
+  if (otp.verify) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'OTP Already used');
+  }
+  otp.verify = true;
+  otp.save();
+  user.mobile = otp.mobile;
+  user.save();
+  return { mobile: user.mobile };
+}
 
 const verify_email = async (token) => {
   const payload = jwt.verify(token, config.jwt.secret);
@@ -243,6 +391,39 @@ const forget_password_set = async (body) => {
 
 };
 
+const email_verification = async (req) => {
+  const token = req.headers.token;
+  try {
+    const payload = jwt.verify(token, config.jwt.secret);
+    const cand = await AgriCandidate.findById(payload.sub, 'mail mobile name');
+    // const email = await Emailverify.findOne({ emailverifyed: false, userId: cand._id, type: "Candidate" });
+    return cand;
+  }
+  catch (error) {
+
+  }
+}
+
+const check_email_verification = async (req) => {
+  const token = req.headers.token;
+  try {
+    const payload = jwt.verify(token, config.jwt.secret);
+    const cand = await AgriCandidate.findById(payload.sub, 'mail mobile name');
+    const email = await Emailverify.findOne({ emailverifyed: false, userId: cand._id, OTP: req.body.OTP, type: "Candidate", }, 'type userId token');
+
+    if (!email) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid OTP');
+    }
+    email.emailverifyed = true;
+    console.log(email)
+    return email;
+  }
+  catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid OTP');
+  }
+
+}
+
 const UsersLogin = async (userBody) => {
   const { email, password } = userBody;
   let userName = await AgriCandidate.findOne({ mail: email });
@@ -289,13 +470,20 @@ const forgot = async (body) => {
 };
 
 const change_password = async (id, body) => {
-  const { password, confirmpassword } = body;
+  let data = await AgriCandidate.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid User');
+  }
+  const { password, confirmpassword, oldpassword } = body;
   if (password != confirmpassword) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'confirmpassword wrong');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'confirmpassword wrong');
+  }
+  if (!await data.isPasswordMatch(oldpassword)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Old Password Doesn't Match");
   }
   const salt = await bcrypt.genSalt(10);
   let password1 = await bcrypt.hash(password, salt);
-  const data = await CandidateRegistration.findByIdAndUpdate({ _id: id }, { password: password1 }, { new: true });
+  data = await AgriCandidate.findByIdAndUpdate({ _id: id }, { password: password1 }, { new: true });
   return data;
 };
 
@@ -456,7 +644,17 @@ module.exports = {
   send_otp_now,
   otp_verification,
   create_email_verify,
-  verify_otp_now
+  verify_otp_now,
+  update_basic_details,
+  update_other_details,
+  upload_resume,
+  verify_email_new,
+
+  verify_mobile,
+  update_email_new,
+  update_mobile,
+  email_verification,
+  check_email_verification
   //   getUserById,
   //   getUserByEmail,
   //   updateUserById,

@@ -507,8 +507,18 @@ const emailverifySchema = mongoose.Schema(
     },
     token: {
       type: String,
+    },
+    OTP: {
+      type: Number,
+    },
+    emailverifyed: {
+      type: Boolean,
+      default: false,
+    },
+    mobileverifyed: {
+      type: Boolean,
+      default: false,
     }
-
 
 
 
@@ -558,6 +568,9 @@ const otpverifySchema = mongoose.Schema(
       default: false
     },
     DateIso: {
+      type: Number,
+    },
+    mobile: {
       type: Number,
     }
 
