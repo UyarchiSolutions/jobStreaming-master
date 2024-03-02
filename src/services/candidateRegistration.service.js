@@ -277,7 +277,11 @@ const verify_mobile = async (req) => {
   let userId = req.userId;
   let user = await AgriCandidate.findById(userId);
   let mobile = req.body.mobile;
+  let ext = await AgriCandidate.findOne({ mobile: mobile });
+  if (ext) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'This  Number Add Another Account');
 
+  }
   let otp = await update_mobile_number(mobile, userId);
   return otp;
 }
