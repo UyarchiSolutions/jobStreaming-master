@@ -7,6 +7,7 @@ const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const AWS = require('aws-sdk');
 const axios = require('axios');
+const { default: strictTransportSecurity } = require('helmet/dist/middlewares/strict-transport-security');
 const createVolunteer = async (req) => {
   let body = req.body;
   let findByEmail = await Volunteer.findOne({ email: body.email });
@@ -82,7 +83,7 @@ const MatchCandidate = async (req) => {
     let findCand = await AgriCandidate.aggregate([
       {
         $match: {
-          $and: [keySkillSearch],
+          $and: [keySkillSearch, { status: { $in: ['Slot Chosen', 'Approved', 'Waiting For Approval'] } }],
         },
       },
       {
@@ -98,7 +99,66 @@ const MatchCandidate = async (req) => {
           from: 'slotbookings',
           localField: '_id',
           foreignField: 'candId',
-          pipeline: [{ $match: { streamStatus: 'Pending', Type: 'Tech' } }],
+          pipeline: [
+            { $match: { streamStatus: 'Pending', Type: 'Tech' } },
+            {
+              $lookup: {
+                from: 'intrestedcandidates',
+                localField: 'DateTime',
+                foreignField: 'startTime',
+                pipeline: [
+                  {
+                    $match: {
+                      $and: [
+                        {
+                          volunteerId: { $eq: id }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    $lookup: {
+                      from: 'agricandidates',
+                      localField: 'candId',
+                      foreignField: '_id',
+                      as: 'agricandidates',
+                    },
+                  },
+                  { $unset: "agricandidates" }
+                ],
+                as: 'already_choosen',
+              },
+            },
+            {
+              $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$already_choosen',
+              },
+            },
+            {
+              $addFields: {
+                already_choosenss: {
+                  $cond: {
+                    if: { $eq: [true, { $ifNull: ["$already_choosen", true] }] },
+                    then: false,
+                    else: {
+                      $cond: {
+                        if: { $ne: ["$already_choosen.status", 'Intrested'] },
+                        then: true,
+                        else: {
+                          $cond: {
+                            if: { $in: ['$already_choosen.agricandidates.status', ['Slot Chosen', 'Approved', 'Waiting For Approval']] },
+                            then: true,
+                            else: false,
+                          },
+                        },
+                      },
+                    }
+                  }
+                }
+              },
+            },
+          ],
           as: 'candidate',
         },
       },
@@ -108,13 +168,6 @@ const MatchCandidate = async (req) => {
       {
         $addFields: {
           isIdInArrayss: {
-            $in: [id, '$intrest'],
-          },
-        },
-      },
-      {
-        $addFields: {
-          techIntrestss: {
             $in: [id, '$techIntrest'],
           },
         },
@@ -138,12 +191,14 @@ const MatchCandidate = async (req) => {
           intrest: 1,
           slotDate: '$candidate.date',
           slotTime: '$candidate.time',
+          already_choosen: "$candidate.already_choosenss",
           Type: '$candidate.Type',
           slotId: '$candidate._id',
           isIdInArray: '$isIdInArrayss',
           Tech: { $size: '$techIntrest' },
           HR: { $size: '$intrest' },
           experience: 1,
+          already_: "$candidate",
           experience_year: 1,
           experience_month: 1
         },
@@ -166,7 +221,67 @@ const MatchCandidate = async (req) => {
           from: 'slotbookings',
           localField: '_id',
           foreignField: 'candId',
-          pipeline: [{ $match: { streamStatus: 'Pending', Type: 'HR' } }],
+          pipeline: [
+            { $match: { streamStatus: 'Pending', Type: 'HR' } },
+            {
+              $lookup: {
+                from: 'intrestedcandidates',
+                localField: 'DateTime',
+                foreignField: 'startTime',
+                pipeline: [
+                  {
+                    $match: {
+                      $and: [
+                        {
+                          volunteerId: { $eq: id }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    $lookup: {
+                      from: 'agricandidates',
+                      localField: 'candId',
+                      foreignField: '_id',
+                      as: 'agricandidates',
+                    },
+                  },
+                  { $unwind: "$agricandidates" }
+                ],
+                as: 'already_choosen',
+              },
+            },
+            {
+              $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$already_choosen',
+              },
+            },
+            {
+              $addFields: {
+                already_choosenss: {
+                  $cond: {
+                    if: { $eq: [true, { $ifNull: ["$already_choosen", true] }] },
+                    then: false,
+                    else: {
+                      $cond: {
+                        if: { $ne: ["$already_choosen.hrStatus", 'Intrested'] },
+                        then: true,
+                        else: {
+                          $cond: {
+                            if: { $in: ['$already_choosen.agricandidates.status', ['Slot Chosen', 'Approved', 'Waiting For Approval']] },
+                            then: true,
+                            else: false,
+                          },
+                        },
+                      },
+                    }
+                  }
+                }
+              },
+            },
+          
+          ],
           as: 'candidate',
         },
       },
@@ -186,14 +301,7 @@ const MatchCandidate = async (req) => {
         },
       },
       {
-        $match: { $and: [match_experience] },
-      },
-      {
-        $addFields: {
-          techIntrestss: {
-            $in: [id, '$techIntrest'],
-          },
-        },
+        $match: { $and: [match_experience, { status: { $in: ['Slot Chosen', 'Approved', 'Waiting For Approval'] } }] },
       },
       {
         $lookup: {
@@ -218,6 +326,8 @@ const MatchCandidate = async (req) => {
           slotId: '$candidate._id',
           isIdInArray: '$isIdInArrayss',
           Tech: { $size: '$techIntrest' },
+          already_choosen: "$candidate.already_choosenss",
+          already_: "$candidate",
           HR: { $size: '$intrest' },
           experience: 1,
           experience_year: 1,
@@ -539,10 +649,17 @@ const getIntrestedCandidates = async (req) => {
   let userId = req.userId;
   let role = req.Role == 'HR Volunteer' ? 'HR' : 'Tech';
   let matchIntrestedCand = { active: true };
+  let typeMatch = { active: true };
+  let statusMatch = "$IntrestedCandidate.status";
+  let statusValue = 'Intrested';
   if (role == 'HR') {
     matchIntrestedCand = { intrest: { $in: [userId] } };
+    typeMatch = { Type: { $eq: "HR" } };
+    statusMatch = "$IntrestedCandidate.hrStatus";
+    statusValue = 'Pending';
   } else {
     matchIntrestedCand = { techIntrest: { $in: [userId] } };
+    typeMatch = { Type: { $eq: "Tech" } }
   }
   let values = await AgriCandidate.aggregate([
     {
@@ -561,6 +678,38 @@ const getIntrestedCandidates = async (req) => {
       $unwind: {
         preserveNullAndEmptyArrays: true,
         path: '$IntrestedCandidate',
+      },
+    },
+    {
+      $lookup: {
+        from: 'slotbookings',
+        localField: '_id',
+        foreignField: 'candId',
+        pipeline: [{ $match: typeMatch }],
+        as: 'slotbookings',
+      },
+    },
+    {
+      $unwind: '$slotbookings',
+    },
+
+    { $addFields: { DateTime: "$slotbookings.DateTime" } },
+    { $unset: "slotbookings" },
+    {
+      $addFields: {
+        stream_approval: {
+          $cond: {
+            if: { $ne: [statusMatch, statusValue] },
+            then: false,
+            else: {
+              $cond: {
+                if: { $in: ['$status', ['Slot Chosen', 'Approved', 'Waiting For Approval']] },
+                then: false,
+                else: true,
+              },
+            },
+          },
+        }
       },
     },
   ]);
