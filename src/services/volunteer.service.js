@@ -121,10 +121,15 @@ const MatchCandidate = async (req) => {
                       from: 'agricandidates',
                       localField: 'candId',
                       foreignField: '_id',
-                      as: 'agricandidates',
+                      as: 'agricand',
                     },
                   },
-                  { $unset: "agricandidates" }
+                  {
+                    $unwind: {
+                      preserveNullAndEmptyArrays: true,
+                      path: '$agricand',
+                    },
+                  },
                 ],
                 as: 'already_choosen',
               },
@@ -143,11 +148,11 @@ const MatchCandidate = async (req) => {
                     then: false,
                     else: {
                       $cond: {
-                        if: { $eq: ["$already_choosen.status", 'Intrested'] },
+                        if: { $eq: ["$already_choosen.status", 'Approved'] },
                         then: true,
                         else: {
                           $cond: {
-                            if: { $in: ['$already_choosen.agricandidates.status', ['Slot Chosen', 'Approved', 'Waiting For Approval']] },
+                            if: { $in: ['$already_choosen.agricand.status', ['Slot Chosen', 'Approved', 'Waiting For Approval']] },
                             then: true,
                             else: false,
                           },
@@ -246,7 +251,12 @@ const MatchCandidate = async (req) => {
                       as: 'agricandidates',
                     },
                   },
-                  { $unwind: "$agricandidates" }
+                  {
+                    $unwind: {
+                      preserveNullAndEmptyArrays: true,
+                      path: '$agricandidates',
+                    },
+                  },
                 ],
                 as: 'already_choosen',
               },
