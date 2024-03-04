@@ -536,7 +536,6 @@ const getCandidatesForInterview = async (req) => {
     },
   ]);
 
-  // pending = await IntrestedCandidate.findOne({ volunteerId: id, streamStatus: "Joined", rating: { $eq: "Rating Pending" } });
   pending = await IntrestedCandidate.find().populate({
     path: '',
     model: 'SlotBooking',
