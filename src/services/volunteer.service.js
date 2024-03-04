@@ -143,7 +143,7 @@ const MatchCandidate = async (req) => {
                     then: false,
                     else: {
                       $cond: {
-                        if: { $ne: ["$already_choosen.status", 'Intrested'] },
+                        if: { $eq: ["$already_choosen.status", 'Intrested'] },
                         then: true,
                         else: {
                           $cond: {
@@ -265,7 +265,7 @@ const MatchCandidate = async (req) => {
                     then: false,
                     else: {
                       $cond: {
-                        if: { $ne: ["$already_choosen.hrStatus", 'Intrested'] },
+                        if: { $ne: ["$already_choosen.hrStatus", 'Pending'] },
                         then: true,
                         else: {
                           $cond: {
@@ -280,7 +280,7 @@ const MatchCandidate = async (req) => {
                 }
               },
             },
-          
+
           ],
           as: 'candidate',
         },
