@@ -3340,11 +3340,28 @@ const keySkillData = async (key) => {
   // let data = ["angular","nodejs","mongodb","python","sql","react","plsql","java","c","c++"]
   // let filtered = data.filter(fn);
   var query = new RegExp('^' + key, 'i');
-  const data = await Skill.find({ Skill_Title: { $regex: query } })
-    .sort({ Skill_Title: 1 })
-    .limit(10);
-  // .sort({ Skill_Title: 1 })
-  // .select('Skill_Title')
+  const data = await Skill.aggregate([
+    {
+      $match: {
+        $and: [{ Skill_Title: { $regex: query } }]
+      }
+    },
+    {
+      $group: {
+        _id: { Skill_Title: "$Skill_Title" }
+      }
+    },
+    {
+      $project: {
+        _id: "$_id.Skill_Title",
+        Skill_Title: "$_id.Skill_Title"
+      }
+    },
+    { $limit: 20 },
+    { $sort: { Skill_Title: 1 } }
+
+  ]);
+
   return data;
 };
 
