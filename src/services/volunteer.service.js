@@ -25,6 +25,7 @@ const createVolunteer = async (req) => {
 const setPassword = async (req) => {
   const { password, email } = req.body;
   let findByemail = await Volunteer.findOne({ email: email });
+  console.log(findByemail)
   if (!findByemail) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email not found');
   }
@@ -33,6 +34,39 @@ const setPassword = async (req) => {
   findByemail = await Volunteer.findByIdAndUpdate({ _id: findByemail._id }, { password: pwd }, { new: true });
   return findByemail;
 };
+
+const change_password = async (req) => {
+  let id = req.userId;
+  let data = await Volunteer.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid User');
+  }
+  const { password, confirmpassword, oldpassword } = req.body;
+  if (password != confirmpassword) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'confirmpassword wrong');
+  }
+  if (!await data.isPasswordMatch(oldpassword)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Old Password Doesn't Match");
+  }
+  const salt = await bcrypt.genSalt(10);
+  let password1 = await bcrypt.hash(password, salt);
+  data = await Volunteer.findByIdAndUpdate({ _id: id }, { password: password1 }, { new: true });
+  return data;
+};
+
+const forget_password = async (req) => {
+  console.log(req.body.text)
+  let data = await Volunteer.findOne({ mobileNumber: req.body.text })
+  if (!data) {
+    data = await Volunteer.findOne({ email: req.body.text })
+  }
+
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  return { id: data._id }
+}
 
 const Login = async (req) => {
   const { password, email } = req.body;
@@ -568,11 +602,12 @@ const getCandidatesForInterview = async (req) => {
 };
 
 const updateVolunteer = async (req) => {
+  console.log(req.userId)
   let findById = await Volunteer.findById(req.userId);
   if (!findById) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Volunteer not found');
   }
-  findById = await Volunteer.findByIdAndUpdate({ _id: req.params.id }, req.body, { new: true });
+  findById = await Volunteer.findByIdAndUpdate({ _id: req.userId }, req.body, { new: true });
   return findById;
 };
 
@@ -767,4 +802,6 @@ module.exports = {
   VerifyOTP,
   getIntrestedCandidates,
   UndoIntrestedCandidate,
+  change_password,
+  forget_password
 };

@@ -25,4 +25,10 @@ router.route('/sendOTP').get(volunteerController.sendOTP);
 router.route('/verifyOTP').post(volunteerController.VerifyOTP);
 router.route('/getIntrestedCandidates').get(volunteerAuth, volunteerController.getIntrestedCandidates);
 router.route('/UndoIntrestedCandidate/:id').get(volunteerAuth, volunteerController.UndoIntrestedCandidate);
+
+router.route('/change/password').post(volunteerAuth, volunteerController.change_password);
+
+
+router.route('/forget/password').post(volunteerController.forget_password);
+
 module.exports = router;

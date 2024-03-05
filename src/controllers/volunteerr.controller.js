@@ -17,6 +17,16 @@ const setPassword = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const change_password= catchAsync(async (req, res) => {
+  const data = await VolunteerService.change_password(req);
+  res.send(data);
+});
+
+const forget_password= catchAsync(async (req, res) => {
+  const data = await VolunteerService.forget_password(req);
+  res.send(data);
+});
+
 const Login = catchAsync(async (req, res) => {
   const data = await VolunteerService.Login(req);
   const token = await tokenService.generateAuthTokens(data);
@@ -93,4 +103,6 @@ module.exports = {
   VerifyOTP,
   getIntrestedCandidates,
   UndoIntrestedCandidate,
+  change_password,
+  forget_password
 };
