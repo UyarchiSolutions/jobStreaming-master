@@ -568,7 +568,7 @@ const getCandidatesForInterview = async (req) => {
 };
 
 const updateVolunteer = async (req) => {
-  let findById = await Volunteer.findById(req.params.id);
+  let findById = await Volunteer.findById(req.userId);
   if (!findById) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Volunteer not found');
   }
