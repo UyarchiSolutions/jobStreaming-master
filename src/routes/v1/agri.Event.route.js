@@ -34,5 +34,7 @@ router.route('/active/Inactive/candidate/:id').get(AgriEventController.active_In
 router.route('/get/hr/review').get(AgriEventController.get_hr_review);
 router.route('/get/tech/review').get(AgriEventController.get_tech_review);
 
+router.route('/match/volunteers/hr').get(AgriEventController.get_interested_hrs);
+router.route('/match/volunteers/tech').get(AgriEventController.get_interested_tech);
 
 module.exports = router;

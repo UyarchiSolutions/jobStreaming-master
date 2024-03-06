@@ -82,6 +82,17 @@ const getIntrestedByCand_Role = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_interested_hrs = catchAsync(async (req, res) => {
+  const data = await AgriEventService.get_interested_hrs(req);
+  res.send(data);
+});
+
+const get_interested_tech = catchAsync(async (req, res) => {
+  const data = await AgriEventService.get_interested_tech(req);
+  res.send(data);
+});
+
+
 const AdminApprove = catchAsync(async (req, res) => {
   const data = await AgriEventService.AdminApprove(req);
   res.send(data);
@@ -152,5 +163,7 @@ module.exports = {
   getStreamDetailsByCand,
   active_Inactive_candidate,
   get_hr_review,
-  get_tech_review
+  get_tech_review,
+  get_interested_hrs,
+  get_interested_tech
 };

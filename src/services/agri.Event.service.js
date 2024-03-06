@@ -9,6 +9,8 @@ const {
   BookedSlot,
 } = require('../models/agri.Event.model');
 
+const { Volunteer } = require('../models/vlounteer.model');
+
 const { Democloudrecord } = require('../models/liveStreaming/demo.realestate.model');
 
 const { EventRegister } = require('../models/climb-event.model');
@@ -903,6 +905,260 @@ const getIntrestedByCand_Role = async (req) => {
   return { value, Counts };
 };
 
+const get_interested_hrs = async (req) => {
+  let id = req.query.id;
+  let candidate = await AgriCandidate.findById(id);
+  if (!candidate) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Upload file');
+  }
+  // let skils = 
+  let coreExperienceFrom = candidate.experience_year;
+  let coreExperienceTo = candidate.experience_month;
+  let month = (coreExperienceTo * 100) / 1200;
+  totalexp = coreExperienceFrom + month;
+  match_experience = { experience: { $gt: totalexp } }
+
+  let slots = await SlotBooking.findOne({ candId: candidate._id, Type: "HR" });
+  if (!slots) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Not Found');
+  }
+  let start = slots.DateTime;
+
+
+
+  let volunteer = await Volunteer.aggregate([
+    {
+      $match: {
+        $and: [
+          { Role: { $eq: "HR Volunteer" } },
+        ]
+      }
+    },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        foreignField: 'volunteerId',
+        pipeline: [{
+          $match: {
+            $and: [{ Role: 'HR Volunteer' }, { candId: { $eq: id } }]
+          }
+        }],
+        as: 'intrestedcandidates',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$intrestedcandidates"
+      }
+    },
+    {
+      $addFields: {
+        alreadyIntrested: { $ifNull: ["$intrestedcandidates.active", false] },
+        alreadyIntrested_status: { $ifNull: ["$intrestedcandidates.status", null] },
+      },
+    },
+    { $unset: "intrestedcandidates" },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        foreignField: 'volunteerId',
+        pipeline: [
+          {
+            $match: {
+              $and: [{ Role: 'HR Volunteer' }, { candId: { $ne: id } }, { startTime: { $eq: start } }]
+            },
+          },
+          {
+            $lookup: {
+              from: 'agricandidates',
+              localField: 'candId',
+              foreignField: '_id',
+              as: 'agricandidates',
+            },
+          },
+          { $unwind: "$agricandidates" },
+          {
+            $addFields: {
+              matchvalue: {
+                $cond: {
+                  if: { $eq: ["$status", 'Approved'] },
+                  then: true,
+                  else: {
+                    $cond: {
+                      if: { $in: ['$agricandidates.status', ['Slot Chosen', 'Approved', 'Waiting For Approval']] },
+                      then: true,
+                      else: false,
+                    },
+                  },
+                },
+              }
+            }
+          },
+          { $unset: "agricandidates" }
+        ],
+        as: 'intrestedcandidatessss',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$intrestedcandidatessss"
+      }
+    },
+    { $addFields: { committed: { $ifNull: ["$intrestedcandidatessss.matchvalue", false] } } },
+    { $match: { $and: [{ committed: { $eq: false } }] } }
+  ])
+
+  return volunteer;
+}
+
+
+
+
+
+const get_interested_tech = async (req) => {
+
+  let id = req.query.id;
+  let candidate = await AgriCandidate.findById(id);
+  if (!candidate) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Upload file');
+  }
+
+  let match_experience = { Role: { $eq: "Tech Volunteer" } }
+  let keySkillSearch = { Role: { $eq: "Tech Volunteer" } }
+
+
+  let coreExperienceFrom = candidate.experience_year;
+  let coreExperienceTo = candidate.experience_month;
+  let month = (coreExperienceTo * 100) / 1200;
+  totalexp = coreExperienceFrom + month;
+  if (req.query.match == 'match') {
+    match_experience = { experience: { $gt: totalexp } }
+  }
+  else {
+    match_experience = { experience: { $lt: totalexp } }
+  }
+
+  let volunSkills = candidate.skills;
+  if (volunSkills.length > 0) {
+    let arr = [];
+    volunSkills.forEach((e) => {
+      arr.push({ skills: { $elemMatch: { $regex: e, $options: 'i' } } });
+    });
+    keySkillSearch = { $or: arr };
+  }
+
+  let slots = await SlotBooking.findOne({ candId: candidate._id, Type: "Tech" });
+  if (!slots) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Not Found');
+  }
+  let start = slots.DateTime;
+
+
+  let volunteer = await Volunteer.aggregate([
+    {
+      $match: {
+        $and: [
+          { Role: { $eq: "Tech Volunteer" } },
+          keySkillSearch
+        ]
+      }
+    },
+    {
+      $addFields: {
+        experience: { $add: [{ $divide: [{ $multiply: ["$coreExperienceTo", 100] }, 1200] }, "$coreExperienceFrom"] }
+      },
+    },
+    {
+      $match: { $and: [match_experience] },
+    },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        foreignField: 'volunteerId',
+        pipeline: [{
+          $match: {
+            $and: [{ Role: 'Tech Volunteer' }, { candId: { $eq: id } }]
+          }
+        }],
+        as: 'intrestedcandidates',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$intrestedcandidates"
+      }
+    },
+    {
+      $addFields: {
+        alreadyIntrested: { $ifNull: ["$intrestedcandidates.active", false] },
+        alreadyIntrested_status: { $ifNull: ["$intrestedcandidates.status", null] },
+      },
+    },
+    { $unset: "intrestedcandidates" },
+    {
+      $lookup: {
+        from: 'intrestedcandidates',
+        localField: '_id',
+        foreignField: 'volunteerId',
+        pipeline: [
+          {
+            $match: {
+              $and: [{ Role: 'Tech Volunteer' }, { candId: { $ne: id } }, { startTime: { $eq: start } }]
+            },
+          },
+          {
+            $lookup: {
+              from: 'agricandidates',
+              localField: 'candId',
+              foreignField: '_id',
+              as: 'agricandidates',
+            },
+          },
+          { $unwind: "$agricandidates" },
+          {
+            $addFields: {
+              matchvalue: {
+                $cond: {
+                  if: { $eq: ["$status", 'Approved'] },
+                  then: true,
+                  else: {
+                    $cond: {
+                      if: { $in: ['$agricandidates.status', ['Slot Chosen', 'Approved', 'Waiting For Approval']] },
+                      then: true,
+                      else: false,
+                    },
+                  },
+                },
+              }
+            }
+          },
+          { $unset: "agricandidates" }
+        ],
+        as: 'intrestedcandidatessss',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: "$intrestedcandidatessss"
+      }
+    },
+    { $addFields: { committed: { $ifNull: ["$intrestedcandidatessss.matchvalue", false] } } },
+    { $match: { $and: [{ committed: { $eq: false } }] } }
+
+  ])
+
+  return volunteer;
+
+
+}
+
 const getCandidateById = async (req) => {
   let id = req.params.id;
   let values = await AgriCandidate.findById(id);
@@ -1451,5 +1707,7 @@ module.exports = {
   get_hr_review,
   get_tech_review,
   link_send,
-  getslots
+  getslots,
+  get_interested_hrs,
+  get_interested_tech
 };
