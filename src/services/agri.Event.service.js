@@ -977,6 +977,7 @@ const get_interested_hrs = async (req) => {
         alreadyIntrested_status: { $ifNull: ["$intrestedcandidates.status", null] },
       },
     },
+    { $match: { $and: [{ alreadyIntrested: { $eq: false } }] } },
     { $unset: "intrestedcandidates" },
     {
       $lookup: {
@@ -1028,6 +1029,7 @@ const get_interested_hrs = async (req) => {
     },
     { $addFields: { committed: { $ifNull: ["$intrestedcandidatessss.matchvalue", false] } } },
     { $match: { $and: [{ committed: { $eq: false } }] } }
+
   ])
 
   return volunteer;
@@ -1118,6 +1120,7 @@ const get_interested_tech = async (req) => {
         alreadyIntrested_status: { $ifNull: ["$intrestedcandidates.status", null] },
       },
     },
+    { $match: { $and: [{ alreadyIntrested: { $eq: false } }] } },
     { $unset: "intrestedcandidates" },
     {
       $lookup: {
