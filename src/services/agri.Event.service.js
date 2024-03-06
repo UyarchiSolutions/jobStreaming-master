@@ -911,13 +911,20 @@ const get_interested_hrs = async (req) => {
   if (!candidate) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Upload file');
   }
-  // let skils = 
+
+  let match_experience = { Role: { $eq: "HR Volunteer" } }
+
+
   let coreExperienceFrom = candidate.experience_year;
   let coreExperienceTo = candidate.experience_month;
   let month = (coreExperienceTo * 100) / 1200;
   totalexp = coreExperienceFrom + month;
-  match_experience = { experience: { $gt: totalexp } }
-
+  if (req.query.match == 'match') {
+    match_experience = { experience: { $gt: totalexp } }
+  }
+  else {
+    match_experience = { experience: { $lt: totalexp } }
+  }
   let slots = await SlotBooking.findOne({ candId: candidate._id, Type: "HR" });
   if (!slots) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Not Found');
@@ -934,6 +941,17 @@ const get_interested_hrs = async (req) => {
         ]
       }
     },
+
+    {
+      $addFields: {
+        experience: { $add: [{ $divide: [{ $multiply: ["$hrExperienceTo", 100] }, 1200] }, "$hrExperienceFrom"] }
+      },
+    },
+
+    {
+      $match: { $and: [match_experience] },
+    },
+
     {
       $lookup: {
         from: 'intrestedcandidates',
