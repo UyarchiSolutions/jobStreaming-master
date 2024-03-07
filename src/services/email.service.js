@@ -37,12 +37,13 @@ if (config.env !== 'test') {
 const sendVerificationEmail = async (user, tokens) => {
   data1 = await ejs.renderFile(__dirname + '/verifytemplate.ejs', {
     OTP: tokens,
+    name: user.name
   });
 
   const msg = {
     from: config.email.from,
     to: user.mail,
-    subject: 'templates',
+    subject: 'Email Verification',
     html: data1,
   };
   await transport.sendMail(msg);
@@ -57,7 +58,7 @@ const sendVerificationEmailEmp = async (userData) => {
   const msg = {
     from: config.email.from,
     to: email,
-    subject: 'templates',
+    subject: 'Email Verification',
     html: data1,
   };
   await transport.sendMail(msg);
