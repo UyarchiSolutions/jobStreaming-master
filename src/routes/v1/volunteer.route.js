@@ -9,7 +9,7 @@ const storage = multer.memoryStorage({
     callback(null, '');
   },
 });
-const upload = multer({ storage }).single('image');
+const resume = multer({ storage }).fields([{ name: 'resume', maxCount: 1 }, { name: 'image', maxCount: 1 }]);
 
 router.route('/').post(volunteerController.createVolunteer);
 router.route('/setPassword').post(volunteerController.setPassword);
@@ -18,7 +18,7 @@ router.route('/profile').get(volunteerAuth, volunteerController.getProfile);
 router.route('/MatchCandidate').get(volunteerAuth, volunteerController.MatchCandidate);
 router.route('/Candidate/IntrestUpdate/:id/:slotId').get(volunteerAuth, volunteerController.CandidateIntrestUpdate);
 router.route('/admin/intrestUpdate/:id/:volunteer').get(volunteerController.CandidateIntrestUpdate_admin);
-router.route('/upload/ProfileImage/:id').put(upload, volunteerController.uploadProfileImage);
+router.route('/upload/ProfileImage/:id').put(resume, volunteerController.uploadProfileImage);
 router.route('/getVolunteers/Details').get(volunteerAuth, volunteerController.getVolunteersDetails);
 router.route('/getCandidates/ForInterview').get(volunteerAuth, volunteerController.getCandidatesForInterview);
 router.route('/updateVolunteer').put(volunteerAuth, volunteerController.updateVolunteer);

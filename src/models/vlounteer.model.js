@@ -91,6 +91,9 @@ const VolunteerSchema = new mongoose.Schema({
   charges: {
     type: String,
   },
+  resume: {
+    type: String,
+  },
 });
 
 /**

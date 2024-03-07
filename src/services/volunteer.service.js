@@ -505,30 +505,61 @@ const uploadProfileImage = async (req) => {
   if (!findVol) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Volunteer does not exist');
   }
-  if (req.file) {
+
+  if (req.files) {
     const s3 = new AWS.S3({
       accessKeyId: 'AKIA3323XNN7Y2RU77UG',
       secretAccessKey: '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',
       region: 'ap-south-1',
     });
-    let params = {
-      Bucket: 'jobresume',
-      Key: req.file.originalname,
-      Body: req.file.buffer,
-      ACL: 'public-read',
-      ContentType: req.file.mimetype,
-    };
+
+
     return new Promise((resolve, reject) => {
-      s3.upload(params, async (err, res) => {
-        if (err) {
-          reject(err);
-        } else {
-          let updateImgLoca = await Volunteer.findByIdAndUpdate({ _id: id }, { profileImage: res.Location }, { new: true });
-          resolve(updateImgLoca);
-        }
-      });
+      if (req.files.resume != null) {
+        console.log('resume')
+        let params = {
+          Bucket: 'jobresume',
+          Key: req.files.resume[0].originalname,
+          Body: req.files.resume[0].buffer,
+          ACL: 'public-read',
+          ContentType: req.files.resume[0].mimetype,
+        };
+        s3.upload(params, async (err, res) => {
+          if (err) {
+            reject(err);
+          } else {
+            let updateImgLoca = await Volunteer.findByIdAndUpdate({ _id: id }, { resume: res.Location }, { new: true });
+            if (req.files.image == null) {
+              resolve(updateImgLoca);
+            }
+          }
+        });
+      }
+      if (req.files.image != null) {
+        let params = {
+          Bucket: 'jobresume',
+          Key: req.files.image[0].originalname,
+          Body: req.files.image[0].buffer,
+          ACL: 'public-read',
+          ContentType: req.files.image[0].mimetype,
+        };
+        s3.upload(params, async (err, res) => {
+          if (err) {
+            reject(err);
+          } else {
+            let updateImgLoca = await Volunteer.findByIdAndUpdate({ _id: id }, { profileImage: res.Location }, { new: true });
+            resolve(updateImgLoca);
+          }
+        });
+
+      }
+      if (req.files.image == null && req.files.resume == null) {
+        resolve({ message: 'No File There' })
+      }
     });
   }
+
+
 };
 
 const getVolunteersDetails = async (req) => {
