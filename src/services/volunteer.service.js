@@ -440,6 +440,65 @@ const CandidateIntrestUpdate = async (req) => {
   return cand;
 };
 
+const CandidateIntrestUpdate_admin = async (req) => {
+  let volunteerId = req.params.volunteer;
+  let candId = req.params.id;
+  let cand = await AgriCandidate.findById(candId);
+  if (!cand) {
+    throw new ApiError(httpStatus.BAD_REQUEST, " Couldn't find candidate");
+  }
+  let values = await Volunteer.findById(volunteerId);
+  let userrole = values.Role == 'Tech Volunteer' ? 'Tech' : 'HR'
+  let slots = await SlotBooking.findOne({ Type: userrole, candId: candId });
+  if (!slots) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slots Not Found');
+  }
+
+  let already = await IntrestedCandidate.findOne({ startTime: slots.DateTime, volunteerId: volunteerId });
+  if (already) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Already Intrested');
+  }
+
+  if (values.Role == 'HR Volunteer') {
+    if (cand.interest_HR >= 5) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Slot Booking Full");
+    }
+    // console.log(cand.interest_HR, cand.interest_HR + 1)
+    cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { intrest: volunteerId }, interest_HR: cand.interest_HR + 1 }, { new: true });
+    if (cand.interest_TECH >= 2 && cand.interest_HR >= 2) {
+      cand.status = 'Waiting For Approval';
+    }
+    cand.save();
+  } else {
+    if (cand.interest_TECH >= 5) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Slot Booking Full");
+    }
+    console.log(cand.interest_TECH, cand.interest_TECH + 1)
+    // cand.interest_TECH = cand.interest_TECH + 1;
+    cand = await AgriCandidate.findByIdAndUpdate({ _id: candId }, { $push: { techIntrest: volunteerId, }, interest_TECH: cand.interest_TECH + 1 }, { new: true });
+    console.log(cand.interest_TECH, cand)
+
+    if (cand.interest_TECH >= 2 && cand.interest_HR >= 2) {
+      cand.status = 'Waiting For Approval';
+    }
+    cand.save();
+  }
+
+  await IntrestedCandidate.create({
+    candId: candId,
+    volunteerId: volunteerId,
+    status: 'Intrested',
+    Role: values.Role,
+    slotId: slots._id,
+    slotDate: slots.date,
+    slotTime: slots.time,
+    startTime: slots.DateTime,
+    endTime: slots.endTime,
+  });
+  return cand;
+};
+
+
 const uploadProfileImage = async (req) => {
   let id = req.params.id;
   let findVol = await Volunteer.findById(id);
@@ -803,5 +862,6 @@ module.exports = {
   getIntrestedCandidates,
   UndoIntrestedCandidate,
   change_password,
-  forget_password
+  forget_password,
+  CandidateIntrestUpdate_admin
 };

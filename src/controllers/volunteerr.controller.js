@@ -17,12 +17,12 @@ const setPassword = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-const change_password= catchAsync(async (req, res) => {
+const change_password = catchAsync(async (req, res) => {
   const data = await VolunteerService.change_password(req);
   res.send(data);
 });
 
-const forget_password= catchAsync(async (req, res) => {
+const forget_password = catchAsync(async (req, res) => {
   const data = await VolunteerService.forget_password(req);
   res.send(data);
 });
@@ -45,6 +45,11 @@ const MatchCandidate = catchAsync(async (req, res) => {
 
 const CandidateIntrestUpdate = catchAsync(async (req, res) => {
   const data = await VolunteerService.CandidateIntrestUpdate(req);
+  res.send(data);
+});
+
+const CandidateIntrestUpdate_admin = catchAsync(async (req, res) => {
+  const data = await VolunteerService.CandidateIntrestUpdate_admin(req);
   res.send(data);
 });
 
@@ -104,5 +109,6 @@ module.exports = {
   getIntrestedCandidates,
   UndoIntrestedCandidate,
   change_password,
-  forget_password
+  forget_password,
+  CandidateIntrestUpdate_admin
 };
