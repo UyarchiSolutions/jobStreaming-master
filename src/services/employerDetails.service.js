@@ -1484,8 +1484,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: 'noreply-tj@uyarchi.com',
-    pass: 'Thunivu@100',
+    user: 'noreply-sw@seewe.info',
+    pass: 'Dhoni@001',
   },
 });
 const send_mail_and_notification = async (userId, body) => {

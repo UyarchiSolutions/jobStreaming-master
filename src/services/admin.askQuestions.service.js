@@ -144,8 +144,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: 'noreply-tj@uyarchi.com',
-    pass: 'Thunivu@100',
+    user: 'noreply-sw@seewe.info',
+    pass: 'Dhoni@001',
   },
 });
 const reply_enquiry = async (body) => {
@@ -164,7 +164,7 @@ const reply_enquiry = async (body) => {
   });
 
   const mainOptions = {
-    from: 'noreply-tj@uyarchi.com',
+    from: 'noreply-sw@seewe.info',
     to: data.emailId,
     // to:"vignesh1041996@gmail.com",
     subject: 'templates',

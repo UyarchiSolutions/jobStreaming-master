@@ -280,14 +280,14 @@ let maskmail = async (email) => {
 
 const maskmail_email = async (to) => {
   console.log(to);
-  const msg = { from: '"Uyarchi solutions" <noreply-tj@uyarchi.com>', to, subject: 'maskmailer checked' };
+  const msg = { from: '"Uyarchi solutions" <noreply-sw@seewe.info>', to, subject: 'maskmailer checked' };
   console.log(msg);
   await transport.sendMail(msg);
 };
 
 const notification_mail = async (candidate, body) => {
   console.log(candidate);
-  const msg = { from: '"Uyarchi solutions" <noreply-tj@uyarchi.com>', to, subject: 'maskmailer checked' };
+  const msg = { from: '"Uyarchi solutions" <noreply-sw@seewe.info>', to, subject: 'maskmailer checked' };
   console.log(msg);
   await transport.sendMail(msg);
 };
