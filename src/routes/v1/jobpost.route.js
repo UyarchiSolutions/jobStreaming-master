@@ -11,4 +11,19 @@ router.route('/employer/post').put(authorization, Jobpost.update_employer_post);
 router.route('/employer/post/draft').put(authorization, Jobpost.update_employer_post_draft);
 
 
+router.route('/active/post').get(authorization, Jobpost.get_active_postes);
+
+
+
+router.route('/create/stream/request').post(authorization, Jobpost.create_stream_request);
+router.route('/update/stream/request').put(authorization, Jobpost.update_stream_request);
+router.route('/stream/request').get(authorization, Jobpost.get_my_job_stream);
+
+
+router.route('/get/post/details').get(authorization, Jobpost.get_post_details_single);
+
+
+
+
+
 module.exports = router;

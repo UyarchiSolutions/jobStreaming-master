@@ -223,9 +223,9 @@ const employerDetailsSchema = mongoose.Schema(
     education_match: {
       type: Array,
     },
-    status:{
+    status: {
       type: String,
-      default:"Published"
+      default: "Published"
     }
   },
   {
@@ -579,6 +579,59 @@ const EmployeOtpSchema = new mongoose.Schema({
 
 const EmployerOTP = mongoose.model('empotp', EmployeOtpSchema);
 
+
+
+
+
+
+const JobpoststreamSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  DateIso: {
+    type: Number,
+  },
+  date: {
+    type: String,
+  },
+  created: {
+    type: Date,
+  },
+  userId: {
+    type: String,
+  },
+  status: {
+    type: String,
+    default: 'Pending'
+  },
+  datetime: {
+    type: String,
+  },
+  startTime: {
+    type: Number,
+  },
+  endTime: {
+    type: Number,
+  },
+  actualEnd: {
+    type: Number,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  post: {
+    type: String,
+  },
+  agoraID: {
+    type: String,
+  }
+}, { timestamps: true });
+
+const Jobpoststream = mongoose.model('jobpoststream', JobpoststreamSchema);
+
+
 module.exports = {
   EmployerDetails,
   EmployerPostjob,
@@ -588,4 +641,5 @@ module.exports = {
   EmployerMailNotification,
   Recruiters,
   EmployerOTP,
+  Jobpoststream
 };

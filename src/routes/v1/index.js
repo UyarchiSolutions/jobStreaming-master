@@ -27,12 +27,18 @@ const eventClimb = require('./event-climb.router');
 const AgriEvent = require('./agri.Event.route');
 const ClimbCand = require('./climb.cand.route');
 const jobpost = require('./jobpost.route');
+const stream = require('./stream.route');
 
 const defaultRoutes = [
   {
     path: '/auth',
     route: authRoute,
   },
+  {
+    path: '/stream',
+    route: stream,
+  },
+
   {
     path: '/agriEvent',
     route: AgriEvent,
@@ -129,7 +135,7 @@ const defaultRoutes = [
     path: '/jobpost',
     route: jobpost,
   },
-  
+
 ];
 
 const devRoutes = [

@@ -2,6 +2,8 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
 const { AgoraAppId, UsageAppID, TestAgora } = require('../models/AgoraAppId.model');
+const { StreamAppID } = require('../models/stream.model');
+
 const Agora = require('agora-access-token');
 const axios = require('axios');
 
@@ -513,6 +515,27 @@ const update_check_appid = async (req, data) => {
 
 
 
+
+
+const get_app_id = async (data) => {
+
+
+  const query = await axios.post(`https://seewe.co/v2/agora/get/app/id/assign`, data);
+
+  let create_app = await StreamAppID.create(
+    {
+      appID: query.data.appID,
+      Authorization: query.data.Authorization,
+      cloud_KEY: query.data.cloud_KEY,
+      cloud_secret: query.data.cloud_secret,
+      appCertificate: query.data.appCertificate,
+      duration: data.minutes,
+      streamId: data.streamId,
+    }
+  );
+  return create_app
+}
+
 module.exports = {
   InsertAppId,
   InsertAget_app_id,
@@ -529,5 +552,6 @@ module.exports = {
   get_test_details_test,
   get_all_token_check,
   update_check_appid,
-  get_all_token_my
+  get_all_token_my,
+  get_app_id
 };
