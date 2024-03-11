@@ -15,7 +15,7 @@ const routes_v2 = require('./routes/v1/liveStreaming');
 const routes_v3 = require('./routes/v3/index');
 const logger = require('./config/logger');
 const cookieparser = require('cookie-parser');
-
+const initSocketService = require('./socket.io/socket.service');
 const chetModule = require('./services/liveStreaming/chat.service');
 
 const { errorConverter, errorHandler } = require('./middlewares/error');
@@ -28,7 +28,6 @@ let server = http.Server(app);
 let socketIO = require('socket.io');
 let io = socketIO(server);
 const moment = require('moment');
-
 
 server.listen(config.port, () => {
   logger.info(`Listening to port ${config.port}`);
@@ -47,8 +46,6 @@ io.sockets.on('connection', async (socket) => {
   socket.on('privateChat', async (data) => {
     // await privatechat.recived_message(data, io, socket.handshake.auth);
   });
-
-
 
 });
 app.use(function (req, res, next) {
@@ -131,6 +128,8 @@ app.get('/health', (req, res) => {
 app.get('/login.html', (req, res) => {
   res.sendStatus(200);
 });
+initSocketService(server, io);
+
 
 // /login.html 
 // convert error to ApiError, if needed

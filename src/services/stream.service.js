@@ -2,20 +2,13 @@ const httpStatus = require('http-status');
 const Agora = require('agora-access-token');
 
 const { StreamAppID, Streamtoken } = require('../models/stream.model');
-const {
-    EmployerDetails,
-    EmployerPostjob,
-    EmployerPostDraft,
-    Employercomment,
-    EmployerMailTemplate,
-    EmployerMailNotification,
-    Recruiters,
-    EmployerOTP, Jobpoststream } = require('../models/employerDetails.model');
+const { EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification, Recruiters, EmployerOTP, Jobpoststream } = require('../models/employerDetails.model');
 
 const { AgoraAppId } = require("../models/AgoraAppId.model")
 const ApiError = require('../utils/ApiError');
 const axios = require('axios'); //
 const agoraToken = require('./AgoraAppId.service');
+const { Groupchat } = require('../models/liveStreaming/chat.model');
 
 const moment = require('moment');
 
@@ -90,8 +83,25 @@ const get_stream_token = async (req) => {
 }
 
 
+const get_all_chats = async (req) => {
+    let userId = req.userId;
+    let steamId = req.query.id;
+    let stream = await Jobpoststream.findById(req.query.id);
+    if (!stream) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
+    }
+    let token = await Streamtoken.findOne({ supplierId: userId, chennel: stream._id });
+    let chat = await Groupchat.aggregate([
+        { $match: { $and: [{ channel: { $eq: steamId } }] } },
+        { $addFields: { you: { $eq: ["$joinuser", token._id] } } },
+    ]);
+
+    return { joinUser: token._id, chat };
+}
+
 
 module.exports = {
     emp_go_live,
-    get_stream_token
+    get_stream_token,
+    get_all_chats
 };

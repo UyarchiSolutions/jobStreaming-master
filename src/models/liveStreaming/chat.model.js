@@ -31,9 +31,6 @@ const Groupchat_schema = mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    shopId: {
-        type: String,
-    },
     userName: {
         type: String,
     },
@@ -51,7 +48,7 @@ const Groupchat_schema = mongoose.Schema({
         default: false,
     }
 
-});
+}, { timeStamp: true });
 
 const Groupchat = mongoose.model('groupchat', Groupchat_schema);
 
@@ -87,7 +84,7 @@ const Ricehands_schema = mongoose.Schema({
         type: String,
     }
 
-});
+}, { timeStamp: true });
 
 const Ricehands = mongoose.model('ricehands', Ricehands_schema);
 module.exports = { Groupchat, Ricehands };
