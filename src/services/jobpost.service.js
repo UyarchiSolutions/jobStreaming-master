@@ -3,6 +3,9 @@ const ApiError = require('../utils/ApiError');
 const { EmployerDetails, Jobpoststream } = require('../models/employerDetails.model');
 const { EmployerRegistration } = require('../models/employerRegistration.model');
 
+const { StreamAppID, Streamtoken } = require('../models/stream.model');
+
+
 const moment = require('moment');
 // create job Alert
 
@@ -321,6 +324,54 @@ const get_post_details_single = async (req) => {
 
   return data;
 }
+
+const get_post_details_candidateAuth = async (req) => {
+  let userId = req.userId;
+  let update = await Streamtoken.findById(req.query.id);
+  console.log(update)
+  if (!update) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
+  }
+
+  let stream = await EmployerDetails.aggregate([
+    { $match: { $and: [{ _id: { $eq: update.post } }] } },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'employerregistrations',
+      },
+    },
+    { $unwind: "$employerregistrations" },
+
+    {
+      $addFields: {
+        cmp_choosefile: "$employerregistrations.choosefile",
+        cmp_companyAddress: "$employerregistrations.companyAddress",
+        cmp_companyDescription: "$employerregistrations.companyDescription",
+        cmp_companyType: "$employerregistrations.companyType",
+        cmp_companyWebsite: "$employerregistrations.companyWebsite",
+        cmp_contactName: "$employerregistrations.contactName",
+        cmp_industryType: "$employerregistrations.industryType",
+        cmp_location: "$employerregistrations.location",
+        cmp_logo: "$employerregistrations.logo",
+        cmp_name: "$employerregistrations.name",
+        cmp_postedBy: "$employerregistrations.postedBy",
+        cmp_registrationType: "$employerregistrations.choosefile",
+      }
+    },
+    { $unset: "employerregistrations" },
+
+  ])
+
+  if (stream.length == 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+
+
+  return stream[0];
+}
 module.exports = {
   get_my_job_post,
   toggle_job_post,
@@ -332,5 +383,6 @@ module.exports = {
   create_stream_request,
   get_my_job_stream,
   update_stream_request,
-  get_post_details_single
+  get_post_details_single,
+  get_post_details_candidateAuth
 };

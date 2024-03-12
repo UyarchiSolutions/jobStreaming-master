@@ -23,4 +23,11 @@ router.route('/jobpost/home').get(streamcontroller.get_candidate_jobpost);
 router.route('/post/details').get(streamcontroller.get_post_details);
 
 
+
+router.route('/candidate/chats').get(candidateAuth, streamcontroller.candidateAuth_get_all_chats);
+
+router.route('/candidate/go/live').post(candidateAuth, streamcontroller.candidate_go_live);
+router.route('/candidate/token').get(candidateAuth, streamcontroller.get_stream_token_candidateAuth);
+
+
 module.exports = router;

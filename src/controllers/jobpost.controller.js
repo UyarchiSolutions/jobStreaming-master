@@ -59,6 +59,11 @@ const get_post_details_single= catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
+const get_post_details_candidateAuth= catchAsync(async (req, res) => {
+  const data = await Jobpost.get_post_details_candidateAuth(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
 
 module.exports = {
   get_my_job_post,
@@ -71,5 +76,6 @@ module.exports = {
   create_stream_request,
   get_my_job_stream,
   update_stream_request,
-  get_post_details_single
+  get_post_details_single,
+  get_post_details_candidateAuth
 };

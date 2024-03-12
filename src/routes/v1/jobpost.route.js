@@ -2,6 +2,8 @@ const express = require('express');
 const Jobpost = require('../../controllers/jobpost.controller');
 const authorization = require('../../controllers/empVEridy.controller');
 const router = express.Router();
+const candidateAuth = require('../../controllers/tokenVerify.controller');
+
 
 router.route('/employer/post').get(authorization, Jobpost.get_my_job_post);
 router.route('/employer/post/draft').get(authorization, Jobpost.get_my_job_post_draft);
@@ -21,6 +23,7 @@ router.route('/stream/request').get(authorization, Jobpost.get_my_job_stream);
 
 
 router.route('/get/post/details').get(authorization, Jobpost.get_post_details_single);
+router.route('/get/post/details/candidate').get(candidateAuth, Jobpost.get_post_details_candidateAuth);
 
 
 

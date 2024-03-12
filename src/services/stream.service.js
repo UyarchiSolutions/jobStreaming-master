@@ -50,6 +50,7 @@ const emp_go_live = async (req) => {
                 time: moment().format('HHMMSS'),
                 supplierId: empId,
                 streamId: streamId,
+                post: stream.post,
                 created: moment(),
                 Uid: uid,
                 created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
@@ -63,6 +64,7 @@ const emp_go_live = async (req) => {
         value.chennel = streamId;
         value.save();
         stream.tokenGeneration = true;
+        stream.status = "On Going";
         stream.goLive = true;
         stream.save();
     }
@@ -84,6 +86,7 @@ const get_stream_token = async (req) => {
 
     return { stream, token, app };
 }
+
 
 const stream_end = async (req) => {
     let userId = req.userId;
@@ -322,6 +325,7 @@ const production_supplier_token_cloudrecording = async (req, id, agroaID) => {
                 created: moment(),
                 Uid: uid,
                 chennel: stream._id,
+                post: stream.post,
                 created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
                 expDate: expirationTimestamp * 1000,
                 type: 'CloudRecording',
@@ -364,6 +368,7 @@ const production_supplier_token_cloudrecording = async (req, id, agroaID) => {
                     created: moment(),
                     Uid: uid,
                     chennel: stream._id,
+                    post: stream.post,
                     created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
                     expDate: expirationTimestamp * 1000,
                     type: 'CloudRecording',
@@ -511,7 +516,7 @@ const get_post_details = async (req) => {
                                     if: { $lt: ["$endTime", now_time] },
                                     then: {
                                         $cond: {
-                                            if: { $eq: ["$status", 'Completed'] },
+                                            if: { $in: ["$status", ['Completed', 'On Going']] },
                                             then: "Completed",
                                             else: false
                                         }
@@ -532,7 +537,8 @@ const get_post_details = async (req) => {
                                 }
                             }
                         }
-                    }
+                    },
+                    { $match: { $and: [{ stream_status: { $ne: false } }] } }
                 ],
                 as: 'jobpoststreams',
             },
@@ -546,6 +552,92 @@ const get_post_details = async (req) => {
     return stream[0];
 }
 
+
+
+
+
+const candidate_go_live = async (req) => {
+
+    let candidateId = req.userId;
+    let streamId = req.body.streamId;
+    let stream = await Jobpoststream.findById(streamId);
+    if (!stream) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+    }
+    let value = await Streamtoken.findOne({ candidateId: candidateId, chennel: streamId });
+    if (!value) {
+        const uid = await generateUid();
+        const role = req.body.isPublisher ? Agora.RtcRole.SUBSCRIBER : Agora.RtcRole.PUBLISHER;
+        const expirationTimestamp = stream.endTime / 1000;
+        value = await Streamtoken.create({
+            ...req.body,
+            ...{
+                date: moment().format('YYYY-MM-DD'),
+                time: moment().format('HHMMSS'),
+                candidateId: candidateId,
+                streamId: streamId,
+                post: stream.post,
+                created: moment(),
+                Uid: uid,
+                created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+                expDate: expirationTimestamp * 1000,
+                Duration: 30,
+                type: 'Candidate',
+            },
+        });
+        const token = await geenerate_rtc_token(streamId, uid, role, expirationTimestamp, stream.agoraID);
+        value.token = token;
+        value.chennel = streamId;
+        value.save();
+    }
+    return value;
+};
+
+
+
+
+const get_stream_token_candidateAuth = async (req) => {
+    let userId = req.userId;
+    let update = await Streamtoken.findById(req.query.id);
+
+    if (!update) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Join Token Missing');
+    }
+
+    let stream = await Jobpoststream.findById(update.streamId);
+    if (!stream) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
+    }
+    let token = await Streamtoken.findOne({ candidateId: userId, chennel: stream._id });
+    let app = await StreamAppID.findById(stream.agoraID);
+
+    return { stream, token, app };
+}
+
+
+
+const candidateAuth_get_all_chats = async (req) => {
+    let userId = req.userId;
+    let steamId = req.query.id;
+    let update = await Streamtoken.findById(steamId);
+
+    if (!update) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Join Token Missing');
+    }
+    let stream = await Jobpoststream.findById(update.streamId);
+    if (!stream) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
+    }
+    let chat = await Groupchat.aggregate([
+        { $match: { $and: [{ channel: { $eq: update.streamId } }] } },
+        { $addFields: { you: { $eq: ["$joinuser", update._id] } } },
+    ]);
+
+    return { joinUser: update._id, chat, channel: stream._id };
+}
+
+
+
 module.exports = {
     emp_go_live,
     get_stream_token,
@@ -554,5 +646,8 @@ module.exports = {
     cloud_stop,
     stream_end,
     get_candidate_jobpost,
-    get_post_details
+    get_post_details,
+    candidate_go_live,
+    get_stream_token_candidateAuth,
+    candidateAuth_get_all_chats
 };

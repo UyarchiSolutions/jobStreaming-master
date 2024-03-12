@@ -6,6 +6,7 @@ const moment = require('moment');
 const { Groupchat } = require('../models/liveStreaming/chat.model');
 
 const { EmployerRegistration } = require("../models/employerRegistration.model")
+const { AgriCandidate } = require("../models/agri.Event.model")
 
 const { StreamAppID, Streamtoken } = require('../models/stream.model');
 const { EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification, Recruiters, EmployerOTP, Jobpoststream } = require('../models/employerDetails.model');
@@ -38,7 +39,28 @@ const save_chat_host = async (req, io) => {
     }
   }
 }
+
+const save_chat_candidate = async (req, io) => {
+
+  let stream = await Streamtoken.findById(req.channel);
+  if (stream) {
+    let user = await AgriCandidate.findById(stream.candidateId);
+    if (user) {
+      let name = user.name
+      let token = await Groupchat.create({
+        channel: stream.chennel,
+        text: req.text,
+        joinuser: stream._id,
+        userType: 'candidate',
+        userName: name,
+        dateISO: moment(),
+        created: moment()
+      });
+      io.sockets.emit(stream.chennel + '_received', token);
+    }
+  }
+}
 module.exports = {
   save_chat_host,
-
+  save_chat_candidate
 };

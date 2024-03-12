@@ -117,7 +117,7 @@ const tempToken = mongoose.Schema({
     streamId: {
         type: String,
     },
-    shopId: {
+    candidateId: {
         type: String,
     },
     Duration: {
@@ -198,6 +198,9 @@ const tempToken = mongoose.Schema({
         type: String,
     },
     front_code: {
+        type: String,
+    },
+    post: {
         type: String,
     }
 });

@@ -22,6 +22,9 @@ function initSocketService(server, io) {
         socket.on('stream_chat_host', async (msg) => {
             await chatsevice.save_chat_host(msg, io)
         });
+        socket.on('stream_chat_candidate', async (msg) => {
+            await chatsevice.save_chat_candidate(msg, io)
+        });
         socket.on('disconnect', async () => {
             //console.log('User disconnected', socket.name, socket.mobileNumber, socket.id,socket.userId);
             // await authcheck.user_disconnect_stream(socket, io)

@@ -13,6 +13,7 @@ const get_stream_token = catchAsync(async (req, res) => {
     res.send(data);
 });
 
+
 const stream_end = catchAsync(async (req, res) => {
     const data = await StreamService.stream_end(req, res);
     res.send(data);
@@ -44,6 +45,23 @@ const get_post_details = catchAsync(async (req, res) => {
 });
 
 
+const candidate_go_live = catchAsync(async (req, res) => {
+    const data = await StreamService.candidate_go_live(req, res);
+    res.send(data);
+});
+
+const candidateAuth_get_all_chats = catchAsync(async (req, res) => {
+    const data = await StreamService.candidateAuth_get_all_chats(req, res);
+    res.send(data);
+});
+
+
+const get_stream_token_candidateAuth = catchAsync(async (req, res) => {
+    const data = await StreamService.get_stream_token_candidateAuth(req, res);
+    res.send(data);
+});
+
+
 
 module.exports = {
     emp_go_live,
@@ -53,5 +71,8 @@ module.exports = {
     cloud_stop,
     stream_end,
     get_candidate_jobpost,
-    get_post_details
+    get_post_details,
+    candidate_go_live,
+    get_stream_token_candidateAuth,
+    candidateAuth_get_all_chats
 };

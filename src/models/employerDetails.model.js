@@ -626,6 +626,10 @@ const JobpoststreamSchema = new mongoose.Schema({
   },
   agoraID: {
     type: String,
+  },
+  goLive: {
+    type: Boolean,
+    default: false,
   }
 }, { timestamps: true });
 
