@@ -183,6 +183,7 @@ const create_stream_request = async (req) => {
   let endTime = end;
   let actualEnd = end;
 
+
   let create = await Jobpoststream.create({ ...body, ...{ userId: userId, startTime, endTime, actualEnd } });
 
   return create;

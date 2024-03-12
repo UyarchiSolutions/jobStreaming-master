@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const Agora = require('agora-access-token');
 
 const { StreamAppID, Streamtoken } = require('../models/stream.model');
+
 const { EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification, Recruiters, EmployerOTP, Jobpoststream } = require('../models/employerDetails.model');
 
 const { AgoraAppId } = require("../models/AgoraAppId.model")
@@ -66,6 +67,8 @@ const emp_go_live = async (req) => {
         stream.save();
     }
 
+    await production_supplier_token_cloudrecording(req, streamId, stream.agoraID);
+
     return value;
 };
 
@@ -80,6 +83,200 @@ const get_stream_token = async (req) => {
     let app = await StreamAppID.findById(stream.agoraID);
 
     return { stream, token, app };
+}
+
+const stream_end = async (req) => {
+    let userId = req.userId;
+    let stream = await Jobpoststream.findById(req.query.id);
+    if (!stream) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
+    }
+
+    if (stream.userId != userId) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
+    }
+    stream.status = 'Completed';
+    stream.endTime = moment();
+    stream.save();
+    return stream;
+}
+
+const cloud_start = async (req) => {
+    let id = req.query.id
+    let token = await Streamtoken.findOne({ chennel: id, type: 'CloudRecording', recoredStart: { $eq: "acquire" } }).sort({ created: -1 });
+    if (token) {
+        let str = await Jobpoststream.findById(token.streamId);
+        let agoraToken = await StreamAppID.findById(str.agoraID);
+        const Authorization = `Basic ${Buffer.from(agoraToken.Authorization.replace(/\s/g, '')).toString(
+            'base64'
+        )}`;
+        let nowDate = moment().format('DDMMYYYY');
+        if (token.recoredStart == 'acquire') {
+            const resource = token.resourceId;
+            const mode = 'mix';
+            const start = await axios.post(
+                `https://api.agora.io/v1/apps/${agoraToken.appID.replace(/\s/g, '')}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
+                {
+                    cname: token.chennel,
+                    uid: token.Uid.toString(),
+                    clientRequest: {
+                        token: token.token,
+                        recordingConfig: {
+                            maxIdleTime: 15,
+                            streamTypes: 2,
+                            channelType: 1,
+                            videoStreamType: 0,
+                            transcodingConfig: {
+                                height: 640,
+                                width: 1080,
+                                bitrate: 1000,
+                                fps: 15,
+                                mixedVideoLayout: 1,
+                                backgroundColor: '#FFFFFF',
+                            },
+                        },
+                        recordingFileConfig: {
+                            avFileType: ['hls', 'mp4'],
+                        },
+                        storageConfig: {
+                            vendor: 1,
+                            region: 14,
+                            bucket: 'streamingupload',
+                            accessKey: 'AKIA3323XNN7Y2RU77UG',
+                            secretKey: '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',
+                            fileNamePrefix: [nowDate.toString(), token.store, token.Uid.toString()],
+                        },
+                    },
+                },
+                { headers: { Authorization } }
+            );
+            token.resourceId = start.data.resourceId;
+            token.sid = start.data.sid;
+            token.recoredStart = 'start';
+            token.save();
+            setTimeout(async () => {
+                await recording_query(req, token._id, agoraToken);
+            }, 3000);
+            return start.data;
+        }
+        else {
+            return { message: 'Already Started' };
+        }
+    }
+    else {
+        return { message: 'Already Started' };
+    }
+}
+
+
+
+const recording_query = async (req, id, agoraToken) => {
+    const Authorization = `Basic ${Buffer.from(agoraToken.Authorization.replace(/\s/g, '')).toString(
+        'base64'
+    )}`;
+    let temtoken = id;
+    let token = await Streamtoken.findById(temtoken);
+    if (!token) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+    }
+    const resource = token.resourceId;
+    const sid = token.sid;
+    const mode = 'mix';
+    const query = await axios.get(
+        `https://api.agora.io/v1/apps/${agoraToken.appID.replace(/\s/g, '')}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
+        { headers: { Authorization } }
+    ).then((res) => {
+        return res;
+    }).catch((err) => {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Cloud Recording Query:' + err.message);
+    });;
+
+    if (query.data != null) {
+        if (query.data.serverResponse != null) {
+            if (query.data.serverResponse.fileList != null) {
+                if (query.data.serverResponse.fileList.length != 0) {
+                    if (Array.isArray(query.data.serverResponse.fileList)) {
+                        token.videoLink = query.data.serverResponse.fileList[0].fileName;
+                        token.videoLink_array = query.data.serverResponse.fileList;
+                        let m3u8 = query.data.serverResponse.fileList[0].fileName;
+                        if (m3u8 != null) {
+                            let mp4 = m3u8.replace('.m3u8', '_0.mp4')
+                            token.videoLink_mp4 = mp4;
+                        }
+                        token.recoredStart = 'query';
+                        token.save();
+                    }
+                    else {
+                        token.videoLink = query.data.serverResponse.fileList.fileName;
+                        let m3u8 = query.data.serverResponse.fileList.fileName;
+                        if (m3u8 != null) {
+                            let mp4 = m3u8.replace('.m3u8', '_0.mp4')
+                            token.videoLink_mp4 = mp4;
+                        }
+                        token.recoredStart = 'query';
+                        token.save();
+                    }
+                }
+            }
+        }
+        return query.data;
+    }
+    else {
+        return { message: "Query failed" };
+    }
+};
+
+
+
+const cloud_stop = async (req) => {
+    let token = await Streamtoken.findOne({ chennel: req.body.stream, type: 'CloudRecording', recoredStart: { $eq: "query" } }).sort({ created: -1 });
+    if (token) {
+        let str = await Jobpoststream.findById(token.streamId);
+        let agoraToken = await StreamAppID.findById(str.agoraID);
+        const Authorization = `Basic ${Buffer.from(agoraToken.Authorization.replace(/\s/g, '')).toString(
+            'base64'
+        )}`;
+        if (token.recoredStart == 'query') {
+            const resource = token.resourceId;
+            const sid = token.sid;
+            const mode = 'mix';
+
+            const stop = await axios.post(
+                `https://api.agora.io/v1/apps/${agoraToken.appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
+                {
+                    cname: token.chennel,
+                    uid: token.Uid.toString(),
+                    clientRequest: {},
+                },
+                {
+                    headers: {
+                        Authorization,
+                    },
+                }
+            ).then((res) => {
+                return res;
+            }).catch((err) => {
+
+                throw new ApiError(httpStatus.NOT_FOUND, 'Cloud Recording Stop:' + err.message);
+            });
+
+            token.recoredStart = 'stop';
+            if (stop.data.serverResponse.fileList.length == 2) {
+                token.videoLink = stop.data.serverResponse.fileList[0].fileName;
+                token.videoLink_array = stop.data.serverResponse.fileList;
+                let m3u8 = stop.data.serverResponse.fileList[0].fileName;
+                token.videoLink_mp4 = m3u8;
+            }
+            token.save();
+            return token;
+        }
+        else {
+            return { message: 'Already Stoped' };
+        }
+    }
+    else {
+        return { message: 'Clound not Found' };
+    }
 }
 
 
@@ -100,8 +297,262 @@ const get_all_chats = async (req) => {
 }
 
 
+
+
+
+const production_supplier_token_cloudrecording = async (req, id, agroaID) => {
+    let streamId = id;
+    // let streamId = req.body.streamId;
+    let agoraToken = await StreamAppID.findById(agroaID)
+    let stream = await Jobpoststream.findById(streamId);
+    if (!stream) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+    }
+    // console.log(stream);
+    value = await Streamtoken.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $in: ["query", 'start',] } });
+    if (!value) {
+        const uid = await generateUid();
+        const role = Agora.RtcRole.SUBSCRIBER;
+        const expirationTimestamp = stream.endTime / 1000;
+        value = await Streamtoken.create({
+            ...req.body,
+            ...{
+                date: moment().format('YYYY-MM-DD'),
+                time: moment().format('HHMMSS'),
+                created: moment(),
+                Uid: uid,
+                chennel: stream._id,
+                created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+                expDate: expirationTimestamp * 1000,
+                type: 'CloudRecording',
+                hostId: req.userId
+            },
+        });
+        const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp, agroaID);
+        value.token = token;
+        value.store = stream._id.replace(/[^a-zA-Z0-9]/g, '');
+        value.save();
+        if (value.videoLink == '' || value.videoLink == null) {
+            await agora_acquire(req, value._id, agroaID);
+        }
+    } else {
+        // try {
+        let token = value;
+        const resource = token.resourceId;
+        const sid = token.sid;
+        // console.log(1234567890123456, resource)
+        const mode = 'mix';
+        const Authorization = `Basic ${Buffer.from(agoraToken.Authorization.replace(/\s/g, '')).toString(
+            'base64'
+        )}`;
+        // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
+        await axios.get(
+            `https://api.agora.io/v1/apps/${agoraToken.appID.replace(/\s/g, '')}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
+            { headers: { Authorization } }
+        ).then((res) => {
+
+        }).catch(async (error) => {
+            await Streamtoken.findByIdAndUpdate({ _id: value._id }, { recoredStart: "stop" }, { new: true });
+            const uid = await generateUid();
+            const role = Agora.RtcRole.SUBSCRIBER;
+            const expirationTimestamp = stream.endTime / 1000;
+            value = await Streamtoken.create({
+                ...req.body,
+                ...{
+                    date: moment().format('YYYY-MM-DD'),
+                    time: moment().format('HHMMSS'),
+                    created: moment(),
+                    Uid: uid,
+                    chennel: stream._id,
+                    created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+                    expDate: expirationTimestamp * 1000,
+                    type: 'CloudRecording',
+                },
+            });
+            const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp, agroaID);
+            value.token = token;
+            value.store = stream._id.replace(/[^a-zA-Z0-9]/g, '');
+            value.save();
+            await agora_acquire(req, value._id, agroaID);
+        });
+    }
+    return value;
+};
+
+
+
+const agora_acquire = async (req, id, agroaID) => {
+    let temtoken = id;
+    let agoraToken = await StreamAppID.findById(agroaID);
+
+    let token = await Streamtoken.findById(temtoken);
+    const Authorization = `Basic ${Buffer.from(agoraToken.Authorization.replace(/\s/g, '')).toString(
+        'base64'
+    )}`;
+    const acquire = await axios.post(
+        `https://api.agora.io/v1/apps/${agoraToken.appID.replace(/\s/g, '')}/cloud_recording/acquire`,
+        {
+            cname: token.chennel,
+            uid: token.Uid.toString(),
+            clientRequest: {
+                resourceExpiredHour: 24,
+                scene: 0,
+            },
+        },
+        { headers: { Authorization } }
+    );
+    token.resourceId = acquire.data.resourceId;
+    token.recoredStart = 'acquire';
+    token.save();
+};
+
+
+
+const get_candidate_jobpost = async (req) => {
+
+    let currentTime = new Date().getTime();
+    let range = req.query.range == null || req.query.range == undefined || req.query.range == null ? 10 : parseInt(req.query.range);
+    let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
+
+    let post = await EmployerDetails.aggregate([
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $limit: 1 }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+        { $unwind: "$jobpoststreams" },
+        {
+            $addFields: {
+                startTime: "$jobpoststreams.startTime",
+                endTime: "$jobpoststreams.endTime",
+                actualEnd: "$jobpoststreams.actualEnd",
+                streamstatus: "$jobpoststreams.status",
+            }
+        },
+        { $unset: "jobpoststreams" },
+        { $skip: range * page },
+        { $limit: range },
+    ])
+
+    let next = await EmployerDetails.aggregate([
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $limit: 1 }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+        { $unwind: "$jobpoststreams" },
+        { $skip: range * (page + 1) },
+        { $limit: range },
+    ])
+
+
+    return { post, next: next.length != 0 }
+}
+
+const get_post_details = async (req) => {
+    // 
+
+    let now_time = new Date().getTime();
+    let id = req.query.id;
+    let stream = await EmployerDetails.aggregate([
+        { $match: { $and: [{ _id: { $eq: id } }] } },
+        {
+            $lookup: {
+                from: 'employerregistrations',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'employerregistrations',
+            },
+        },
+        { $unwind: "$employerregistrations" },
+
+        {
+            $addFields: {
+                cmp_choosefile: "$employerregistrations.choosefile",
+                cmp_companyAddress: "$employerregistrations.companyAddress",
+                cmp_companyDescription: "$employerregistrations.companyDescription",
+                cmp_companyType: "$employerregistrations.companyType",
+                cmp_companyWebsite: "$employerregistrations.companyWebsite",
+                cmp_contactName: "$employerregistrations.contactName",
+                cmp_industryType: "$employerregistrations.industryType",
+                cmp_location: "$employerregistrations.location",
+                cmp_logo: "$employerregistrations.logo",
+                cmp_name: "$employerregistrations.name",
+                cmp_postedBy: "$employerregistrations.postedBy",
+                cmp_registrationType: "$employerregistrations.choosefile",
+            }
+        },
+        { $unset: "employerregistrations" },
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    {
+                        $addFields: {
+                            // stream_status: "$employerregistrations.choosefile",
+                            stream_status: {
+                                $cond: {
+                                    if: { $lt: ["$endTime", now_time] },
+                                    then: {
+                                        $cond: {
+                                            if: { $eq: ["$status", 'Completed'] },
+                                            then: "Completed",
+                                            else: false
+                                        }
+                                    },
+                                    else: {
+                                        $cond: {
+                                            if: { $and: [{ $lt: ["$startTime", now_time] }, { $gt: ["$endTime", now_time] }] },
+                                            then: "On Going",
+                                            else: {
+                                                $cond: {
+                                                    if: { $gt: ["$startTime", now_time] },
+                                                    then: "Upcoming",
+                                                    else: "false",
+                                                },
+                                            },
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+    ])
+
+    if (stream.length == 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+    }
+
+    return stream[0];
+}
+
 module.exports = {
     emp_go_live,
     get_stream_token,
-    get_all_chats
+    get_all_chats,
+    cloud_start,
+    cloud_stop,
+    stream_end,
+    get_candidate_jobpost,
+    get_post_details
 };
