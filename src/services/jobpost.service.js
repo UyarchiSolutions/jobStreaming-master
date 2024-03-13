@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
-const { EmployerDetails, Jobpoststream } = require('../models/employerDetails.model');
+const { EmployerDetails, Jobpoststream, Applypost } = require('../models/employerDetails.model');
 const { EmployerRegistration } = require('../models/employerRegistration.model');
 
 const { StreamAppID, Streamtoken } = require('../models/stream.model');
@@ -286,7 +286,9 @@ const get_my_job_stream = async (req) => {
         salaryRangeTo: "$employerdetails.salaryRangeTo",
         urltoApply: "$employerdetails.urltoApply",
         workplaceType: "$employerdetails.workplaceType",
-        post: 1
+        post: 1,
+        totalApply: "$employerdetails.appliedCount",
+        appliedCount: 1
       }
     }
 
@@ -346,6 +348,20 @@ const get_post_details_candidateAuth = async (req) => {
     { $unwind: "$employerregistrations" },
 
     {
+      $lookup: {
+        from: 'jobpostapplies',
+        localField: '_id',
+        foreignField: 'jobpostId',
+        as: 'jobpostapplies',
+      },
+    },
+    {
+      $unwind: {
+        path: '$jobpostapplies',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $addFields: {
         cmp_choosefile: "$employerregistrations.choosefile",
         cmp_companyAddress: "$employerregistrations.companyAddress",
@@ -359,9 +375,12 @@ const get_post_details_candidateAuth = async (req) => {
         cmp_name: "$employerregistrations.name",
         cmp_postedBy: "$employerregistrations.postedBy",
         cmp_registrationType: "$employerregistrations.choosefile",
+        apply: { $ifNull: ["$jobpostapplies.active", false] }
       }
     },
     { $unset: "employerregistrations" },
+    { $unset: "jobpostapplies" },
+
 
   ])
 
@@ -372,6 +391,72 @@ const get_post_details_candidateAuth = async (req) => {
 
   return stream[0];
 }
+
+
+const apply_candidate_jobpost_onlive = async (req) => {
+  let userId = req.userId;
+  let update = await Streamtoken.findById(req.body.id);
+  if (!update) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  let stream = await Jobpoststream.findById(update.chennel);
+  if (!stream) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  let post = await EmployerDetails.findById(stream.post);
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  let apply = await Applypost.findOne({ jobpostId: update.post, candidateID: userId });
+  if (!apply) {
+    apply = await Applypost.create({ jobpostId: update.post, joineduser: update._id, candidateID: userId, streamId: update.streamId, type: "Onlive" });
+    stream.appliedCount = stream.appliedCount + 1;
+    stream.save();
+    post.appliedCount = post.appliedCount + 1;
+    post.save();
+  }
+  return apply;
+
+}
+
+const apply_candidate_jobpost_completed = async (req) => {
+  let userId = req.userId;
+  let update = await Jobpoststream.findById(req.body.id);
+  if (!update) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  let post = await EmployerDetails.findById(stream.post);
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  let apply = await Applypost.findOne({ jobpostId: update.post, candidateID: userId });
+  if (!apply) {
+    apply = await Applypost.create({ jobpostId: update.post, candidateID: userId, streamId: update._id, type: "Completed" });
+    update.appliedCount = update.appliedCount + 1;
+    update.save();
+    post.appliedCount = post.appliedCount + 1;
+    post.save();
+  }
+  return apply;
+
+}
+
+const apply_candidate_jobpost = async (req) => {
+  let userId = req.userId;
+  let update = await EmployerDetails.findById(req.body.id);
+  if (!update) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  let apply = await Applypost.findOne({ jobpostId: update._id, candidateID: userId });
+  if (!apply) {
+    apply = await Applypost.create({ jobpostId: update._id, candidateID: userId, type: "Normal" });
+    update.appliedCount = update.appliedCount + 1;
+    update.save();
+  }
+  return apply;
+
+}
+
 module.exports = {
   get_my_job_post,
   toggle_job_post,
@@ -384,5 +469,8 @@ module.exports = {
   get_my_job_stream,
   update_stream_request,
   get_post_details_single,
-  get_post_details_candidateAuth
+  get_post_details_candidateAuth,
+  apply_candidate_jobpost_onlive,
+  apply_candidate_jobpost_completed,
+  apply_candidate_jobpost
 };

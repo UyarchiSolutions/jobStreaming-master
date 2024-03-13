@@ -43,7 +43,7 @@ const create_stream_request = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
-const update_stream_request= catchAsync(async (req, res) => {
+const update_stream_request = catchAsync(async (req, res) => {
   const data = await Jobpost.update_stream_request(req);
   res.status(httpStatus.CREATED).send(data);
 });
@@ -54,13 +54,29 @@ const get_my_job_stream = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
-const get_post_details_single= catchAsync(async (req, res) => {
+const get_post_details_single = catchAsync(async (req, res) => {
   const data = await Jobpost.get_post_details_single(req);
   res.status(httpStatus.CREATED).send(data);
 });
 
-const get_post_details_candidateAuth= catchAsync(async (req, res) => {
+const get_post_details_candidateAuth = catchAsync(async (req, res) => {
   const data = await Jobpost.get_post_details_candidateAuth(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+const apply_candidate_jobpost_onlive = catchAsync(async (req, res) => {
+  const data = await Jobpost.apply_candidate_jobpost_onlive(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const apply_candidate_jobpost_completed = catchAsync(async (req, res) => {
+  const data = await Jobpost.apply_candidate_jobpost_completed(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const apply_candidate_jobpost = catchAsync(async (req, res) => {
+  const data = await Jobpost.apply_candidate_jobpost(req);
   res.status(httpStatus.CREATED).send(data);
 });
 
@@ -77,5 +93,8 @@ module.exports = {
   get_my_job_stream,
   update_stream_request,
   get_post_details_single,
-  get_post_details_candidateAuth
+  get_post_details_candidateAuth,
+  apply_candidate_jobpost_onlive,
+  apply_candidate_jobpost_completed,
+  apply_candidate_jobpost
 };

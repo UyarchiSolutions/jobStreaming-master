@@ -484,7 +484,20 @@ const get_post_details = async (req) => {
             },
         },
         { $unwind: "$employerregistrations" },
-
+        {
+            $lookup: {
+                from: 'jobpostapplies',
+                localField: '_id',
+                foreignField: 'jobpostId',
+                as: 'jobpostapplies',
+            },
+        },
+        {
+            $unwind: {
+                path: '$jobpostapplies',
+                preserveNullAndEmptyArrays: true,
+            },
+        },
         {
             $addFields: {
                 cmp_choosefile: "$employerregistrations.choosefile",
@@ -499,9 +512,12 @@ const get_post_details = async (req) => {
                 cmp_name: "$employerregistrations.name",
                 cmp_postedBy: "$employerregistrations.postedBy",
                 cmp_registrationType: "$employerregistrations.choosefile",
+                apply: { $ifNull: ["$jobpostapplies.active", false] }
             }
         },
         { $unset: "employerregistrations" },
+        { $unset: "jobpostapplies" },
+
         {
             $lookup: {
                 from: 'jobpoststreams',

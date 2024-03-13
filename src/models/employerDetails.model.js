@@ -226,6 +226,10 @@ const employerDetailsSchema = mongoose.Schema(
     status: {
       type: String,
       default: "Published"
+    },
+    appliedCount: {
+      type: Number,
+      default: 0
     }
   },
   {
@@ -630,10 +634,57 @@ const JobpoststreamSchema = new mongoose.Schema({
   goLive: {
     type: Boolean,
     default: false,
+  },
+  appliedCount: {
+    type: Number,
+    default: 0
   }
 }, { timestamps: true });
 
 const Jobpoststream = mongoose.model('jobpoststream', JobpoststreamSchema);
+
+
+
+
+const jobpostApplyschema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    status: {
+      type: String,
+      default: 'Applied'
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    jobpostId: {
+      type: String,
+    },
+    joineduser: {
+      type: String,
+    },
+    candidateID: {
+      type: String,
+    },
+    type: {
+      type: String,
+    },
+    streamId: {
+      type: String,
+    },
+    device: {
+      type: Object,
+
+    }
+
+  },
+  { timestamps: true }
+);
+
+const Applypost = mongoose.model('jobpostapply', jobpostApplyschema);
 
 
 module.exports = {
@@ -645,5 +696,6 @@ module.exports = {
   EmployerMailNotification,
   Recruiters,
   EmployerOTP,
-  Jobpoststream
+  Jobpoststream,
+  Applypost
 };

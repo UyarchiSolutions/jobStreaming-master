@@ -27,6 +27,13 @@ router.route('/get/post/details/candidate').get(candidateAuth, Jobpost.get_post_
 
 
 
+router.route('/apply/onlive').post(candidateAuth, Jobpost.apply_candidate_jobpost_onlive);
+router.route('/apply/completed').post(candidateAuth, Jobpost.apply_candidate_jobpost_completed);
+router.route('/apply').post(candidateAuth, Jobpost.apply_candidate_jobpost);
+
+
+
+
 
 
 module.exports = router;
