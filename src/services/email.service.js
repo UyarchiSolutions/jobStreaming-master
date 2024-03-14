@@ -172,16 +172,26 @@ const sendsuccessTestMailNew = async (data) => {
   await transporter2.sendMail(msg);
 };
 
+const tConv24 = async (time24) => {
+  var ts = time24;
+  var H = +ts.substr(0, 2);
+  var h = (H % 12) || 12;
+  h = (h < 10) ? ("0" + h) : h;  // leading 0 at the left for 1 digit hours
+  var ampm = H < 12 ? " AM" : " PM";
+  ts = h + ts.substr(2, 3) + ampm;
+  return ts;
+};
+
 const agriCandidateSlotBookedMail = async (data) => {
-  const { mail, name, date, slot, slot_tech, slot_time } = data;
+  const { mail, name, date, slot, slot_date, slot_time } = data;
   console.log(data);
   let data1 = await ejs.renderFile(__dirname + '/testwarmynew.ejs', {
     email: mail,
     name: name,
     date: date,
-    time: slot,
-    date_tech: slot_tech,
-    time_tech: slot_time
+    time: tConv24(slot),
+    date_tech: slot_date,
+    time_tech: tConv24(slot_time)
 
   });
   const msg = {

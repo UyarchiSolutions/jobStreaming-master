@@ -1563,7 +1563,7 @@ const createSlotBooking = async (req) => {
     date: body.slot[0].date,
     slot: body.slot[0].time,
     date: body.slot[0].date,
-    slot_tech: body.slot[1].time,
+    slot_date: body.slot[1].date,
     slot_time: body.slot[1].time,
   };
   let slotCreate = await BookedSlot.create({ slots: body.slot, candId: body.candId });
