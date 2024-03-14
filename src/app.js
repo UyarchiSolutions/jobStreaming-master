@@ -35,8 +35,12 @@ server.listen(config.port, () => {
   // console.log(moment('21-12-2023 12:00 PM', 'DD-MM-YYYY hh:mm A').toISOString());
   // console.log(moment(1703140200000).format("DD-MM-yyyy hh:mm a"))
 });
+
+
+
 io.sockets.on('connection', async (socket) => {
 
+  console.log("Connection Successfully established")
   socket.on('groupchathost_demo', async (data) => {
     await chetModule.chat_room_create_host_demo(data, io);
   });

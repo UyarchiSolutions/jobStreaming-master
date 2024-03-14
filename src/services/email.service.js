@@ -172,7 +172,7 @@ const sendsuccessTestMailNew = async (data) => {
   await transporter2.sendMail(msg);
 };
 
-const tConv24 = async (time24) => {
+const tConv24 = (time24) => {
   var ts = time24;
   var H = +ts.substr(0, 2);
   var h = (H % 12) || 12;
