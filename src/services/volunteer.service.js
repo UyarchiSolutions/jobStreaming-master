@@ -75,7 +75,7 @@ const Login = async (req) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect Email');
   }
   if (findByemail.password == null) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password Does not set Check your Email');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password Does not set Check your Email or forgot password');
   }
   if (!(await findByemail.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect password');
