@@ -173,7 +173,7 @@ const sendsuccessTestMailNew = async (data) => {
 };
 
 const agriCandidateSlotBookedMail = async (data) => {
-  const { mail, name, date, slot } = data;
+  const { mail, name, date, slot, slot_tech, slot_time } = data;
   console.log(data);
   let data1 = await ejs.renderFile(__dirname + '/testwarmynew.ejs', {
     email: mail,
