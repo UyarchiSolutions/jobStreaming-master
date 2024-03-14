@@ -63,6 +63,11 @@ const get_stream_token_candidateAuth = catchAsync(async (req, res) => {
 
 
 
+const get_preevalution = catchAsync(async (req, res) => {
+    const data = await StreamService.get_preevalution(req, res);
+    res.send(data);
+});
+
 module.exports = {
     emp_go_live,
     get_stream_token,
@@ -74,5 +79,6 @@ module.exports = {
     get_post_details,
     candidate_go_live,
     get_stream_token_candidateAuth,
-    candidateAuth_get_all_chats
+    candidateAuth_get_all_chats,
+    get_preevalution
 };

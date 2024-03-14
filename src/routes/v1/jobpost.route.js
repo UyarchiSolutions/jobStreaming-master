@@ -36,4 +36,9 @@ router.route('/apply').post(candidateAuth, Jobpost.apply_candidate_jobpost);
 
 
 
+
+
+
+
+
 module.exports = router;

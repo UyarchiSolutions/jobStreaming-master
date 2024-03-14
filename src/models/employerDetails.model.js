@@ -230,6 +230,9 @@ const employerDetailsSchema = mongoose.Schema(
     appliedCount: {
       type: Number,
       default: 0
+    },
+    expireAt: {
+      type: Number
     }
   },
   {

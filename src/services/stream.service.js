@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const Agora = require('agora-access-token');
 
 const { StreamAppID, Streamtoken } = require('../models/stream.model');
+const { AgriCandidate, AgriEventSlot, SlotBooking, IntrestedCandidate, agriCandReview, BookedSlot, } = require('../models/agri.Event.model');
 
 const { EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification, Recruiters, EmployerOTP, Jobpoststream } = require('../models/employerDetails.model');
 
@@ -653,6 +654,19 @@ const candidateAuth_get_all_chats = async (req) => {
 }
 
 
+const get_preevalution = async (req) => {
+
+    let userId = req.userId;
+
+    let slots = await SlotBooking.aggregate([
+        { $match: { $and: [{ candId: userId }] } }
+    ])
+
+    return slots;
+
+}
+
+
 
 module.exports = {
     emp_go_live,
@@ -665,5 +679,6 @@ module.exports = {
     get_post_details,
     candidate_go_live,
     get_stream_token_candidateAuth,
-    candidateAuth_get_all_chats
+    candidateAuth_get_all_chats,
+    get_preevalution
 };

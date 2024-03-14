@@ -30,4 +30,10 @@ router.route('/candidate/go/live').post(candidateAuth, streamcontroller.candidat
 router.route('/candidate/token').get(candidateAuth, streamcontroller.get_stream_token_candidateAuth);
 
 
+
+//pre evalution
+router.route('/preevalution').get(candidateAuth, streamcontroller.get_preevalution);
+
+
+
 module.exports = router;

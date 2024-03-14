@@ -12,9 +12,11 @@ const moment = require('moment');
 
 const get_my_job_post = async (req) => {
   let userId = req.userId;
-  console.log(userId)
   let range = req.query.range == null || req.query.range == undefined || req.query.range == null ? 10 : parseInt(req.query.range);
   let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
+
+  let now_time = new Date().getTime();
+  await EmployerDetails.updateMany({ userId: { $eq: userId }, status: { $eq: "Published" }, expireAt: { $lt: now_time }, }, { $set: { status: "Expired" } }, { new: true });
   let data = await EmployerDetails.aggregate([
     {
       $match: {
@@ -42,6 +44,8 @@ const get_my_job_post = async (req) => {
     { $skip: range * (page + 1) },
     { $limit: range },
   ])
+
+
 
   return { data, next: next.length != 0 };
 };
@@ -156,7 +160,7 @@ const get_active_postes = async (req) => {
   console.log(filter)
 
   let data = await EmployerDetails.aggregate([
-    { $match: { $and: [filter, { status: { $ne: "draft" } }, { userId: { $eq: userId } }] } },
+    { $match: { $and: [filter, { status: { $eq: "Published" } }, { userId: { $eq: userId } }] } },
     { $limit: 20 },
     { $sort: { createdAt: -1 } },
     {
@@ -186,7 +190,13 @@ const create_stream_request = async (req) => {
   let endTime = end;
   let actualEnd = end;
 
+  let already = await Jobpoststream.find({ post: body.post, $or: [{ $and: [{ startTime: { $lt: iso } }, { endTime: { $gt: iso } }] }, { $and: [{ startTime: { $lt: end } }, { endTime: { $gt: end } }] }] })
 
+
+  if (already.length != 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Another stream Inbetween Time');
+
+  }
   let create = await Jobpoststream.create({ ...body, ...{ userId: userId, startTime, endTime, actualEnd } });
 
   return create;
@@ -209,11 +219,14 @@ const update_stream_request = async (req) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream Request not found');
   }
   if (update.status != 'Pending') {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Not Aable Update');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Able Update');
+  }
+  let already = await Jobpoststream.find({ _id: { $ne: update._id }, post: body.post, $or: [{ $and: [{ startTime: { $lt: iso } }, { endTime: { $gt: iso } }] }, { $and: [{ startTime: { $lt: end } }, { endTime: { $gt: end } }] }] });
+  if (already.length != 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Another stream Inbetween Time');
   }
   update = await Jobpoststream.findByIdAndUpdate({ _id: req.body.stream }, { ...body, ...{ startTime, endTime, actualEnd } }, { new: true });
   return update;
-
 }
 
 
