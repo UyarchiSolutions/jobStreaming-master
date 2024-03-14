@@ -71,8 +71,14 @@ const forget_password = async (req) => {
 const Login = async (req) => {
   const { password, email } = req.body;
   let findByemail = await Volunteer.findOne({ email: email });
-  if (!findByemail || !(await findByemail.isPasswordMatch(password))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+  if (!findByemail) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect Email');
+  }
+  if (findByemail.password == null) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password Does not set Check your Email');
+  }
+  if (!(await findByemail.isPasswordMatch(password))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect password');
   }
   return findByemail;
 };
