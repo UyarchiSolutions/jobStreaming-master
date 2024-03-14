@@ -948,6 +948,7 @@ const get_interested_hrs = async (req) => {
       $match: {
         $and: [
           { Role: { $eq: "HR Volunteer" } },
+          { password: { $ne: null } }
         ]
       }
     },
@@ -1249,6 +1250,7 @@ const get_interested_tech = async (req) => {
       $match: {
         $and: [
           { Role: { $eq: "Tech Volunteer" } },
+          { password: { $ne: null } },
           keySkillSearch
         ]
       }
