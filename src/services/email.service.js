@@ -180,14 +180,18 @@ const agriCandidateSlotBookedMail = async (data) => {
     name: name,
     date: date,
     time: slot,
+    date_tech: slot_tech,
+    time_tech: slot_time
+
   });
   const msg = {
-    from: 'noreply@warmy.co.in',
+    from: config.email.from,
     to: mail,
-    subject: 'Agri job Fair Slot Confirmation Message',
+    subject: 'Interview Schedule-Software Engineer-Full Stack Developer(Angular/NodeJs)-Confirmation-Regarding',
     html: data1,
   };
-  await transporter2.sendMail(msg);
+
+  await transport.sendMail(msg);
 };
 
 const sendEmailTemplate = async (to, subject, text) => {
