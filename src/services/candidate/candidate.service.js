@@ -142,7 +142,7 @@ const get_candidate_applies = async (req) => {
   let posts = await Jobpoststream.findById(post);
   let match = { jobpostId: { $eq: post } };
   if (posts) {
-    post = posts.post;
+    post = posts._id;
     match = { streamId: { $eq: post } };
 
   }

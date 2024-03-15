@@ -44,5 +44,9 @@ router.route('/get/folders').get(authorization, employerCandidateSearch.get_my_f
 router.route('/get/my/saved/folders').get(authorization, employerCandidateSearch.get_my_saved_folder);
 
 
+router.route('/get/saved/candidate').get(authorization, employerCandidateSearch.get_saved_candidate);
+
+
+
 
 module.exports = router;

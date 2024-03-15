@@ -2612,6 +2612,31 @@ const get_my_saved_folder = async (req) => {
   return { folders, next: next.length != 0 };
 }
 
+
+const get_saved_candidate = async (req) => {
+
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
+  let range = req.query.range == '' || req.query.range == null || req.query.range == null ? 10 : parseInt(req.query.range);
+  let userId = req.userId;
+  let saved_candidate = await Savedcandidate.aggregate([
+    { $match: { $and: [{ userId: { $eq: userId } }] } },
+    { $skip: parseInt(range) * parseInt(page) },
+    { $limit: parseInt(range) },
+  ])
+  let next = await Savedcandidate.aggregate([
+    { $match: { $and: [{ userId: { $eq: userId } }] } },
+    {
+      $skip: range * (parseInt(page) + 1),
+    },
+    {
+      $limit: range,
+    },
+  ])
+
+
+  return { data: saved_candidate, next: next.length != 0 };
+}
+
 module.exports = {
   // createCandidateSearch,
   // searchCandidate,
@@ -2644,5 +2669,6 @@ module.exports = {
   create_saved_folder,
   existing_saved_folder,
   get_my_folder,
-  get_my_saved_folder
+  get_my_saved_folder,
+  get_saved_candidate
 };

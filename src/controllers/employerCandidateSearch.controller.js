@@ -194,6 +194,12 @@ const get_my_saved_folder = catchAsync(async (req, res) => {
   res.send(user)
 
 })
+
+const get_saved_candidate= catchAsync(async (req, res) => {
+  const user = await employerCandidateSearch.get_saved_candidate(req)
+  res.send(user)
+
+})
 module.exports = {
   // createCandidateSearch,
   // searchQuery,
@@ -226,5 +232,6 @@ module.exports = {
   create_saved_folder,
   existing_saved_folder,
   get_my_folder,
-  get_my_saved_folder
+  get_my_saved_folder,
+  get_saved_candidate
 };
