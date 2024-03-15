@@ -365,6 +365,9 @@ const get_post_details_candidateAuth = async (req) => {
         from: 'jobpostapplies',
         localField: '_id',
         foreignField: 'jobpostId',
+        pipeline: [
+          { $match: { candidateID: { $eq: userId } } }
+        ],
         as: 'jobpostapplies',
       },
     },

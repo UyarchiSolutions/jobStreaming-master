@@ -40,6 +40,9 @@ const get_all_candidates = async (req) => {
 
 const get_applied_jobs = async (req) => {
   let userId = req.userId;
+  let range = req.query.range == null || req.query.range == undefined || req.query.range == null ? 10 : parseInt(req.query.range);
+  let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
+
   let jobs = await Applypost.aggregate([
     { $match: { $and: [{ candidateID: { $eq: userId } }] } },
     {
@@ -101,7 +104,7 @@ const get_applied_jobs = async (req) => {
         recruiterName: "$employerdetails.recruiterName",
         recruiterEmail: "$employerdetails.recruiterEmail",
         recruiterNumber: "$employerdetails.recruiterNumber",
-        createdAt: "$employerdetails.createdAt",
+        post_createdAt: "$employerdetails.createdAt",
         companyType: "$employerdetails.employerregistrations.companyType",
         companyType: "$employerdetails.employerregistrations.companyType",
         companyAddress: "$employerdetails.employerregistrations.companyAddress",
@@ -113,21 +116,122 @@ const get_applied_jobs = async (req) => {
         companyWebsite: "$employerdetails.employerregistrations.companyWebsite",
       }
     },
-    { $unset: "employerdetails" }
+    { $unset: "employerdetails" },
+    { $skip: range * page },
+    { $limit: range },
   ])
 
 
-  return { jobs }
+  let next = await Applypost.aggregate([
+    { $match: { $and: [{ candidateID: { $eq: userId } }] } },
+    { $skip: range * (page + 1) },
+    { $limit: range },
+
+  ])
+
+  return { jobs, next: next.length != 0 }
+}
+
+const get_candidate_applies = async (req) => {
+  let userId = req.userId
+  let post = req.query.id;
+  let range = req.query.range == null || req.query.range == undefined || req.query.range == null ? 10 : parseInt(req.query.range);
+  let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
+
+
+  let posts = await Jobpoststream.findById(post);
+  let match = { jobpostId: { $eq: post } };
+  if (posts) {
+    post = posts.post;
+    match = { streamId: { $eq: post } };
+
+  }
+
+
+  let applies = await Applypost.aggregate([
+    { $match: { $and: [match] } },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'jobpostId',
+        foreignField: '_id',
+        pipeline: [
+          { $match: { userId: { $eq: userId } } }
+        ],
+        as: 'employerdetails',
+      },
+    },
+    { $unwind: "$employerdetails" },
+    { $unset: "employerdetails" },
+
+
+    {
+      $lookup: {
+        from: 'agricandidates',
+        localField: 'candidateID',
+        foreignField: '_id',
+        as: 'agricandidates',
+      },
+    },
+    { $unwind: "$agricandidates" },
+
+    {
+      $addFields: {
+        _id: "$agricandidates._id",
+        applyID: "$_id",
+        skills: "$agricandidates.skills",
+        language: "$agricandidates.language",
+        intrest: "$agricandidates.intrest",
+        techIntrest: "$agricandidates.techIntrest",
+        experience_year: "$agricandidates.experience_year",
+        experience_month: "$agricandidates.experience_month",
+        name: "$agricandidates.name",
+        mail: "$agricandidates.mail",
+        mobile: "$agricandidates.mobile",
+        location: "$agricandidates.location",
+        Instituitionname: "$agricandidates.Instituitionname",
+        affiliateduniversity: "$agricandidates.affiliateduniversity",
+        Education: "$agricandidates.Education",
+        course: "$agricandidates.course",
+        yearOfPassing: "$agricandidates.yearOfPassing",
+        dob: "$agricandidates.dob",
+        gender: "$agricandidates.gender",
+        resumeUrl: "$agricandidates.resumeUrl",
+      }
+    },
+
+    { $unset: "agricandidates" },
+
+    { $skip: range * page },
+    { $limit: range },
+  ])
+  let next = await Applypost.aggregate([
+    { $match: { $and: [match] } },
+    {
+      $lookup: {
+        from: 'employerdetails',
+        localField: 'jobpostId',
+        foreignField: '_id',
+        pipeline: [
+          { $match: { userId: { $eq: userId } } }
+        ],
+        as: 'employerdetails',
+      },
+    },
+    { $unwind: "$employerdetails" },
+    { $unset: "employerdetails" },
+    { $skip: range * (page + 1) },
+    { $limit: range },
+  ])
+
+  return { data: applies, next: next.length != 0 }
 }
 
 module.exports = {
   get_all_candidates,
-  get_applied_jobs
+  get_applied_jobs,
+  get_candidate_applies
 
 };
-
-
-
-
 
 

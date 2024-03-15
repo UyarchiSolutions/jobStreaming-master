@@ -470,8 +470,8 @@ const get_candidate_jobpost = async (req) => {
 }
 
 const get_post_details = async (req) => {
-    // 
 
+    let userId = req.userId;
     let now_time = new Date().getTime();
     let id = req.query.id;
     let stream = await EmployerDetails.aggregate([
@@ -490,6 +490,9 @@ const get_post_details = async (req) => {
                 from: 'jobpostapplies',
                 localField: '_id',
                 foreignField: 'jobpostId',
+                pipeline: [
+                    { $match: { candidateID: { $eq: userId } } }
+                ],
                 as: 'jobpostapplies',
             },
         },
