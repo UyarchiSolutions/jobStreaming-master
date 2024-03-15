@@ -9,8 +9,16 @@ const get_all_candidates = catchAsync(async (req, res) => {
 });
 
 
+const get_applied_jobs = catchAsync(async (req, res) => {
+  const data = await AgoraAppId.get_applied_jobs(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+
 module.exports = {
   get_all_candidates,
+  get_applied_jobs
 
 };
 
