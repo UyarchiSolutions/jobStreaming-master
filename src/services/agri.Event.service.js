@@ -35,10 +35,19 @@ const createAgriEvent = async (req) => {
 
 const createSlots = async (req, res) => {
   let date = req.body;
-  const dateTimeString = `${date.date} ${date.slot}`;
-  const momentObject = moment(dateTimeString, 'YYYY-MM-DD hh:mm A');
+  var dateString = `${date.date} ${date.slot}`;
+  var dateParts = dateString.split(/[\s:-]+/);
+  var year = parseInt(dateParts[2], 10);
+  var month = parseInt(dateParts[1], 10) - 1;
+  var day = parseInt(dateParts[0], 10);
+  var hour = parseInt(dateParts[3], 10);
+  var minute = parseInt(dateParts[4], 10);
+
+  var datetime = new Date(year, month, day, hour, minute);
+  var timestamp = datetime.getTime();
+
   // console.log(isoDateTime)
-  let datas = { ...date, ...{ dateTime: momentObject } };
+  let datas = { ...date, ...{ dateTime: timestamp } };
   const slots = await AgriEventSlot.create(datas);
   return slots;
 };
@@ -67,13 +76,15 @@ const getslots = async (req, res) => {
 }
 
 const slotDetailsAgriHR = async () => {
+  let nowdate = new Date().getTime();
   let slots = await AgriEventSlot.aggregate([
-    { $match: { Type: 'HR' } },
-    { $sort: { sortcount: 1 } },
+    { $match: { Type: 'HR', dateTime: { $lt: nowdate } } },
+    { $sort: { dateTime: 1 } },
     {
       $group: {
         _id: { date: '$date' },
         time: { $push: '$slot' },
+        dateTime: { $push: '$dateTime' },
       },
     },
     {
@@ -81,6 +92,7 @@ const slotDetailsAgriHR = async () => {
         _id: '',
         date: '$_id.date',
         time: 1,
+        dateTime: 1
       },
     },
     { $sort: { date: 1 } },
@@ -89,13 +101,16 @@ const slotDetailsAgriHR = async () => {
 };
 
 const slotDetailsAgriTch = async () => {
+
+  let nowdate = new Date().getTime();
   let slots = await AgriEventSlot.aggregate([
-    { $match: { Type: 'Tech' } },
+    { $match: { Type: 'Tech', dateTime: { $lt: nowdate } } },
     { $sort: { dateTime: 1 } },
     {
       $group: {
         _id: { date: '$date' },
         time: { $push: '$slot' },
+        dateTime: { $push: '$dateTime' },
       },
     },
     {
@@ -103,6 +118,7 @@ const slotDetailsAgriTch = async () => {
         _id: '',
         date: '$_id.date',
         time: 1,
+        dateTime: 1
       },
     },
     { $sort: { date: 1 } },
