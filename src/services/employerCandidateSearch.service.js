@@ -2620,11 +2620,87 @@ const get_saved_candidate = async (req) => {
   let userId = req.userId;
   let saved_candidate = await Savedcandidate.aggregate([
     { $match: { $and: [{ userId: { $eq: userId } }] } },
+    {
+      $lookup: {
+        from: 'emp-folders',
+        localField: 'folderId',
+        foreignField: '_id',
+        as: 'emp-folders',
+      },
+    },
+    {
+      $unwind: {
+        path: '$emp-folders',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'agricandidates',
+        localField: 'candidateId',
+        foreignField: '_id',
+        as: 'agricandidates',
+      },
+    },
+    { $unwind: "$agricandidates" },
+
+    {
+      $addFields: {
+        _id: "$_id",
+        candidateId: "$agricandidates._id",
+        skills: "$agricandidates.skills",
+        language: "$agricandidates.language",
+        intrest: "$agricandidates.intrest",
+        techIntrest: "$agricandidates.techIntrest",
+        experience_year: "$agricandidates.experience_year",
+        experience_month: "$agricandidates.experience_month",
+        name: "$agricandidates.name",
+        mail: "$agricandidates.mail",
+        mobile: "$agricandidates.mobile",
+        location: "$agricandidates.location",
+        Instituitionname: "$agricandidates.Instituitionname",
+        affiliateduniversity: "$agricandidates.affiliateduniversity",
+        Education: "$agricandidates.Education",
+        course: "$agricandidates.course",
+        yearOfPassing: "$agricandidates.yearOfPassing",
+        dob: "$agricandidates.dob",
+        gender: "$agricandidates.gender",
+        resumeUrl: "$agricandidates.resumeUrl",
+        folderName: "$emp-folders.folderName"
+      }
+    },
+    { $unset: "agricandidates" },
+    { $unset: "emp-folders" },
     { $skip: parseInt(range) * parseInt(page) },
     { $limit: parseInt(range) },
   ])
   let next = await Savedcandidate.aggregate([
     { $match: { $and: [{ userId: { $eq: userId } }] } },
+    {
+      $lookup: {
+        from: 'emp-folders',
+        localField: 'folderId',
+        foreignField: '_id',
+        as: 'emp-folders',
+      },
+    },
+    {
+      $unwind: {
+        path: '$emp-folders',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'agricandidates',
+        localField: 'candidateId',
+        foreignField: '_id',
+        as: 'agricandidates',
+      },
+    },
+    { $unwind: "$agricandidates" },
     {
       $skip: range * (parseInt(page) + 1),
     },

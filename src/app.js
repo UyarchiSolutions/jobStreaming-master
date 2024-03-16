@@ -47,6 +47,9 @@ io.sockets.on('connection', async (socket) => {
   socket.on('groupchathost_demo_buyer', async (data) => {
     await chetModule.chat_room_create_host_demo_sub(data, io);
   });
+  socket.on('groupchathost_pre_buyer', async (data) => {
+    await chetModule.chat_room_create_host_pre_sub(data, io);
+  });
   socket.on('privateChat', async (data) => {
     // await privatechat.recived_message(data, io, socket.handshake.auth);
   });

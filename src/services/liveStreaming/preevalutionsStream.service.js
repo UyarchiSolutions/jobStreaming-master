@@ -761,27 +761,12 @@ const get_buyer_join_stream = async (req) => {
 
 
 const buyer_go_live_stream = async (req) => {
-
-  let userId = req.userId;
-  let streamId = req.body.stream;
-
-  const stream = await SlotBooking.findById(streamId);
-  if (!stream) {
+  let demotoken = await DemostreamToken.findById(req.query.id);
+  if (!demotoken) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
-  let demotoken = await DemostreamToken.findOne({ userID: userId, streamID: stream._id });
-  if (!demotoken) {
-    demotoken = await DemostreamToken.create({
-      streamID: streamId,
-      type: 'BUYER',
-      agoraID: stream.agoraID,
-      channel: streamId,
-      dateISO: moment(),
-      userID: userId,
-      demoPost: stream.streamId,
-      candId: stream.candId,
-    });
-  }
+  const stream = await SlotBooking.findById(demotoken.streamID);
+  console.log(stream)
   if (stream) {
     if (demotoken.token == null && stream.agoraAppId != null) {
       const uid = await generateUid();
@@ -793,11 +778,11 @@ const buyer_go_live_stream = async (req) => {
       demotoken.token = token;
       demotoken.save();
     }
-    stream.linkstatus = "Verified";
     stream.candidate_join = true;
     stream.save();
     req.io.emit(stream._id + '_cantidate_join', { candidate_join: true });
   }
+
   return demotoken;
 };
 

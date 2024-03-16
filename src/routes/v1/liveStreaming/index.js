@@ -4,6 +4,7 @@ const multihostModal = require('./generateToken-multihost.route');
 const chatModel = require('./chat.route');
 const docsRoute = require('../docs.route');
 const demostream = require('../liveStreaming/DemoStream.route');
+const preevalution = require('../liveStreaming/preevalutionsStream.route');
 const config = require('../../../config/config');
 
 const router = express.Router();
@@ -24,6 +25,10 @@ const defaultRoutes = [
   {
     path: "/demostream",
     route: demostream
+  },
+  {
+    path: "/preevalution",
+    route: preevalution
   }
 ];
 

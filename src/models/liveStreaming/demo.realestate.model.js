@@ -219,7 +219,10 @@ const Demostreamchema = mongoose.Schema({
   mainhost: {
     type: Boolean,
     default: false,
-  }
+  },
+  candId: {
+    type: String,
+  },
 });
 
 const DemostreamToken = mongoose.model('demostreamtoken', Demostreamchema);
@@ -392,7 +395,7 @@ const democloud_record = mongoose.Schema({
     type: String,
     default: 'Pending',
   },
-  videoLink_mp4:{
+  videoLink_mp4: {
     type: String,
     default: 'Pending'
   },

@@ -188,7 +188,7 @@ const send_otp_now = async (user) => {
 
 const getUserById = async (id) => {
 
-  const data = await AgriCandidate.findById(id, 'Education Instituitionname affiliateduniversity course createdAt dob experience_month experience_year gender language location mail mobile name resumeUrl skills yearOfPassing ')
+  const data = await AgriCandidate.findById(id, 'status Education Instituitionname affiliateduniversity course createdAt dob experience_month experience_year gender language location mail mobile name resumeUrl skills yearOfPassing ')
   if (!data) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Registration');
   }
