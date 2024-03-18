@@ -20,8 +20,8 @@ const createVolunteer = async (req) => {
   }
   console.log(body.currentCTC)
   console.log(body.currentCTC.thousand)
-  let thousand = body.currentCTC.thousand == null || body.currentCTC.thousand == null ? 0 : parserInt(body.currentCTC.thousand);
-  let lacs = body.currentCTC.lacs == null || body.currentCTC.lacs == null ? 0 : parserInt(body.currentCTC.lacs);
+  let thousand = body.currentCTC.thousand == null || body.currentCTC.thousand == null ? 0 : parseInt(body.currentCTC.thousand);
+  let lacs = body.currentCTC.lacs == null || body.currentCTC.lacs == null ? 0 : parseInt(body.currentCTC.lacs);
   let totalctc = 0;
   if (thousand != null && lacs != null) {
     totalctc = thousand + (lacs * 100);
