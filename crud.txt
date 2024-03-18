@@ -1,0 +1,35 @@
+create api
+curl --location 'https://livebroadcast.click/v1/crud/create' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name":"bharathi",
+    "phone":9965740303,
+    "email":"bharathi@gmail.com",
+    "password":6723
+}'
+
+
+
+get api
+ https://livebroadcast.click/v1/crud/get?id=f9247b8a-b15e-4651-81d2-7b7224887605
+
+
+get api all
+ https://livebroadcast.click/v1/crud/getall
+
+
+
+update api
+curl --location --request PUT 'https://livebroadcast.click/v1/crud/update?id=f9247b8a-b15e-4651-81d2-7b7224887605' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name":"bharathiraja",
+    "phone":9965740303,
+    "email":"bharathi@gmail.com",
+    "password":6723
+}'
+
+
+
+delete api
+curl --location --request DELETE 'https://livebroadcast.click/v1/crud/delete?id=f9247b8a-b15e-4651-81d2-7b7224887605'

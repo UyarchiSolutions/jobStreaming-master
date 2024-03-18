@@ -34,6 +34,10 @@ const get_all_chats = catchAsync(async (req, res) => {
     res.send(data);
 });
 
+const get_candidate_jobpost_current_live = catchAsync(async (req, res) => {
+    const data = await StreamService.get_candidate_jobpost_current_live(req, res);
+    res.send(data);
+});
 const get_candidate_jobpost = catchAsync(async (req, res) => {
     const data = await StreamService.get_candidate_jobpost(req, res);
     res.send(data);
@@ -80,5 +84,6 @@ module.exports = {
     candidate_go_live,
     get_stream_token_candidateAuth,
     candidateAuth_get_all_chats,
-    get_preevalution
+    get_preevalution,
+    get_candidate_jobpost_current_live
 };

@@ -521,6 +521,7 @@ const get_app_id = async (data) => {
 
 
   const query = await axios.post(`https://seewe.co/v2/agora/get/app/id/assign`, data);
+  console.log(query.data)
 
   let create_app = await StreamAppID.create(
     {

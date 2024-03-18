@@ -416,6 +416,235 @@ const agora_acquire = async (req, id, agroaID) => {
 
 const get_candidate_jobpost = async (req) => {
 
+
+
+    let current_live = await current_live_post(req);
+    let upcomming_live = await upcomming_live_post(req);
+    let completed_live = await completed_live_post(req);
+    let normal = await without_stream(req);
+
+
+    return {
+        current: current_live,
+        upcomming: upcomming_live,
+        completed: completed_live,
+        normal
+
+    }
+}
+
+
+const current_live_post = async (req) => {
+    let currentTime = new Date().getTime();
+    let post = await EmployerDetails.aggregate([
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $limit: 1 }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+        { $unwind: "$jobpoststreams" },
+        {
+            $addFields: {
+                startTime: "$jobpoststreams.startTime",
+                endTime: "$jobpoststreams.endTime",
+                actualEnd: "$jobpoststreams.actualEnd",
+                streamstatus: "$jobpoststreams.status",
+            }
+        },
+        { $unset: "jobpoststreams" },
+        { $limit: 10 },
+    ])
+
+    let next = await EmployerDetails.aggregate([
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $limit: 1 }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+        { $unwind: "$jobpoststreams" },
+        { $skip: 10 },
+        { $limit: 10 },
+    ])
+
+    return {
+        post, next: next.length != 0
+    }
+}
+
+
+
+
+const upcomming_live_post = async (req) => {
+    let currentTime = new Date().getTime();
+    let post = await EmployerDetails.aggregate([
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $limit: 1 }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+        { $unwind: "$jobpoststreams" },
+        {
+            $addFields: {
+                startTime: "$jobpoststreams.startTime",
+                endTime: "$jobpoststreams.endTime",
+                actualEnd: "$jobpoststreams.actualEnd",
+                streamstatus: "$jobpoststreams.status",
+            }
+        },
+        { $unset: "jobpoststreams" },
+        { $limit: 10 },
+    ])
+
+    let next = await EmployerDetails.aggregate([
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $limit: 1 }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+        { $unwind: "$jobpoststreams" },
+        { $skip: 10 },
+        { $limit: 10 },
+    ])
+
+    return {
+        post, next: next.length != 0
+    }
+}
+
+const completed_live_post = async (req) => {
+    let currentTime = new Date().getTime();
+    let post = await EmployerDetails.aggregate([
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $limit: 1 }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+        { $unwind: "$jobpoststreams" },
+        {
+            $addFields: {
+                startTime: "$jobpoststreams.startTime",
+                endTime: "$jobpoststreams.endTime",
+                actualEnd: "$jobpoststreams.actualEnd",
+                streamstatus: "$jobpoststreams.status",
+            }
+        },
+        { $unset: "jobpoststreams" },
+        { $limit: 10 },
+    ])
+
+    let next = await EmployerDetails.aggregate([
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $limit: 1 }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+        { $unwind: "$jobpoststreams" },
+        { $skip: 10 },
+        { $limit: 10 },
+    ])
+
+    return {
+        post, next: next.length != 0
+    }
+}
+
+
+
+const without_stream = async (req) => {
+    let currentTime = new Date().getTime();
+    let post = await EmployerDetails.aggregate([
+        // {
+        //     $lookup: {
+        //         from: 'jobpoststreams',
+        //         localField: '_id',
+        //         foreignField: 'post',
+        //         pipeline: [
+        //             { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+        //             { $limit: 1 }
+        //         ],
+        //         as: 'jobpoststreams',
+        //     },
+        // },
+        // { $unwind: "$jobpoststreams" },
+        // {
+        //     $addFields: {
+        //         startTime: "$jobpoststreams.startTime",
+        //         endTime: "$jobpoststreams.endTime",
+        //         actualEnd: "$jobpoststreams.actualEnd",
+        //         streamstatus: "$jobpoststreams.status",
+        //     }
+        // },
+        // { $unset: "jobpoststreams" },
+        { $limit: 30 },
+    ])
+
+    let next = await EmployerDetails.aggregate([
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $limit: 1 }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+        { $unwind: "$jobpoststreams" },
+        { $skip: 10 },
+        { $limit: 10 },
+    ])
+
+    return {
+        post, next: next.length != 0
+    }
+}
+
+const get_candidate_jobpost_current_live = async (req) => {
+
     let currentTime = new Date().getTime();
     let range = req.query.range == null || req.query.range == undefined || req.query.range == null ? 10 : parseInt(req.query.range);
     let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
@@ -683,5 +912,6 @@ module.exports = {
     candidate_go_live,
     get_stream_token_candidateAuth,
     candidateAuth_get_all_chats,
-    get_preevalution
+    get_preevalution,
+    get_candidate_jobpost_current_live
 };
