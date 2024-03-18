@@ -18,7 +18,13 @@ const createVolunteer = async (req) => {
   if (findByMobile) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Already Exists');
   }
-  let creations = await Volunteer.create(body);
+  let thousand = body.currentCTC.thousand == null || body.currentCTC.thousand == null ? 0 : parserInt(body.currentCTC.thousand);
+  let locs = body.currentCTC.locs == null || body.currentCTC.locs == null ? 0 : parserInt(body.currentCTC.locs);
+  let totalctc = 0;
+  if (thousand != null && locs != null) {
+    totalctc = thousand + (locs * 100);
+  }
+  let creations = await Volunteer.create({ ...body, ...{ currentCTC_thousand: thousand, currentCTC_locs: currentCTC_locs, totalctc } });
   return creations;
 };
 

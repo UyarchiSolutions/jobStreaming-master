@@ -77,6 +77,11 @@ const createSlotBooking = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+
+const SlotBooking = catchAsync(async (req, res) => {
+  const data = await AgriEventService.slotBooking_new(req);
+  res.send(data);
+});
 const getIntrestedByCand_Role = catchAsync(async (req, res) => {
   const data = await AgriEventService.getIntrestedByCand_Role(req);
   res.send(data);
@@ -165,5 +170,6 @@ module.exports = {
   get_hr_review,
   get_tech_review,
   get_interested_hrs,
-  get_interested_tech
+  get_interested_tech,
+  SlotBooking
 };

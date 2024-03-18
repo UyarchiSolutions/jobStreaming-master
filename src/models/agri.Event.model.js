@@ -129,6 +129,11 @@ const AgriCandidateSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+    },
+    slotBook: {
+      type: Boolean,
+      default: false
+
     }
 
   },

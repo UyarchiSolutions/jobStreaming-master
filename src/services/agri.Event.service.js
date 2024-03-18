@@ -78,13 +78,13 @@ const getslots = async (req, res) => {
 const slotDetailsAgriHR = async () => {
   let nowdate = new Date().getTime();
   let slots = await AgriEventSlot.aggregate([
-    { $match: { Type: 'HR', dateTime: { $lt: nowdate } } },
+    { $match: { Type: 'HR', dateTime: { $gt: nowdate } } },
     { $sort: { dateTime: 1 } },
     {
       $group: {
         _id: { date: '$date' },
         time: { $push: '$slot' },
-        dateTime: { $push: '$dateTime' },
+        dateTime: { $push: { dateTime: '$dateTime', _id: "$_id" } },
       },
     },
     {
@@ -104,13 +104,13 @@ const slotDetailsAgriTch = async () => {
 
   let nowdate = new Date().getTime();
   let slots = await AgriEventSlot.aggregate([
-    { $match: { Type: 'Tech', dateTime: { $lt: nowdate } } },
+    { $match: { Type: 'Tech', dateTime: { $gt: nowdate } } },
     { $sort: { dateTime: 1 } },
     {
       $group: {
         _id: { date: '$date' },
         time: { $push: '$slot' },
-        dateTime: { $push: '$dateTime' },
+        dateTime: { $push: { dateTime: '$dateTime', _id: "$_id" } },
       },
     },
     {
@@ -1604,6 +1604,44 @@ const createSlotBooking = async (req) => {
   return { message: 'Slot Booking created successfully' };
 };
 
+
+const slotBooking_new = async (req) => {
+  const body = req.body;
+  let userId = req.userId;
+  let findCand = await AgriCandidate.findById(userId);
+  let techslot = await AgriEventSlot.findById(body.techslot);
+  if (findCand.slotBook) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Slot Already Booked');
+  }
+
+  if (!techslot) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Tech Slot Not Found');
+  }
+
+  let hrslot = await AgriEventSlot.findById(body.hrslot);
+
+  if (!hrslot) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'HR Slot Not Found');
+  }
+
+  let emailData = {
+    mail: findCand.mail,
+    name: findCand.name,
+    date: hrslot.date,
+    slot: hrslot.slot,
+    slot_date: techslot.date,
+    slot_time: techslot.slot,
+  };
+  let _hr_end = moment(hrslot.dateTime).add(30, 'minutes');
+  let _tech_end = moment(techslot.dateTime).add(30, 'minutes');
+  await SlotBooking.create({ candId: findCand._id, date: hrslot.date, time: hrslot.slot, Type: "HR", DateTime: hrslot.dateTime, endTime: _hr_end, slotId: hrslot._id, });
+  await SlotBooking.create({ candId: findCand._id, date: techslot.date, time: techslot.slot, Type: "Tech", DateTime: techslot.dateTime, endTime: _tech_end, slotId: techslot._id, });
+
+  await AgriCandidate.findByIdAndUpdate({ _id: findCand._id }, { slotbooked: true, slotBook: true, status: "Slot Chosen" }, { new: true });
+  await agriCandidateSlotBookedMail(emailData);
+
+  return { message: 'Slot Booking created successfully' };
+};
 const AdminApprove = async (req) => {
   const { slotId, volunteerId, intrestId, Role } = req.body;
   let getIntrested = await IntrestedCandidate.findById(intrestId);
@@ -2063,5 +2101,6 @@ module.exports = {
   link_send,
   getslots,
   get_interested_hrs,
-  get_interested_tech
+  get_interested_tech,
+  slotBooking_new
 };

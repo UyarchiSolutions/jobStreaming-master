@@ -44,7 +44,16 @@ const VolunteerSchema = new mongoose.Schema({
     type: String,
   },
   currentCTC: {
-    type: String,
+    type: Object,
+  },
+  currentCTC_thousand: {
+    type: Number,
+  },
+  currentCTC_locs: {
+    type: Number,
+  },
+  totalctc: {
+    type: Number,
   },
   currentLocation: {
     type: String,

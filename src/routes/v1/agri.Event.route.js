@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const AgriEventController = require('../../controllers/agri.event.controller');
+const candidateAuth = require('../../controllers/tokenVerify.controller');
+
 const multer = require('multer');
 
 const storage = multer.memoryStorage();
@@ -21,6 +23,8 @@ router.route('/agri/cand').get(AgriEventController.getAgriCandidates);
 router.route('/getCandidateById/:id').get(AgriEventController.getCandidateById);
 router.route('/getCandBy').post(AgriEventController.getCandBy);
 router.route('/create/SlotBooking').post(AgriEventController.createSlotBooking);
+router.route('/SlotBooking/').post(candidateAuth,AgriEventController.SlotBooking);
+
 router.route('/getIntrested/ByCand_Role/:id/:role').get(AgriEventController.getIntrestedByCand_Role);
 router.route('/AdminApprove').post(AgriEventController.AdminApprove);
 router.route('/Undo/:id').get(AgriEventController.Undo);
