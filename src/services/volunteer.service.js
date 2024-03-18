@@ -18,8 +18,7 @@ const createVolunteer = async (req) => {
   if (findByMobile) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Already Exists');
   }
-  console.log(body.currentCTC)
-  console.log(body.currentCTC.thousand)
+
   let thousand = body.currentCTC.thousand == null || body.currentCTC.thousand == null ? 0 : parseInt(body.currentCTC.thousand);
   let lacs = body.currentCTC.lacs == null || body.currentCTC.lacs == null ? 0 : parseInt(body.currentCTC.lacs);
   let totalctc = 0;
@@ -711,7 +710,16 @@ const updateVolunteer = async (req) => {
   if (!findById) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Volunteer not found');
   }
-  findById = await Volunteer.findByIdAndUpdate({ _id: req.userId }, req.body, { new: true });
+  let body = req.body;
+
+  let thousand = body.currentCTC.thousand == null || body.currentCTC.thousand == null ? 0 : parseInt(body.currentCTC.thousand);
+  let lacs = body.currentCTC.lacs == null || body.currentCTC.lacs == null ? 0 : parseInt(body.currentCTC.lacs);
+  let totalctc = 0;
+  if (thousand != null && lacs != null) {
+    totalctc = thousand + (lacs * 100);
+  }
+
+  findById = await Volunteer.findByIdAndUpdate({ _id: req.userId }, { ...body, ...{ currentCTC_thousand: thousand, currentCTC_locs: lacs, totalctc } }, { new: true });
   return findById;
 };
 
