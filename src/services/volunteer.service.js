@@ -24,7 +24,7 @@ const createVolunteer = async (req) => {
   if (thousand != null && locs != null) {
     totalctc = thousand + (locs * 100);
   }
-  let creations = await Volunteer.create({ ...body, ...{ currentCTC_thousand: thousand, currentCTC_locs: currentCTC_locs, totalctc } });
+  let creations = await Volunteer.create({ ...body, ...{ currentCTC_thousand: thousand, currentCTC_locs: locs, totalctc } });
   return creations;
 };
 
