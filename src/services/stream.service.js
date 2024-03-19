@@ -64,12 +64,16 @@ const emp_go_live = async (req) => {
         value.token = token;
         value.chennel = streamId;
         value.save();
+
+    }
+    if (stream.status == 'Pending') {
         stream.tokenGeneration = true;
         stream.status = "On Going";
         stream.goLive = true;
         stream.save();
     }
-
+    console.log(stream)
+    req.io.emit(stream.post + '_host_join', { streamId: stream._id, status: stream.status, goLive: stream.goLive });
     await production_supplier_token_cloudrecording(req, streamId, stream.agoraID);
 
     return value;
@@ -437,6 +441,7 @@ const get_candidate_jobpost = async (req) => {
 const current_live_post = async (req) => {
     let currentTime = new Date().getTime();
     let post = await EmployerDetails.aggregate([
+        { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
         {
             $lookup: {
                 from: 'jobpoststreams',
@@ -479,6 +484,7 @@ const current_live_post = async (req) => {
     ])
 
     let next = await EmployerDetails.aggregate([
+        { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
         {
             $lookup: {
                 from: 'jobpoststreams',
@@ -507,12 +513,14 @@ const current_live_post = async (req) => {
 const upcomming_live_post = async (req) => {
     let currentTime = new Date().getTime();
     let post = await EmployerDetails.aggregate([
+        { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
         {
             $lookup: {
                 from: 'jobpoststreams',
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
+                    { $sort: { startTime: 1 } },
                     { $match: { $and: [{ startTime: { $gt: currentTime } }] } },
                     { $limit: 1 }
                 ],
@@ -543,12 +551,13 @@ const upcomming_live_post = async (req) => {
                 cmp_logo: "$employerregistrations.status",
             }
         },
-        { $unset: "jobpoststreams" },
+        // { $unset: "jobpoststreams" },
         { $unset: "employerregistrations" },
         { $limit: 10 },
     ])
 
     let next = await EmployerDetails.aggregate([
+        { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
         {
             $lookup: {
                 from: 'jobpoststreams',
@@ -574,6 +583,7 @@ const upcomming_live_post = async (req) => {
 const completed_live_post = async (req) => {
     let currentTime = new Date().getTime();
     let post = await EmployerDetails.aggregate([
+        { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
         {
             $lookup: {
                 from: 'jobpoststreams',
@@ -616,6 +626,7 @@ const completed_live_post = async (req) => {
     ])
 
     let next = await EmployerDetails.aggregate([
+        { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
         {
             $lookup: {
                 from: 'jobpoststreams',
@@ -644,7 +655,7 @@ const without_stream = async (req) => {
     let currentTime = new Date().getTime();
     let post = await EmployerDetails.aggregate([
         { $sort: { createdAt: -1 } },
-        // { $match: { $and: [{ expireAt: { $gt: currentTime } }] } },
+        { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
         {
             $lookup: {
                 from: 'jobpoststreams',
@@ -690,7 +701,7 @@ const without_stream = async (req) => {
                 cmp_name: "$employerregistrations.name",
                 cmp_companyAddress: "$employerregistrations.companyAddress",
                 cmp_logo: "$employerregistrations.status",
-                expirenow: { $gt: ["$expireAt",currentTime] }
+                // expirenow: { $gt: ["$expireAt", currentTime] }
             }
         },
         { $match: { $and: [{ stream_available: { $eq: false } }] } },
@@ -699,6 +710,7 @@ const without_stream = async (req) => {
     ])
 
     let next = await EmployerDetails.aggregate([
+        { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
         {
             $lookup: {
                 from: 'jobpoststreams',
@@ -751,6 +763,9 @@ const without_stream = async (req) => {
         { $skip: 10 },
         { $limit: 10 },
     ])
+
+
+
 
     return {
         post, next: next.length != 0
