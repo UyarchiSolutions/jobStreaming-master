@@ -28,7 +28,10 @@ const createEmpDetails = async (userId, userBody) => {
   if (!app) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
-  let values = { ...userBody, ...{ userId: userId } };
+  expiredDate = moment().add(30, 'days')
+
+
+  let values = { ...userBody, ...{ userId: userId, expireAt: expiredDate } };
   let data = await EmployerDetails.create(values);
   return data;
 };

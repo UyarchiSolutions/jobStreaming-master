@@ -451,14 +451,30 @@ const current_live_post = async (req) => {
         },
         { $unwind: "$jobpoststreams" },
         {
+            $lookup: {
+                from: 'employerregistrations',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'employerregistrations',
+            },
+        },
+        { $unwind: "$employerregistrations" },
+
+        {
             $addFields: {
                 startTime: "$jobpoststreams.startTime",
                 endTime: "$jobpoststreams.endTime",
                 actualEnd: "$jobpoststreams.actualEnd",
                 streamstatus: "$jobpoststreams.status",
+                cmp_companyType: "$employerregistrations.status",
+                cmp_companyWebsite: "$employerregistrations.companyWebsite",
+                cmp_name: "$employerregistrations.name",
+                cmp_companyAddress: "$employerregistrations.companyAddress",
+                cmp_logo: "$employerregistrations.status",
             }
         },
         { $unset: "jobpoststreams" },
+        { $unset: "employerregistrations" },
         { $limit: 10 },
     ])
 
@@ -497,7 +513,7 @@ const upcomming_live_post = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
-                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $match: { $and: [{ startTime: { $gt: currentTime } }] } },
                     { $limit: 1 }
                 ],
                 as: 'jobpoststreams',
@@ -505,14 +521,30 @@ const upcomming_live_post = async (req) => {
         },
         { $unwind: "$jobpoststreams" },
         {
+            $lookup: {
+                from: 'employerregistrations',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'employerregistrations',
+            },
+        },
+        { $unwind: "$employerregistrations" },
+
+        {
             $addFields: {
                 startTime: "$jobpoststreams.startTime",
                 endTime: "$jobpoststreams.endTime",
                 actualEnd: "$jobpoststreams.actualEnd",
                 streamstatus: "$jobpoststreams.status",
+                cmp_companyType: "$employerregistrations.status",
+                cmp_companyWebsite: "$employerregistrations.companyWebsite",
+                cmp_name: "$employerregistrations.name",
+                cmp_companyAddress: "$employerregistrations.companyAddress",
+                cmp_logo: "$employerregistrations.status",
             }
         },
         { $unset: "jobpoststreams" },
+        { $unset: "employerregistrations" },
         { $limit: 10 },
     ])
 
@@ -548,7 +580,7 @@ const completed_live_post = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
-                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $match: { $or: [{ $and: [{ endTime: { $lt: currentTime } }, { goLive: { $eq: true } }] }, { status: { $eq: "Completed" } }] } },
                     { $limit: 1 }
                 ],
                 as: 'jobpoststreams',
@@ -556,14 +588,30 @@ const completed_live_post = async (req) => {
         },
         { $unwind: "$jobpoststreams" },
         {
+            $lookup: {
+                from: 'employerregistrations',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'employerregistrations',
+            },
+        },
+        { $unwind: "$employerregistrations" },
+
+        {
             $addFields: {
                 startTime: "$jobpoststreams.startTime",
                 endTime: "$jobpoststreams.endTime",
                 actualEnd: "$jobpoststreams.actualEnd",
                 streamstatus: "$jobpoststreams.status",
+                cmp_companyType: "$employerregistrations.status",
+                cmp_companyWebsite: "$employerregistrations.companyWebsite",
+                cmp_name: "$employerregistrations.name",
+                cmp_companyAddress: "$employerregistrations.companyAddress",
+                cmp_logo: "$employerregistrations.status",
             }
         },
         { $unset: "jobpoststreams" },
+        { $unset: "employerregistrations" },
         { $limit: 10 },
     ])
 
@@ -595,28 +643,58 @@ const completed_live_post = async (req) => {
 const without_stream = async (req) => {
     let currentTime = new Date().getTime();
     let post = await EmployerDetails.aggregate([
-        // {
-        //     $lookup: {
-        //         from: 'jobpoststreams',
-        //         localField: '_id',
-        //         foreignField: 'post',
-        //         pipeline: [
-        //             { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
-        //             { $limit: 1 }
-        //         ],
-        //         as: 'jobpoststreams',
-        //     },
-        // },
-        // { $unwind: "$jobpoststreams" },
-        // {
-        //     $addFields: {
-        //         startTime: "$jobpoststreams.startTime",
-        //         endTime: "$jobpoststreams.endTime",
-        //         actualEnd: "$jobpoststreams.actualEnd",
-        //         streamstatus: "$jobpoststreams.status",
-        //     }
-        // },
-        // { $unset: "jobpoststreams" },
+        { $sort: { createdAt: -1 } },
+        // { $match: { $and: [{ expireAt: { $gt: currentTime } }] } },
+        {
+            $lookup: {
+                from: 'jobpoststreams',
+                localField: '_id',
+                foreignField: 'post',
+                pipeline: [
+                    {
+                        $match: {
+                            $or: [
+                                { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] },
+                                { $and: [{ startTime: { $gt: currentTime } }] },
+                                { $or: [{ $and: [{ endTime: { $lt: currentTime } }, { goLive: { $eq: true } }] }, { status: { $eq: "Completed" } }] }
+                            ]
+                        }
+                    },
+                    { $limit: 1 }
+                ],
+                as: 'jobpoststreams',
+            },
+        },
+        {
+            $unwind: {
+                path: '$jobpoststreams',
+                preserveNullAndEmptyArrays: true,
+            },
+        },
+
+        {
+            $lookup: {
+                from: 'employerregistrations',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'employerregistrations',
+            },
+        },
+        { $unwind: "$employerregistrations" },
+
+        {
+            $addFields: {
+                stream_available: { $ifNull: ["$jobpoststreams.active", false] },
+                cmp_companyType: "$employerregistrations.status",
+                cmp_companyWebsite: "$employerregistrations.companyWebsite",
+                cmp_name: "$employerregistrations.name",
+                cmp_companyAddress: "$employerregistrations.companyAddress",
+                cmp_logo: "$employerregistrations.status",
+                expirenow: { $gt: ["$expireAt",currentTime] }
+            }
+        },
+        { $match: { $and: [{ stream_available: { $eq: false } }] } },
+        { $unset: "employerregistrations" },
         { $limit: 30 },
     ])
 
@@ -627,13 +705,49 @@ const without_stream = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
-                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    {
+                        $match: {
+                            $or: [
+                                { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] },
+                                { $and: [{ startTime: { $gt: currentTime } }] },
+                                { $or: [{ $and: [{ endTime: { $lt: currentTime } }, { goLive: { $eq: true } }] }, { status: { $eq: "Completed" } }] }
+                            ]
+                        }
+                    },
                     { $limit: 1 }
                 ],
                 as: 'jobpoststreams',
             },
         },
-        { $unwind: "$jobpoststreams" },
+        {
+            $unwind: {
+                path: '$jobpoststreams',
+                preserveNullAndEmptyArrays: true,
+            },
+        },
+
+        {
+            $lookup: {
+                from: 'employerregistrations',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'employerregistrations',
+            },
+        },
+        { $unwind: "$employerregistrations" },
+
+        {
+            $addFields: {
+                stream_available: { $ifNull: ["$jobpoststreams.active", false] },
+                cmp_companyType: "$employerregistrations.status",
+                cmp_companyWebsite: "$employerregistrations.companyWebsite",
+                cmp_name: "$employerregistrations.name",
+                cmp_companyAddress: "$employerregistrations.companyAddress",
+                cmp_logo: "$employerregistrations.status",
+            }
+        },
+        { $match: { $and: [{ stream_available: { $eq: false } }] } },
+        { $unset: "employerregistrations" },
         { $skip: 10 },
         { $limit: 10 },
     ])
