@@ -3,6 +3,7 @@ const streamcontroller = require('../../controllers/stream.controller');
 const router = express.Router();
 const authorization = require('../../controllers/empVEridy.controller');
 const candidateAuth = require('../../controllers/tokenVerify.controller');
+const candidateAuth_required = require('../../controllers/candidate.auth');
 
 router.route('/emp/go/live').post(authorization, streamcontroller.emp_go_live);
 router.route('/token').get(authorization, streamcontroller.get_stream_token);
@@ -20,7 +21,7 @@ router.route('/chats').get(authorization, streamcontroller.get_all_chats);
 
 
 router.route('/jobpost/current/live').get(streamcontroller.get_candidate_jobpost_current_live);
-router.route('/jobpost/home').get(streamcontroller.get_candidate_jobpost);
+router.route('/jobpost/home').get(candidateAuth_required, streamcontroller.get_candidate_jobpost);
 router.route('/post/details').get(candidateAuth, streamcontroller.get_post_details);
 
 
