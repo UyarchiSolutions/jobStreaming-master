@@ -103,9 +103,11 @@ const stream_end = async (req) => {
     if (stream.userId != userId) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
     }
-    stream.status = 'Completed';
-    stream.endTime = moment();
-    stream.save();
+    // stream.status = 'Completed';
+    // stream.endTime = moment();
+    // stream.save();
+
+    req.io.emit(stream._id + "_stream_end", { stream: stream.status })
     return stream;
 }
 
@@ -988,8 +990,15 @@ const get_stream_token_candidateAuth = async (req) => {
     }
     let token = await Streamtoken.findOne({ candidateId: userId, chennel: stream._id });
     let app = await StreamAppID.findById(stream.agoraID);
+    let current_time = false;
+    let now_time = new Date().getTime();
+    if (stream.endTime < now_time) {
+        current_time = true;
+        stream.status = 'Completed';
+        stream.save();
+    }
 
-    return { stream, token, app };
+    return { stream, token, app, expried: current_time };
 }
 
 
