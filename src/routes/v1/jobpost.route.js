@@ -8,6 +8,7 @@ const candidateAuth = require('../../controllers/tokenVerify.controller');
 router.route('/employer/post').get(authorization, Jobpost.get_my_job_post);
 router.route('/employer/post/draft').get(authorization, Jobpost.get_my_job_post_draft);
 router.route('/toggle/post/job').get(authorization, Jobpost.toggle_job_post);
+router.route('/toggle/post/stream').get(authorization, Jobpost.toggle_job_stream);
 router.route('/post/details').get(authorization, Jobpost.get_post_details);
 router.route('/employer/post').put(authorization, Jobpost.update_employer_post);
 router.route('/employer/post/draft').put(authorization, Jobpost.update_employer_post_draft);
@@ -26,7 +27,6 @@ router.route('/get/post/details').get(authorization, Jobpost.get_post_details_si
 router.route('/get/post/details/candidate').get(candidateAuth, Jobpost.get_post_details_candidateAuth);
 
 
-
 router.route('/apply/onlive').post(candidateAuth, Jobpost.apply_candidate_jobpost_onlive);
 router.route('/apply/completed').post(candidateAuth, Jobpost.apply_candidate_jobpost_completed);
 router.route('/apply').post(candidateAuth, Jobpost.apply_candidate_jobpost);
@@ -35,7 +35,7 @@ router.route('/apply').post(candidateAuth, Jobpost.apply_candidate_jobpost);
 
 
 // saved post
-router.route('/saved/post').post(candidateAuth, Jobpost.saved_post_candidate);
+// router.route('/saved/post').post(candidateAuth, Jobpost.saved_post_candidgetEmployerByMobilate);
 
 
 

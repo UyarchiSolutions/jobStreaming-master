@@ -72,6 +72,11 @@ const get_preevalution = catchAsync(async (req, res) => {
     res.send(data);
 });
 
+const get_completed_video = catchAsync(async (req, res) => {
+    const data = await StreamService.get_completed_video(req, res);
+    res.send(data);
+});
+
 module.exports = {
     emp_go_live,
     get_stream_token,
@@ -85,5 +90,6 @@ module.exports = {
     get_stream_token_candidateAuth,
     candidateAuth_get_all_chats,
     get_preevalution,
-    get_candidate_jobpost_current_live
+    get_candidate_jobpost_current_live,
+    get_completed_video
 };

@@ -104,6 +104,24 @@ const toggle_job_post = async (req) => {
 
 }
 
+const toggle_job_stream = async (req) => {
+  let userId = req.userId;
+  let data = await Jobpoststream.findById(req.query.id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
+  }
+
+  if (data.userId != userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
+  }
+  data.active = !data.active;
+
+  data.save();
+
+  return data;
+
+}
+
 const get_post_details = async (req) => {
   let userId = req.userId;
   let data = await EmployerDetails.findById(req.query.id);
@@ -237,6 +255,11 @@ const get_my_job_stream = async (req) => {
   let range = req.query.range == null || req.query.range == undefined || req.query.range == null ? 10 : parseInt(req.query.range);
   let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
 
+  let now_time = new Date().getTime();
+  await Jobpoststream.updateMany({ userId: userId, status: "On Going", endTime: { $lt: now_time } }, { $set: { status: "Completed" } }, { new: true })
+  await Jobpoststream.updateMany({ userId: userId, status: "Pending", endTime: { $lt: now_time } }, { $set: { status: "Time Out" } }, { new: true })
+
+  // 
   let data = await Jobpoststream.aggregate([
     {
       $match: {
@@ -259,6 +282,23 @@ const get_my_job_stream = async (req) => {
     { $limit: range },
 
     {
+      $addFields: {
+        status: {
+          $cond: {
+            if: { $lt: ["$endTime", now_time] },
+            then: {
+              $cond: {
+                if: { $in: ["$status", ['Completed', 'On Going']] },
+                then: "Completed",
+                else: "Time Out"
+              }
+            },
+            else: "$status"
+          }
+        }
+      }
+    },
+    {
       $project: {
         endTime: 1,
         startTime: 1,
@@ -267,6 +307,7 @@ const get_my_job_stream = async (req) => {
         createdAt: 1,
         datetime: 1,
         status: 1,
+        active: 1,
         adminActive: "$employerdetails.adminActive",
         adminStatus: "$employerdetails.adminStatus",
         apply_method: "$employerdetails.apply_method",
@@ -345,7 +386,12 @@ const get_post_details_candidateAuth = async (req) => {
   let update = await Streamtoken.findById(req.query.id);
   console.log(update)
   if (!update) {
+    update = await Jobpoststream.findById(req.query.id);
+  }
+
+  if (!update) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
+
   }
 
   let stream = await EmployerDetails.aggregate([
@@ -409,6 +455,7 @@ const get_post_details_candidateAuth = async (req) => {
 }
 
 
+
 const apply_candidate_jobpost_onlive = async (req) => {
   let userId = req.userId;
   let update = await Streamtoken.findById(req.body.id);
@@ -441,7 +488,7 @@ const apply_candidate_jobpost_completed = async (req) => {
   if (!update) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
-  let post = await EmployerDetails.findById(stream.post);
+  let post = await EmployerDetails.findById(update.post);
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
@@ -504,5 +551,6 @@ module.exports = {
   apply_candidate_jobpost_onlive,
   apply_candidate_jobpost_completed,
   apply_candidate_jobpost,
-  saved_post_candidate
+  saved_post_candidate,
+  toggle_job_stream
 };

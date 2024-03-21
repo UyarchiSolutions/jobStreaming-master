@@ -369,6 +369,7 @@ const production_supplier_token_cloudrecording = async (req, id, agroaID) => {
         ).then((res) => {
 
         }).catch(async (error) => {
+
             await Streamtoken.findByIdAndUpdate({ _id: value._id }, { recoredStart: "stop" }, { new: true });
             const uid = await generateUid();
             const role = Agora.RtcRole.SUBSCRIBER;
@@ -633,6 +634,7 @@ const completed_live_post = async (req) => {
     let userId = req.userId;
     let currentTime = new Date().getTime();
     let post = await EmployerDetails.aggregate([
+        { $sort: { createdAt: -1 } },
         { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
         {
             $lookup: {
@@ -640,6 +642,7 @@ const completed_live_post = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
+                    { $match: { $and: [{ active: { $eq: true } },] } },
                     { $match: { $or: [{ $and: [{ endTime: { $lt: currentTime } }, { goLive: { $eq: true } }] }, { status: { $eq: "Completed" } }] } },
                     { $limit: 1 }
                 ],
@@ -688,7 +691,7 @@ const completed_live_post = async (req) => {
                 applied: { $ifNull: ["$jobpostapplies.active", false] },
             }
         },
-        { $unset: "jobpoststreams" },
+        // { $unset: "jobpoststreams" },
         { $unset: "employerregistrations" },
         { $unset: "jobpostapplies" },
 
@@ -703,7 +706,8 @@ const completed_live_post = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
-                    { $match: { $and: [{ startTime: { $lt: currentTime } }, { endTime: { $gt: currentTime } }] } },
+                    { $match: { $and: [{ active: { $eq: true } },] } },
+                    { $match: { $or: [{ $and: [{ endTime: { $lt: currentTime } }, { goLive: { $eq: true } }] }, { status: { $eq: "Completed" } }] } },
                     { $limit: 1 }
                 ],
                 as: 'jobpoststreams',
@@ -734,6 +738,7 @@ const without_stream = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
+                    { $match: { $and: [{ active: { $eq: true } }] } },
                     {
                         $match: {
                             $or: [
@@ -808,6 +813,7 @@ const without_stream = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
+                    { $match: { $and: [{ active: { $eq: true } }] } },
                     {
                         $match: {
                             $or: [
@@ -977,6 +983,7 @@ const get_post_details = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
+                    { $match: { $and: [{ active: { $eq: true } }, { status: { $ne: "Time Out" } }] } },
                     {
                         $addFields: {
                             // stream_status: "$employerregistrations.choosefile",
@@ -998,7 +1005,7 @@ const get_post_details = async (req) => {
                                                 $cond: {
                                                     if: { $gt: ["$startTime", now_time] },
                                                     then: "Upcoming",
-                                                    else: "false",
+                                                    else: false,
                                                 },
                                             },
                                         },
@@ -1125,6 +1132,42 @@ const get_preevalution = async (req) => {
 
 }
 
+const get_completed_video = async (req) => {
+
+    let stream = req.query.id;
+    let slots = await Jobpoststream.aggregate([
+        { $match: { $and: [{ _id: { $eq: stream } }, { status: { $eq: "Completed" } }] } },
+        {
+            $lookup: {
+                from: 'streamtokens',
+                localField: '_id',
+                foreignField: 'streamId',
+                pipeline: [
+                    { $match: { $and: [{ videoLink: { $ne: null } }, { type: { $eq: 'CloudRecording' } }] } },
+                    { $limit: 1 }
+                ],
+                as: 'streamtokens',
+            },
+        },
+        { $unwind: "$streamtokens" },
+        {
+            $addFields: {
+                videoLink: "$streamtokens.videoLink",
+                videoLink_mp4: "$streamtokens.videoLink_mp4",
+
+            }
+        },
+        { $unset: "streamtokens" }
+    ])
+
+    if (slots.length == 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+    }
+    return slots[0];
+
+}
+
+
 
 
 module.exports = {
@@ -1140,5 +1183,6 @@ module.exports = {
     get_stream_token_candidateAuth,
     candidateAuth_get_all_chats,
     get_preevalution,
-    get_candidate_jobpost_current_live
+    get_candidate_jobpost_current_live,
+    get_completed_video
 };

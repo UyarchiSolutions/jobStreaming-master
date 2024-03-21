@@ -18,6 +18,10 @@ const toggle_job_post = catchAsync(async (req, res) => {
   const data = await Jobpost.toggle_job_post(req);
   res.status(httpStatus.CREATED).send(data);
 });
+const toggle_job_stream = catchAsync(async (req, res) => {
+  const data = await Jobpost.toggle_job_stream(req);
+  res.status(httpStatus.CREATED).send(data);
+});
 
 const get_post_details = catchAsync(async (req, res) => {
   const data = await Jobpost.get_post_details(req);
@@ -65,6 +69,7 @@ const get_post_details_candidateAuth = catchAsync(async (req, res) => {
 });
 
 
+
 const apply_candidate_jobpost_onlive = catchAsync(async (req, res) => {
   const data = await Jobpost.apply_candidate_jobpost_onlive(req);
   res.status(httpStatus.CREATED).send(data);
@@ -103,5 +108,6 @@ module.exports = {
   apply_candidate_jobpost_onlive,
   apply_candidate_jobpost_completed,
   apply_candidate_jobpost,
-  saved_post_candidate
+  saved_post_candidate,
+  toggle_job_stream
 };
