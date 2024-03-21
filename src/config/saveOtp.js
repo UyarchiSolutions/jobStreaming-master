@@ -12,6 +12,6 @@ const saveOtp = async (body, OTPCODE) => {
 };
 
 const UpdatesaveOtp = async (body, OTPCODE) => {
-  await OTPModel.create({ otp: OTPCODE, mobileNumber: body.mobileNumber});
+  await OTPModel.create({ otp: OTPCODE, mobileNumber: body.mobile});
 };
 module.exports = { saveOtp, UpdatesaveOtp };

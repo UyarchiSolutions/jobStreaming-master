@@ -26,7 +26,7 @@ const Otp = async (bodydata) => {
 
 const forgetOtp = async (bodydata) => {
   var sender = 'txtlcl';
-  const contact = bodydata.mobileNumber
+  const contact = bodydata.mobile
   numbers = '91' + contact;
   apiKey = urlencode('NTgzOTZiMzY3MTQ4MzI0ODU1NmI0NDZhNDQ3NTQ5NmY=');
   sender = urlencode('UYARBZ');

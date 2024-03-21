@@ -81,6 +81,12 @@ const apply_candidate_jobpost = catchAsync(async (req, res) => {
 });
 
 
+const saved_post_candidate= catchAsync(async (req, res) => {
+  const data = await Jobpost.saved_post_candidate(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
 module.exports = {
   get_my_job_post,
   toggle_job_post,
@@ -96,5 +102,6 @@ module.exports = {
   get_post_details_candidateAuth,
   apply_candidate_jobpost_onlive,
   apply_candidate_jobpost_completed,
-  apply_candidate_jobpost
+  apply_candidate_jobpost,
+  saved_post_candidate
 };

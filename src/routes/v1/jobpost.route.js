@@ -34,6 +34,11 @@ router.route('/apply').post(candidateAuth, Jobpost.apply_candidate_jobpost);
 
 
 
+// saved post
+router.route('/saved/post').post(candidateAuth, Jobpost.saved_post_candidate);
+
+
+
 
 
 

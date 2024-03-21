@@ -524,9 +524,6 @@ const emailverifySchema = mongoose.Schema(
       type: Boolean,
       default: false,
     }
-
-
-
   },
   { timestamps: true }
 );

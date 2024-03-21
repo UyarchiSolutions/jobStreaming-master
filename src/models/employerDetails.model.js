@@ -690,6 +690,49 @@ const jobpostApplyschema = new mongoose.Schema(
 const Applypost = mongoose.model('jobpostapply', jobpostApplyschema);
 
 
+
+
+
+const jobpostsavedschema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    status: {
+      type: String,
+      default: 'Saved'
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    jobpostId: {
+      type: String,
+    },
+    joineduser: {
+      type: String,
+    },
+    candidateID: {
+      type: String,
+    },
+    type: {
+      type: String,
+    },
+    streamId: {
+      type: String,
+    },
+    device: {
+      type: Object,
+    }
+  },
+  { timestamps: true }
+);
+
+const Savedpost = mongoose.model('jobpostsaved', jobpostsavedschema);
+
+
+
 module.exports = {
   EmployerDetails,
   EmployerPostjob,
@@ -700,5 +743,6 @@ module.exports = {
   Recruiters,
   EmployerOTP,
   Jobpoststream,
-  Applypost
+  Applypost,
+  Savedpost
 };

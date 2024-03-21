@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
-const { EmployerDetails, Jobpoststream, Applypost } = require('../models/employerDetails.model');
+const { EmployerDetails, Jobpoststream, Applypost, Savedpost } = require('../models/employerDetails.model');
 const { EmployerRegistration } = require('../models/employerRegistration.model');
 
 const { StreamAppID, Streamtoken } = require('../models/stream.model');
@@ -473,6 +473,21 @@ const apply_candidate_jobpost = async (req) => {
 
 }
 
+
+const saved_post_candidate = async (req) => {
+  let userId = req.userId;
+  let update = await EmployerDetails.findById(req.body.id);
+  if (!update) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  let apply = await Savedpost.findOne({ jobpostId: update._id, candidateID: userId });
+  if (!apply) {
+    apply = await Savedpost.create({ jobpostId: update._id, candidateID: userId });
+  }
+
+  return apply;
+}
+
 module.exports = {
   get_my_job_post,
   toggle_job_post,
@@ -488,5 +503,6 @@ module.exports = {
   get_post_details_candidateAuth,
   apply_candidate_jobpost_onlive,
   apply_candidate_jobpost_completed,
-  apply_candidate_jobpost
+  apply_candidate_jobpost,
+  saved_post_candidate
 };

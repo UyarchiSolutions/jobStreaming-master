@@ -348,13 +348,16 @@ const mobile_verify_Otp = async (mobilenumber, otp) => {
   return verify;
 };
 
-const forget_password = async (mobilenumber) => {
-  const data = await CandidateRegistration.findOne({ mobileNumber: mobilenumber, active: true });
+const forget_password = async (mobile) => {
+  console.log(mobile)
+  const data = await AgriCandidate.findOne({ mobile: mobile, active: true });
   if (!data) {
     throw new Error('mobileNumber not found');
   }
-  await sendmail.forgetOtp(data);
-  return { message: 'otp send successfully' };
+  let otp = await send_otp_now(data);
+  const tokens = await tokenService.generateAuthTokens(data);
+  let email = await Emailverify.create({ token: tokens.access.token, userId: data._id, type: "Candidate", emailVerify: 'Verified' });
+  return email;
 };
 
 const forget_password_Otp = async (body) => {

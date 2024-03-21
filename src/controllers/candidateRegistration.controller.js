@@ -75,8 +75,8 @@ const mobile_verify_Otp = catchAsync(async (req, res) => {
 });
 
 const forget_password = catchAsync(async (req, res) => {
-  const { mobilenumber } = req.body;
-  const user = await candidateRegistrationService.forget_password(mobilenumber);
+  const { mobile } = req.body;
+  const user = await candidateRegistrationService.forget_password(mobile);
   res.send(user);
 });
 
