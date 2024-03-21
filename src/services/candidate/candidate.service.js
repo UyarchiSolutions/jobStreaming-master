@@ -44,6 +44,7 @@ const get_applied_jobs = async (req) => {
   let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
 
   let jobs = await Applypost.aggregate([
+    {$sort:{createdAt:-1}},
     { $match: { $and: [{ candidateID: { $eq: userId } }] } },
     {
       $lookup: {

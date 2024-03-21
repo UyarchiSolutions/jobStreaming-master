@@ -88,6 +88,12 @@ const get_stream_token = async (req) => {
     }
     let token = await Streamtoken.findOne({ supplierId: userId, chennel: stream._id });
     let app = await StreamAppID.findById(stream.agoraID);
+    let now_time = new Date().getTime();
+    if (stream.endTime < now_time) {
+        current_time = true;
+        stream.status = 'Completed';
+        stream.save();
+    }
 
     return { stream, token, app };
 }
@@ -103,9 +109,9 @@ const stream_end = async (req) => {
     if (stream.userId != userId) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
     }
-    // stream.status = 'Completed';
-    // stream.endTime = moment();
-    // stream.save();
+    stream.status = 'Completed';
+    stream.endTime = moment();
+    stream.save();
 
     req.io.emit(stream._id + "_stream_end", { stream: stream.status })
     return stream;
@@ -422,7 +428,7 @@ const agora_acquire = async (req, id, agroaID) => {
 
 const get_candidate_jobpost = async (req) => {
 
-
+    let userId = req.userId;
 
     let current_live = await current_live_post(req);
     let upcomming_live = await upcomming_live_post(req);
@@ -441,6 +447,7 @@ const get_candidate_jobpost = async (req) => {
 
 
 const current_live_post = async (req) => {
+    let userId = req.userId;
     let currentTime = new Date().getTime();
     let post = await EmployerDetails.aggregate([
         { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
@@ -468,6 +475,23 @@ const current_live_post = async (req) => {
         { $unwind: "$employerregistrations" },
 
         {
+            $lookup: {
+                from: 'jobpostapplies',
+                localField: '_id',
+                foreignField: 'jobpostId',
+                pipeline: [
+                    { $match: { $and: [{ candidateID: { $eq: userId } }] } }
+                ],
+                as: 'jobpostapplies',
+            },
+        },
+        {
+            $unwind: {
+                path: '$jobpostapplies',
+                preserveNullAndEmptyArrays: true,
+            },
+        },
+        {
             $addFields: {
                 startTime: "$jobpoststreams.startTime",
                 endTime: "$jobpoststreams.endTime",
@@ -478,10 +502,13 @@ const current_live_post = async (req) => {
                 cmp_name: "$employerregistrations.name",
                 cmp_companyAddress: "$employerregistrations.companyAddress",
                 cmp_logo: "$employerregistrations.status",
+                applied: { $ifNull: ["$jobpostapplies.active", false] },
             }
         },
         { $unset: "jobpoststreams" },
         { $unset: "employerregistrations" },
+        { $unset: "jobpostapplies" },
+
         { $limit: 10 },
     ])
 
@@ -513,6 +540,7 @@ const current_live_post = async (req) => {
 
 
 const upcomming_live_post = async (req) => {
+    let userId = req.userId;
     let currentTime = new Date().getTime();
     let post = await EmployerDetails.aggregate([
         { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
@@ -539,7 +567,23 @@ const upcomming_live_post = async (req) => {
             },
         },
         { $unwind: "$employerregistrations" },
-
+        {
+            $lookup: {
+                from: 'jobpostapplies',
+                localField: '_id',
+                foreignField: 'jobpostId',
+                pipeline: [
+                    { $match: { $and: [{ candidateID: { $eq: userId } }] } }
+                ],
+                as: 'jobpostapplies',
+            },
+        },
+        {
+            $unwind: {
+                path: '$jobpostapplies',
+                preserveNullAndEmptyArrays: true,
+            },
+        },
         {
             $addFields: {
                 startTime: "$jobpoststreams.startTime",
@@ -551,10 +595,13 @@ const upcomming_live_post = async (req) => {
                 cmp_name: "$employerregistrations.name",
                 cmp_companyAddress: "$employerregistrations.companyAddress",
                 cmp_logo: "$employerregistrations.status",
+                applied: { $ifNull: ["$jobpostapplies.active", false] },
             }
         },
-        // { $unset: "jobpoststreams" },
+        { $unset: "jobpoststreams" },
         { $unset: "employerregistrations" },
+        { $unset: "jobpostapplies" },
+
         { $limit: 10 },
     ])
 
@@ -583,6 +630,7 @@ const upcomming_live_post = async (req) => {
 }
 
 const completed_live_post = async (req) => {
+    let userId = req.userId;
     let currentTime = new Date().getTime();
     let post = await EmployerDetails.aggregate([
         { $match: { $and: [{ expireAt: { $gt: currentTime } }, { active: { $eq: true } }, { status: { $eq: "Published" } }] } },
@@ -610,6 +658,23 @@ const completed_live_post = async (req) => {
         { $unwind: "$employerregistrations" },
 
         {
+            $lookup: {
+                from: 'jobpostapplies',
+                localField: '_id',
+                foreignField: 'jobpostId',
+                pipeline: [
+                    { $match: { $and: [{ candidateID: { $eq: userId } }] } }
+                ],
+                as: 'jobpostapplies',
+            },
+        },
+        {
+            $unwind: {
+                path: '$jobpostapplies',
+                preserveNullAndEmptyArrays: true,
+            },
+        },
+        {
             $addFields: {
                 startTime: "$jobpoststreams.startTime",
                 endTime: "$jobpoststreams.endTime",
@@ -620,10 +685,13 @@ const completed_live_post = async (req) => {
                 cmp_name: "$employerregistrations.name",
                 cmp_companyAddress: "$employerregistrations.companyAddress",
                 cmp_logo: "$employerregistrations.status",
+                applied: { $ifNull: ["$jobpostapplies.active", false] },
             }
         },
         { $unset: "jobpoststreams" },
         { $unset: "employerregistrations" },
+        { $unset: "jobpostapplies" },
+
         { $limit: 10 },
     ])
 
@@ -654,6 +722,8 @@ const completed_live_post = async (req) => {
 
 
 const without_stream = async (req) => {
+    let userId = req.userId;
+
     let currentTime = new Date().getTime();
     let post = await EmployerDetails.aggregate([
         { $sort: { createdAt: -1 } },
@@ -696,6 +766,23 @@ const without_stream = async (req) => {
         { $unwind: "$employerregistrations" },
 
         {
+            $lookup: {
+                from: 'jobpostapplies',
+                localField: '_id',
+                foreignField: 'jobpostId',
+                pipeline: [
+                    { $match: { $and: [{ candidateID: { $eq: userId } }] } }
+                ],
+                as: 'jobpostapplies',
+            },
+        },
+        {
+            $unwind: {
+                path: '$jobpostapplies',
+                preserveNullAndEmptyArrays: true,
+            },
+        },
+        {
             $addFields: {
                 stream_available: { $ifNull: ["$jobpoststreams.active", false] },
                 cmp_companyType: "$employerregistrations.status",
@@ -703,9 +790,11 @@ const without_stream = async (req) => {
                 cmp_name: "$employerregistrations.name",
                 cmp_companyAddress: "$employerregistrations.companyAddress",
                 cmp_logo: "$employerregistrations.status",
-                // expirenow: { $gt: ["$expireAt", currentTime] }
+                applied: { $ifNull: ["$jobpostapplies.active", false] },
             }
         },
+        { $unset: "jobpoststreams" },
+        { $unset: "jobpostapplies" },
         { $match: { $and: [{ stream_available: { $eq: false } }] } },
         { $unset: "employerregistrations" },
         { $limit: 30 },
