@@ -537,6 +537,10 @@ const RecruiterSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    activity: {
+      type: Boolean,
+      default: true,
+    }
   },
   {
     timestamps: true,

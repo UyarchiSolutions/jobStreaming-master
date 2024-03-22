@@ -470,6 +470,35 @@ const get_post_details_candidateAuth = async (req) => {
 }
 
 
+const get_post_details_completed = async (req) => {
+  let userId = req.userId;
+  stream = req.query.id;
+
+  let stream = await Jobpoststream.aggregate([
+    { $match: { $and: [{ userId: { $eq: userId } }, { _id: { $eq: stream } }, { status: { $eq: "Completed" } }] } },
+    {
+      $lookup: {
+        from: 'streamtokens',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [
+          { $match: { $and: [{ videoLink: { $ne: null } }, { type: { $eq: 'CloudRecording' } }] } },
+        ],
+        as: 'streamtokens',
+      },
+    },
+  ])
+
+
+  if (stream.length == 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+
+
+  return stream[0];
+}
+
+
 
 const apply_candidate_jobpost_onlive = async (req) => {
   let userId = req.userId;
@@ -555,12 +584,21 @@ const create_recruiters = async (req) => {
   let userId = req.userId;
   let userBody = req.body;
 
-  let recruiter = await Recruiters.findOne({ userId: userId, email: userBody.email, mobileNumber: userBody.mobileNumber });
-  if (!recruiter) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  let exit = await Recruiters.findOne({ userId: userId, email: userBody.email });
+  if (exit && exit.active) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Email Already Exists');
   }
-  recruiter = await Recruiters.create({ ...userBody, ...{ userId } });
-  return recruiter;
+  exit = await Recruiters.findOne({ userId: userId, mobileNumber: userBody.mobileNumber });
+  if (exit && exit.active) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Mobile Number Already Exists');
+  }
+  if (!exit.active) {
+    exit = await Recruiters.findByIdAndUpdate({ _id: exit._id }, { ...req.body, ...{ active: true, createdAt: moment() } }, { new: true });
+  }
+  if (!exit) {
+    exit = await Recruiters.create({ ...userBody, ...{ userId } });
+  }
+  return exit;
 }
 
 const update_recruiters = async (req) => {
@@ -568,23 +606,28 @@ const update_recruiters = async (req) => {
   let userId = req.userId;
   let update = await Recruiters.findById(req.body.id);
   if (!update) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'StRecruitersream not found');
   }
-  update = await Recruiters.findOne({ userId: userId, email: userBody.email, mobileNumber: userBody.mobileNumber });
-  if (!apply) {
-    apply = await Recruiters.findByIdAndUpdate({ jobpostId: update._id, candidateID: userId });
+  let exit = await Recruiters.findOne({ userId: userId, email: userBody.email, _id: { $ne: update._id } });
+  if (exit) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Email Already Exists');
   }
+  exit = await Recruiters.findOne({ userId: userId, mobileNumber: userBody.mobileNumber, _id: { $ne: update._id } });
+  if (exit) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Mobile Number Already Exists');
+  }
+  update = await Recruiters.findByIdAndUpdate({ _id: update._id }, userBody, { new: true });
 
-  return apply;
+  return update;
 }
 const get_recruiters = async (req) => {
   let userId = req.userId;
   let data = await Recruiters.findById(req.query.id);
   if (!data) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Recruiter not found');
   }
-  if (data.userId != userId) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  if (data.userId != userId || !data.active) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Recruiter not found');
   }
   return data;
 }
@@ -594,17 +637,55 @@ const get_all_recruiters = async (req) => {
   let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
 
   let data = await Recruiters.aggregate([
-    { $match: { userId: { $eq: userId } } },
+    { $match: { $and: [{ active: { $eq: true } }, { userId: { $eq: userId } }] } },
     { $skip: range * page },
     { $limit: range },
   ]);
   let next = await Recruiters.aggregate([
-    { $match: { userId: { $eq: userId } } },
+    { $match: { $and: [{ active: { $eq: true } }, { userId: { $eq: userId } }] } },
     { $skip: range * (page + 1) },
     { $limit: range },
   ]);
 
   return { data, next: next.length != 0 };
+}
+
+const delete_recruiters = async (req) => {
+  let userId = req.userId;
+  let data = await Recruiters.findById(req.query.id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Recruiter not found');
+  }
+  if (data.userId != userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Recruiter not found');
+  }
+
+  data.active = false;
+  data.save();
+
+  return data;
+}
+const toggle_recruiters = async (req) => {
+  let userId = req.userId;
+  let data = await Recruiters.findById(req.body.id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  if (data.userId != userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  data.activity = !data.activity;
+  data.save();
+  return data;
+
+}
+
+const list_recruiters = async (req) => {
+  let userId = req.userId;
+  let data = await Recruiters.find({ userId, active: true, activity: true });
+
+  return data;
+
 }
 
 module.exports = {
@@ -619,6 +700,7 @@ module.exports = {
   get_my_job_stream,
   update_stream_request,
   get_post_details_single,
+  get_post_details_completed,
   get_post_details_candidateAuth,
   apply_candidate_jobpost_onlive,
   apply_candidate_jobpost_completed,
@@ -628,5 +710,8 @@ module.exports = {
   create_recruiters,
   update_recruiters,
   get_recruiters,
-  get_all_recruiters
+  get_all_recruiters,
+  delete_recruiters,
+  toggle_recruiters,
+  list_recruiters
 };

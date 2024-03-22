@@ -25,6 +25,7 @@ router.route('/stream/request').get(authorization, Jobpost.get_my_job_stream);
 
 router.route('/get/post/details').get(authorization, Jobpost.get_post_details_single);
 router.route('/get/post/details/candidate').get(candidateAuth, Jobpost.get_post_details_candidateAuth);
+router.route('/get/post/details/completed').get(authorization, Jobpost.get_post_details_completed);
 
 
 router.route('/apply/onlive').post(candidateAuth, Jobpost.apply_candidate_jobpost_onlive);
@@ -40,10 +41,17 @@ router.route('/apply').post(candidateAuth, Jobpost.apply_candidate_jobpost);
 
 
 // manage recruiters
-router.route('/recruiters').post(candidateAuth, Jobpost.create_recruiters);
-router.route('/recruiters').put(candidateAuth, Jobpost.update_recruiters);
-router.route('/recruiters').get(candidateAuth, Jobpost.get_recruiters);
-router.route('/recruiters/all').get(candidateAuth, Jobpost.get_all_recruiters);
+router.route('/recruiters').post(authorization, Jobpost.create_recruiters);
+router.route('/recruiters').put(authorization, Jobpost.update_recruiters);
+router.route('/recruiters').get(authorization, Jobpost.get_recruiters);
+router.route('/recruiters/all').get(authorization, Jobpost.get_all_recruiters);
+
+router.route('/recruiters').delete(authorization, Jobpost.delete_recruiters);
+router.route('/recruiters/toggle').put(authorization, Jobpost.toggle_recruiters);
+
+router.route('/recruiters/list').get(authorization, Jobpost.list_recruiters);
+
+
 
 
 

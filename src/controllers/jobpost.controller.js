@@ -68,6 +68,12 @@ const get_post_details_candidateAuth = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
+const get_post_details_completed= catchAsync(async (req, res) => {
+  const data = await Jobpost.get_post_details_completed(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
 
 
 const apply_candidate_jobpost_onlive = catchAsync(async (req, res) => {
@@ -117,6 +123,22 @@ const get_all_recruiters = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
+const delete_recruiters = catchAsync(async (req, res) => {
+  const data = await Jobpost.delete_recruiters(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const toggle_recruiters = catchAsync(async (req, res) => {
+  const data = await Jobpost.toggle_recruiters(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+const list_recruiters= catchAsync(async (req, res) => {
+  const data = await Jobpost.list_recruiters(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
 
 module.exports = {
   get_my_job_post,
@@ -139,5 +161,9 @@ module.exports = {
   create_recruiters,
   update_recruiters,
   get_recruiters,
-  get_all_recruiters
+  get_all_recruiters,
+  delete_recruiters,
+  toggle_recruiters,
+  list_recruiters,
+  get_post_details_completed
 };
