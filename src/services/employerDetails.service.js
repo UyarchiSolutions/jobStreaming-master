@@ -29,9 +29,21 @@ const createEmpDetails = async (userId, userBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Employer Not Approved');
   }
   expiredDate = moment().add(30, 'days')
-
-
-  let values = { ...userBody, ...{ userId: userId, expireAt: expiredDate } };
+  let recruiter;
+  if (userBody.recruiterList == 'Recruiters List') {
+    recruiter = await Recruiters.findById(userBody.recruiterId);
+  }
+  if (userBody.recruiterList == 'New Recruiter') {
+    recruiter = await Recruiters.findOne({ userId: userId, email: userBody.recruiterEmail, mobileNumber: userBody.recruiterNumber });
+    if (!recruiter) {
+      recruiter = await Recruiters.create({ userId: userId, recruiterName: userBody.recruiterName, mobileNumber: userBody.recruiterNumber, email: userBody.recruiterEmail });
+    }
+  }
+  if (!recruiter) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'recruiter Not found');
+  }
+  userBody.recruiterList = 'Recruiters List';
+  let values = { ...userBody, ...{ userId: userId, expireAt: expiredDate, recruiterId: recruiter._id } };
   let data = await EmployerDetails.create(values);
   return data;
 };
@@ -473,12 +485,24 @@ const getById_Get = async (id) => {
   return data[0];
 };
 
-const updateById = async (id, updateBody) => {
+const updateById = async (id, updateBody, userId) => {
   const user = await getById(id);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'employerDetails not found');
+  let recruiter;
+  if (userBody.recruiterList == 'Recruiters List') {
+    recruiter = await Recruiters.findById(userBody.recruiterId);
   }
-  const data = await EmployerDetails.findByIdAndUpdate({ _id: id }, updateBody, { new: true });
+  if (userBody.recruiterList == 'New Recruiter') {
+    recruiter = await Recruiters.findOne({ userId: userId, email: userBody.recruiterEmail, mobileNumber: userBody.recruiterNumber });
+    if (!recruiter) {
+      recruiter = await Recruiters.create({ userId: userId, recruiterName: userBody.recruiterName, mobileNumber: userBody.recruiterNumber, email: userBody.recruiterEmail });
+    }
+  }
+  if (!recruiter) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'recruiter Not found');
+  }
+  userBody.recruiterList = 'Recruiters List';
+
+  const data = await EmployerDetails.findByIdAndUpdate({ _id: id }, { recruiterId: recruiter._id }, { new: true });
   await data.save();
   return data;
 };

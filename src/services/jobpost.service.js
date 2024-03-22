@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
-const { EmployerDetails, Jobpoststream, Applypost, Savedpost } = require('../models/employerDetails.model');
+const { EmployerDetails, Jobpoststream, Applypost, Savedpost, Recruiters } = require('../models/employerDetails.model');
 const { EmployerRegistration } = require('../models/employerRegistration.model');
 
 const { StreamAppID, Streamtoken } = require('../models/stream.model');
@@ -139,6 +139,7 @@ const get_post_details = async (req) => {
 
 const update_employer_post = async (req) => {
   let userId = req.userId;
+  let userBody = req.body
   let data = await EmployerDetails.findById(req.query.id);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
@@ -147,8 +148,22 @@ const update_employer_post = async (req) => {
   if (data.userId != userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
   }
-
-  data = await EmployerDetails.findByIdAndUpdate({ _id: data._id }, { ...req.body, ...{ status: "Published" } }, { new: true });
+  let recruiter;
+  if (userBody.recruiterList == 'Recruiters List') {
+    recruiter = await Recruiters.findById(userBody.recruiterId);
+  }
+  if (userBody.recruiterList == 'New Recruiter') {
+    recruiter = await Recruiters.findOne({ userId: userId, email: userBody.recruiterEmail, mobileNumber: userBody.recruiterNumber });
+    if (!recruiter) {
+      recruiter = await Recruiters.create({ userId: userId, recruiterName: userBody.recruiterName, mobileNumber: userBody.recruiterNumber, email: userBody.recruiterEmail });
+    }
+  }
+  if (!recruiter) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'recruiter Not found');
+  }
+  userBody.recruiterList = 'Recruiters List';
+  let values = { ...userBody, ...{ recruiterId: recruiter._id, status: "Published" } };
+  data = await EmployerDetails.findByIdAndUpdate({ _id: data._id }, values, { new: true });
   return data;
 }
 
@@ -535,6 +550,63 @@ const saved_post_candidate = async (req) => {
   return apply;
 }
 
+
+const create_recruiters = async (req) => {
+  let userId = req.userId;
+  let userBody = req.body;
+
+  let recruiter = await Recruiters.findOne({ userId: userId, email: userBody.email, mobileNumber: userBody.mobileNumber });
+  if (!recruiter) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  recruiter = await Recruiters.create({ ...userBody, ...{ userId } });
+  return recruiter;
+}
+
+const update_recruiters = async (req) => {
+  let userBody = req.body;
+  let userId = req.userId;
+  let update = await Recruiters.findById(req.body.id);
+  if (!update) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  update = await Recruiters.findOne({ userId: userId, email: userBody.email, mobileNumber: userBody.mobileNumber });
+  if (!apply) {
+    apply = await Recruiters.findByIdAndUpdate({ jobpostId: update._id, candidateID: userId });
+  }
+
+  return apply;
+}
+const get_recruiters = async (req) => {
+  let userId = req.userId;
+  let data = await Recruiters.findById(req.query.id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  if (data.userId != userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  return data;
+}
+const get_all_recruiters = async (req) => {
+  let userId = req.userId;
+  let range = req.query.range == null || req.query.range == undefined || req.query.range == null ? 10 : parseInt(req.query.range);
+  let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
+
+  let data = await Recruiters.aggregate([
+    { $match: { userId: { $eq: userId } } },
+    { $skip: range * page },
+    { $limit: range },
+  ]);
+  let next = await Recruiters.aggregate([
+    { $match: { userId: { $eq: userId } } },
+    { $skip: range * (page + 1) },
+    { $limit: range },
+  ]);
+
+  return { data, next: next.length != 0 };
+}
+
 module.exports = {
   get_my_job_post,
   toggle_job_post,
@@ -552,5 +624,9 @@ module.exports = {
   apply_candidate_jobpost_completed,
   apply_candidate_jobpost,
   saved_post_candidate,
-  toggle_job_stream
+  toggle_job_stream,
+  create_recruiters,
+  update_recruiters,
+  get_recruiters,
+  get_all_recruiters
 };

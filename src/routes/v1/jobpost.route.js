@@ -39,6 +39,12 @@ router.route('/apply').post(candidateAuth, Jobpost.apply_candidate_jobpost);
 
 
 
+// manage recruiters
+router.route('/recruiters').post(candidateAuth, Jobpost.create_recruiters);
+router.route('/recruiters').put(candidateAuth, Jobpost.update_recruiters);
+router.route('/recruiters').get(candidateAuth, Jobpost.get_recruiters);
+router.route('/recruiters/all').get(candidateAuth, Jobpost.get_all_recruiters);
+
 
 
 

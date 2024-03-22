@@ -86,8 +86,34 @@ const apply_candidate_jobpost = catchAsync(async (req, res) => {
 });
 
 
-const saved_post_candidate= catchAsync(async (req, res) => {
+const saved_post_candidate = catchAsync(async (req, res) => {
   const data = await Jobpost.saved_post_candidate(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+
+
+// manage recruiters 
+
+const create_recruiters = catchAsync(async (req, res) => {
+  const data = await Jobpost.create_recruiters(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+const update_recruiters = catchAsync(async (req, res) => {
+  const data = await Jobpost.update_recruiters(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const get_recruiters = catchAsync(async (req, res) => {
+  const data = await Jobpost.get_recruiters(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const get_all_recruiters = catchAsync(async (req, res) => {
+  const data = await Jobpost.get_all_recruiters(req);
   res.status(httpStatus.CREATED).send(data);
 });
 
@@ -109,5 +135,9 @@ module.exports = {
   apply_candidate_jobpost_completed,
   apply_candidate_jobpost,
   saved_post_candidate,
-  toggle_job_stream
+  toggle_job_stream,
+  create_recruiters,
+  update_recruiters,
+  get_recruiters,
+  get_all_recruiters
 };
