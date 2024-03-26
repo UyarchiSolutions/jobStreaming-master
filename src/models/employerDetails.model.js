@@ -714,7 +714,7 @@ const jobpostApplyschema = new mongoose.Schema(
     },
     device: {
       type: Object,
-    }
+    },
 
   },
   { timestamps: true }
@@ -766,6 +766,44 @@ const Savedpost = mongoose.model('jobpostsaved', jobpostsavedschema);
 
 
 
+
+
+
+const interviewschema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    status: {
+      type: String,
+      default: 'moved'
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    userId: {
+      type: String,
+    },
+    candidateId: {
+      type: String,
+    },
+    short: {
+      type: Number,
+      default: 0,
+    }
+  },
+  { timestamps: true }
+);
+
+const Myinterview = mongoose.model('myinterview', interviewschema);
+
+
+
+
+
+
 module.exports = {
   EmployerDetails,
   EmployerPostjob,
@@ -777,5 +815,6 @@ module.exports = {
   EmployerOTP,
   Jobpoststream,
   Applypost,
-  Savedpost
+  Savedpost,
+  Myinterview
 };
