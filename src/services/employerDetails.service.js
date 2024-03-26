@@ -6,7 +6,9 @@ const {
   EmployerMailTemplate,
   EmployerMailNotification,
   Recruiters,
+  Jobpoststream
 } = require('../models/employerDetails.model');
+const { StreamAppID, Streamtoken } = require('../models/stream.model');
 const { PlanPayment } = require('../models/planPaymentDetails.model');
 const { CandidatePostjob } = require('../models/candidateDetails.model');
 const { CandidateRegistration } = require('../models');
@@ -20,7 +22,8 @@ const { format } = require('morgan');
 const { create, count } = require('../models/candidateRegistration.model');
 const Axios = require('axios');
 const { emailService } = require('../services');
-
+const fileupload = require('fs');
+const { videoupload } = require('./S3video.service')
 //keySkill
 
 const createEmpDetails = async (userId, userBody) => {
@@ -4706,6 +4709,127 @@ const get_my_profile = async (req) => {
   return values;
 };
 
+const post_video_completed = async (req) => {
+  let userId = req.userId;
+  let values = await Jobpoststream.findById(req.body.id);
+  if (!values) {
+    fileupload.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
+  }
+  if (values.userId != userId) {
+    fileupload.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
+  }
+
+  let up = await videoupload(req.file, 'upload/admin/upload', 'mp4');
+  if (up) {
+    values.upload_URL = up.Location;
+    values.uploadDate = moment();
+    values.upload_Video = true;
+    values.save();
+  }
+  fileupload.unlink(req.file.path, (err) => {
+    if (err) {
+      return;
+    }
+  });
+
+  return values;
+};
+
+const post_shorts_completed = async (req) => {
+  let userId = req.userId;
+  let values = await Jobpoststream.findById(req.body.id);
+  if (!values) {
+    fileupload.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
+  }
+  if (values.userId != userId) {
+    fileupload.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
+  }
+
+  let up = await videoupload(req.file, 'upload/admin/upload', 'mp4');
+  if (up) {
+    values.shorts_URL = up.Location;
+    values.shorts_upload = true;
+    values.save();
+  }
+  fileupload.unlink(req.file.path, (err) => {
+    if (err) {
+      return;
+    }
+  });
+
+  return values;
+};
+
+const remove_shorts_completed = async (req) => {
+  let userId = req.userId;
+  let values = await Jobpoststream.findById(req.query.id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
+  }
+  if (values.userId != userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
+  }
+
+  values.shorts_upload = false;
+  values.shorts_URL = null;
+  values.save();
+
+  return values;
+}
+
+
+
+const selected_video_completed = async (req) => {
+  let userId = req.userId;
+  let values = await Jobpoststream.findById(req.body.id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
+  }
+  if (values.userId != userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
+  }
+  let video;
+  if (req.body.selected_video == 'upload') {
+    video = values.upload_URL;
+  }
+  else {
+    let token = await Streamtoken.findById(req.body.selected_video);
+    let backet = 'https://streamingupload.s3.ap-south-1.amazonaws.com/'
+    video = backet + token.videoLink_mp4;
+  }
+  values.selected_video = req.body.selected_video;
+  values.stream_video_URL = video;
+  values.show_video = true;
+  values.save();
+
+  return values;
+  // stream_video_URL
+
+}
 module.exports = {
   createEmpDetails,
   getByIdUser,
@@ -4756,5 +4880,9 @@ module.exports = {
   getEmployerRegister,
   location_api,
   get_my_profile,
-  create_draft_job_post
+  create_draft_job_post,
+  post_video_completed,
+  selected_video_completed,
+  post_shorts_completed,
+  remove_shorts_completed
 };

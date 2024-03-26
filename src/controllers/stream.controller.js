@@ -43,6 +43,12 @@ const get_candidate_jobpost = catchAsync(async (req, res) => {
     res.send(data);
 });
 
+const get_shorts_all= catchAsync(async (req, res) => {
+    const data = await StreamService.get_shorts_all(req, res);
+    res.send(data);
+});
+
+
 const get_post_details = catchAsync(async (req, res) => {
     const data = await StreamService.get_post_details(req, res);
     res.send(data);
@@ -91,5 +97,6 @@ module.exports = {
     candidateAuth_get_all_chats,
     get_preevalution,
     get_candidate_jobpost_current_live,
-    get_completed_video
+    get_completed_video,
+    get_shorts_all
 };

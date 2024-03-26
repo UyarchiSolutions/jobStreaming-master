@@ -85,4 +85,23 @@ router.route('/getEmployerRegister/:id').get(employerDetailsController.getEmploy
 
 router.route('/myprofile').get(authorization, employerDetailsController.get_my_profile);
 
+
+const storage_s3 = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, 'uploads');
+  },
+  filename(req, file, cb) {
+    cb(null, `${file.fieldname}-${Date.now()}`);
+  },
+});
+
+const upload_s3 = multer({ storage: storage_s3 });
+
+
+
+router.route('/upload/video/completed').post(authorization, upload_s3.single('video'), employerDetailsController.post_video_completed);
+router.route('/upload/shorts/completed').post(authorization, upload_s3.single('video'), employerDetailsController.post_shorts_completed);
+router.route('/remove/shorts/completed').get(authorization, employerDetailsController.remove_shorts_completed);
+router.route('/selected/video/completed').post(authorization, employerDetailsController.selected_video_completed);
+
 module.exports = router;

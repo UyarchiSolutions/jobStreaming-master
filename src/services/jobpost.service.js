@@ -357,7 +357,10 @@ const get_my_job_stream = async (req) => {
         workplaceType: "$employerdetails.workplaceType",
         post: 1,
         totalApply: "$employerdetails.appliedCount",
-        appliedCount: 1
+        appliedCount: 1,
+        stream_video_URL: 1,
+        selected_video: 1,
+        show_video: 1,
       }
     }
 
@@ -472,10 +475,10 @@ const get_post_details_candidateAuth = async (req) => {
 
 const get_post_details_completed = async (req) => {
   let userId = req.userId;
-  stream = req.query.id;
+  let streamId = req.query.id;
 
   let stream = await Jobpoststream.aggregate([
-    { $match: { $and: [{ userId: { $eq: userId } }, { _id: { $eq: stream } }, { status: { $eq: "Completed" } }] } },
+    { $match: { $and: [{ userId: { $eq: userId } }, { _id: { $eq: streamId } }, { status: { $eq: "Completed" } }] } },
     {
       $lookup: {
         from: 'streamtokens',

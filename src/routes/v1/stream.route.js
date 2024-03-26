@@ -42,6 +42,9 @@ router.route('/preevalution').get(candidateAuth, streamcontroller.get_preevaluti
 router.route('/completed/video').get(candidateAuth, streamcontroller.get_completed_video);
 
 
+// shorts
+router.route('/shorts/all').post(candidateAuth, streamcontroller.get_shorts_all);
+
 
 
 

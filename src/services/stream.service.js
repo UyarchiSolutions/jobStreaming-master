@@ -435,13 +435,17 @@ const get_candidate_jobpost = async (req) => {
     let upcomming_live = await upcomming_live_post(req);
     let completed_live = await completed_live_post(req);
     let normal = await without_stream(req);
+    let shorts = await shorts_list(req);
+
+
 
 
     return {
         current: current_live,
         upcomming: upcomming_live,
         completed: completed_live,
-        normal
+        normal,
+        shorts
 
     }
 }
@@ -642,7 +646,7 @@ const completed_live_post = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
-                    { $match: { $and: [{ active: { $eq: true } },] } },
+                    { $match: { $and: [{ active: { $eq: true } }, { show_video: { $eq: true } }] } },
                     { $match: { $or: [{ $and: [{ endTime: { $lt: currentTime } }, { goLive: { $eq: true } }] }, { status: { $eq: "Completed" } }] } },
                     { $limit: 1 }
                 ],
@@ -706,7 +710,7 @@ const completed_live_post = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
-                    { $match: { $and: [{ active: { $eq: true } },] } },
+                    { $match: { $and: [{ active: { $eq: true } }, { show_video: { $eq: true } }] } },
                     { $match: { $or: [{ $and: [{ endTime: { $lt: currentTime } }, { goLive: { $eq: true } }] }, { status: { $eq: "Completed" } }] } },
                     { $limit: 1 }
                 ],
@@ -869,6 +873,32 @@ const without_stream = async (req) => {
     }
 }
 
+
+
+
+const shorts_list = async (req) => {
+    let userId = req.userId;
+
+    let currentTime = new Date().getTime();
+    let post = await Jobpoststream.aggregate([
+        { $match: { $and: [{ shorts_upload: { $eq: true } }] } },
+        { $sort: { createdAt: -1 } },
+        { $limit: 30 },
+    ])
+
+    let next = await Jobpoststream.aggregate([
+        { $match: { $and: [{ shorts_upload: { $eq: true } }] } },
+        { $skip: 10 },
+        { $limit: 10 },
+    ])
+
+    return {
+        post, next: next.length != 0
+    }
+}
+
+
+
 const get_candidate_jobpost_current_live = async (req) => {
 
     let currentTime = new Date().getTime();
@@ -983,7 +1013,7 @@ const get_post_details = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
-                    { $match: { $and: [{ active: { $eq: true } }, { status: { $ne: "Time Out" } }] } },
+                    { $match: { $and: [{ active: { $eq: true } }, { show_video: { $eq: true } }, { status: { $ne: "Time Out" } }] } },
                     {
                         $addFields: {
                             // stream_status: "$employerregistrations.choosefile",
@@ -1137,27 +1167,6 @@ const get_completed_video = async (req) => {
     let stream = req.query.id;
     let slots = await Jobpoststream.aggregate([
         { $match: { $and: [{ _id: { $eq: stream } }, { status: { $eq: "Completed" } }] } },
-        {
-            $lookup: {
-                from: 'streamtokens',
-                localField: '_id',
-                foreignField: 'streamId',
-                pipeline: [
-                    { $match: { $and: [{ videoLink: { $ne: null } }, { type: { $eq: 'CloudRecording' } }] } },
-                    { $limit: 1 }
-                ],
-                as: 'streamtokens',
-            },
-        },
-        { $unwind: "$streamtokens" },
-        {
-            $addFields: {
-                videoLink: "$streamtokens.videoLink",
-                videoLink_mp4: "$streamtokens.videoLink_mp4",
-
-            }
-        },
-        { $unset: "streamtokens" }
     ])
 
     if (slots.length == 0) {
@@ -1168,6 +1177,124 @@ const get_completed_video = async (req) => {
 }
 
 
+
+const get_shorts_all = async (req) => {
+    let { page, short } = req.body;
+    page = page == '' || page == null || page == null ? 0 : parseInt(page);
+    let now_time = new Date().getTime();
+    // let stream = req.query.id;
+    console.log(short,878797)
+    let shorts = await Jobpoststream.aggregate([
+        { $match: { $and: [{ shorts_upload: { $eq: true } }] } },
+        {
+            $addFields: {
+                sort_by_id: {
+                    $cond: { if: { $eq: ['$_id', short] }, then: 1, else: 0 },
+                },
+            },
+        },
+        { $sort: { sort_by_id: -1 } },
+        {
+            $lookup: {
+                from: 'employerdetails',
+                localField: 'post',
+                foreignField: '_id',
+                as: 'employerdetails',
+            },
+        },
+        { $unwind: "$employerdetails" },
+        {
+            $addFields: {
+                status: {
+                    $cond: {
+                        if: { $lt: ["$endTime", now_time] },
+                        then: {
+                            $cond: {
+                                if: { $in: ["$status", ['Completed', 'On Going']] },
+                                then: "Completed",
+                                else: "Time Out"
+                            }
+                        },
+                        else: "$status"
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                endTime: 1,
+                startTime: 1,
+                actualEnd: 1,
+                _id: 1,
+                createdAt: 1,
+                datetime: 1,
+                status: 1,
+                active: 1,
+                adminActive: "$employerdetails.adminActive",
+                adminStatus: "$employerdetails.adminStatus",
+                apply_method: "$employerdetails.apply_method",
+                candidateDescription: "$employerdetails.candidateDescription",
+                department: "$employerdetails.department",
+                education: "$employerdetails.education",
+                education_array: "$employerdetails.education_array",
+                education_match: "$employerdetails.education_match",
+                education_object: "$employerdetails.education_object",
+                employmentType: "$employerdetails.employmentType",
+                experienceFrom: "$employerdetails.experienceFrom",
+                experienceTo: "$employerdetails.experienceTo",
+                industry: "$employerdetails.industry",
+                interviewType: "$employerdetails.interviewType",
+                jobDescription: "$employerdetails.jobDescription",
+                jobLocation: "$employerdetails.jobLocation",
+                jobTittle: "$employerdetails.jobTittle",
+                keySkill: "$employerdetails.keySkill",
+                location: "$employerdetails.location",
+                openings: "$employerdetails.openings",
+                preferedIndustry: "$employerdetails.preferedIndustry",
+                qualification: "$employerdetails.qualification",
+                recruiterEmail: "$employerdetails.recruiterEmail",
+                recruiterList: "$employerdetails.recruiterList",
+                recruiterName: "$employerdetails.recruiterName",
+                recruiterNumber: "$employerdetails.recruiterNumber",
+                roleCategory: "$employerdetails.roleCategory",
+                salaryDescription: "$employerdetails.salaryDescription",
+                salaryRangeFrom: "$employerdetails.salaryRangeFrom",
+                salaryRangeTo: "$employerdetails.salaryRangeTo",
+                urltoApply: "$employerdetails.urltoApply",
+                workplaceType: "$employerdetails.workplaceType",
+                post: 1,
+                totalApply: "$employerdetails.appliedCount",
+                appliedCount: 1,
+                stream_video_URL: 1,
+                selected_video: 1,
+                show_video: 1,
+                shorts_URL: 1,
+                sort_by_id:1
+
+            }
+        },
+        { $skip: 5 * page },
+        { $limit: 5 },
+    ]);
+
+    let next = await Jobpoststream.aggregate([
+        { $match: { $and: [{ shorts_upload: { $eq: true } }] } },
+        {
+            $addFields: {
+                sort_by_id: {
+                    $cond: { if: { $eq: ['$_id', short] }, then: 1, else: 0 },
+                },
+            },
+        },
+        { $sort: { startTime: -1 } },
+        { $skip: 5 * (page + 1) },
+        { $limit: 5 },
+    ]);
+
+
+    return { shorts, next: next.length != 0 }
+
+}
 
 
 module.exports = {
@@ -1184,5 +1311,6 @@ module.exports = {
     candidateAuth_get_all_chats,
     get_preevalution,
     get_candidate_jobpost_current_live,
-    get_completed_video
+    get_completed_video,
+    get_shorts_all
 };

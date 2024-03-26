@@ -630,7 +630,7 @@ const JobpoststreamSchema = new mongoose.Schema({
   },
   active: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   post: {
     type: String,
@@ -645,7 +645,37 @@ const JobpoststreamSchema = new mongoose.Schema({
   appliedCount: {
     type: Number,
     default: 0
+  },
+
+  upload_Video: {
+    type: Boolean,
+    default: false,
+  },
+  upload_URL: {
+    type: String,
+  },
+  uploadDate: {
+    type: Number,
+  },
+  shorts_upload: {
+    type: Boolean,
+    default: false,
+  },
+  shorts_URL: {
+    type: String,
+  },
+
+  stream_video_URL: {
+    type: String,
+  },
+  selected_video: {
+    type: String,
+  },
+  show_video: {
+    type: Boolean,
+    default: false,
   }
+
 }, { timestamps: true });
 
 const Jobpoststream = mongoose.model('jobpoststream', JobpoststreamSchema);
@@ -684,7 +714,6 @@ const jobpostApplyschema = new mongoose.Schema(
     },
     device: {
       type: Object,
-
     }
 
   },

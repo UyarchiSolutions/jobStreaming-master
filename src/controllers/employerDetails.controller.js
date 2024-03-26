@@ -8,7 +8,7 @@ const createEmpDetails = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send({ user });
 });
 
-const create_draft_job_post= catchAsync(async (req, res) => {
+const create_draft_job_post = catchAsync(async (req, res) => {
   const userId = req.userId;
   const user = await employerDetailsService.create_draft_job_post(userId, req.body);
   res.status(httpStatus.CREATED).send({ user });
@@ -22,7 +22,7 @@ const getByIdUser = catchAsync(async (req, res) => {
 });
 
 const updateById = catchAsync(async (req, res) => {
-  const user = await employerDetailsService.updateById(req.params.id, req.body,req.userId);
+  const user = await employerDetailsService.updateById(req.params.id, req.body, req.userId);
   res.send({ user });
 });
 
@@ -270,9 +270,33 @@ const location_api = catchAsync(async (req, res) => {
   res.send(user);
 });
 
-const get_my_profile= catchAsync(async (req, res) => {
+const get_my_profile = catchAsync(async (req, res) => {
   console.log(req.query)
   const user = await employerDetailsService.get_my_profile(req);
+  res.send(user);
+});
+
+const post_video_completed = catchAsync(async (req, res) => {
+  console.log(req.query)
+  const user = await employerDetailsService.post_video_completed(req);
+  res.send(user);
+});
+
+const post_shorts_completed= catchAsync(async (req, res) => {
+  console.log(req.query)
+  const user = await employerDetailsService.post_shorts_completed(req);
+  res.send(user);
+});
+
+const remove_shorts_completed= catchAsync(async (req, res) => {
+  console.log(req.query)
+  const user = await employerDetailsService.remove_shorts_completed(req);
+  res.send(user);
+});
+
+const selected_video_completed = catchAsync(async (req, res) => {
+  console.log(req.query)
+  const user = await employerDetailsService.selected_video_completed(req);
   res.send(user);
 });
 module.exports = {
@@ -325,5 +349,9 @@ module.exports = {
   getEmployerRegister,
   location_api,
   get_my_profile,
-  create_draft_job_post
+  create_draft_job_post,
+  post_video_completed,
+  selected_video_completed,
+  post_shorts_completed,
+  remove_shorts_completed
 };
