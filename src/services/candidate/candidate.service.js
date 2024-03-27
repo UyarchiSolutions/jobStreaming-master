@@ -442,7 +442,7 @@ const get_my_interviews = async (req) => {
   let range = req.body.range == null || req.body.range == undefined || req.body.range == null ? 10 : parseInt(req.body.range);
   let page = req.body.page == null || req.body.page == undefined || req.body.page == null ? 0 : parseInt(req.body.page);
 
-
+  let nowTime = new Date().getTime();
   let candidate = await Myinterview.aggregate([
     { $match: { $and: [{ userId: { $eq: userId } }] } },
     {
@@ -455,6 +455,41 @@ const get_my_interviews = async (req) => {
     },
     { $unwind: "$agricandidates" },
     { $unset: "employerdetails" },
+    {
+      $lookup: {
+        from: 'candidateinterviews',
+        localField: '_id',
+        foreignField: 'interviewId',
+        pipeline: [
+          { $sort: { startTime: -1 } },
+          { $limit: 1 }
+        ],
+        as: 'candidateinterviews',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidateinterviews',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'candidateinterviews',
+        localField: '_id',
+        foreignField: 'interviewId',
+        pipeline: [
+          { $group: { _id: null, count: { $sum: 1 } } }
+        ],
+        as: 'candidateinterviews_count',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidateinterviews_count',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     {
       $addFields: {
         "skills": "$agricandidates.skills",
@@ -473,13 +508,38 @@ const get_my_interviews = async (req) => {
         "dob": "$agricandidates.dob",
         "gender": "$agricandidates.gender",
         "resumeUrl": "$agricandidates.resumeUrl",
+        interviewStatus: { $ifNull: ["$candidateinterviews.streamStatus", 'Pending'] },
+        streamStatus: "$candidateinterviews.status",
+        startTime: { $ifNull: ["$candidateinterviews.startTime", null] },
+        endTime: { $ifNull: ["$candidateinterviews.endTime", null] },
+        interviewCount: { $ifNull: ["$candidateinterviews_count.count", 0] },
+        startTime_now: { $gt: ["$candidateinterviews.startTime", nowTime] },
+      },
+    },
+
+    {
+      $addFields: {
+        interviewStatus: {
+          $cond: {
+            if: { $eq: ["$interviewStatus", 'Upcoming'] },
+            then: {
+              $cond: {
+                if: { $lt: ["$startTime", nowTime] },
+                then: "Time Out",
+                else: "Upcoming"
+              }
+            },
+            else: "$interviewStatus"
+          }
+        }
       }
     },
     { $unset: "agricandidates" },
+    { $unset: "candidateinterviews" },
     { $skip: range * page },
     { $limit: range },
   ]);
-  
+
   let next = await Myinterview.aggregate([
     { $match: { $and: [{ userId: { $eq: userId } }] } },
     { $skip: range * (page + 1) },

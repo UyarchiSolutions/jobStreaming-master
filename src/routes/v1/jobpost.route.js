@@ -3,6 +3,7 @@ const Jobpost = require('../../controllers/jobpost.controller');
 const authorization = require('../../controllers/empVEridy.controller');
 const router = express.Router();
 const candidateAuth = require('../../controllers/tokenVerify.controller');
+const multer = require('multer');
 
 
 router.route('/employer/post').get(authorization, Jobpost.get_my_job_post);
@@ -45,7 +46,6 @@ router.route('/recruiters').post(authorization, Jobpost.create_recruiters);
 router.route('/recruiters').put(authorization, Jobpost.update_recruiters);
 router.route('/recruiters').get(authorization, Jobpost.get_recruiters);
 router.route('/recruiters/all').get(authorization, Jobpost.get_all_recruiters);
-
 router.route('/recruiters').delete(authorization, Jobpost.delete_recruiters);
 router.route('/recruiters/toggle').put(authorization, Jobpost.toggle_recruiters);
 
@@ -53,8 +53,33 @@ router.route('/recruiters/list').get(authorization, Jobpost.list_recruiters);
 
 
 
+const storage_s3 = multer.diskStorage({
+    destination(req, file, cb) {
+        cb(null, 'uploads');
+    },
+    filename(req, file, cb) {
+        cb(null, `${file.fieldname}-${Date.now()}`);
+    },
+});
+
+const upload_s3 = multer({ storage: storage_s3 });
 
 
+
+
+// manage Interviewers
+router.route('/interviewer').post(authorization, Jobpost.create_interviewer);
+router.route('/interviewer').put(authorization, Jobpost.update_interviewer);
+router.route('/interviewer').get(authorization, Jobpost.get_interviewer);
+router.route('/interviewer/all').get(authorization, Jobpost.get_all_interviewer);
+router.route('/interviewer').delete(authorization, Jobpost.delete_interviewer);
+router.route('/interviewer/toggle').put(authorization, Jobpost.toggle_interviewer);
+
+router.route('/interviewer/list').get(authorization, Jobpost.list_interviewer);
+
+
+
+router.route('/interviewer/resume').put(authorization, upload_s3.single('file'), Jobpost.resume_interviewer);
 
 
 

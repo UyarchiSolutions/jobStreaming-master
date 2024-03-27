@@ -1,10 +1,12 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
-const { EmployerDetails, Jobpoststream, Applypost, Savedpost, Recruiters } = require('../models/employerDetails.model');
+const { EmployerDetails, Jobpoststream, Applypost, Savedpost, Recruiters, Interviewer } = require('../models/employerDetails.model');
 const { EmployerRegistration } = require('../models/employerRegistration.model');
 
 const { StreamAppID, Streamtoken } = require('../models/stream.model');
 
+const { videoupload } = require('./S3video.service')
+const fileupload = require('fs');
 
 const moment = require('moment');
 // create job Alert
@@ -595,8 +597,10 @@ const create_recruiters = async (req) => {
   if (exit && exit.active) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Mobile Number Already Exists');
   }
-  if (!exit.active) {
-    exit = await Recruiters.findByIdAndUpdate({ _id: exit._id }, { ...req.body, ...{ active: true, createdAt: moment() } }, { new: true });
+  if (exit) {
+    if (!exit.active) {
+      exit = await Recruiters.findByIdAndUpdate({ _id: exit._id }, { ...req.body, ...{ active: true, createdAt: moment() } }, { new: true });
+    }
   }
   if (!exit) {
     exit = await Recruiters.create({ ...userBody, ...{ userId } });
@@ -691,6 +695,163 @@ const list_recruiters = async (req) => {
 
 }
 
+
+
+
+
+// interviewers
+
+
+const create_interviewer = async (req) => {
+  let userId = req.userId;
+  let userBody = req.body;
+
+  let exit = await Interviewer.findOne({ userId: userId, email: userBody.email });
+  if (exit && exit.active) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Email Already Exists');
+  }
+  exit = await Interviewer.findOne({ userId: userId, mobileNumber: userBody.mobileNumber });
+  if (exit && exit.active) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Mobile Number Already Exists');
+  }
+  if (exit) {
+    if (!exit.active) {
+      exit = await Interviewer.findByIdAndUpdate({ _id: exit._id }, { ...req.body, ...{ active: true, createdAt: moment() } }, { new: true });
+    }
+  }
+  if (!exit) {
+    exit = await Interviewer.create({ ...userBody, ...{ userId } });
+  }
+  return exit;
+}
+
+const update_interviewer = async (req) => {
+  let userBody = req.body;
+  let userId = req.userId;
+  let update = await Interviewer.findById(req.body.id);
+  if (!update) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'StRecruitersream not found');
+  }
+  let exit = await Interviewer.findOne({ userId: userId, email: userBody.email, _id: { $ne: update._id } });
+  if (exit) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Email Already Exists');
+  }
+  exit = await Interviewer.findOne({ userId: userId, mobileNumber: userBody.mobileNumber, _id: { $ne: update._id } });
+  if (exit) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Mobile Number Already Exists');
+  }
+  update = await Interviewer.findByIdAndUpdate({ _id: update._id }, userBody, { new: true });
+
+  return update;
+}
+const get_interviewer = async (req) => {
+  let userId = req.userId;
+  let data = await Interviewer.findById(req.query.id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Recruiter not found');
+  }
+  if (data.userId != userId || !data.active) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Recruiter not found');
+  }
+  return data;
+}
+const get_all_interviewer = async (req) => {
+  let userId = req.userId;
+  let range = req.query.range == null || req.query.range == undefined || req.query.range == null ? 10 : parseInt(req.query.range);
+  let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
+
+  let data = await Interviewer.aggregate([
+    { $match: { $and: [{ active: { $eq: true } }, { userId: { $eq: userId } }] } },
+    { $skip: range * page },
+    { $limit: range },
+  ]);
+  let next = await Interviewer.aggregate([
+    { $match: { $and: [{ active: { $eq: true } }, { userId: { $eq: userId } }] } },
+    { $skip: range * (page + 1) },
+    { $limit: range },
+  ]);
+
+  return { data, next: next.length != 0 };
+}
+
+const delete_interviewer = async (req) => {
+  let userId = req.userId;
+  let data = await Interviewer.findById(req.query.id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Recruiter not found');
+  }
+  if (data.userId != userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Recruiter not found');
+  }
+
+  data.active = false;
+  data.save();
+
+  return data;
+}
+const toggle_interviewer = async (req) => {
+  let userId = req.userId;
+  let data = await Interviewer.findById(req.body.id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  if (data.userId != userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  data.activity = !data.activity;
+  data.save();
+  return data;
+
+}
+
+const list_interviewer = async (req) => {
+  let userId = req.userId;
+  let data = await Interviewer.find({ userId, active: true, activity: true });
+
+  return data;
+
+}
+
+const resume_interviewer = async (req) => {
+  let userId = req.userId;
+  let data = await Interviewer.findById(req.body.id);
+  if (!data) {
+    fileupload.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  if (data.userId != userId) {
+    fileupload.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+
+  let up = await videoupload(req.file, 'upload/resume/', 'mp4');
+  if (up) {
+    data.resumeURL = up.Location;
+    data.save();
+  }
+  fileupload.unlink(req.file.path, (err) => {
+    if (err) {
+      return;
+    }
+  });
+  return data;
+
+}
+
+
+
+
+
 module.exports = {
   get_my_job_post,
   toggle_job_post,
@@ -716,5 +877,13 @@ module.exports = {
   get_all_recruiters,
   delete_recruiters,
   toggle_recruiters,
-  list_recruiters
+  list_recruiters,
+  create_interviewer,
+  update_interviewer,
+  get_interviewer,
+  get_all_interviewer,
+  delete_interviewer,
+  toggle_interviewer,
+  list_interviewer,
+  resume_interviewer
 };

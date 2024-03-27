@@ -548,6 +548,56 @@ const RecruiterSchema = mongoose.Schema(
 );
 const Recruiters = mongoose.model('recruiter', RecruiterSchema);
 
+
+
+const interviewerSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    userId: {
+      type: String,
+    },
+    name: {
+      type: String,
+    },
+    email: {
+      type: String,
+    },
+    mobileNumber: {
+      type: String,
+    },
+    resume: {
+      type: String,
+    },
+    resumeURL: {
+      type: String,
+    },
+    message: {
+      type: String,
+    },
+    date: {
+      type: String,
+      default: moment().format('YYYY-MM-DD'),
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    activity: {
+      type: Boolean,
+      default: true,
+    }
+  },
+  {
+    timestamps: true,
+  }
+);
+const Interviewer = mongoose.model('interviewers', interviewerSchema);
+
+
+
 const EmployeOtpSchema = new mongoose.Schema({
   _id: {
     type: String,
@@ -804,6 +854,83 @@ const Myinterview = mongoose.model('myinterview', interviewschema);
 
 
 
+const candidateinterviewschema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    status: {
+      type: String,
+      default: 'Pending'
+    },
+    streamStatus: {
+      type: String,
+      default: 'Upcoming'
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    userId: {
+      type: String,
+    },
+    candidateId: {
+      type: String,
+    },
+    interviewId: {
+      type: String,
+    },
+    startTime: {
+      type: Number,
+    },
+    endTime: {
+      type: Number,
+    },
+    date: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+    role: {
+      type: String,
+    },
+    cand_subject: {
+      type: String,
+    },
+    cand_message: {
+      type: String,
+    },
+    cand_Attachment: {
+      type: String,
+    },
+    cand_Attachment_name: {
+      type: String,
+    },
+    interviewer: {
+      type: Array,
+    },
+    interviewer_1: {
+      type: String,
+    },
+    interviewer_2: {
+      type: String,
+    },
+    inter_subject: {
+      type: String,
+    },
+    inter_message: {
+      type: String,
+    }
+  },
+  { timestamps: true }
+);
+
+const Candidateinterview = mongoose.model('candidateinterview', candidateinterviewschema);
+
+
+
 module.exports = {
   EmployerDetails,
   EmployerPostjob,
@@ -812,9 +939,11 @@ module.exports = {
   EmployerMailTemplate,
   EmployerMailNotification,
   Recruiters,
+  Interviewer,
   EmployerOTP,
   Jobpoststream,
   Applypost,
   Savedpost,
-  Myinterview
+  Myinterview,
+  Candidateinterview
 };

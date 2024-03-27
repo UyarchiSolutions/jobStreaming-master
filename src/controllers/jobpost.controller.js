@@ -68,7 +68,7 @@ const get_post_details_candidateAuth = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
-const get_post_details_completed= catchAsync(async (req, res) => {
+const get_post_details_completed = catchAsync(async (req, res) => {
   const data = await Jobpost.get_post_details_completed(req);
   res.status(httpStatus.CREATED).send(data);
 });
@@ -134,10 +134,67 @@ const toggle_recruiters = catchAsync(async (req, res) => {
 });
 
 
-const list_recruiters= catchAsync(async (req, res) => {
+const list_recruiters = catchAsync(async (req, res) => {
   const data = await Jobpost.list_recruiters(req);
   res.status(httpStatus.CREATED).send(data);
 });
+
+
+
+
+
+
+
+// manage Interviewers 
+
+const create_interviewer = catchAsync(async (req, res) => {
+  const data = await Jobpost.create_interviewer(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+const update_interviewer = catchAsync(async (req, res) => {
+  const data = await Jobpost.update_interviewer(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const get_interviewer = catchAsync(async (req, res) => {
+  const data = await Jobpost.get_interviewer(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const get_all_interviewer = catchAsync(async (req, res) => {
+  const data = await Jobpost.get_all_interviewer(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const delete_interviewer = catchAsync(async (req, res) => {
+  const data = await Jobpost.delete_interviewer(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const toggle_interviewer = catchAsync(async (req, res) => {
+  const data = await Jobpost.toggle_interviewer(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+const list_interviewer = catchAsync(async (req, res) => {
+  const data = await Jobpost.list_interviewer(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+const resume_interviewer= catchAsync(async (req, res) => {
+  const data = await Jobpost.resume_interviewer(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+
+
+
+
 
 
 module.exports = {
@@ -165,5 +222,13 @@ module.exports = {
   delete_recruiters,
   toggle_recruiters,
   list_recruiters,
-  get_post_details_completed
+  get_post_details_completed,
+  create_interviewer,
+  update_interviewer,
+  get_interviewer,
+  get_all_interviewer,
+  delete_interviewer,
+  toggle_interviewer,
+  list_interviewer,
+  resume_interviewer
 };
