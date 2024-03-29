@@ -514,6 +514,8 @@ const get_my_interviews = async (req) => {
         endTime: { $ifNull: ["$candidateinterviews.endTime", null] },
         interviewCount: { $ifNull: ["$candidateinterviews_count.count", 0] },
         startTime_now: { $gt: ["$candidateinterviews.startTime", nowTime] },
+        interviewID: "$candidateinterviews._id",
+
       },
     },
 

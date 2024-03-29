@@ -113,6 +113,41 @@ const generateVerifyEmailToken = async (user) => {
   return verifyEmailToken;
 };
 
+
+
+const generateAuthTokens_interview = async (startTime, user) => {
+  const accessTokenExpires = moment(startTime).add(60, 'minutes');
+  const accessToken = generateToken_interview(user._id, accessTokenExpires, tokenTypes.ACCESS, user);
+
+  const refreshTokenExpires = moment(startTime).add(60, 'minutes');
+  const refreshToken = generateToken_interview(user._id, refreshTokenExpires, tokenTypes.REFRESH, user);
+  await saveToken(refreshToken, user._id, refreshTokenExpires, tokenTypes.REFRESH);
+  return {
+    access: {
+      token: accessToken,
+      expires: accessTokenExpires.toDate(),
+    },
+    refresh: {
+      token: refreshToken,
+      expires: refreshTokenExpires.toDate(),
+    },
+  };
+};
+
+const generateToken_interview = (userId, expires, type, details) => {
+  secret = config.jwt.secret;
+  const payload = {
+    userId: userId,
+    iat: moment().unix(),
+    exp: expires.unix(),
+    type,
+    details,
+  };
+  return jwt.sign(payload, secret);
+};
+
+
+
 module.exports = {
   generateToken,
   saveToken,
@@ -120,4 +155,5 @@ module.exports = {
   generateAuthTokens,
   generateResetPasswordToken,
   generateVerifyEmailToken,
+  generateAuthTokens_interview
 };
