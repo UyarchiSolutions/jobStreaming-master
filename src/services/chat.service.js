@@ -9,7 +9,7 @@ const { EmployerRegistration } = require("../models/employerRegistration.model")
 const { AgriCandidate } = require("../models/agri.Event.model")
 
 const { StreamAppID, Streamtoken } = require('../models/stream.model');
-const { EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification, Recruiters, EmployerOTP, Jobpoststream } = require('../models/employerDetails.model');
+const { EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification, Recruiters, EmployerOTP, Jobpoststream, Myinterview, Candidateinterview, Interviewer } = require('../models/employerDetails.model');
 
 const save_chat_host = async (req, io) => {
   console.log(req)
@@ -40,6 +40,29 @@ const save_chat_host = async (req, io) => {
   }
 }
 
+const interview_chat_host = async (req, io) => {
+  console.log(req);
+
+  let streamtoken = await Streamtoken.findById(req.channel);
+  if (streamtoken) {
+    let user = await Interviewer.findById(streamtoken.supplierId);
+    if (user) {
+      let name = user.name
+      let token = await Groupchat.create({
+        channel: streamtoken.chennel,
+        text: req.text,
+        channel: streamtoken.chennel,
+        joinuser: streamtoken._id,
+        userType: 'host',
+        userName: name,
+        dateISO: moment(),
+        created: moment()
+      });
+      io.sockets.emit(streamtoken.chennel + '_received', token);
+    }
+  }
+}
+
 const save_chat_candidate = async (req, io) => {
 
   let stream = await Streamtoken.findById(req.channel);
@@ -62,5 +85,6 @@ const save_chat_candidate = async (req, io) => {
 }
 module.exports = {
   save_chat_host,
-  save_chat_candidate
+  save_chat_candidate,
+  interview_chat_host
 };

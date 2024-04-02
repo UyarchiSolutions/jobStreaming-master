@@ -887,6 +887,9 @@ const candidateinterviewschema = new mongoose.Schema(
     endTime: {
       type: Number,
     },
+    actualEnd:{
+      type: Number,
+    },
     date: {
       type: String,
     },
@@ -921,6 +924,9 @@ const candidateinterviewschema = new mongoose.Schema(
       type: String,
     },
     inter_message: {
+      type: String,
+    },
+    agoraID:{
       type: String,
     }
   },

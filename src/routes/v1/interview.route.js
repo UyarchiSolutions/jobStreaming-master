@@ -1,20 +1,21 @@
 const express = require('express');
-const streamcontroller = require('../../controllers/stream.controller');
+const streamcontroller = require('../../controllers/interview.controller');
 const router = express.Router();
 const authorization = require('../../controllers/empVEridy.controller');
 const candidateAuth = require('../../controllers/tokenVerify.controller');
 const candidateAuth_required = require('../../controllers/candidate.auth');
+const Interviewer_auth = require('../v3/interviwer.auth');
 
-router.route('/emp/go/live').post(authorization, streamcontroller.emp_go_live);
-router.route('/token').get(authorization, streamcontroller.get_stream_token);
+router.route('/start').post(Interviewer_auth, streamcontroller.emp_go_live);
+router.route('/token').get(Interviewer_auth, streamcontroller.get_stream_token);
 
-router.route('/end').get(authorization, streamcontroller.stream_end);
+router.route('/end').get(Interviewer_auth, streamcontroller.stream_end);
 
 
-router.route('/cloud/start').get(authorization, streamcontroller.cloud_start);
-router.route('/cloud/stop').post(authorization, streamcontroller.cloud_stop);
+router.route('/cloud/start').get(Interviewer_auth, streamcontroller.cloud_start);
+router.route('/cloud/stop').post(Interviewer_auth, streamcontroller.cloud_stop);
 
-router.route('/chats').get(authorization, streamcontroller.get_all_chats);
+router.route('/chats').get(Interviewer_auth, streamcontroller.get_all_chats);
 
 
 
@@ -31,9 +32,9 @@ router.route('/candidate/token').get(candidateAuth, streamcontroller.get_stream_
 
 
 
+
 //pre evalution
 router.route('/preevalution').get(candidateAuth, streamcontroller.get_preevalution);
-
 
 
 

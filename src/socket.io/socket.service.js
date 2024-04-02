@@ -22,6 +22,9 @@ function initSocketService(server, io) {
         socket.on('stream_chat_host', async (msg) => {
             await chatsevice.save_chat_host(msg, io)
         });
+        socket.on('interview_chat_host', async (msg) => {
+            await chatsevice.interview_chat_host(msg, io)
+        });
         socket.on('stream_chat_candidate', async (msg) => {
             await chatsevice.save_chat_candidate(msg, io)
         });

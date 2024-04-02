@@ -202,6 +202,10 @@ const tempToken = mongoose.Schema({
     },
     post: {
         type: String,
+    },
+    streamType: {
+        type: String,
+        default: "Jobpost"
     }
 });
 

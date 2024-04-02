@@ -29,7 +29,7 @@ const ClimbCand = require('./climb.cand.route');
 const jobpost = require('./jobpost.route');
 const stream = require('./stream.route');
 const crud = require('./crud.route');
-
+const interview = require('./interview.route');
 const defaultRoutes = [
   {
     path: '/crud',
@@ -43,7 +43,10 @@ const defaultRoutes = [
     path: '/stream',
     route: stream,
   },
-
+  {
+    path: '/interview',
+    route: interview,
+  },
   {
     path: '/agriEvent',
     route: AgriEvent,

@@ -4,7 +4,7 @@ const Agora = require('agora-access-token');
 const { StreamAppID, Streamtoken } = require('../models/stream.model');
 const { AgriCandidate, AgriEventSlot, SlotBooking, IntrestedCandidate, agriCandReview, BookedSlot, } = require('../models/agri.Event.model');
 
-const { EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification, Recruiters, EmployerOTP, Jobpoststream } = require('../models/employerDetails.model');
+const { EmployerDetails, EmployerPostjob, EmployerPostDraft, Employercomment, EmployerMailTemplate, EmployerMailNotification, Recruiters, EmployerOTP, Jobpoststream, Myinterview, Candidateinterview, Interviewer } = require('../models/employerDetails.model');
 
 const { AgoraAppId } = require("../models/AgoraAppId.model")
 const ApiError = require('../utils/ApiError');
@@ -26,9 +26,12 @@ const generateUid = async (req) => {
 
 const emp_go_live = async (req) => {
 
-    let empId = req.userId;
-    let streamId = req.body.streamId;
-    let stream = await Jobpoststream.findById(streamId);
+
+    console.log(req.streamId)
+    console.log(req.userId)
+    let interviewerId = req.userId;
+    let streamId = req.streamId;
+    let stream = await Candidateinterview.findById(streamId);
     if (!stream) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
     }
@@ -39,26 +42,23 @@ const emp_go_live = async (req) => {
         }
     }
 
-    let value = await Streamtoken.findOne({ supplierId: empId, chennel: streamId });
+    let value = await Streamtoken.findOne({ supplierId: interviewerId, chennel: streamId, streamType: "Interview" });
     if (!value) {
         const uid = await generateUid();
         const role = req.body.isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
         const expirationTimestamp = stream.endTime / 1000;
         value = await Streamtoken.create({
-            ...req.body,
-            ...{
-                date: moment().format('YYYY-MM-DD'),
-                time: moment().format('HHMMSS'),
-                supplierId: empId,
-                streamId: streamId,
-                post: stream.post,
-                created: moment(),
-                Uid: uid,
-                created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-                expDate: expirationTimestamp * 1000,
-                Duration: 30,
-                type: 'Employer',
-            },
+            date: moment().format('YYYY-MM-DD'),
+            time: moment().format('HHMMSS'),
+            supplierId: interviewerId,
+            streamId: streamId,
+            created: moment(),
+            Uid: uid,
+            created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+            expDate: expirationTimestamp * 1000,
+            Duration: 30,
+            type: 'Interviewer',
+            streamType: "Interview"
         });
         const token = await geenerate_rtc_token(streamId, uid, role, expirationTimestamp, stream.agoraID);
         value.token = token;
@@ -72,21 +72,24 @@ const emp_go_live = async (req) => {
         stream.goLive = true;
         stream.save();
     }
-    console.log(stream)
+    // console.log(stream)
     req.io.emit(stream.post + '_host_join', { streamId: stream._id, status: stream.status, goLive: stream.goLive });
     await production_supplier_token_cloudrecording(req, streamId, stream.agoraID);
 
     return value;
+
+    return { message: "hello world" }
 };
 
 
 const get_stream_token = async (req) => {
     let userId = req.userId;
-    let stream = await Jobpoststream.findById(req.query.id);
+    let streamId = req.streamId;
+    let stream = await Candidateinterview.findById(streamId);
     if (!stream) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
     }
-    let token = await Streamtoken.findOne({ supplierId: userId, chennel: stream._id });
+    let token = await Streamtoken.findOne({ supplierId: userId, chennel: stream._id, streamType: "Interview" });
     let app = await StreamAppID.findById(stream.agoraID);
     let now_time = new Date().getTime();
     if (stream.endTime < now_time) {
@@ -101,15 +104,14 @@ const get_stream_token = async (req) => {
 
 const stream_end = async (req) => {
     let userId = req.userId;
-    let stream = await Jobpoststream.findById(req.query.id);
+    let streamId = req.streamId;
+    let stream = await Candidateinterview.findById(streamId);
     if (!stream) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
     }
 
-    if (stream.userId != userId) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
-    }
     stream.status = 'Completed';
+    stream.streamStatus = 'Completed';
     stream.endTime = moment();
     stream.save();
 
@@ -118,10 +120,12 @@ const stream_end = async (req) => {
 }
 
 const cloud_start = async (req) => {
-    let id = req.query.id
+    let id = req.streamId
     let token = await Streamtoken.findOne({ chennel: id, type: 'CloudRecording', recoredStart: { $eq: "acquire" } }).sort({ created: -1 });
     if (token) {
-        let str = await Jobpoststream.findById(token.streamId);
+        let str = await Candidateinterview.findById(token.streamId);
+
+        console.log(token, 8776)
         let agoraToken = await StreamAppID.findById(str.agoraID);
         const Authorization = `Basic ${Buffer.from(agoraToken.Authorization.replace(/\s/g, '')).toString(
             'base64'
@@ -245,9 +249,9 @@ const recording_query = async (req, id, agoraToken) => {
 
 
 const cloud_stop = async (req) => {
-    let token = await Streamtoken.findOne({ chennel: req.body.stream, type: 'CloudRecording', recoredStart: { $eq: "query" } }).sort({ created: -1 });
+    let token = await Streamtoken.findOne({ chennel: req.streamId, type: 'CloudRecording', recoredStart: { $eq: "query" } }).sort({ created: -1 });
     if (token) {
-        let str = await Jobpoststream.findById(token.streamId);
+        let str = await Candidateinterview.findById(token.streamId);
         let agoraToken = await StreamAppID.findById(str.agoraID);
         const Authorization = `Basic ${Buffer.from(agoraToken.Authorization.replace(/\s/g, '')).toString(
             'base64'
@@ -272,7 +276,6 @@ const cloud_stop = async (req) => {
             ).then((res) => {
                 return res;
             }).catch((err) => {
-
                 throw new ApiError(httpStatus.NOT_FOUND, 'Cloud Recording Stop:' + err.message);
             });
 
@@ -298,12 +301,12 @@ const cloud_stop = async (req) => {
 
 const get_all_chats = async (req) => {
     let userId = req.userId;
-    let steamId = req.query.id;
-    let stream = await Jobpoststream.findById(req.query.id);
+    let steamId = req.streamId;
+    let stream = await Candidateinterview.findById(steamId);
     if (!stream) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
     }
-    let token = await Streamtoken.findOne({ supplierId: userId, chennel: stream._id });
+    let token = await Streamtoken.findOne({ supplierId: userId, chennel: stream._id, streamType: "Interview", });
     let chat = await Groupchat.aggregate([
         { $match: { $and: [{ channel: { $eq: steamId } }] } },
         { $addFields: { you: { $eq: ["$joinuser", token._id] } } },
@@ -320,7 +323,7 @@ const production_supplier_token_cloudrecording = async (req, id, agroaID) => {
     let streamId = id;
     // let streamId = req.body.streamId;
     let agoraToken = await StreamAppID.findById(agroaID)
-    let stream = await Jobpoststream.findById(streamId);
+    let stream = await Candidateinterview.findById(streamId);
     if (!stream) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
     }
@@ -331,19 +334,17 @@ const production_supplier_token_cloudrecording = async (req, id, agroaID) => {
         const role = Agora.RtcRole.SUBSCRIBER;
         const expirationTimestamp = stream.endTime / 1000;
         value = await Streamtoken.create({
-            ...req.body,
-            ...{
-                date: moment().format('YYYY-MM-DD'),
-                time: moment().format('HHMMSS'),
-                created: moment(),
-                Uid: uid,
-                chennel: stream._id,
-                post: stream.post,
-                created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-                expDate: expirationTimestamp * 1000,
-                type: 'CloudRecording',
-                hostId: req.userId
-            },
+            date: moment().format('YYYY-MM-DD'),
+            time: moment().format('HHMMSS'),
+            created: moment(),
+            Uid: uid,
+            chennel: stream._id,
+            created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+            expDate: expirationTimestamp * 1000,
+            type: 'CloudRecording',
+            hostId: req.userId,
+            streamType: "Interview",
+            streamId: streamId
         });
         const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp, agroaID);
         value.token = token;
@@ -375,18 +376,18 @@ const production_supplier_token_cloudrecording = async (req, id, agroaID) => {
             const role = Agora.RtcRole.SUBSCRIBER;
             const expirationTimestamp = stream.endTime / 1000;
             value = await Streamtoken.create({
-                ...req.body,
-                ...{
-                    date: moment().format('YYYY-MM-DD'),
-                    time: moment().format('HHMMSS'),
-                    created: moment(),
-                    Uid: uid,
-                    chennel: stream._id,
-                    post: stream.post,
-                    created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-                    expDate: expirationTimestamp * 1000,
-                    type: 'CloudRecording',
-                },
+
+                date: moment().format('YYYY-MM-DD'),
+                time: moment().format('HHMMSS'),
+                created: moment(),
+                Uid: uid,
+                chennel: stream._id,
+                post: stream.post,
+                created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+                expDate: expirationTimestamp * 1000,
+                type: 'CloudRecording',
+                streamType: "Interview",
+                streamId: streamId
             });
             const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp, agroaID);
             value.token = token;
@@ -1089,6 +1090,7 @@ const candidate_go_live = async (req) => {
                 expDate: expirationTimestamp * 1000,
                 Duration: 30,
                 type: 'Candidate',
+                streamType: "Interview"
             },
         });
         const token = await geenerate_rtc_token(streamId, uid, role, expirationTimestamp, stream.agoraID);
