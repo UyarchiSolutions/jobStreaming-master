@@ -1013,7 +1013,7 @@ const get_post_details = async (req) => {
                 localField: '_id',
                 foreignField: 'post',
                 pipeline: [
-                    { $match: { $and: [{ active: { $eq: true } }, { show_video: { $eq: true } }, { status: { $ne: "Time Out" } }] } },
+                    { $match: { $and: [{ show_video: { $eq: true } }, { status: { $ne: "Time Out" } }] } },
                     {
                         $addFields: {
                             // stream_status: "$employerregistrations.choosefile",
