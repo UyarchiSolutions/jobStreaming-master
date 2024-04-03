@@ -1885,6 +1885,7 @@ const active_Inactive_candidate = async (req) => {
 const getStreamDetailsByCand = async (req) => {
   let id = req.params.id;
   let now_time = new Date().getTime();
+  let Cand = await AgriCandidate.findById(id);
   let values = await SlotBooking.aggregate([
     { $match: { candId: id } },
     {
@@ -1989,11 +1990,23 @@ const getStreamDetailsByCand = async (req) => {
         Name: "$volunteer.name",
         linkstatus: 1,
         retingCount: 1,
-        candidate_join: 1
+        candidate_join: 1,
+        teaserURL: 1,
+        teaseruploadBy: 1,
+        teaseruploadDate: 1,
+        teaserUpload: 1,
+        trailerURL: 1,
+        traileruploadDate: 1,
+        trailerUpload: 1,
+        traileruploadBy: 1,
+        editedURL: 1,
+        editedUpload: 1,
+        editeduploadBy: 1,
+        editeduploadDate: 1,
       }
     }
   ]);
-  return values;
+  return { slot: values, Cand };
 };
 
 

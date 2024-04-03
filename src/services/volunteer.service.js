@@ -588,7 +588,7 @@ const getCandidatesForInterview = async (req) => {
   let id = req.userId;
   let role = req.Role == 'HR Volunteer' ? 'HR' : 'Tech';
 
-  console.log(role);
+  // console.log(role);
   let statusMatch = { active: true };
   let ClearMatch = { active: true };
 
@@ -665,7 +665,9 @@ const getCandidatesForInterview = async (req) => {
         streamId: '$Cand.streamId',
         hrclear: '$Cand.hrClear',
         techclear: '$Cand.clear',
-        candidate_join: "$slotbookings.candidate_join"
+        candidate_join: "$slotbookings.candidate_join",
+        hr_Video_upload: '$Cand.hr_Video_upload',
+        tech_Video_upload: '$Cand.tech_Video_upload',
       },
     },
     {

@@ -134,6 +134,18 @@ const AgriCandidateSchema = new mongoose.Schema(
       type: Boolean,
       default: false
 
+    },
+    hr_Video_upload: {
+      type: String,
+      default: "Pending"
+    },
+    tech_Video_upload: {
+      type: String,
+      default: "Pending"
+    },
+    employerSideShow: {
+      type: String,
+      default: "Pending"
     }
 
   },
@@ -413,7 +425,46 @@ const SlotBookingSchema = mongoose.Schema(
     candidate_join: {
       type: Boolean,
       default: false,
-    }
+    },
+    teaserURL: {
+      type: String,
+    },
+    teaseruploadBy: {
+      type: String,
+    },
+    teaseruploadDate: {
+      type: Number,
+    },
+    teaserUpload: {
+      type: Boolean,
+      default: false,
+    },
+    trailerURL: {
+      type: String,
+    },
+    traileruploadDate: {
+      type: Number,
+    },
+    trailerUpload: {
+      type: Boolean,
+      default: false,
+    },
+    traileruploadBy: {
+      type: String,
+    },
+    editedURL: {
+      type: String,
+    },
+    editedUpload: {
+      type: Boolean,
+      default: false,
+    },
+    editeduploadBy: {
+      type: String,
+    },
+    editeduploadDate: {
+      type: Number,
+    },
 
   },
   { timestamps: true }

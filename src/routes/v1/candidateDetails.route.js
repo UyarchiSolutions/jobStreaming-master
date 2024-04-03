@@ -59,4 +59,10 @@ router.route('/recent/search').post(authorization, candidateDetailsController.re
 router.route('/get/SavedJobs/Candidate').get(authorization, candidateDetailsController.get_SavedJobs_Candidate);
 router.route('/update/Profesional/Details').post(authorization, candidateDetailsController.updateProfesionalDetails);
 router.route('/getCandidateById').get(authorization, candidateDetailsController.getCandidateById);
+
+
+
+router.route('/myinterviews').get(authorization, candidateDetailsController.get_imy_interviews);
+router.route('/myinterviews/list').get(authorization, candidateDetailsController.get_imy_interviews_list);
+
 module.exports = router;

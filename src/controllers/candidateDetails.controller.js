@@ -270,6 +270,16 @@ const getCandidateById = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_imy_interviews= catchAsync(async (req, res) => {
+  const data = await candidateDetailsService.get_imy_interviews(req);
+  res.send(data);
+});
+
+const get_imy_interviews_list= catchAsync(async (req, res) => {
+  const data = await candidateDetailsService.get_imy_interviews_list(req);
+  res.send(data);
+});
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -314,4 +324,6 @@ module.exports = {
   get_SavedJobs_Candidate,
   updateProfesionalDetails,
   getCandidateById,
+  get_imy_interviews,
+  get_imy_interviews_list
 };

@@ -951,5 +951,5 @@ module.exports = {
   Applypost,
   Savedpost,
   Myinterview,
-  Candidateinterview
+Candidateinterview
 };

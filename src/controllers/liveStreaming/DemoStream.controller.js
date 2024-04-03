@@ -119,6 +119,29 @@ const add_reference = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
+const completed_videos = catchAsync(async (req, res) => {
+  const data = await demostream.completed_videos(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+
+const upload_teaser = catchAsync(async (req, res) => {
+  const data = await demostream.upload_teaser(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+const upload_trailer = catchAsync(async (req, res) => {
+  const data = await demostream.upload_trailer(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+const upload_edited = catchAsync(async (req, res) => {
+  const data = await demostream.upload_edited(req);
+  res.status(httpStatus.CREATED).send(data);
+});
+
+const approve_upload = catchAsync(async (req, res) => {
+  const data = await demostream.approve_upload(req);
+  res.status(httpStatus.CREATED).send(data);
+});
 module.exports = {
   getDatas,
   get_stream_details,
@@ -142,5 +165,10 @@ module.exports = {
   verification_sms_send,
   get_buyer_token,
   get_reference,
-  add_reference
+  add_reference,
+  completed_videos,
+  upload_teaser,
+  upload_trailer,
+  upload_edited,
+  approve_upload
 };

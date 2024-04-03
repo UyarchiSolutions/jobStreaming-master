@@ -22,8 +22,9 @@ const { AgriCandidate,
   SlotBooking, Reference } = require("../../models/agri.Event.model")
 const jwt = require('jsonwebtoken');
 const agoraToken = require('../AgoraAppId.service');
-
+const { videoupload } = require('../S3video.service')
 const Agora = require('agora-access-token');
+const fileupload = require('fs');
 
 const getDatas = async () => {
   let stream = await DemostreamToken.aggregate([
@@ -1032,6 +1033,219 @@ const add_reference = async (req) => {
 
 
 
+const completed_videos = async (req) => {
+
+  let userId = req.userId;
+
+  const token = await SlotBooking.findById(req.query.id);
+  if (!token) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Slot not found');
+  }
+
+  let completed = await Democloudrecord.aggregate([
+    { $match: { $and: [{ chennel: { $eq: token._id } }, { videoLink_mp4: { $ne: null } }] } },
+  ])
+
+  let candidate = await AgriCandidate.findById(token.candId).select({
+    name: 1,
+    mail: 1,
+    mobile: 1,
+    gender: 1,
+    location: 1,
+    skills: 1,
+    dob: 1,
+    language: 1,
+    Instituitionname: 1,
+    affiliateduniversity: 1,
+    Education: 1,
+    course: 1,
+    yearOfPassing: 1,
+    hr_Video_upload: 1,
+    tech_Video_upload: 1,
+  });
+
+  return { completed, token, candidate };
+}
+
+
+
+const update_candiate = async (token) => {
+  let candidate = await AgriCandidate.findById(token.candId);
+  if (!candidate) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
+  }
+  if (token.teaserUpload && token.trailerUpload && token.editedUpload) {
+    if (token.Type == 'HR') {
+      candidate.hr_Video_upload = 'Uploaded';
+    }
+    if (token.Type == 'Tech') {
+      candidate.tech_Video_upload = 'Uploaded';
+    }
+    candidate.save();
+  }
+  else if (token.teaserUpload || token.trailerUpload || token.editedUpload) {
+    if (token.Type == 'HR') {
+      candidate.hr_Video_upload = 'Partial Pending';
+    }
+    if (token.Type == 'Tech') {
+      candidate.tech_Video_upload = 'Partial Pending';
+    }
+    candidate.save();
+  }
+
+}
+
+
+const upload_teaser = async (req) => {
+  let userId = req.userId;
+  let values = await SlotBooking.findById(req.body.id);
+  if (!values) {
+    fileupload.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
+  }
+
+  let up = await videoupload(req.file, 'teaser/upload', 'mp4');
+
+  if (up) {
+    values.teaserURL = up.Location;
+    values.teaseruploadDate = moment();
+    values.teaseruploadBy = userId;
+    values.teaserUpload = true;
+    values.save();
+  }
+
+  fileupload.unlink(req.file.path, (err) => {
+    if (err) {
+      return;
+    }
+  });
+  await update_candiate(values);
+  return values;
+}
+
+const upload_trailer = async (req) => {
+  let userId = req.userId;
+  let values = await SlotBooking.findById(req.body.id);
+  if (!values) {
+    fileupload.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
+  }
+
+  let up = await videoupload(req.file, 'teaser/upload', 'mp4');
+
+  if (up) {
+    values.trailerURL = up.Location;
+    values.traileruploadDate = moment();
+    values.traileruploadBy = userId;
+    values.trailerUpload = true;
+    values.save();
+  }
+
+  fileupload.unlink(req.file.path, (err) => {
+    if (err) {
+      return;
+    }
+  });
+  await update_candiate(values);
+  return values;
+}
+const upload_edited = async (req) => {
+  let userId = req.userId;
+  let values = await SlotBooking.findById(req.body.id);
+  if (!values) {
+    fileupload.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
+  }
+
+  let up = await videoupload(req.file, 'teaser/upload', 'mp4');
+
+  if (up) {
+    values.editedURL = up.Location;
+    values.editeduploadDate = moment();
+    values.editeduploadBy = userId;
+    values.editedUpload = true;
+    values.save();
+  }
+
+  fileupload.unlink(req.file.path, (err) => {
+    if (err) {
+      return;
+    }
+  });
+  await update_candiate(values);
+  return values;
+}
+
+const approve_upload = async (req) => {
+  let values = await SlotBooking.findById(req.body.id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Slot Not Found');
+  }
+  const candId = await AgriCandidate.findById(values.candId).select({
+    name: 1,
+    mail: 1,
+    mobile: 1,
+    gender: 1,
+    location: 1,
+    skills: 1,
+    dob: 1,
+    language: 1,
+    Instituitionname: 1,
+    affiliateduniversity: 1,
+    Education: 1,
+    course: 1,
+    yearOfPassing: 1,
+    hr_Video_upload: 1,
+    tech_Video_upload: 1,
+  });
+  if (!candId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Candidate Not Found');
+  }
+  if (values.Type == 'HR') {
+    if (candId.hr_Video_upload != 'Uploaded') {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Uploaded Pending');
+    }
+    if (candId.hr_Video_upload == 'Uploaded') {
+      candId.hr_Video_upload = 'Approved';
+      candId.save();
+    }
+
+  }
+  if (values.Type == 'Tech') {
+    if (candId.tech_Video_upload != 'Uploaded') {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Uploaded Pending');
+    }
+    if (candId.tech_Video_upload == 'Uploaded') {
+      candId.tech_Video_upload = 'Approved';
+      candId.save();
+    }
+
+  }
+
+  if (candId.tech_Video_upload == 'Approved' && candId.hr_Video_upload == 'Approved') {
+    await AgriCandidate.findByIdAndUpdate({ _id: candId._id }, { employerSideShow: 'Appreved' }, { new: true })
+  }
+  else if (candId.tech_Video_upload == 'Approved' || candId.hr_Video_upload == 'Approved') {
+    await AgriCandidate.findByIdAndUpdate({ _id: candId._id }, { employerSideShow: 'Partial Pending' }, { new: true })
+  }
+  return candId;
+}
+
 module.exports = {
   getDatas,
   get_stream_details,
@@ -1054,5 +1268,10 @@ module.exports = {
   verification_sms_send,
   get_buyer_token,
   get_reference,
-  add_reference
+  add_reference,
+  completed_videos,
+  upload_teaser,
+  upload_trailer,
+  upload_edited,
+  approve_upload
 };

@@ -121,7 +121,7 @@ const stream_end = async (req) => {
 
 const cloud_start = async (req) => {
     let id = req.streamId
-    let token = await Streamtoken.findOne({ chennel: id, type: 'CloudRecording', recoredStart: { $eq: "acquire" } }).sort({ created: -1 });
+    let token = await Streamtoken.findOne({ streamType: "Interview", chennel: id, type: 'CloudRecording', recoredStart: { $eq: "acquire" } }).sort({ created: -1 },);
     if (token) {
         let str = await Candidateinterview.findById(token.streamId);
 
@@ -249,7 +249,7 @@ const recording_query = async (req, id, agoraToken) => {
 
 
 const cloud_stop = async (req) => {
-    let token = await Streamtoken.findOne({ chennel: req.streamId, type: 'CloudRecording', recoredStart: { $eq: "query" } }).sort({ created: -1 });
+    let token = await Streamtoken.findOne({ streamType: "Interview", chennel: req.streamId, type: 'CloudRecording', recoredStart: { $eq: "query" } }).sort({ created: -1 });
     if (token) {
         let str = await Candidateinterview.findById(token.streamId);
         let agoraToken = await StreamAppID.findById(str.agoraID);
@@ -328,7 +328,7 @@ const production_supplier_token_cloudrecording = async (req, id, agroaID) => {
         throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
     }
     // console.log(stream);
-    value = await Streamtoken.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $in: ["query", 'start',] } });
+    value = await Streamtoken.findOne({ streamType: "Interview", chennel: streamId, type: 'CloudRecording', recoredStart: { $in: ["query", 'start',] } });
     if (!value) {
         const uid = await generateUid();
         const role = Agora.RtcRole.SUBSCRIBER;
@@ -958,105 +958,18 @@ const get_candidate_jobpost_current_live = async (req) => {
 const get_post_details = async (req) => {
 
     let userId = req.userId;
-    let now_time = new Date().getTime();
     let id = req.query.id;
-    let stream = await EmployerDetails.aggregate([
-        { $match: { $and: [{ _id: { $eq: id } }] } },
-        {
-            $lookup: {
-                from: 'employerregistrations',
-                localField: 'userId',
-                foreignField: '_id',
-                as: 'employerregistrations',
-            },
-        },
-        { $unwind: "$employerregistrations" },
-        {
-            $lookup: {
-                from: 'jobpostapplies',
-                localField: '_id',
-                foreignField: 'jobpostId',
-                pipeline: [
-                    { $match: { candidateID: { $eq: userId } } }
-                ],
-                as: 'jobpostapplies',
-            },
-        },
-        {
-            $unwind: {
-                path: '$jobpostapplies',
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-        {
-            $addFields: {
-                cmp_choosefile: "$employerregistrations.choosefile",
-                cmp_companyAddress: "$employerregistrations.companyAddress",
-                cmp_companyDescription: "$employerregistrations.companyDescription",
-                cmp_companyType: "$employerregistrations.companyType",
-                cmp_companyWebsite: "$employerregistrations.companyWebsite",
-                cmp_contactName: "$employerregistrations.contactName",
-                cmp_industryType: "$employerregistrations.industryType",
-                cmp_location: "$employerregistrations.location",
-                cmp_logo: "$employerregistrations.logo",
-                cmp_name: "$employerregistrations.name",
-                cmp_postedBy: "$employerregistrations.postedBy",
-                cmp_registrationType: "$employerregistrations.choosefile",
-                apply: { $ifNull: ["$jobpostapplies.active", false] }
-            }
-        },
-        { $unset: "employerregistrations" },
-        { $unset: "jobpostapplies" },
+    let streamtoken = await Streamtoken.findById(id);
+    if (!streamtoken) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Stream Token not found');
+    }
+    let stream = await Candidateinterview.findById(streamtoken.chennel);
 
-        {
-            $lookup: {
-                from: 'jobpoststreams',
-                localField: '_id',
-                foreignField: 'post',
-                pipeline: [
-                    { $match: { $and: [{ active: { $eq: true } }, { show_video: { $eq: true } }, { status: { $ne: "Time Out" } }] } },
-                    {
-                        $addFields: {
-                            // stream_status: "$employerregistrations.choosefile",
-                            stream_status: {
-                                $cond: {
-                                    if: { $lt: ["$endTime", now_time] },
-                                    then: {
-                                        $cond: {
-                                            if: { $in: ["$status", ['Completed', 'On Going']] },
-                                            then: "Completed",
-                                            else: false
-                                        }
-                                    },
-                                    else: {
-                                        $cond: {
-                                            if: { $and: [{ $lt: ["$startTime", now_time] }, { $gt: ["$endTime", now_time] }] },
-                                            then: "On Going",
-                                            else: {
-                                                $cond: {
-                                                    if: { $gt: ["$startTime", now_time] },
-                                                    then: "Upcoming",
-                                                    else: false,
-                                                },
-                                            },
-                                        },
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    { $match: { $and: [{ stream_status: { $ne: false } }] } }
-                ],
-                as: 'jobpoststreams',
-            },
-        },
-    ])
-
-    if (stream.length == 0) {
+    if (!stream) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
     }
 
-    return stream[0];
+    return stream;
 }
 
 
@@ -1067,31 +980,31 @@ const candidate_go_live = async (req) => {
 
     let candidateId = req.userId;
     let streamId = req.body.streamId;
-    let stream = await Jobpoststream.findById(streamId);
+    let stream = await Candidateinterview.findById(streamId);
     if (!stream) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
     }
-    let value = await Streamtoken.findOne({ candidateId: candidateId, chennel: streamId });
+    if (!stream.agoraID) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Host Not Yet Joined');
+    }
+    let value = await Streamtoken.findOne({ candidateId: candidateId, chennel: streamId, streamType: "Interview" });
     if (!value) {
         const uid = await generateUid();
-        const role = req.body.isPublisher ? Agora.RtcRole.SUBSCRIBER : Agora.RtcRole.PUBLISHER;
+        const role = req.body.isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
         const expirationTimestamp = stream.endTime / 1000;
         value = await Streamtoken.create({
-            ...req.body,
-            ...{
-                date: moment().format('YYYY-MM-DD'),
-                time: moment().format('HHMMSS'),
-                candidateId: candidateId,
-                streamId: streamId,
-                post: stream.post,
-                created: moment(),
-                Uid: uid,
-                created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-                expDate: expirationTimestamp * 1000,
-                Duration: 30,
-                type: 'Candidate',
-                streamType: "Interview"
-            },
+            date: moment().format('YYYY-MM-DD'),
+            time: moment().format('HHMMSS'),
+            candidateId: candidateId,
+            streamId: streamId,
+            post: stream.post,
+            created: moment(),
+            Uid: uid,
+            created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+            expDate: expirationTimestamp * 1000,
+            Duration: 30,
+            type: 'Candidate',
+            streamType: "Interview"
         });
         const token = await geenerate_rtc_token(streamId, uid, role, expirationTimestamp, stream.agoraID);
         value.token = token;
@@ -1112,11 +1025,11 @@ const get_stream_token_candidateAuth = async (req) => {
         throw new ApiError(httpStatus.NOT_FOUND, 'Join Token Missing');
     }
 
-    let stream = await Jobpoststream.findById(update.streamId);
+    let stream = await Candidateinterview.findById(update.streamId);
     if (!stream) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
     }
-    let token = await Streamtoken.findOne({ candidateId: userId, chennel: stream._id });
+    let token = await Streamtoken.findOne({ candidateId: userId, chennel: stream._id, streamType: "Interview" });
     let app = await StreamAppID.findById(stream.agoraID);
     let current_time = false;
     let now_time = new Date().getTime();
@@ -1125,7 +1038,6 @@ const get_stream_token_candidateAuth = async (req) => {
         stream.status = 'Completed';
         stream.save();
     }
-
     return { stream, token, app, expried: current_time };
 }
 
@@ -1139,7 +1051,7 @@ const candidateAuth_get_all_chats = async (req) => {
     if (!update) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Join Token Missing');
     }
-    let stream = await Jobpoststream.findById(update.streamId);
+    let stream = await Candidateinterview.findById(update.streamId);
     if (!stream) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
     }

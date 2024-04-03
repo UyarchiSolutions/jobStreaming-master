@@ -10,7 +10,7 @@ const {
 } = require('../models/candidateDetails.model');
 const { CandidateRegistration } = require('../models');
 const { Languages } = require('../models/languages.model');
-const { EmployerDetails, EmployerPostjob } = require('../models/employerDetails.model');
+const { EmployerDetails, EmployerPostjob, Myinterview, Candidateinterview } = require('../models/employerDetails.model');
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
@@ -3995,6 +3995,214 @@ const getCandidateById = async (userId) => {
   return values;
 };
 
+const get_imy_interviews = async (req) => {
+  let userId = req.userId;
+  let now_Time = new Date().getTime();
+  let values = await Candidateinterview.aggregate([
+    { $match: { $and: [{ candidateId: { $eq: userId } }] } },
+    { $sort: { endTime: 1 } },
+    {
+      $addFields: {
+        matchvalue: {
+          $cond: {
+            if: { $and: [{ $lt: ["$startTime", now_Time] }, { $gt: ["$endTime", now_Time] },] },
+            then: 1,
+            else: {
+              $cond: {
+                if: { $gt: ["$startTime", now_Time] },
+                then: 2,
+                else: 3,
+              },
+            },
+          },
+        }
+      }
+    },
+    {
+      $addFields: {
+        streamStatus: {
+          $cond: {
+            if: { $and: [{ $lt: ["$startTime", now_Time] }, { $gt: ["$endTime", now_Time] },] },
+            then: "Live",
+            else: {
+              $cond: {
+                if: { $gt: ["$startTime", now_Time] },
+                then: "Upcoming",
+                else: "Completed",
+              },
+            },
+          },
+        }
+      }
+    },
+
+    { $sort: { matchvalue: 1 } },
+    { $limit: 5 }
+  ])
+  return values;
+};
+
+
+const get_imy_interviews_list = async (req) => {
+
+  let range = req.query.range == null || req.query.range == undefined || req.query.range == null ? 10 : parseInt(req.query.range);
+  let page = req.query.page == null || req.query.page == undefined || req.query.page == null ? 0 : parseInt(req.query.page);
+  let status = req.query.status == null || req.query.status == undefined || req.query.status == '' ? 'all' : req.query.status;
+  let filter = { active: { $eq: true } }
+  if (status != 'all') {
+    filter = { streamStatus: { $eq: status } }
+  }
+  let userId = req.userId;
+  let now_Time = new Date().getTime();
+  let values = await Candidateinterview.aggregate([
+    { $match: { $and: [{ candidateId: { $eq: userId } }] } },
+    { $sort: { endTime: 1 } },
+    {
+      $addFields: {
+        matchvalue: {
+          $cond: {
+            if: { $and: [{ $lt: ["$startTime", now_Time] }, { $gt: ["$endTime", now_Time] },] },
+            then: 1,
+            else: {
+              $cond: {
+                if: { $gt: ["$startTime", now_Time] },
+                then: 2,
+                else: 3,
+              },
+            },
+          },
+        }
+      }
+    },
+    {
+      $addFields: {
+        streamStatus: {
+          $cond: {
+            if: { $and: [{ $lt: ["$startTime", now_Time] }, { $gt: ["$endTime", now_Time] },] },
+            then: "Live",
+            else: {
+              $cond: {
+                if: { $gt: ["$startTime", now_Time] },
+                then: "Upcoming",
+                else: "Completed",
+              },
+            },
+          },
+        }
+      }
+    },
+    {
+      $lookup: {
+        from: 'employerregistrations',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'employerregistrations',
+      },
+    },
+    {
+      $unwind: {
+        path: '$employerregistrations',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'candidateinterviews',
+        localField: 'userId',
+        foreignField: 'userId',
+        pipeline: [
+          { $match: { $and: [{ candidateId: { $eq: userId } }] } },
+          { $group: { _id: null, count: { $sum: 1 } } }
+        ],
+        as: 'candidateinterviews',
+      },
+    },
+    {
+      $unwind: {
+        path: '$candidateinterviews',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $addFields: {
+        companyWebsite: "$employerregistrations.companyWebsite",
+        companyDescription: "$employerregistrations.companyDescription",
+        companyAddress: "$employerregistrations.companyAddress",
+        companyType: "$employerregistrations.companyType",
+        contactName: "$employerregistrations.contactName",
+        NOI: "$candidateinterviews.count",
+
+      }
+    },
+
+    {
+      $unset: "employerregistrations"
+    },
+    {
+      $unset: "interviewer"
+    },
+    {
+      $unset: "interviewer_2"
+    },
+    // {
+    //   $unset: "candidateinterviews"
+    // },
+
+    { $match: { $and: [filter] } },
+    { $sort: { matchvalue: 1 } },
+    { $skip: range * page },
+    { $limit: range },
+  ])
+
+  let next = await Candidateinterview.aggregate([
+    { $match: { $and: [{ candidateId: { $eq: userId } }] } },
+    { $sort: { endTime: 1 } },
+    {
+      $addFields: {
+        matchvalue: {
+          $cond: {
+            if: { $and: [{ $lt: ["$startTime", now_Time] }, { $gt: ["$endTime", now_Time] },] },
+            then: 1,
+            else: {
+              $cond: {
+                if: { $gt: ["$startTime", now_Time] },
+                then: 2,
+                else: 3,
+              },
+            },
+          },
+        }
+      }
+    },
+    {
+      $addFields: {
+        streamStatus: {
+          $cond: {
+            if: { $and: [{ $lt: ["$startTime", now_Time] }, { $gt: ["$endTime", now_Time] },] },
+            then: "Live",
+            else: {
+              $cond: {
+                if: { $gt: ["$startTime", now_Time] },
+                then: "Upcoming",
+                else: "Completed",
+              },
+            },
+          },
+        }
+      }
+    },
+    { $match: { $and: [filter] } },
+    { $sort: { matchvalue: 1 } },
+    { $skip: range * (page + 1) },
+    { $limit: range },
+  ])
+
+
+  return { data: values, next: next.length != 0 }
+
+}
+
 module.exports = {
   createkeySkill,
   getByIdUser,
@@ -4039,4 +4247,6 @@ module.exports = {
   get_SavedJobs_Candidate,
   updateProfesionalDetails,
   getCandidateById,
+  get_imy_interviews,
+  get_imy_interviews_list
 };

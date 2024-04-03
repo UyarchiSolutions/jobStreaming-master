@@ -120,7 +120,7 @@ const attachment_interview = async (req) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
   }
 
-  let up = await videoupload(req.file, 'upload/attachment/', 'mp4');
+  let up = await videoupload(req.file, 'upload/jd/', 'mp4');
   if (up) {
     interview.cand_Attachment = up.Location;
     interview.save();
@@ -237,7 +237,7 @@ const stream_details = async (req) => {
     "startTime": 1,
     "endTime": 1,
     "cand_Attachment": 1,
-    candidateId:1
+    candidateId: 1
   });
 
 
