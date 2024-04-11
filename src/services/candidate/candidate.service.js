@@ -283,11 +283,31 @@ const applied_candidate_details = async (req) => {
         pipeline: [
           { $match: { $and: [{ teaserUpload: { $eq: true } }, { trailerUpload: { $eq: true } }, { editedUpload: { $eq: true } }] } },
           {
+            $lookup: {
+              from: 'democloundrecords',
+              localField: '_id',
+              foreignField: 'chennel',
+              pipeline: [
+                { $match: { $and: [{ videoLink_mp4: { $ne: null } }, { videoLink_mp4: { $ne: "Pending" } }] } },
+                {
+                  $project: {
+                    _id: 1,
+                    videoLink_mp4: { $concat: ["https://streamingupload.s3.ap-south-1.amazonaws.com/", '', "$videoLink_mp4"] }
+                  }
+                }
+              ],
+              as: 'StreamRecord',
+            },
+          },
+          {
             $project: {
               _id: 1,
               editedURL: 1,
               teaserURL: 1,
-              trailerURL: 1
+              trailerURL: 1,
+              streamtokens: 1,
+              StreamRecord: 1,
+              Type: 1
             }
           }
         ],
@@ -295,6 +315,46 @@ const applied_candidate_details = async (req) => {
       },
     },
 
+    {
+      $lookup: {
+        from: 'agricandreviews',
+        localField: 'candidateID',
+        foreignField: 'candId',
+        pipeline: [
+          // { $match: { $and: [{ userId: { $eq: userId } }] } }
+          {
+            $group: {
+              _id: "$Role",
+              details: {
+                $push: {
+                  rating: "$rating",
+                  lang: "$lang",
+                  skillsrated: "$skillsrated",
+                  Role: "$Role",
+                  rating: "$rating",
+                  expCTC: "$expCTC",
+                  curCTC: "$curCTC",
+                  noticePeriod: "$noticePeriod",
+                  performance: "$performance",
+                  attitude: "$attitude",
+                  desc: "$desc",
+                  coding: "$coding",
+                  comments: "$comments",
+                  communication: "$communication",
+                  individualCode: "$individualCode",
+                  logic: "$logic",
+                  projectUnderStanding: "$projectUnderStanding",
+                  underStating: "$underStating",
+                }
+              },
+              avgQuantity: { $avg: "$rating" }
+            }
+          },
+          { $sort: { _id: 1 } }
+        ],
+        as: 'agricandreviews',
+      },
+    },
     {
       $addFields: {
         "skills": "$agricandidates.skills",
