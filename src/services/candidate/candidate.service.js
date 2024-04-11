@@ -276,6 +276,26 @@ const applied_candidate_details = async (req) => {
     { $unwind: "$agricandidates" },
     { $unset: "employerdetails" },
     {
+      $lookup: {
+        from: 'slotbookings',
+        localField: 'candidateID',
+        foreignField: 'candId',
+        pipeline: [
+          { $match: { $and: [{ teaserUpload: { $eq: true } }, { trailerUpload: { $eq: true } }, { editedUpload: { $eq: true } }] } },
+          {
+            $project: {
+              _id: 1,
+              editedURL: 1,
+              teaserURL: 1,
+              trailerURL: 1
+            }
+          }
+        ],
+        as: 'slotbookings',
+      },
+    },
+
+    {
       $addFields: {
         "skills": "$agricandidates.skills",
         "language": "$agricandidates.language",
@@ -293,7 +313,8 @@ const applied_candidate_details = async (req) => {
         "dob": "$agricandidates.dob",
         "gender": "$agricandidates.gender",
         "resumeUrl": "$agricandidates.resumeUrl",
-        interview: { $ifNull: ["$myinterviews.active", false] }
+        interview: { $ifNull: ["$myinterviews.active", false] },
+        preevalutions: { $ne: [{ $size: "$slotbookings" }, 0] }
       }
     },
     { $unset: "myinterviews" },
