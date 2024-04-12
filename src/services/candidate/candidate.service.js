@@ -177,6 +177,17 @@ const get_candidate_applies = async (req) => {
     { $unwind: "$agricandidates" },
 
     {
+      $lookup: {
+        from: 'slotbookings',
+        localField: 'candidateID',
+        foreignField: 'candId',
+        pipeline: [
+          { $match: { $and: [{ teaserUpload: { $eq: true } }, { trailerUpload: { $eq: true } }, { editedUpload: { $eq: true } }] } },
+        ],
+        as: 'slotbookings',
+      },
+    },
+    {
       $addFields: {
         _id: "$agricandidates._id",
         applyID: "$_id",
@@ -198,6 +209,7 @@ const get_candidate_applies = async (req) => {
         dob: "$agricandidates.dob",
         gender: "$agricandidates.gender",
         resumeUrl: "$agricandidates.resumeUrl",
+        preevalutions: { $ne: [{ $size: "$slotbookings" }, 0] }
       }
     },
 

@@ -4,10 +4,12 @@ const moment = require('moment');
 const Agora = require('agora-access-token');
 const axios = require('axios');
 const { EmployerDetails, Jobpoststream, Applypost, Myinterview, Candidateinterview, Interviewer } = require('../../models/employerDetails.model');
-
+const { EmployerRegistration } = require("../../models/employerRegistration.model");
 const { AgriCandidate, AgriEventSlot, agriCandReview, IntrestedCandidate, SlotBooking, BookedSlot, Reference, } = require('../../models/agri.Event.model')
 const fileupload = require('fs');
 const { videoupload } = require('../S3video.service')
+
+const emailservice = require("../email.service")
 
 const tokenService = require("../token.service")
 
@@ -21,7 +23,6 @@ const create_new_interview = async (req) => {
   if (!interview) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Myinterview Not Found');
   }
-  console.log(interview, userId)
   if (interview.userId != userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Access');
   }
@@ -50,8 +51,40 @@ const create_new_interview = async (req) => {
     }
   });
 
+
+  let inerviewers = await Interviewer.find({ _id: { $in: candidate_interview.interviewer } });
+  let candidate = await AgriCandidate.findById(candidate_interview.candidateId)
+  let employer = await EmployerRegistration.findById(candidate_interview.userId)
+  inerviewers.forEach(async (e) => {
+    let data = {
+      interviewername: e.name,
+      date: moment(candidate_interview.startTime).format('DD-MM-YYYY'),
+      resume: candidate.resumeUrl,
+      time: candidate_interview.time,
+      candidatename: candidate.name,
+      companyname: employer.name,
+      link: 'https://evaluation.seewe.info/interview/' + candidate_interview._id,
+      subject: '',
+      email: e.email
+    };
+    await interviewr_link(data)
+  });
   return candidate_interview;
 }
+
+
+const interviewr_link = async (data) => {
+  let send = await emailservice.send_interviewLink(data);
+  return send;
+}
+
+const send_candidate_message_for_interview = async (data) => {
+
+
+  let send = await emailservice.send_candidate_message_for_interview(data);
+  return send;
+}
+
 
 const update_interview = async (req) => {
 
@@ -130,6 +163,23 @@ const attachment_interview = async (req) => {
       return;
     }
   });
+
+
+
+  let candidate = await AgriCandidate.findById(interview.candidateId)
+  let employer = await EmployerRegistration.findById(interview.userId)
+  let data = {
+    date: moment(interview.startTime).format('DD-MM-YYYY'),
+    description: interview.cand_Attachment,
+    time: interview.time,
+    candidatename: candidate.name,
+    companyname: employer.name,
+    subject: '',
+    email: candidate.mail
+  };
+   console.log(data)
+  await send_candidate_message_for_interview(data)
+
   return interview;
 }
 

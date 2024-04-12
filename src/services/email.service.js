@@ -323,6 +323,43 @@ const send_email_update = async (id, to) => {
   await transport.sendMail(msg);
 };
 
+
+
+
+const send_interviewLink = async (userData) => {
+
+
+  const { interviewername, date, time, candidatename, companyname, link, subject, email, resume } = userData;
+  let data1 = await ejs.renderFile(__dirname + '/email-template/employer-inteviewer-link.ejs', {
+    interviewername, date, time: tConv24(time), candidatename, companyname, link, resume
+  });
+  const msg = {
+    from: config.email.from,
+    to: email,
+    subject: 'Interview Schedule-' + date + ' ' + tConv24(time) + ' Regarding.',
+    html: data1,
+  };
+  return await transport.sendMail(msg);
+};
+
+const send_candidate_message_for_interview = async (userData) => {
+
+
+  const { interviewername, date, time, candidatename, companyname, link, subject, email, description } = userData;
+  let data1 = await ejs.renderFile(__dirname + '/email-template/candidate-inteview-schedule.ejs', {
+    interviewername, date, time: tConv24(time), candidatename, companyname, link, description
+  });
+  const msg = {
+    from: config.email.from,
+    to: email,
+    subject: 'Interview Schedule - ' + date + ' ' + tConv24(time) + ' Regarding.',
+    html: data1,
+  };
+  return await transport.sendMail(msg);
+};
+
+
+
 module.exports = {
   transport,
   // sendEmail,
@@ -343,4 +380,6 @@ module.exports = {
   eventMailSend,
   sendsuccessTestMailNew,
   agriCandidateSlotBookedMail,
+  send_interviewLink,
+  send_candidate_message_for_interview
 };
