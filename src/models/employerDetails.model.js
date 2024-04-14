@@ -887,7 +887,7 @@ const candidateinterviewschema = new mongoose.Schema(
     endTime: {
       type: Number,
     },
-    actualEnd:{
+    actualEnd: {
       type: Number,
     },
     date: {
@@ -926,9 +926,13 @@ const candidateinterviewschema = new mongoose.Schema(
     inter_message: {
       type: String,
     },
-    agoraID:{
+    agoraID: {
       type: String,
-    }
+    },
+    goLive: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
@@ -951,5 +955,5 @@ module.exports = {
   Applypost,
   Savedpost,
   Myinterview,
-Candidateinterview
+  Candidateinterview
 };

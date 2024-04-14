@@ -72,13 +72,11 @@ const emp_go_live = async (req) => {
         stream.goLive = true;
         stream.save();
     }
-    // console.log(stream)
-    req.io.emit(stream.post + '_host_join', { streamId: stream._id, status: stream.status, goLive: stream.goLive });
+    req.io.emit('interview_started', { streamId: stream._id, status: stream.status, goLive: stream.goLive });
     await production_supplier_token_cloudrecording(req, streamId, stream.agoraID);
 
     return value;
 
-    return { message: "hello world" }
 };
 
 
@@ -109,12 +107,10 @@ const stream_end = async (req) => {
     if (!stream) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Job Post not found');
     }
-
     stream.status = 'Completed';
     stream.streamStatus = 'Completed';
     stream.endTime = moment();
     stream.save();
-
     req.io.emit(stream._id + "_stream_end", { stream: stream.status })
     return stream;
 }

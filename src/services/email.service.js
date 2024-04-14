@@ -177,7 +177,7 @@ const tConv24 = (time24) => {
   var H = +ts.substr(0, 2);
   var h = (H % 12) || 12;
   h = (h < 10) ? ("0" + h) : h;  // leading 0 at the left for 1 digit hours
-  var ampm = H < 12 ? " AM" : " PM";
+  var ampm = H < 12 ? " am" : " pm";
   ts = h + ts.substr(2, 3) + ampm;
   return ts;
 };
@@ -336,7 +336,7 @@ const send_interviewLink = async (userData) => {
   const msg = {
     from: config.email.from,
     to: email,
-    subject: 'Interview Schedule-' + date + ' ' + tConv24(time) + ' Regarding.',
+    subject: 'Interview Schedule-' + date + ' ' + tConv24(time) + ' - Regarding.',
     html: data1,
   };
   return await transport.sendMail(msg);
@@ -352,7 +352,7 @@ const send_candidate_message_for_interview = async (userData) => {
   const msg = {
     from: config.email.from,
     to: email,
-    subject: 'Interview Schedule - ' + date + ' ' + tConv24(time) + ' Regarding.',
+    subject: 'Interview Schedule - ' + date + ' ' + tConv24(time) + ' - Regarding.',
     html: data1,
   };
   return await transport.sendMail(msg);

@@ -4132,7 +4132,6 @@ const get_imy_interviews_list = async (req) => {
         companyType: "$employerregistrations.companyType",
         contactName: "$employerregistrations.contactName",
         NOI: "$candidateinterviews.count",
-
       }
     },
 
